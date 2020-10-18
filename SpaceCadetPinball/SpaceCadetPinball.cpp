@@ -4,17 +4,27 @@
 #include "pch.h"
 #include <iostream>
 #include "objlist_class.h"
+#include "partman.h"
+#include  "DatParser.h"
 
 int main()
 {
-    std::cout << "Hello World!\n";
+	std::cout << "Hello World!\n";
 
-	objlist_class d =  objlist_class(2, 4);
-	for(int i=0;i<100;i++)
+	objlist_class d = objlist_class(2, 4);
+	for (int i = 0; i < 100; i++)
 	{
 		d.Add((void*)i);
 	}
 	d.Delete(3);
+
+	auto xx = sizeof(datFileHeader);
+
+	char dataFileName[300];
+	partman::make_path_name(dataFileName, "PINBALL.DAT");
+	auto datFile = partman::load_records(dataFileName);
+
+	//DatParser::Parse(dataFileName);
 }
 
 // Run program: Ctrl + F5 or Debug > Start Without Debugging menu

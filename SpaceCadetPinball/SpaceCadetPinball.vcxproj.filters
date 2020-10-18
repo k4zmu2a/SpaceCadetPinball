@@ -21,6 +21,12 @@
     <ClInclude Include="objlist_class.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="partman.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="DatParser.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="pch.cpp">
@@ -30,6 +36,12 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="objlist_class.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="partman.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="DatParser.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

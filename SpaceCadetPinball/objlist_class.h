@@ -4,7 +4,7 @@ struct __declspec(align(4)) objlist_struct1
 {
 	int Size;
 	int Count;
-	int Array[];
+	int Array[1];
 };
 
 

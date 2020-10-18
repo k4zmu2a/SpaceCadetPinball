@@ -10,5 +10,11 @@
 #define PCH_H
 
 // TODO: add headers that you want to pre-compile here
+#include <windows.h>
+
+#include <cstdio>
+
+#define memoryallocate(x) malloc(x);
+#define memoryfree(x) free(x);
 
 #endif //PCH_H

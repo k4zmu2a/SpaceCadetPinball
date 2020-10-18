@@ -1,0 +1,123 @@
++-----------------------------------------------------+
+| 3D Pinball for Windows ("PARTOUT") .DAT file format |
+| AdrienTD                                            |
++-----------------------------------------------------+
+
+//-- Header --//
+
++0x00:  File signature          BYTE*21
++0x15:  App name                BYTE*50
++0x47:  Description             BYTE*100
++0xAB:  File size               DWORD
++0xAF:  Number of files/groups  WORD
++0xB1:  Size of body            DWORD
++0xB5:  Unknown (0)             WORD
+
+In 3D Pinball, the file signature is "PARTOUT(4.0)RESOURCE". The rest is
+filled with 0.
+
+//-- Body --//
+
+The body is constitued of groups. Every group begins with a byte that tells
+how many entries are in the group.
+
+Every entry begins with a byte that specifies the type of the entry. A DWORD that
+tells the size of the coming data follows the byte. Then there's some data for the
+entry. However, if the type is 0, the type byte is followed by a short value,
+and that's all.
+
+Existing types:
+
+Type            Meaning/comments
+---------------------------------------------------
+0               ?, does not have the 32bits size value, but a 16bits value (see above).
+1               8 bpp bitmap
+3               Group name
+5               Palette (1 color is 1 DWORD, only present 1 time in PINBALL.DAT
+                with a data size of 1024 bytes for 256 colors. Some colors are 0
+                because their indexes are reserved by Windows.)
+9               String (content)
+10              Array of 16bits integer values
+11              Array of 32bits floating point values (collision box, ...)
+12              16 bpp bitmap (Heightmap?)
+
+
+//-- 8bpp bitmap data header --//
++0:     Unknown (0)     BYTE
++1:     Width           WORD
++3:     Height          WORD
++5:     X position      WORD
++7      Y position      WORD
++9:     Size of bitmap  DWORD
++13:    Unknown (1)     BYTE
++14:    Bitmap data     BYTE*(DWORD@+9)
+
+
+//-- 16bpp bitmap data header --//
++0:     Width           WORD
++2:     Height          WORD
++4:     Pitch/2         WORD
++6:     Unknown (0)     DWORD
++10:    Unknown (0)     WORD
++12:    Unknown (80)    WORD
++14:    Bitmap data     BYTE*(DWORD@+9)
+
+
+//-- Pinball 3D remarkable groups --//
+
+-- table_size
+Entry type 10 contains 2 16-bit integers: first is width, second is height.
+
+-- table_objects
+In entry type 10, the first integer is unknown, but then comes a series of
+16-bits integer pairs. Every pair represents an object of the table. The
+first integer is the type of object, and the second is the number of
+a group/resource in this data file.
+
+Types of object (3D Pinball Space Cadet for Windows):
+1000: ?
+1001: Plunger
+1002: Light (lite###)
+1003: Left flipper
+1004: Right flipper
+1005: Bumper
+1006: Yellow target
+1007: Drain (no bmp)
+1010: ? (no bmp)
+1011: Bloc (dot between the flippers)
+1012: kout (no bmp) (?)
+1013: Gate
+1014: Kicker
+1015: Roll
+1016: One way (no bmp) (?)
+1017: Sink (no bmp) (?)
+1018: Flag
+1019: Red target
+1020: Roll (the green circle that makes a weird sound when rolling on it)
+1021: Ramp (no bmp)
+1022: Ramp hole (no bmp)
+1023: Demo (no bmp)
+1024: Trip (no bmp)
+1026: Lights (no bmp, list?)
+1028: Bumpers list (one for attack, one for launch)
+1029: kout (no bmp) (?, similar to 1012?)
+1030: Fuel bargraph (list?)
+1031: Sound
+1033: Text box (score, ball counter, player number)
+
+//-- Information --//
+
+There's an article of the format at http://rewiki.regengedanken.de/.
+I haven't read it completely, but some informations helped me a bit.
+
+Another thing: There's nearly nothing about hacking the game on the web (even
+though the Space Cadet game bundled with Windows is very popular).
+What I've only seen when doing a (Google) web search is the 'hidden test'
+cheat code. [as of 2017 or even less]
+
+
+//-- Contact --//
+
+Any questions? Contact me at [see my GitHub profile @AdrienTD for contacts] .
+
+AdrienTD :)
