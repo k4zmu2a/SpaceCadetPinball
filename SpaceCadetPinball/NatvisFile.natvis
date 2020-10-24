@@ -23,4 +23,28 @@
       </ArrayItems>
     </Expand>
   </Type>
+
+  <Type Name="datFileStruct">
+    <DisplayString>{{ NumberOfGroups={NumberOfGroups} }}</DisplayString>
+    <Expand>
+      <Item Name="[NumberOfGroups]" ExcludeView="simple">NumberOfGroups</Item>
+      <Item Name="[Description]" ExcludeView="simple">Description</Item>
+      <ArrayItems>
+        <Size>NumberOfGroups</Size>
+        <ValuePointer>GroupData</ValuePointer>
+      </ArrayItems>
+    </Expand>
+  </Type>
+  <Type Name="datGroupData">
+    <DisplayString>{{ EntryCount={EntryCount} }}</DisplayString>
+    <Expand>
+      <Item Name="[EntryCount]" ExcludeView="simple">EntryCount</Item>
+      <ArrayItems>
+        <Size>EntryCount</Size>
+        <ValuePointer>Entries</ValuePointer>
+      </ArrayItems>
+    </Expand>
+  </Type>
+
+
 </AutoVisualizer>

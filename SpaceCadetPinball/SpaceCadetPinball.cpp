@@ -2,6 +2,7 @@
 //
 
 #include "pch.h"
+
 #include <iostream>
 #include "objlist_class.h"
 #include "partman.h"
@@ -23,6 +24,19 @@ int main()
 	char dataFileName[300];
 	partman::make_path_name(dataFileName, "PINBALL.DAT");
 	auto datFile = partman::load_records(dataFileName);
+	assert(datFile);
+
+	assert(partman::field_size_nth(datFile, 0, String, 0) == 43);
+	assert(partman::field_size_nth(datFile, 2, Palette, 0) == 1024);
+	assert(partman::field_size_nth(datFile, 101, FloatArray, 4) == 32);
+
+	assert(strcmp(partman::field(datFile, 0, String), "3D-Pinball:  Copyright 1994, Cinematronics") == 0);
+	assert(strcmp(partman::field(datFile, 540, GroupName), "table_objects") == 0);
+
+	assert(partman::record_labeled(datFile, "background") == 2);
+	assert(partman::record_labeled(datFile, "a_bump1") == 372);
+	
+	assert(memcmp(partman::field_labeled(datFile, "table_size", ShortArray), new short[2]{ 600, 416 }, 2 * 2) == 0);
 
 	//DatParser::Parse(dataFileName);
 }

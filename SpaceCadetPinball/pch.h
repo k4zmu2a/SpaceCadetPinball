@@ -11,8 +11,8 @@
 
 // TODO: add headers that you want to pre-compile here
 #include <windows.h>
-
 #include <cstdio>
+#include <assert.h>
 
 #define memoryallocate(x) malloc(x);
 #define memoryfree(x) free(x);
