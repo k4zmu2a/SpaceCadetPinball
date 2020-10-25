@@ -7,6 +7,7 @@
 #include "objlist_class.h"
 #include "partman.h"
 #include  "DatParser.h"
+#include "loader.h"
 
 int main()
 {
@@ -38,6 +39,11 @@ int main()
 	
 	assert(memcmp(partman::field_labeled(datFile, "table_size", ShortArray), new short[2]{ 600, 416 }, 2 * 2) == 0);
 
+	//loader::error(25, 26);
+	loader::loadfrom(datFile);
+
+	loader::get_sound_id(18);
+	//
 	//DatParser::Parse(dataFileName);
 }
 

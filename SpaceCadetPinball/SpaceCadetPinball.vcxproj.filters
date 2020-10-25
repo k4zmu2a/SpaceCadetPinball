@@ -27,6 +27,12 @@
     <ClInclude Include="DatParser.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="loader.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="pinball.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="pch.cpp">
@@ -42,6 +48,12 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="DatParser.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="loader.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="pinball.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
