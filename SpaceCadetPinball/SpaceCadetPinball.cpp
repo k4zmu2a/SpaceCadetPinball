@@ -43,7 +43,14 @@ int main()
 	loader::loadfrom(datFile);
 
 	loader::get_sound_id(18);
-	//
+
+	visualStruct visual1{};
+	loader::material(96, &visual1);
+	loader::query_visual(283,0, &visual1);
+
+	visualKickerStruct kicker1{};
+	loader::kicker(509, &kicker1);
+	
 	//DatParser::Parse(dataFileName);
 }
 

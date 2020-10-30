@@ -80,19 +80,19 @@ int loader::error(int errorCode, int captionCode)
 	return -1;
 }
 
-void loader::default_vsi(int* arr)
+void  loader::default_vsi(visualStruct* visual)
 {
-	arr[13] = 0;
-	arr[5] = 1369940824;
-	arr[12] = 0;
-	arr[0] = 1064514355;
-	arr[1] = 1058642330;
-	arr[2] = 0;
-	arr[4] = 0;
-	arr[16] = 0;
-	arr[17] = 0;
-	arr[15] = 0;
-	arr[14] = 0;
+	visual->Unknown14Flag = 0;
+	visual->Kicker.Unknown1F = 8.9999999e10;
+	visual->Kicker.SoundIndex = 0;
+	visual->Unknown1F = 0.94999999;
+	visual->Unknown2F = 0.60000002;
+	visual->FloatArrSizeDiv8Sub2 = 0;
+	visual->SoundIndex2 = 0;
+	visual->Bitmap8 = 0;
+	visual->Bitmap16 = 0;
+	visual->SoundIndex3 = 0;
+	visual->SoundIndex4 = 0;
 }
 
 void loader::loadfrom(datFileStruct* datFile)
@@ -277,6 +277,47 @@ float* loader::query_float_attribute(int groupIndex, int groupIndexOffset, int f
 	return result;
 }
 
+int loader::material(int groupIndex, visualStruct* visual)
+{
+	if (groupIndex < 0)
+		return error(0, 21);
+	__int16* shortArr = (__int16*)partman::field(loader_table, groupIndex, ShortValue);
+	if (!shortArr)
+		return error(1, 21);
+	if (*shortArr != 300)
+		return error(3, 21);
+	float* floatArr = (float*)partman::field(loader_table, groupIndex, FloatArray);
+	if (!floatArr)
+		return error(11, 21);
+	int index = 0;
+	int floatArrLength = partman::field_size(loader_table, groupIndex, FloatArray) >> 2;
+	if (floatArrLength > 0)
+	{
+		do
+		{
+			float* nextFloatVal = floatArr + 1;
+			switch (static_cast<int>(floor(*floatArr)))
+			{
+			case 301:
+				visual->Unknown1F = *nextFloatVal;
+				break;
+			case 302:
+				visual->Unknown2F = *nextFloatVal;
+				break;
+			case 304:
+				visual->SoundIndex2 = get_sound_id(floor(*nextFloatVal));
+				break;
+			default:
+				return error(9, 21);
+			}
+			floatArr = nextFloatVal + 1;
+			index += 2;
+		}
+		while (index < floatArrLength);
+	}
+	return 0;
+}
+
 
 double loader::play_sound(int soundIndex)
 {
@@ -312,4 +353,215 @@ int loader::state_id(int groupIndex, int groupIndexOffset)
 	else
 		result = groupIndex2;
 	return result;
+}
+
+int loader::kicker(int groupIndex, visualKickerStruct* kicker)
+{
+	if (groupIndex < 0)
+		return error(0, 20);
+	__int16* shortArr = (__int16*)partman::field(loader_table, groupIndex, ShortValue);
+	if (!shortArr)
+		return error(1, 20);
+	if (*shortArr != 400)
+		return error(4, 20);
+	float* floatArr = (float*)partman::field(loader_table, groupIndex, FloatArray);
+	if (!floatArr)
+		return error(11, 20);
+	int floatArrLength = partman::field_size(loader_table, groupIndex, FloatArray) >> 2;
+	int index = 0;
+	if (floatArrLength <= 0)
+		return 0;
+	while (index < floatArrLength)
+	{
+		int floorVal = static_cast<int>(floor(*floatArr++));
+		switch (floorVal)
+		{
+		case 401:
+			kicker->Unknown1F = *floatArr;
+			break;
+		case 402:
+			kicker->Unknown2F = *floatArr;
+			break;
+		case 403:
+			kicker->Unknown3F = *floatArr;
+			break;
+		case 404:
+			kicker->Unknown4F = *floatArr++;
+			kicker->Unknown5F = *floatArr++;
+			kicker->Unknown6F = *floatArr++;
+			index += 4;
+			break;
+		case 405:
+			kicker->Unknown7F = *floatArr;
+			break;
+		case 406:
+			kicker->SoundIndex = get_sound_id(static_cast<int>(floor(*floatArr)));
+			break;
+		default:
+			return error(10, 20);
+		}
+		if (floorVal != 404)
+		{
+			floatArr++;
+			index += 2;
+		}
+	}
+	return 0;
+}
+
+
+
+int  loader::query_visual(int groupIndex, int groupIndexOffset, visualStruct* visual)
+{
+	visualStruct* visual2; // edi
+	int groupIndexSum; // eax
+	int groupIndexSum2; // ebx
+	char* bitmap16; // eax
+	__int16* shortArr; // esi
+	unsigned int shortArrSize; // eax
+	int index; // ebx
+	int shortVal; // ecx
+	__int16* nextShortVal; // esi
+	int nextIndex; // ebx
+	int shortValSub100; // ecx
+	int shortValSub300; // ecx
+	int shortValSub304; // ecx
+	int shortValSub602; // ecx
+	int shortValSub1100; // ecx
+	int shortValSub1101; // ecx
+	float* floatArr; // eax
+	float* nextFloatVal; // esi
+	__int64 floatVal; // rax
+	float* floatArrPtr; // esi
+	int groupIndexSum3; // [esp+1Ch] [ebp+8h]
+	int* shortArrLength; // [esp+24h] [ebp+10h]
+
+	visual2 = visual;
+	default_vsi(visual);
+	if (groupIndex < 0)
+		return error(0, 18);
+	groupIndexSum = state_id(groupIndex, groupIndexOffset);
+	groupIndexSum2 = groupIndexSum;
+	groupIndexSum3 = groupIndexSum;
+	if (groupIndexSum < 0)
+		return error(16, 18);
+	visual->Bitmap8 = partman::field(loader_table, groupIndexSum, Bitmap8bit);
+	bitmap16 = partman::field(loader_table, groupIndexSum2, Bitmap16bit);
+	visual->Bitmap16 = bitmap16;
+	if (bitmap16)
+	{
+		//*(int*)(bitmap16 + 6) = bitmap16 + 14;
+		//*(int*)(visual->Bitmap16 + 10) = *(int*)(visual->Bitmap16 + 6);
+	}
+	shortArr = (__int16*)partman::field(loader_table, groupIndexSum2, ShortArray);
+	if (shortArr)
+	{
+		shortArrSize = partman::field_size(loader_table, groupIndexSum2, ShortArray);
+		index = 0;
+		shortArrLength = (int*)(shortArrSize >> 1);
+		if ((__int16)(shortArrSize >> 1) > 0)
+		{
+			while (1)
+			{
+				shortVal = *shortArr;
+				nextShortVal = shortArr + 1;
+				nextIndex = index + 1;
+				if (shortVal <= 406)
+				{
+					if (shortVal == 406)
+					{
+						visual2->Kicker.SoundIndex = get_sound_id(*nextShortVal);
+					}
+					else
+					{
+						shortValSub100 = shortVal - 100;
+						if (shortValSub100)
+						{
+							shortValSub300 = shortValSub100 - 200;
+							if (shortValSub300)
+							{
+								shortValSub304 = shortValSub300 - 4;
+								if (shortValSub304)
+								{
+									if (shortValSub304 != 96)
+										return error(9, 18);
+									if (kicker(*nextShortVal, &visual2->Kicker))
+										return error(14, 18);
+								}
+								else
+								{
+									visual2->SoundIndex2 = get_sound_id(*nextShortVal);
+								}
+							}
+							else if (material(*nextShortVal, visual2))
+							{
+								return error(15, 18);
+							}
+						}
+						else if (groupIndexOffset)
+						{
+							return error(7, 18);
+						}
+					}
+					goto LABEL_31;
+				}
+				shortValSub602 = shortVal - 602;
+				if (!shortValSub602)
+				{
+					visual2->Unknown14Flag |= 1 << *nextShortVal;
+					goto LABEL_31;
+				}
+				shortValSub1100 = shortValSub602 - 498;
+				if (!shortValSub1100)
+					break;
+				shortValSub1101 = shortValSub1100 - 1;
+				if (!shortValSub1101)
+				{
+					visual2->SoundIndex3 = get_sound_id(*nextShortVal);
+				LABEL_31:
+					shortArr = nextShortVal + 1;
+					index = nextIndex + 1;
+					goto LABEL_32;
+				}
+				if (shortValSub1101 != 399)
+					return error(9, 18);
+				shortArr = nextShortVal + 8;
+				index = nextIndex + 8;
+			LABEL_32:
+				if ((__int16)index >= (__int16)shortArrLength)
+					goto LABEL_33;
+			}
+			visual2->SoundIndex4 = get_sound_id(*nextShortVal);
+			goto LABEL_31;
+		}
+	}
+LABEL_33:
+	if (!visual2->Unknown14Flag)
+		visual2->Unknown14Flag = 1;
+	floatArr = (float*)partman::field(loader_table, groupIndexSum3, FloatArray);
+	if (!floatArr)
+		return 0;
+	nextFloatVal = floatArr + 1;
+	if (*floatArr != 600.0)
+		return 0;
+	visual2->FloatArrSizeDiv8Sub2 = (partman::field_size(loader_table, groupIndexSum3, FloatArray) >> 2)/ 2- 2;
+	floatVal = (__int64)(floor(*nextFloatVal) - 1.0);
+	floatArrPtr = nextFloatVal + 1;
+	if ((int)floatVal)
+	{
+		if ((int)floatVal == 1)
+		{
+			visual2->FloatArrSizeDiv8Sub2 = 2;
+		}
+		else if ((int)floatVal != visual2->FloatArrSizeDiv8Sub2)
+		{
+			return error(8, 18);
+		}
+	}
+	else
+	{
+		visual2->FloatArrSizeDiv8Sub2 = 1;
+	}
+	visual2->FloatArr = floatArrPtr;
+	return 0;
 }
