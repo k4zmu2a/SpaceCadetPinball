@@ -8,6 +8,8 @@
 #include "partman.h"
 #include  "DatParser.h"
 #include "loader.h"
+#include "score.h"
+#include "TPinballTable.h"
 
 int main()
 {
@@ -18,7 +20,7 @@ int main()
 	{
 		d.Add((void*)i);
 	}
-	d.Delete(3);
+	d.Delete((void*)3);
 
 	auto xx = sizeof(datFileHeader);
 
@@ -36,22 +38,24 @@ int main()
 
 	assert(partman::record_labeled(datFile, "background") == 2);
 	assert(partman::record_labeled(datFile, "a_bump1") == 372);
-	
+
 	assert(memcmp(partman::field_labeled(datFile, "table_size", ShortArray), new short[2]{ 600, 416 }, 2 * 2) == 0);
 
 	//loader::error(25, 26);
 	loader::loadfrom(datFile);
-
 	loader::get_sound_id(18);
-
 	visualStruct visual1{};
 	loader::material(96, &visual1);
-	loader::query_visual(283,0, &visual1);
-
+	loader::query_visual(283, 0, &visual1);
 	visualKickerStruct kicker1{};
 	loader::kicker(509, &kicker1);
+
+	auto score1 = score::create("score1", 117);
+
+	auto pinballTable = new TPinballTable();
 	
 	//DatParser::Parse(dataFileName);
+	std::cout << "Goodby World!\n";
 }
 
 // Run program: Ctrl + F5 or Debug > Start Without Debugging menu

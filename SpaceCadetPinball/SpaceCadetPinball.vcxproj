@@ -91,7 +91,7 @@
       <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
-      <BufferSecurityCheck>false</BufferSecurityCheck>
+      <BufferSecurityCheck>true</BufferSecurityCheck>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -158,6 +158,39 @@
     <ClInclude Include="partman.h" />
     <ClInclude Include="pch.h" />
     <ClInclude Include="pinball.h" />
+    <ClInclude Include="resource.h" />
+    <ClInclude Include="score.h" />
+    <ClInclude Include="TBall.h" />
+    <ClInclude Include="TBlocker.h" />
+    <ClInclude Include="TBumper.h" />
+    <ClInclude Include="TComponentGroup.h" />
+    <ClInclude Include="TDemo.h" />
+    <ClInclude Include="TDrain.h" />
+    <ClInclude Include="TFlagSpinner.h" />
+    <ClInclude Include="TFlipper.h" />
+    <ClInclude Include="TGate.h" />
+    <ClInclude Include="THole.h" />
+    <ClInclude Include="TKickback.h" />
+    <ClInclude Include="TKickout.h" />
+    <ClInclude Include="TLight.h" />
+    <ClInclude Include="TLightBargraph.h" />
+    <ClInclude Include="TLightGroup.h" />
+    <ClInclude Include="TLightRollover.h" />
+    <ClInclude Include="TOneway.h" />
+    <ClInclude Include="TPinballComponent.h" />
+    <ClInclude Include="TPinballTable.h" />
+    <ClInclude Include="TPlunger.h" />
+    <ClInclude Include="TPopupTarget.h" />
+    <ClInclude Include="TRamp.h" />
+    <ClInclude Include="TRollover.h" />
+    <ClInclude Include="TSink.h" />
+    <ClInclude Include="TSoloTarget.h" />
+    <ClInclude Include="TSound.h" />
+    <ClInclude Include="TTableLayer.h" />
+    <ClInclude Include="TTextBox.h" />
+    <ClInclude Include="TTimer.h" />
+    <ClInclude Include="TTripwire.h" />
+    <ClInclude Include="TZmapList.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="DatParser.cpp" />
@@ -171,10 +204,44 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="pinball.cpp" />
+    <ClCompile Include="score.cpp" />
     <ClCompile Include="SpaceCadetPinball.cpp" />
+    <ClCompile Include="TBall.cpp" />
+    <ClCompile Include="TBlocker.cpp" />
+    <ClCompile Include="TBumper.cpp" />
+    <ClCompile Include="TComponentGroup.cpp" />
+    <ClCompile Include="TDemo.cpp" />
+    <ClCompile Include="TDrain.cpp" />
+    <ClCompile Include="TFlagSpinner.cpp" />
+    <ClCompile Include="TFlipper.cpp" />
+    <ClCompile Include="TGate.cpp" />
+    <ClCompile Include="THole.cpp" />
+    <ClCompile Include="TKickback.cpp" />
+    <ClCompile Include="TKickout.cpp" />
+    <ClCompile Include="TLight.cpp" />
+    <ClCompile Include="TLightBargraph.cpp" />
+    <ClCompile Include="TLightGroup.cpp" />
+    <ClCompile Include="TLightRollover.cpp" />
+    <ClCompile Include="TOneway.cpp" />
+    <ClCompile Include="TPinballComponent.cpp" />
+    <ClCompile Include="TPinballTable.cpp" />
+    <ClCompile Include="TPlunger.cpp" />
+    <ClCompile Include="TPopupTarget.cpp" />
+    <ClCompile Include="TRamp.cpp" />
+    <ClCompile Include="TRollover.cpp" />
+    <ClCompile Include="TSink.cpp" />
+    <ClCompile Include="TSoloTarget.cpp" />
+    <ClCompile Include="TSound.cpp" />
+    <ClCompile Include="TTableLayer.cpp" />
+    <ClCompile Include="TTextBox.cpp" />
+    <ClCompile Include="TTimer.cpp" />
+    <ClCompile Include="TTripwire.cpp" />
   </ItemGroup>
   <ItemGroup>
     <Natvis Include="NatvisFile.natvis" />
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="SpaceCadetPinball.rc" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

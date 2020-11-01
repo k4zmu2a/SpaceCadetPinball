@@ -83,10 +83,10 @@ int loader::error(int errorCode, int captionCode)
 void  loader::default_vsi(visualStruct* visual)
 {
 	visual->Unknown14Flag = 0;
-	visual->Kicker.Unknown1F = 8.9999999e10;
+	visual->Kicker.Unknown1F = 8.9999999e10f;
 	visual->Kicker.SoundIndex = 0;
-	visual->Unknown1F = 0.94999999;
-	visual->Unknown2F = 0.60000002;
+	visual->Unknown1F = 0.94999999f;
+	visual->Unknown2F = 0.60000002f;
 	visual->FloatArrSizeDiv8Sub2 = 0;
 	visual->SoundIndex2 = 0;
 	visual->Bitmap8 = 0;
@@ -173,7 +173,7 @@ int loader::get_sound_id(int groupIndex)
 				{
 					const CHAR* fileName = partman::field(loader_table, soundGroupId, String);
 					HFILE hFile = _lopen(fileName, 0);
-					sound_list[soundIndex].Volume = static_cast<double>(_llseek(hFile, 0, 2)) * 0.0000909090909090909;
+					sound_list[soundIndex].Volume = (float)((double)(_llseek(hFile, 0, 2)) * 0.0000909090909090909);
 					_lclose(hFile);
 					//sound_list[soundIndex4].WavePtr = Sound_LoadWaveFile(lpName);
 				}
@@ -305,7 +305,7 @@ int loader::material(int groupIndex, visualStruct* visual)
 				visual->Unknown2F = *nextFloatVal;
 				break;
 			case 304:
-				visual->SoundIndex2 = get_sound_id(floor(*nextFloatVal));
+				visual->SoundIndex2 = get_sound_id((int)floor(*nextFloatVal));
 				break;
 			default:
 				return error(9, 21);
@@ -434,7 +434,7 @@ int  loader::query_visual(int groupIndex, int groupIndexOffset, visualStruct* vi
 	__int64 floatVal; // rax
 	float* floatArrPtr; // esi
 	int groupIndexSum3; // [esp+1Ch] [ebp+8h]
-	int* shortArrLength; // [esp+24h] [ebp+10h]
+	int shortArrLength; // [esp+24h] [ebp+10h]
 
 	visual2 = visual;
 	default_vsi(visual);
@@ -458,7 +458,7 @@ int  loader::query_visual(int groupIndex, int groupIndexOffset, visualStruct* vi
 	{
 		shortArrSize = partman::field_size(loader_table, groupIndexSum2, ShortArray);
 		index = 0;
-		shortArrLength = (int*)(shortArrSize >> 1);
+		shortArrLength = shortArrSize >> 1;
 		if ((__int16)(shortArrSize >> 1) > 0)
 		{
 			while (1)
@@ -528,7 +528,7 @@ int  loader::query_visual(int groupIndex, int groupIndexOffset, visualStruct* vi
 				shortArr = nextShortVal + 8;
 				index = nextIndex + 8;
 			LABEL_32:
-				if ((__int16)index >= (__int16)shortArrLength)
+				if (index >= shortArrLength)
 					goto LABEL_33;
 			}
 			visual2->SoundIndex4 = get_sound_id(*nextShortVal);

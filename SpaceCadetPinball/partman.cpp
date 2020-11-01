@@ -115,11 +115,11 @@ datFileStruct* partman::load_records(LPCSTR lpFileName)
 						char* tempBuff = (char*)memoryallocate(bmpHeader.Size);
 						_hread(fileHandle, tempBuff, bmpHeader.Size);
 						memoryfree(tempBuff);
-						*((int*)entryData->Buffer + 29) = bmpHeader.XPosition;
-						*((int*)entryData->Buffer + 33) = bmpHeader.YPosition;
+						//*((int*)entryData->Buffer + 29) = bmpHeader.XPosition;
+						//*((int*)entryData->Buffer + 33) = bmpHeader.YPosition;
 					}
 					else
-					{
+					{						
 						char* entryBuffer = (char*)memoryallocate(fieldSize);
 						entryData->Buffer = entryBuffer;
 						if (!entryBuffer)

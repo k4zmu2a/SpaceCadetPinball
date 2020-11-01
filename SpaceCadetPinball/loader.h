@@ -65,9 +65,9 @@ public:
 	static float* query_float_attribute(int groupIndex, int groupIndexOffset, int firstValue);
 	static __int16* query_iattribute(int groupIndex, int firstValue, int* arraySize);
 	static double play_sound(int soundIndex);
-private:
-	static errorMsg loader_errors[];
 	static datFileStruct* loader_table;
+private:
+	static errorMsg loader_errors[];	
 	static datFileStruct* sound_record_table;
 	static int sound_count;
 	static int loader_sound_count;

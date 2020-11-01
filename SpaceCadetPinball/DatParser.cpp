@@ -60,7 +60,9 @@ int main2(int argc, const char* argv[])
 	printf("pbwdlist - 3D Pinball for Windows DAT file listing program\nby AdrienTD\n\n");
 	if (argc < 2) { printf("Usage: pbwdlist FILE.DAT\n"); return 1; }
 
-	ff = fopen(argv[1], "rb");
+	FILE *ff;
+	 fopen_s(&ff,argv[1], "rb");
+	//ff = fopen(argv[1], "rb");
 	cerr(!ff, -1);
 	printf("File: %s\n\n", argv[1]);
 	fseek(ff, 0, SEEK_END);

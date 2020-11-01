@@ -1,0 +1,1 @@
+cl /Zi /MT /EHsc /O y- /Ob0 /Femyapp.exe *.cpp user32.lib
