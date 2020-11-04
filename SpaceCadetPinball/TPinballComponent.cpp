@@ -9,8 +9,8 @@ TPinballComponent::TPinballComponent(TPinballTable* table, int groupIndex, bool 
 {
 	visualStruct visual{}; // [esp+Ch] [ebp-6Ch]
 
-	// this->VfTable = (int)&TPinballComponent::`vftable';
-	this->Unknown2 = 0;
+	//this->VfTable = (int)&TPinballComponent::`vftable';
+	this->MessageField = 0;
 	this->UnknownBaseFlag1 = 0;
 	this->UnknownBaseFlag2 = 0;
 	this->PinballTable = table;
@@ -78,4 +78,34 @@ TPinballComponent::TPinballComponent(TPinballTable* table, int groupIndex, bool 
 		}
 	}
 	this->GroupIndex = groupIndex;
+}
+
+
+TPinballComponent::~TPinballComponent()
+{
+	TPinballTable* table = PinballTable;
+	if (table)
+		table->ListP1->Delete(this);
+
+	delete List1Bitmap8;
+	delete List2Bitmap16;
+}
+
+
+int TPinballComponent::Message(int message1, float message2)
+{
+	this->MessageField = message1;
+	if (message1 == 1024)
+		this->MessageField = 0;
+	return 0;
+}
+
+void TPinballComponent::put_scoring( int score1, int score2)
+{	
+}
+
+
+int TPinballComponent::get_scoring(int score1)
+{
+	return 0;
 }

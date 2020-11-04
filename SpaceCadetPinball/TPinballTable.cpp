@@ -180,8 +180,83 @@ TPinballTable::TPinballTable(): TPinballComponent(nullptr, -1, false)
 		}
 	}
 
-	/* build_occlude_list();
-	 InfoTextBox = (TTextBox*)TPinballTable::find_component(this, "info_text_box");
-	 MissTextBox = (TTextBox*)TPinballTable::find_component(this, "mission_text_box");
-	 control_make_links(this);*/
+	//build_occlude_list();
+	pinball::InfoTextBox = static_cast<TTextBox*>(find_component("info_text_box"));
+	pinball::MissTextBox = static_cast<TTextBox*>(find_component("mission_text_box"));
+	//control_make_links(this);
+}
+
+
+TPinballTable::~TPinballTable()
+{
+	//this->VfTable = (TPinballComponent_vtbl*)&TPinballTable::`vftable';
+	scoreStruct** scorePtr = &Score2;
+	int index = 4;
+	do
+	{
+		if (*scorePtr)
+		{
+			free(*scorePtr);
+			*scorePtr = nullptr;
+		}
+		scorePtr += 7;
+		--index;
+	}
+	while (index);
+	if (ScorePlayerNumber1)
+	{
+		free(ScorePlayerNumber1);
+		ScorePlayerNumber1 = nullptr;
+	}
+	if (ScoreBallcount)
+	{
+		free(ScoreBallcount);
+		ScoreBallcount = nullptr;
+	}
+	for (auto i = LightGroup; ; i = static_cast<TLightGroup*>(ListP1->Get(0)))
+	{
+		//if (i)
+		//(*(void(__thiscall**)(TLightGroup*, int))(*(_DWORD*)i + 16))(i, 1);
+		if (!ListP1->Count())
+			break;
+	}
+	delete ListP2;
+	delete ListP1;
+}
+
+TPinballComponent* TPinballTable::find_component(LPCSTR componentName)
+{
+	int objCount = ListP1->Count();
+	if (objCount > 0)
+	{
+		for (int index = 0; index < objCount; ++index)
+		{
+			TPinballComponent* obj = static_cast<TPinballComponent*>(ListP1->Get(index));
+			const CHAR* groupName = obj->GroupName;
+			if (groupName && !lstrcmpA(groupName, componentName))
+			{
+				return obj;
+			}
+		}
+	}
+	MessageBoxA(nullptr, "Table cant find:", componentName, 0x2000u);
+	return nullptr;
+}
+
+TPinballComponent* TPinballTable::find_component(int groupIndex)
+{
+	char Buffer[33];
+	int objCount = ListP1->Count();
+	if (objCount > 0)
+	{
+		for (int index = 0; index < objCount; ++index)
+		{
+			TPinballComponent* obj = static_cast<TPinballComponent*>(ListP1->Get(index));
+			if (obj->GroupIndex == groupIndex)
+				return obj;
+		}
+	}
+	_itoa_s(groupIndex, Buffer, 10);
+	MessageBoxA(nullptr, "Table cant find (lh):", Buffer, 0x2000u);
+	return nullptr;
 }

@@ -11,6 +11,9 @@ class TPinballTable:TPinballComponent
 {
 public:
 	TPinballTable();
+	~TPinballTable();
+	TPinballComponent* find_component(LPCSTR componentName);
+	TPinballComponent* find_component(int groupIndex);
 	
 	TFlipper* FlipperL;
 	TFlipper* FlipperR;

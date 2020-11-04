@@ -8,12 +8,16 @@
 #include "partman.h"
 #include  "DatParser.h"
 #include "loader.h"
+#include "pinball.h"
 #include "score.h"
 #include "TPinballTable.h"
+#include "TTextBox.h"
 
 int main()
 {
 	std::cout << "Hello World!\n";
+
+	pinball::hinst = GetModuleHandle(nullptr);
 
 	objlist_class d = objlist_class(2, 4);
 	for (int i = 0; i < 100; i++)
@@ -53,7 +57,14 @@ int main()
 	auto score1 = score::create("score1", 117);
 
 	auto pinballTable = new TPinballTable();
-	
+	//pinballTable->find_component(1);
+
+	for (int i = 0; i < 190; i++)
+	{
+		auto rsc = pinball::get_rc_string(i, 0);
+		if (rsc)
+			printf_s("%d:\t%s\n", i, rsc);
+	}
 	//DatParser::Parse(dataFileName);
 	std::cout << "Goodby World!\n";
 }
