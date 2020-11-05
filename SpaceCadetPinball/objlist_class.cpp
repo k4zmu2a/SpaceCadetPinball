@@ -1,6 +1,8 @@
 #include  "pch.h"
 #include "objlist_class.h"
 #include <cstdlib>
+
+#include "memory.h"
 // v1 from Ida
 
 objlist_class::objlist_class(int SizeInt, int growSize)
@@ -12,7 +14,7 @@ objlist_class::objlist_class(int SizeInt, int growSize)
 objlist_class::~objlist_class()
 {
 	if (ListPtr)
-		free(ListPtr);
+		memory::free(ListPtr);
 }
 
 void objlist_class::Add(void* value)
@@ -42,7 +44,7 @@ void* objlist_class::Get(int index)
 
 objlist_struct1* objlist_class::objlist_new(int sizeInt)
 {
-	objlist_struct1* result = (objlist_struct1 *)malloc(sizeof(void*) * sizeInt + sizeof(objlist_struct1));	
+	objlist_struct1* result = (objlist_struct1 *)memory::allocate(sizeof(void*) * sizeInt + sizeof(objlist_struct1));	
 	if (!result)
 		return result;
 	result->Count = 0;
@@ -67,7 +69,7 @@ objlist_struct1* objlist_class::objlist_grow(objlist_struct1* ptrToStruct, int g
 	int newSizeInt = growSize + ptrToStruct->Count;
 	if (newSizeInt <= ptrToStruct->Size)
 		return resultPtr;	
-	objlist_struct1* resultPtr2 = (objlist_struct1*)realloc(ptrToStruct, sizeof(void*) * newSizeInt + sizeof(objlist_struct1));
+	objlist_struct1* resultPtr2 = (objlist_struct1*)memory::realloc(ptrToStruct, sizeof(void*) * newSizeInt + sizeof(objlist_struct1));
 	if (!resultPtr2)
 		return resultPtr;
 	resultPtr = resultPtr2;

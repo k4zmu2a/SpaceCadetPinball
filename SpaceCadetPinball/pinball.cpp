@@ -1,5 +1,6 @@
 #include "pch.h"
 #include "pinball.h"
+#include "memory.h"
 
 
 int pinball::quickFlag = 0;
@@ -9,6 +10,8 @@ TTextBox* pinball::MissTextBox;
 char pinball::getRcBuffer[6 * 256];
 int pinball::rc_string_slot = 0;
 HINSTANCE pinball::hinst;
+char pinball::WindowName[2]{};
+char pinball::DatFileName[300]{};
 
 
 char* pinball::get_rc_string(int uID, int a2)

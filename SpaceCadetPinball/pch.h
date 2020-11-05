@@ -14,9 +14,10 @@
 #include <cstdio>
 #include <cassert>
 #include <cmath>
+#include <CommCtrl.h>
 //#include <cstdlib>
 
-#define memoryallocate(x) malloc(x);
-#define memoryfree(x) free(x);
+// Use (void) to silent unused warnings.
+#define assertm(exp, msg) assert(((void)msg, exp))
 
 #endif //PCH_H

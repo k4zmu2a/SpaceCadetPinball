@@ -96,6 +96,7 @@
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalDependencies>Comctl32.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -154,7 +155,9 @@
   <ItemGroup>
     <ClInclude Include="DatParser.h" />
     <ClInclude Include="loader.h" />
+    <ClInclude Include="memory.h" />
     <ClInclude Include="objlist_class.h" />
+    <ClInclude Include="options.h" />
     <ClInclude Include="partman.h" />
     <ClInclude Include="pch.h" />
     <ClInclude Include="pinball.h" />
@@ -191,11 +194,14 @@
     <ClInclude Include="TTimer.h" />
     <ClInclude Include="TTripwire.h" />
     <ClInclude Include="TZmapList.h" />
+    <ClInclude Include="winmain.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="DatParser.cpp" />
     <ClCompile Include="loader.cpp" />
+    <ClCompile Include="memory.cpp" />
     <ClCompile Include="objlist_class.cpp" />
+    <ClCompile Include="options.cpp" />
     <ClCompile Include="partman.cpp" />
     <ClCompile Include="pch.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
@@ -236,6 +242,7 @@
     <ClCompile Include="TTextBox.cpp" />
     <ClCompile Include="TTimer.cpp" />
     <ClCompile Include="TTripwire.cpp" />
+    <ClCompile Include="winmain.cpp" />
   </ItemGroup>
   <ItemGroup>
     <Natvis Include="NatvisFile.natvis" />

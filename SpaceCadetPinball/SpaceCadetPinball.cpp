@@ -17,7 +17,9 @@ int main()
 {
 	std::cout << "Hello World!\n";
 
-	pinball::hinst = GetModuleHandle(nullptr);
+	pinball::hinst = GetModuleHandleA(nullptr);
+	char cmdLine[1];
+	WinMain(pinball::hinst, 0, cmdLine, 0);
 
 	objlist_class d = objlist_class(2, 4);
 	for (int i = 0; i < 100; i++)
@@ -65,6 +67,7 @@ int main()
 		if (rsc)
 			printf_s("%d:\t%s\n", i, rsc);
 	}
+	
 	//DatParser::Parse(dataFileName);
 	std::cout << "Goodby World!\n";
 }

@@ -1,6 +1,8 @@
 ﻿#include "pch.h"
 #include "loader.h"
 
+
+#include "memory.h"
 #include "partman.h"
 #include "pinball.h"
 
@@ -138,7 +140,7 @@ void loader::unload()
 		while (index < sound_count);
 	}
 	if (sound_list[index].PtrToSmth)
-		memoryfree(sound_list[index].PtrToSmth);
+		memory::free(sound_list[index].PtrToSmth);
 	sound_count = 1;
 }
 

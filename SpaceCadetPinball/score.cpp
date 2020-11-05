@@ -1,12 +1,13 @@
 #include "pch.h"
 #include "score.h"
 #include "loader.h"
+#include "memory.h"
 #include "partman.h"
 
 
 scoreStruct* score::create(LPCSTR fieldName, int renderBgBmp)
 {
-	scoreStruct* score = (scoreStruct*)memoryallocate(sizeof(scoreStruct));
+	scoreStruct* score = (scoreStruct*)memory::allocate(sizeof(scoreStruct));
 	if (!score)
 		return nullptr;
 	score->Unknown1 = -9999;
@@ -14,7 +15,7 @@ scoreStruct* score::create(LPCSTR fieldName, int renderBgBmp)
 	__int16* shortArr = (__int16*)partman::field_labeled(loader::loader_table, fieldName, ShortArray);
 	if (!shortArr)
 	{
-		memoryfree(score);
+		memory::free(score);
 		return nullptr;
 	}
 	int groupIndex = *shortArr++;
@@ -37,7 +38,7 @@ scoreStruct* score::create(LPCSTR fieldName, int renderBgBmp)
 
 scoreStruct* score::dup(scoreStruct* score, int scoreIndex)
 {
-	scoreStruct* result = (scoreStruct*)memoryallocate(0x44u);
+	scoreStruct* result = (scoreStruct*)memory::allocate(sizeof(scoreStruct));
 	if (result)
 		memcpy(result, score, sizeof(scoreStruct));
 	return result;

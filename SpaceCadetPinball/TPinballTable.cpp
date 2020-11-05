@@ -3,6 +3,7 @@
 
 
 #include "loader.h"
+#include "memory.h"
 #include "pinball.h"
 #include "TBall.h"
 #include "TBlocker.h"
@@ -196,7 +197,7 @@ TPinballTable::~TPinballTable()
 	{
 		if (*scorePtr)
 		{
-			free(*scorePtr);
+			memory::free(*scorePtr);
 			*scorePtr = nullptr;
 		}
 		scorePtr += 7;
@@ -205,12 +206,12 @@ TPinballTable::~TPinballTable()
 	while (index);
 	if (ScorePlayerNumber1)
 	{
-		free(ScorePlayerNumber1);
+		memory::free(ScorePlayerNumber1);
 		ScorePlayerNumber1 = nullptr;
 	}
 	if (ScoreBallcount)
 	{
-		free(ScoreBallcount);
+		memory::free(ScoreBallcount);
 		ScoreBallcount = nullptr;
 	}
 	for (auto i = LightGroup; ; i = static_cast<TLightGroup*>(ListP1->Get(0)))

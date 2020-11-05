@@ -1,6 +1,8 @@
 #include "pch.h"
 #include "partman.h"
 
+#include "memory.h"
+
 short partman::_field_size[] = {
 	2, -1, 2, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 0
 };
@@ -24,7 +26,7 @@ datFileStruct* partman::load_records(LPCSTR lpFileName)
 		_lclose(fileHandle);
 		return nullptr;
 	}
-	datFile = (datFileStruct*)memoryallocate(sizeof(datFileStruct));
+	datFile = (datFileStruct*)memory::allocate(sizeof(datFileStruct));
 	if (!datFile)
 	{
 		_lclose(fileHandle);
@@ -37,12 +39,12 @@ datFileStruct* partman::load_records(LPCSTR lpFileName)
 	else
 	{
 		int lenOfStr = lstrlenA(Buffer.Description);
-		auto descriptionBuf = (char*)memoryallocate(lenOfStr + 1);
+		auto descriptionBuf = (char*)memory::allocate(lenOfStr + 1);
 		datFile->Description = descriptionBuf;
 		if (!descriptionBuf)
 		{
 			_lclose(fileHandle);
-			memoryfree(datFile);
+			memory::free(datFile);
 			return nullptr;
 		}
 		lstrcpyA(descriptionBuf, Buffer.Description);
@@ -50,26 +52,26 @@ datFileStruct* partman::load_records(LPCSTR lpFileName)
 
 	if (Buffer.Unknown)
 	{
-		auto unknownBuf = (char*)memoryallocate(Buffer.Unknown);
+		auto unknownBuf = (char*)memory::allocate(Buffer.Unknown);
 		if (!unknownBuf)
 		{
 			_lclose(fileHandle);
 			if (datFile->Description)
-				memoryfree(datFile->Description);
-			memoryfree(datFile);
+				memory::free(datFile->Description);
+			memory::free(datFile);
 			return nullptr;
 		}
 		_lread(fileHandle, static_cast<void*>(unknownBuf), Buffer.Unknown);
-		memoryfree(unknownBuf);
+		memory::free(unknownBuf);
 	}
 
-	groupDataBuf = (datGroupData**)memoryallocate(sizeof(void*) * Buffer.NumberOfGroups);
+	groupDataBuf = (datGroupData**)memory::allocate(sizeof(void*) * Buffer.NumberOfGroups);
 	datFile->GroupData = groupDataBuf;
 	if (!groupDataBuf)
 	{
 		if (datFile->Description)
-			memoryfree(datFile->Description);
-		memoryfree(datFile);
+			memory::free(datFile->Description);
+		memory::free(datFile);
 		return nullptr;
 	}
 
@@ -83,7 +85,7 @@ datFileStruct* partman::load_records(LPCSTR lpFileName)
 				groupDataSize = 0;
 			else
 				groupDataSize = entryCount - 1;
-			datFile->GroupData[groupIndex] = (datGroupData*)memoryallocate(
+			datFile->GroupData[groupIndex] = (datGroupData*)memory::allocate(
 				sizeof(datEntryData) * groupDataSize + sizeof(datGroupData));
 			datGroupData* groupData = datFile->GroupData[groupIndex];
 			if (!groupData)
@@ -105,22 +107,22 @@ datFileStruct* partman::load_records(LPCSTR lpFileName)
 					if (entryType == Bitmap8bit)
 					{
 						_hread(fileHandle, &bmpHeader, 14);
-						char* bmpBuffer = (char*)memoryallocate(0x25u);
+						char* bmpBuffer = (char*)memory::allocate(0x25u);
 						entryData->Buffer = bmpBuffer;
 						if (!bmpBuffer)
 							goto LABEL_41;
 						/*if (bmpHeader.Unknown2 & 2 ? gdrv_create_bitmap((int)bmpBuffer, bmpHeader.Width, bmpHeader.Height) : gdrv_create_raw_bitmap((int)bmpBuffer, bmpHeader.Width, bmpHeader.Height, bmpHeader.Unknown2 & 1))
 							goto LABEL_41;*/
 						//_hread(fileHandle, *(LPVOID*)(entryData->Buffer + 8), bmpHeader.Size);
-						char* tempBuff = (char*)memoryallocate(bmpHeader.Size);
+						char* tempBuff = (char*)memory::allocate(bmpHeader.Size);
 						_hread(fileHandle, tempBuff, bmpHeader.Size);
-						memoryfree(tempBuff);
+						memory::free(tempBuff);
 						//*((int*)entryData->Buffer + 29) = bmpHeader.XPosition;
 						//*((int*)entryData->Buffer + 33) = bmpHeader.YPosition;
 					}
 					else
 					{						
-						char* entryBuffer = (char*)memoryallocate(fieldSize);
+						char* entryBuffer = (char*)memory::allocate(fieldSize);
 						entryData->Buffer = entryBuffer;
 						if (!entryBuffer)
 							goto LABEL_41;
@@ -165,20 +167,20 @@ void partman::unload_records(datFileStruct* datFile)
 					{
 						//if (HIWORD(entry->EntryType) == 1)
 						//gdrv_destroy_bitmap(entry->Buffer);
-						memoryfree(entry->Buffer);
+						memory::free(entry->Buffer);
 					}
 					++entryIndex;
 					++entry;
 				}
 				while (entryIndex < group->EntryCount);
 			}
-			memoryfree(group);
+			memory::free(group);
 		}
 	}
 	if (datFile->Description)
-		memoryfree(datFile->Description);
-	memoryfree(datFile->GroupData);
-	memoryfree(datFile);
+		memory::free(datFile->Description);
+	memory::free(datFile->GroupData);
+	memory::free(datFile);
 }
 
 char* partman::field(datFileStruct* datFile, int groupIndex, datFieldTypes targetEntryType)
