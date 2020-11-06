@@ -7,14 +7,14 @@
 #include "TPinballComponent.h"
 #include "TPlunger.h"
 
-class TPinballTable:TPinballComponent
+class TPinballTable : public TPinballComponent
 {
 public:
 	TPinballTable();
 	~TPinballTable();
 	TPinballComponent* find_component(LPCSTR componentName);
 	TPinballComponent* find_component(int groupIndex);
-	
+
 	TFlipper* FlipperL;
 	TFlipper* FlipperR;
 	scoreStruct* Score1;
@@ -97,4 +97,3 @@ public:
 	int UnknownP82;
 	int UnknownP83;
 };
-

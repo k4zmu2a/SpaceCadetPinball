@@ -19,7 +19,7 @@ int main()
 
 	pinball::hinst = GetModuleHandleA(nullptr);
 	char cmdLine[1];
-	WinMain(pinball::hinst, 0, cmdLine, 0);
+	WinMain(pinball::hinst, 0, cmdLine, 10);
 
 	objlist_class d = objlist_class(2, 4);
 	for (int i = 0; i < 100; i++)

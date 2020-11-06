@@ -1,17 +1,13 @@
 #include "pch.h"
 #include "winmain.h"
+
+#include "fullscrn.h"
 #include "memory.h"
 #include "pinball.h"
 #include "options.h"
+#include "pb.h"
 
-int iFrostUniqueMsg;
-
-//HWND, UINT, WPARAM, LPARAM
-//typedef LRESULT (CALLBACK* WNDPROC)(HWND, UINT, WPARAM, LPARAM);
-LRESULT CALLBACK message_handler(HWND hWnd, UINT Msg, WPARAM wParam, LPARAM LPARAM)
-{
-	return 0;
-}
+int iFrostUniqueMsg, return_value = 0, bQuit = 0;
 
 int check_expiration_date()
 {
@@ -86,12 +82,12 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	}
 	--memory::critical_allocation;
 
-	pinball::quickFlag = strstr(lpCmdLine, "-quick") != 0;
+	pinball::quickFlag = strstr(lpCmdLine, "-quick") != nullptr;
 	pinball::hinst = hInstance;
 	options::get_string(regSpaceCadet, "Pinball Data", pinball::DatFileName, pinball::get_rc_string(168, 0), 300);
 
 	iFrostUniqueMsg = RegisterWindowMessageA("PinballThemeSwitcherUniqueMsgString");
-	auto windowHandle= FindWindowA(pinball::get_rc_string(167, 0), nullptr);
+	auto windowHandle = FindWindowA(pinball::get_rc_string(167, 0), nullptr);
 	if (windowHandle)
 	{
 		SendMessageA(windowHandle, iFrostUniqueMsg, 0, 0);
@@ -106,19 +102,104 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	picce.dwICC = 5885;
 	InitCommonControlsEx(&picce);
 
-	WNDCLASSA WndClass;
+	auto windowClass = pinball::get_rc_string(167, 0);
+	WNDCLASSA WndClass{};
 	WndClass.style = 4104;
 	WndClass.lpfnWndProc = message_handler;
 	WndClass.cbClsExtra = 0;
 	WndClass.cbWndExtra = 0;
 	WndClass.hInstance = hInstance;
 	WndClass.hIcon = LoadIconA(hInstance, "ICON_1");
-	WndClass.hCursor = LoadCursorA(0, (LPCSTR)0x7F00);
+	WndClass.hCursor = LoadCursorA(nullptr, (LPCSTR)0x7F00);
 	WndClass.hbrBackground = (HBRUSH)16;
 	WndClass.lpszMenuName = "MENU_1";
-	WndClass.lpszClassName = pinball::get_rc_string(167, 0);
-	//auto tmpBuf = splash_screen((int)hInstance, "splash_bitmap", "splash_bitmap");
+	WndClass.lpszClassName = windowClass;
+	//auto tmpBuf = splash_screen((int)hInstance, "splash_bitmap", "splash_bitmap"); // No splash for now
 	RegisterClassA(&WndClass);
+
+	pinball::FindShiftKeys();
+
+	char windowName[40];
+	lstrcpyA(windowName, pinball::get_rc_string(38, 0));
+	windowHandle = CreateWindowExA(0, windowClass, windowName, 0x3CA0000u, 0, 0, 640, 480, nullptr, nullptr, hInstance,
+	                               nullptr);
+	pinball::hwnd_frame = windowHandle;
+	if (!windowHandle)
+	{
+		PostQuitMessage(0);
+		return 0;
+	}
+
+	auto menuHandle = GetMenu(windowHandle);
+	options::init(menuHandle);
+	pb::reset_table();
+	pb::firsttime_setup();
+
+	if (strstr(lpCmdLine, "-fullscreen"))
+	{
+		options::Options.FullScreen = 1;
+		options::menu_check(0x193u, 1);
+	}
+
+	ShowWindow(pinball::hwnd_frame, nShowCmd);
+	fullscrn::set_screen_mode(options::Options.FullScreen);
+	UpdateWindow(pinball::hwnd_frame);
+
+	/*if (tmpBuf) //Close splash
+	{
+		splash_hide(tmpBuf);
+		splash_destroy(tmpBuf);
+	}*/
+
+	pinball::adjust_priority(options::Options.PriorityAdj);
+	auto getTimeFunc = timeGetTime;
+	const auto startTime = timeGetTime();
+	MSG wndMessage{};
+	while (timeGetTime() >= startTime && timeGetTime() - startTime < 2000)
+		PeekMessageA(&wndMessage, pinball::hwnd_frame, 0, 0, 1u);
+	
+	while (true)
+	{
+		if (!ProcessWindowMessages() || bQuit)
+			break;
+		Sleep(8);
+	}
+
+	return return_value;
+}
+
+LRESULT CALLBACK message_handler(HWND hWnd, UINT Msg, WPARAM wParam, LPARAM lParam)
+{
+	return DefWindowProcA(hWnd, Msg, wParam, lParam);
+}
+
+int ProcessWindowMessages()
+{
+	MSG Msg{}; // [esp+8h] [ebp-1Ch]
+
+	if (pinball::has_focus && !pinball::single_step)
+	{
+		while (PeekMessageA(&Msg, nullptr, 0, 0, 1u))
+		{
+			TranslateMessage(&Msg);
+			DispatchMessageA(&Msg);
+			if (Msg.message == 18)
+			{
+				return_value = Msg.wParam;
+				return 0;
+			}
+		}
+		return 1;
+	}
+	GetMessageA(&Msg, pinball::hwnd_frame, 0, 0);
+	TranslateMessage(&Msg);
+	DispatchMessageA(&Msg);
+	if (Msg.message == 18)
+	{
+		return_value = Msg.wParam;
+		return 0;
+	}
+	return 1;
 }
 
 void winmain_memalloc_failure()

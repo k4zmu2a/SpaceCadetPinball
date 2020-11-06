@@ -1,9 +1,76 @@
 #include "pch.h"
 #include "options.h"
 #include "memory.h"
+#include "pinball.h"
+#include "Sound.h"
 
 LPCSTR options::OptionsRegPath;
 LPSTR options::OptionsRegPathCur;
+HMENU options::MenuHandle;
+optionsStruct options::Options;
+
+void options::init(HMENU menuHandle)
+{
+	MenuHandle = menuHandle;
+	Options.Sounds = 1;
+	Options.Music = 0;
+	Options.FullScreen = 0;
+	Options.Average = 5;
+	Options.PriorityAdj = 2;
+	Options.LeftFlipperKey2 = 90;
+	Options.RightFlipperKey2 = 191;
+	Options.PlungerKey2 = 32;
+	Options.LeftTableBumpKey2 = 88;
+	Options.RightTableBumpKey2 = 190;
+	Options.BottomTableBumpKey2 = 38;
+	pinball::get_rc_int(159, &Options.LeftFlipperKey2);
+	pinball::get_rc_int(160, &Options.RightFlipperKey2);
+	pinball::get_rc_int(161, &Options.PlungerKey2);
+	pinball::get_rc_int(162, &Options.LeftTableBumpKey2);
+	pinball::get_rc_int(163, &Options.RightTableBumpKey2);
+	pinball::get_rc_int(164, &Options.BottomTableBumpKey2);
+	Options.LeftFlipperKey = Options.LeftFlipperKey2;
+	Options.RightFlipperKey = Options.RightFlipperKey2;
+	Options.PlungerKey = Options.PlungerKey2;
+	Options.LeftTableBumpKey = Options.LeftTableBumpKey2;
+	Options.RightTableBumpKey = Options.RightTableBumpKey2;
+	Options.Players = 1;
+	Options.BottomTableBumpKey = Options.BottomTableBumpKey2;
+	Options.Sounds = get_int(nullptr, "Sounds", Options.Sounds);
+	Options.Music = get_int(nullptr, "Music", Options.Music);
+	Options.Average = get_int(nullptr, "Average", Options.Average);
+	Options.FullScreen = get_int(nullptr, "FullScreen", Options.FullScreen);
+	Options.PriorityAdj = get_int(nullptr, "Priority_Adjustment", Options.PriorityAdj);
+	Options.Players = get_int(nullptr, "Players", Options.Players);
+	Options.LeftFlipperKey = get_int(nullptr, "Left Flippper key", Options.LeftFlipperKey);
+	Options.RightFlipperKey = get_int(nullptr, "Right Flipper key", Options.RightFlipperKey);
+	Options.PlungerKey = get_int(nullptr, "Plunger key", Options.PlungerKey);
+	Options.LeftTableBumpKey = get_int(nullptr, "Left Table Bump key", Options.LeftTableBumpKey);
+	Options.RightTableBumpKey = get_int(nullptr, "Right Table Bump key", Options.RightTableBumpKey);
+	Options.BottomTableBumpKey = get_int(nullptr, "Bottom Table Bump key", Options.BottomTableBumpKey);
+	menu_check(0xC9u, Options.Sounds);
+	Sound::Enable(0, 7, Options.Sounds);
+	menu_check(0xCAu, Options.Music);
+	menu_check(0x193u, Options.FullScreen);
+	menu_check(0x198u, Options.Players == 1);
+	menu_check(0x199u, Options.Players == 2);
+	menu_check(0x19Au, Options.Players == 3);
+	menu_check(0x19Bu, Options.Players == 4);
+	auto tmpBuf = memory::allocate(0x1F4u);
+	if (tmpBuf)
+	{
+		get_string(nullptr, "Shell Exe", tmpBuf, pinball::WindowName, 500);
+		if (!*tmpBuf)
+		{
+			if (MenuHandle)
+			{
+				DeleteMenu(MenuHandle, 0x195u, 0);
+				DrawMenuBar(pinball::hwnd_frame);
+			}
+		}
+		memory::free(tmpBuf);
+	}
+}
 
 void options::path_init(LPCSTR regPath)
 {
@@ -115,4 +182,13 @@ void options::set_string(LPCSTR optPath, LPCSTR lpValueName, LPCSTR value)
 		}
 		path_free();
 	}
+}
+
+
+HMENU options::menu_check(UINT uIDCheckItem, int value)
+{
+	HMENU result = MenuHandle;
+	if (MenuHandle)
+		result = (HMENU)CheckMenuItem(MenuHandle, uIDCheckItem, value != 0 ? 8 : 0);
+	return result;
 }

@@ -136,6 +136,7 @@ int main2(int argc, const char* argv[])
 	}
 
 	free(fdat);
+	return 0;
 }
 
 

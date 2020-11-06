@@ -96,7 +96,7 @@
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>Comctl32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>Comctl32.lib;Winmm.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -154,15 +154,19 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="DatParser.h" />
+    <ClInclude Include="fullscrn.h" />
     <ClInclude Include="loader.h" />
     <ClInclude Include="memory.h" />
     <ClInclude Include="objlist_class.h" />
     <ClInclude Include="options.h" />
     <ClInclude Include="partman.h" />
+    <ClInclude Include="pb.h" />
     <ClInclude Include="pch.h" />
     <ClInclude Include="pinball.h" />
+    <ClInclude Include="render.h" />
     <ClInclude Include="resource.h" />
     <ClInclude Include="score.h" />
+    <ClInclude Include="Sound.h" />
     <ClInclude Include="TBall.h" />
     <ClInclude Include="TBlocker.h" />
     <ClInclude Include="TBumper.h" />
@@ -198,11 +202,13 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="DatParser.cpp" />
+    <ClCompile Include="fullscrn.cpp" />
     <ClCompile Include="loader.cpp" />
     <ClCompile Include="memory.cpp" />
     <ClCompile Include="objlist_class.cpp" />
     <ClCompile Include="options.cpp" />
     <ClCompile Include="partman.cpp" />
+    <ClCompile Include="pb.cpp" />
     <ClCompile Include="pch.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
@@ -210,7 +216,9 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="pinball.cpp" />
+    <ClCompile Include="render.cpp" />
     <ClCompile Include="score.cpp" />
+    <ClCompile Include="Sound.cpp" />
     <ClCompile Include="SpaceCadetPinball.cpp" />
     <ClCompile Include="TBall.cpp" />
     <ClCompile Include="TBlocker.cpp" />
