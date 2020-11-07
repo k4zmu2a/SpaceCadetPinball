@@ -7,16 +7,16 @@
 #include "options.h"
 #include "pb.h"
 
-int iFrostUniqueMsg, return_value = 0, bQuit = 0;
-
-int check_expiration_date()
-{
-	return 0;
-}
+int winmain::iFrostUniqueMsg, winmain::return_value = 0, winmain::bQuit = 0;
 
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nShowCmd)
 {
-	memory::init(winmain_memalloc_failure);
+	return winmain::WinMain(hInstance, hPrevInstance, lpCmdLine, nShowCmd);
+}
+
+int winmain::WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nShowCmd)
+{
+	memory::init(memalloc_failure);
 	++memory::critical_allocation;
 	auto optionsRegPath = pinball::get_rc_string(165, 0);
 	options::path_init(optionsRegPath);
@@ -97,7 +97,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	if (check_expiration_date())
 		return 0;
 
-	INITCOMMONCONTROLSEX picce{};
+	INITCOMMONCONTROLSEX picce;
 	picce.dwSize = 8;
 	picce.dwICC = 5885;
 	InitCommonControlsEx(&picce);
@@ -157,7 +157,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	MSG wndMessage{};
 	while (timeGetTime() >= startTime && timeGetTime() - startTime < 2000)
 		PeekMessageA(&wndMessage, pinball::hwnd_frame, 0, 0, 1u);
-	
+
 	while (true)
 	{
 		if (!ProcessWindowMessages() || bQuit)
@@ -168,12 +168,12 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	return return_value;
 }
 
-LRESULT CALLBACK message_handler(HWND hWnd, UINT Msg, WPARAM wParam, LPARAM lParam)
+LRESULT CALLBACK winmain::message_handler(HWND hWnd, UINT Msg, WPARAM wParam, LPARAM lParam)
 {
 	return DefWindowProcA(hWnd, Msg, wParam, lParam);
 }
 
-int ProcessWindowMessages()
+int winmain::ProcessWindowMessages()
 {
 	MSG Msg{}; // [esp+8h] [ebp-1Ch]
 
@@ -202,7 +202,7 @@ int ProcessWindowMessages()
 	return 1;
 }
 
-void winmain_memalloc_failure()
+void winmain::memalloc_failure()
 {
 	/*midi_music_stop();
 	Sound_Close();
@@ -211,4 +211,37 @@ void winmain_memalloc_failure()
 	char* text = pinball::get_rc_string(179, 0);
 	MessageBoxA(nullptr, text, caption, 0x2030u);
 	_exit(1);
+}
+
+int winmain::check_expiration_date()
+{
+	return 0;
+}
+
+
+HDC winmain::_BeginPaint(HWND hWnd, LPPAINTSTRUCT lpPaint)
+{
+	HDC context = BeginPaint(hWnd, lpPaint);
+	if (hWnd && GetLayout(context) & 1)
+		SetLayout(context, 0);
+	return context;
+}
+
+HDC winmain::_GetDC(HWND hWnd)
+{
+	HDC context = GetDC(hWnd);
+	if (hWnd && GetLayout(context) & 1)
+		SetLayout(context, 0);
+	return context;
+}
+
+int winmain::a_dialog(HINSTANCE hInstance, HWND hWnd)
+{
+	char appName[100];
+	char szOtherStuff[100];
+
+	lstrcpyA(appName, pinball::get_rc_string(38, 0));
+	lstrcpyA(szOtherStuff, pinball::get_rc_string(102, 0));
+	auto icon = LoadIconA(hInstance, "ICON_1");
+	return ShellAboutA(hWnd, appName, szOtherStuff, icon);
 }

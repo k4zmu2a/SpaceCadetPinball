@@ -157,3 +157,8 @@ void fullscrn::GetWindowCenter()
 	if (MenuEnabled)
 		yDest -= GetSystemMetrics(15);
 }
+
+void fullscrn::force_redraw()
+{
+	BYTE1(fullscrn_flag1) |= 0x80u;
+}

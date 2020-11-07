@@ -5,6 +5,11 @@
 #include "partman.h"
 
 
+int score::init()
+{
+	return 1;
+}
+
 scoreStruct* score::create(LPCSTR fieldName, int renderBgBmp)
 {
 	scoreStruct* score = (scoreStruct*)memory::allocate(sizeof(scoreStruct));

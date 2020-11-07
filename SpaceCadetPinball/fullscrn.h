@@ -17,6 +17,7 @@ public:
 	static int trick;
 
 	static int set_screen_mode(int isFullscreen);
+	static void force_redraw();
 private :
 	static int MenuEnabled;
 	static HMENU MenuHandle;

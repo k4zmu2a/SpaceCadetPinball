@@ -159,6 +159,9 @@
     <ClInclude Include="fullscrn.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="gdrv.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="pch.cpp">
@@ -294,6 +297,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="fullscrn.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="gdrv.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

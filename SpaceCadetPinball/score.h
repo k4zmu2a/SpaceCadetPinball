@@ -1,6 +1,6 @@
 #pragma once
 
-struct  scoreStruct
+struct scoreStruct
 {
 	int Unknown1;
 	int Unknown2;
@@ -24,7 +24,7 @@ struct  scoreStruct
 class score
 {
 public:
+	static int init();
 	static scoreStruct* create(LPCSTR fieldName, int renderBgBmp);
 	static scoreStruct* dup(scoreStruct* score, int scoreIndex);
 };
-

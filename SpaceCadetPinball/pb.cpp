@@ -17,3 +17,8 @@ void pb::firsttime_setup()
 	render::update();
 	render::blit = 1;
 }
+
+void pb::paint()
+{
+	render::paint();
+}

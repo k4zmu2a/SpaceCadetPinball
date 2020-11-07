@@ -155,6 +155,7 @@
   <ItemGroup>
     <ClInclude Include="DatParser.h" />
     <ClInclude Include="fullscrn.h" />
+    <ClInclude Include="gdrv.h" />
     <ClInclude Include="loader.h" />
     <ClInclude Include="memory.h" />
     <ClInclude Include="objlist_class.h" />
@@ -203,6 +204,7 @@
   <ItemGroup>
     <ClCompile Include="DatParser.cpp" />
     <ClCompile Include="fullscrn.cpp" />
+    <ClCompile Include="gdrv.cpp" />
     <ClCompile Include="loader.cpp" />
     <ClCompile Include="memory.cpp" />
     <ClCompile Include="objlist_class.cpp" />
