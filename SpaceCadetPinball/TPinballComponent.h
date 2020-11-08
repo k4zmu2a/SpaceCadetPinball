@@ -1,4 +1,5 @@
 #pragma once
+#include "render.h"
 #include "TZmapList.h"
 
 
@@ -19,8 +20,8 @@ public:
 	int Unknown4;
 	int Unknown5;
 	int GroupIndex;
-	int Unknown7;
+	render_sprite_type_struct* RenderSprite;
 	TPinballTable* PinballTable;
-	TZmapList* List1Bitmap8;
-	TZmapList* List2Bitmap16;
+	TZmapList* ListBitmap;
+	TZmapList* ListZMap;
 };

@@ -1,6 +1,6 @@
 #include "pch.h"
 #include "partman.h"
-
+#include "gdrv.h"
 #include "memory.h"
 
 short partman::_field_size[] = {
@@ -39,7 +39,7 @@ datFileStruct* partman::load_records(LPCSTR lpFileName)
 	else
 	{
 		int lenOfStr = lstrlenA(Buffer.Description);
-		auto descriptionBuf = (char*)memory::allocate(lenOfStr + 1);
+		auto descriptionBuf = static_cast<char*>(memory::allocate(lenOfStr + 1));
 		datFile->Description = descriptionBuf;
 		if (!descriptionBuf)
 		{
@@ -52,7 +52,7 @@ datFileStruct* partman::load_records(LPCSTR lpFileName)
 
 	if (Buffer.Unknown)
 	{
-		auto unknownBuf = (char*)memory::allocate(Buffer.Unknown);
+		auto unknownBuf = static_cast<char*>(memory::allocate(Buffer.Unknown));
 		if (!unknownBuf)
 		{
 			_lclose(fileHandle);
@@ -99,30 +99,30 @@ datFileStruct* partman::load_records(LPCSTR lpFileName)
 				{
 					auto entryType = static_cast<datFieldTypes>(_lread_char(fileHandle));
 					entryData->EntryType = entryType;
-					int fieldSize = _field_size[entryType];
+					int fieldSize = _field_size[(int)entryType];
 					if (fieldSize < 0)
 					{
 						fieldSize = _lread_long(fileHandle);
 					}
-					if (entryType == Bitmap8bit)
+					if (entryType == datFieldTypes::Bitmap8bit)
 					{
 						_hread(fileHandle, &bmpHeader, 14);
-						char* bmpBuffer = (char*)memory::allocate(0x25u);
-						entryData->Buffer = bmpBuffer;
-						if (!bmpBuffer)
+						auto bmp = (gdrv_bitmap8*)memory::allocate(sizeof(gdrv_bitmap8));
+						entryData->Buffer = (char*)bmp;
+						if (!bmp)
 							goto LABEL_41;
-						/*if (bmpHeader.Unknown2 & 2 ? gdrv_create_bitmap((int)bmpBuffer, bmpHeader.Width, bmpHeader.Height) : gdrv_create_raw_bitmap((int)bmpBuffer, bmpHeader.Width, bmpHeader.Height, bmpHeader.Unknown2 & 1))
-							goto LABEL_41;*/
-						//_hread(fileHandle, *(LPVOID*)(entryData->Buffer + 8), bmpHeader.Size);
-						char* tempBuff = (char*)memory::allocate(bmpHeader.Size);
-						_hread(fileHandle, tempBuff, bmpHeader.Size);
-						memory::free(tempBuff);
-						//*((int*)entryData->Buffer + 29) = bmpHeader.XPosition;
-						//*((int*)entryData->Buffer + 33) = bmpHeader.YPosition;
+						if (bmpHeader.Unknown2 & 2
+							    ? gdrv::create_bitmap(bmp, bmpHeader.Width, bmpHeader.Height)
+							    : gdrv::create_raw_bitmap(bmp, bmpHeader.Width, bmpHeader.Height,
+							                              bmpHeader.Unknown2 & 1))
+							goto LABEL_41;
+						_hread(fileHandle, bmp->BmpBufPtr1, bmpHeader.Size);
+						bmp->XPosition = bmpHeader.XPosition;
+						bmp->YPosition = bmpHeader.YPosition;
 					}
 					else
-					{						
-						char* entryBuffer = (char*)memory::allocate(fieldSize);
+					{
+						char* entryBuffer = static_cast<char*>(memory::allocate(fieldSize));
 						entryData->Buffer = entryBuffer;
 						if (!entryBuffer)
 							goto LABEL_41;
@@ -193,7 +193,7 @@ char* partman::field(datFileStruct* datFile, int groupIndex, datFieldTypes targe
 	datEntryData* entry = groupData->Entries;
 	while (true)
 	{
-		int entryType = entry->EntryType;
+		auto entryType = entry->EntryType;
 		if (entryType == targetEntryType)
 			break;
 		if (entryType > targetEntryType)
@@ -217,7 +217,7 @@ char* partman::field_nth(datFileStruct* datFile, int groupIndex, datFieldTypes t
 		datEntryData* entry = groupData->Entries;
 		do
 		{
-			int entryType = entry->EntryType;
+			auto entryType = entry->EntryType;
 			if (entryType == targetEntryType)
 			{
 				if (skipCount == skipFirstN)
@@ -250,7 +250,7 @@ int partman::field_size_nth(datFileStruct* datFile, int groupIndex, datFieldType
 		datEntryData* entry = groupData->Entries;
 		do
 		{
-			int entryType = entry->EntryType;
+			auto entryType = entry->EntryType;
 			if (entryType == targetEntryType)
 			{
 				if (skipCount == skipFirstN)
@@ -287,7 +287,7 @@ int partman::record_labeled(datFileStruct* datFile, LPCSTR targetGroupName)
 	{
 		if (--groupIndex < 0)
 			return -1;
-		char* groupName = field(datFile, groupIndex, GroupName);
+		char* groupName = field(datFile, groupIndex, datFieldTypes::GroupName);
 		if (groupName)
 		{
 			int index = 0;

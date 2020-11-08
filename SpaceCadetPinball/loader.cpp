@@ -1,10 +1,9 @@
 ﻿#include "pch.h"
 #include "loader.h"
-
-
 #include "memory.h"
 #include "partman.h"
 #include "pinball.h"
+#include "zdrv.h"
 
 
 /*_loader_errors  dd 0, offset aBadHandle, 1, offset aNoTypeField, 2, offset aNoAttributesFi
@@ -91,8 +90,8 @@ void  loader::default_vsi(visualStruct* visual)
 	visual->Unknown2F = 0.60000002f;
 	visual->FloatArrSizeDiv8Sub2 = 0;
 	visual->SoundIndex2 = 0;
-	visual->Bitmap8 = 0;
-	visual->Bitmap16 = 0;
+	visual->Bitmap = 0;
+	visual->ZMap = 0;
 	visual->SoundIndex3 = 0;
 	visual->SoundIndex4 = 0;
 }
@@ -107,7 +106,7 @@ void loader::loadfrom(datFileStruct* datFile)
 	{
 		do
 		{
-			__int16* value = (__int16*)partman::field(datFile, groupIndex, ShortValue);
+			__int16* value = (__int16*)partman::field(datFile, groupIndex, datFieldTypes::ShortValue);
 			if (value && *value == 202)
 			{
 				soundIndex = sound_count;
@@ -170,10 +169,10 @@ int loader::get_sound_id(int groupIndex)
 			sound_list[soundIndex].Volume = 0.0;
 			if (soundGroupId > 0 && !pinball::quickFlag)
 			{
-				__int16* value = (__int16*)partman::field(loader_table, soundGroupId, ShortValue);
+				__int16* value = (__int16*)partman::field(loader_table, soundGroupId, datFieldTypes::ShortValue);
 				if (value && *value == 202)
 				{
-					const CHAR* fileName = partman::field(loader_table, soundGroupId, String);
+					const CHAR* fileName = partman::field(loader_table, soundGroupId, datFieldTypes::String);
 					HFILE hFile = _lopen(fileName, 0);
 					sound_list[soundIndex].Volume = (float)((double)(_llseek(hFile, 0, 2)) * 0.0000909090909090909);
 					_lclose(hFile);
@@ -198,7 +197,7 @@ short loader::query_visual_states(int groupIndex)
 	short result;
 	if (groupIndex < 0)
 		return error(0, 17);
-	__int16* shortArr = (__int16*)partman::field(loader_table, groupIndex, ShortArray);
+	__int16* shortArr = (__int16*)partman::field(loader_table, groupIndex, datFieldTypes::ShortArray);
 	if (shortArr && *shortArr == 100)
 		result = shortArr[1];
 	else
@@ -209,7 +208,7 @@ short loader::query_visual_states(int groupIndex)
 char* loader::query_name(int groupIndex)
 {
 	if (groupIndex >= 0)
-		return partman::field(loader_table, groupIndex, GroupName);
+		return partman::field(loader_table, groupIndex, datFieldTypes::GroupName);
 	error(0, 19);
 	return nullptr;
 }
@@ -222,12 +221,12 @@ __int16* loader::query_iattribute(int groupIndex, int firstValue, int* arraySize
 	{
 		while (true)
 		{
-			__int16* shortArr = (__int16*)partman::field_nth(loader_table, groupIndex, ShortArray, skipIndex);
+			__int16* shortArr = (__int16*)partman::field_nth(loader_table, groupIndex, datFieldTypes::ShortArray, skipIndex);
 			if (!shortArr)
 				break;
 			if (*shortArr == firstValue)
 			{
-				*arraySize = partman::field_size(loader_table, groupIndex, ShortArray) / 2 - 1;
+				*arraySize = partman::field_size(loader_table, groupIndex, datFieldTypes::ShortArray) / 2 - 1;
 				return shortArr + 1;
 			}
 			++skipIndex;
@@ -255,7 +254,7 @@ float* loader::query_float_attribute(int groupIndex, int groupIndexOffset, int f
 		{
 			while (true)
 			{
-				float* floatArr = (float*)partman::field_nth(loader_table, groupIndexSum, FloatArray, skipIndex);
+				float* floatArr = (float*)partman::field_nth(loader_table, groupIndexSum, datFieldTypes::FloatArray, skipIndex);
 				if (!floatArr)
 					break;
 				if (static_cast<__int16>(static_cast<__int64>(floor(*floatArr))) == firstValue)
@@ -283,16 +282,16 @@ int loader::material(int groupIndex, visualStruct* visual)
 {
 	if (groupIndex < 0)
 		return error(0, 21);
-	__int16* shortArr = (__int16*)partman::field(loader_table, groupIndex, ShortValue);
+	__int16* shortArr = (__int16*)partman::field(loader_table, groupIndex, datFieldTypes::ShortValue);
 	if (!shortArr)
 		return error(1, 21);
 	if (*shortArr != 300)
 		return error(3, 21);
-	float* floatArr = (float*)partman::field(loader_table, groupIndex, FloatArray);
+	float* floatArr = (float*)partman::field(loader_table, groupIndex, datFieldTypes::FloatArray);
 	if (!floatArr)
 		return error(11, 21);
 	int index = 0;
-	int floatArrLength = partman::field_size(loader_table, groupIndex, FloatArray) >> 2;
+	int floatArrLength = partman::field_size(loader_table, groupIndex, datFieldTypes::FloatArray) >> 2;
 	if (floatArrLength > 0)
 	{
 		do
@@ -336,7 +335,7 @@ int loader::state_id(int groupIndex, int groupIndexOffset)
 	__int16 visualState = query_visual_states(groupIndex);
 	if (visualState <= 0)
 		return error(12, 24);
-	__int16* shortArr = (__int16*)partman::field(loader_table, groupIndex, ShortValue);
+	__int16* shortArr = (__int16*)partman::field(loader_table, groupIndex, datFieldTypes::ShortValue);
 	if (!shortArr)
 		return error(1, 24);
 	if (*shortArr != 200)
@@ -347,7 +346,7 @@ int loader::state_id(int groupIndex, int groupIndexOffset)
 		return groupIndex2;
 
 	groupIndex2 = groupIndexOffset + groupIndex;
-	shortArr = (__int16*)partman::field(loader_table, groupIndexOffset + groupIndex, ShortValue);
+	shortArr = (__int16*)partman::field(loader_table, groupIndexOffset + groupIndex, datFieldTypes::ShortValue);
 	if (!shortArr)
 		return error(1, 24);
 	if (*shortArr != 201)
@@ -361,15 +360,15 @@ int loader::kicker(int groupIndex, visualKickerStruct* kicker)
 {
 	if (groupIndex < 0)
 		return error(0, 20);
-	__int16* shortArr = (__int16*)partman::field(loader_table, groupIndex, ShortValue);
+	__int16* shortArr = (__int16*)partman::field(loader_table, groupIndex, datFieldTypes::ShortValue);
 	if (!shortArr)
 		return error(1, 20);
 	if (*shortArr != 400)
 		return error(4, 20);
-	float* floatArr = (float*)partman::field(loader_table, groupIndex, FloatArray);
+	float* floatArr = (float*)partman::field(loader_table, groupIndex, datFieldTypes::FloatArray);
 	if (!floatArr)
 		return error(11, 20);
-	int floatArrLength = partman::field_size(loader_table, groupIndex, FloatArray) >> 2;
+	int floatArrLength = partman::field_size(loader_table, groupIndex, datFieldTypes::FloatArray) >> 2;
 	int index = 0;
 	if (floatArrLength <= 0)
 		return 0;
@@ -418,7 +417,7 @@ int  loader::query_visual(int groupIndex, int groupIndexOffset, visualStruct* vi
 	visualStruct* visual2; // edi
 	int groupIndexSum; // eax
 	int groupIndexSum2; // ebx
-	char* bitmap16; // eax
+	zmap_header_type* bitmap16; // eax
 	__int16* shortArr; // esi
 	unsigned int shortArrSize; // eax
 	int index; // ebx
@@ -447,18 +446,18 @@ int  loader::query_visual(int groupIndex, int groupIndexOffset, visualStruct* vi
 	groupIndexSum3 = groupIndexSum;
 	if (groupIndexSum < 0)
 		return error(16, 18);
-	visual->Bitmap8 = partman::field(loader_table, groupIndexSum, Bitmap8bit);
-	bitmap16 = partman::field(loader_table, groupIndexSum2, Bitmap16bit);
-	visual->Bitmap16 = bitmap16;
+	visual->Bitmap = (gdrv_bitmap8*)partman::field(loader_table, groupIndexSum, datFieldTypes::Bitmap8bit);
+	bitmap16 = (zmap_header_type*)partman::field(loader_table, groupIndexSum2, datFieldTypes::Bitmap16bit);
+	visual->ZMap = bitmap16;
 	if (bitmap16)
 	{
-		//*(int*)(bitmap16 + 6) = bitmap16 + 14;
-		//*(int*)(visual->Bitmap16 + 10) = *(int*)(visual->Bitmap16 + 6);
+		bitmap16->BmpBufPtr1 = bitmap16->BmpBuffer;
+		visual->ZMap->bmpBufPtr2 = visual->ZMap->BmpBufPtr1;
 	}
-	shortArr = (__int16*)partman::field(loader_table, groupIndexSum2, ShortArray);
+	shortArr = (__int16*)partman::field(loader_table, groupIndexSum2, datFieldTypes::ShortArray);
 	if (shortArr)
 	{
-		shortArrSize = partman::field_size(loader_table, groupIndexSum2, ShortArray);
+		shortArrSize = partman::field_size(loader_table, groupIndexSum2, datFieldTypes::ShortArray);
 		index = 0;
 		shortArrLength = shortArrSize >> 1;
 		if ((__int16)(shortArrSize >> 1) > 0)
@@ -540,13 +539,13 @@ int  loader::query_visual(int groupIndex, int groupIndexOffset, visualStruct* vi
 LABEL_33:
 	if (!visual2->Unknown14Flag)
 		visual2->Unknown14Flag = 1;
-	floatArr = (float*)partman::field(loader_table, groupIndexSum3, FloatArray);
+	floatArr = (float*)partman::field(loader_table, groupIndexSum3, datFieldTypes::FloatArray);
 	if (!floatArr)
 		return 0;
 	nextFloatVal = floatArr + 1;
 	if (*floatArr != 600.0)
 		return 0;
-	visual2->FloatArrSizeDiv8Sub2 = (partman::field_size(loader_table, groupIndexSum3, FloatArray) >> 2)/ 2- 2;
+	visual2->FloatArrSizeDiv8Sub2 = (partman::field_size(loader_table, groupIndexSum3, datFieldTypes::FloatArray) >> 2)/ 2- 2;
 	floatVal = (__int64)(floor(*nextFloatVal) - 1.0);
 	floatArrPtr = nextFloatVal + 1;
 	if ((int)floatVal)

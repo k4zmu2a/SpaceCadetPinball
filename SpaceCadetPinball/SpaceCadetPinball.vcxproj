@@ -157,6 +157,7 @@
     <ClInclude Include="fullscrn.h" />
     <ClInclude Include="gdrv.h" />
     <ClInclude Include="loader.h" />
+    <ClInclude Include="maths.h" />
     <ClInclude Include="memory.h" />
     <ClInclude Include="objlist_class.h" />
     <ClInclude Include="options.h" />
@@ -200,12 +201,14 @@
     <ClInclude Include="TTripwire.h" />
     <ClInclude Include="TZmapList.h" />
     <ClInclude Include="winmain.h" />
+    <ClInclude Include="zdrv.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="DatParser.cpp" />
     <ClCompile Include="fullscrn.cpp" />
     <ClCompile Include="gdrv.cpp" />
     <ClCompile Include="loader.cpp" />
+    <ClCompile Include="maths.cpp" />
     <ClCompile Include="memory.cpp" />
     <ClCompile Include="objlist_class.cpp" />
     <ClCompile Include="options.cpp" />
@@ -253,6 +256,7 @@
     <ClCompile Include="TTimer.cpp" />
     <ClCompile Include="TTripwire.cpp" />
     <ClCompile Include="winmain.cpp" />
+    <ClCompile Include="zdrv.cpp" />
   </ItemGroup>
   <ItemGroup>
     <Natvis Include="NatvisFile.natvis" />

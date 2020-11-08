@@ -1,6 +1,6 @@
 #pragma once
 
-enum datFieldTypes : __int16
+enum class datFieldTypes : __int16
 {
 	ShortValue = 0,
 	//, does not have the 32bits size value, but a 16bits value(see above).

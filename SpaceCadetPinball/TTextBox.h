@@ -5,7 +5,7 @@ class TTextBox :
 	public TPinballComponent
 {
 public:
-	TTextBox(TPinballTable* table, int groupIndex) : TPinballComponent(table, groupIndex, false)
+	TTextBox(TPinballTable* table, int groupIndex) : TPinballComponent(table, groupIndex, true)
 	{
 	}
 

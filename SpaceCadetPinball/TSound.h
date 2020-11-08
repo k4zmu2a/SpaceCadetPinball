@@ -4,7 +4,7 @@ class TSound :
     public TPinballComponent
 {
 public:
-	TSound(TPinballTable* table, int groupIndex) : TPinballComponent(table, groupIndex, false)
+	TSound(TPinballTable* table, int groupIndex) : TPinballComponent(table, groupIndex, true)
 	{
 	}
 };

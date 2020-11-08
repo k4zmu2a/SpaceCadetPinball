@@ -4,7 +4,7 @@ class TLight :
     public TPinballComponent
 {
 public:
-	TLight(TPinballTable* table, int groupIndex) : TPinballComponent(table, groupIndex, false)
+	TLight(TPinballTable* table, int groupIndex) : TPinballComponent(table, groupIndex, true)
 	{
 	}
 };

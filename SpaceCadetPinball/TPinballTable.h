@@ -63,8 +63,8 @@ public:
 	TPlunger* Plunger;
 	TDrain* Drain;
 	int UnknownP48;
-	int UnknownP49;
-	int UnknownP50;
+	int XOffset;
+	int YOffset;
 	int UnknownP51;
 	int UnknownP52;
 	objlist_class* ListP1;

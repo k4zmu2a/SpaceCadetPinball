@@ -2,6 +2,7 @@
 #include "TPinballComponent.h"
 #include "loader.h"
 #include "objlist_class.h"
+#include "render.h"
 #include "TZmapList.h"
 #include "TPinballTable.h"
 
@@ -9,75 +10,69 @@ TPinballComponent::TPinballComponent(TPinballTable* table, int groupIndex, bool 
 {
 	visualStruct visual{}; // [esp+Ch] [ebp-6Ch]
 
-	//this->VfTable = (int)&TPinballComponent::`vftable';
-	this->MessageField = 0;
-	this->UnknownBaseFlag1 = 0;
-	this->UnknownBaseFlag2 = 0;
-	this->PinballTable = table;
-	this->Unknown7 = 0;
-	this->List1Bitmap8 = nullptr;
-	this->List2Bitmap16 = nullptr;
+	MessageField = 0;
+	UnknownBaseFlag1 = 0;
+	UnknownBaseFlag2 = 0;
+	PinballTable = table;
+	RenderSprite = nullptr;
+	ListBitmap = nullptr;
+	ListZMap = nullptr;
 	if (table)
 		table->ListP1->Add(this);
 	if (groupIndex >= 0)
-		this->GroupName = loader::query_name(groupIndex);
+		GroupName = loader::query_name(groupIndex);
 	if (loadVisuals && groupIndex >= 0)
 	{
 		int visualCount = loader::query_visual_states(groupIndex);
 		for (int index = 0; index < visualCount; ++index)
 		{
 			loader::query_visual(groupIndex, index, &visual);
-			if (visual.Bitmap8)
+			if (visual.Bitmap)
 			{
-				if (!this->List1Bitmap8)
-					this->List1Bitmap8 = new TZmapList(visualCount, 4);
-				if (this->List1Bitmap8)
-					this->List1Bitmap8->Add(visual.Bitmap8);
+				if (!ListBitmap)
+					ListBitmap = new TZmapList(visualCount, 4);
+				if (ListBitmap)
+					ListBitmap->Add(visual.Bitmap);
 			}
-			if (visual.Bitmap16)
+			if (visual.ZMap)
 			{
-				if (!this->List2Bitmap16)
-					this->List2Bitmap16 = new TZmapList(visualCount, 4);
-				if (this->List2Bitmap16)
-					this->List2Bitmap16->Add(visual.Bitmap16);
+				if (!ListZMap)
+					ListZMap = new TZmapList(visualCount, 4);
+				if (ListZMap)
+					ListZMap->Add(visual.ZMap);
 			}
 		}
-		if (this->List2Bitmap16)
-			int listVal0 = (int)this->List2Bitmap16->Get(0);
-		if (this->List1Bitmap8)
+		zmap_header_type* zMap = nullptr;
+		if (ListZMap)
+			zMap = static_cast<zmap_header_type*>(ListZMap->Get(0));
+		if (ListBitmap)
 		{
-			/*listVal0_2 = (int*)this->List1Bitmap8->Get(0);
-			v24 = *(int*)((char*)listVal0_2 + 29) - table->UnknownP49;
-			v15 = 1;
-			v25 = *(int*)((char*)listVal0_2 + 33) - table->UnknownP50;
-			v26 = listVal0_2[3];
-			v27 = listVal0_2[4];
-			if (List1Bitmap8->Count() > 1)
+			visual_rect bmp1Rect{}, tmpRect{};
+			auto rootBmp = static_cast<gdrv_bitmap8*>(ListBitmap->Get(0));
+			bmp1Rect.XPosition = rootBmp->XPosition - table->XOffset;
+			bmp1Rect.YPosition = rootBmp->YPosition - table->YOffset;
+			bmp1Rect.Width = rootBmp->Width;
+			bmp1Rect.Height = rootBmp->Height;
+			for (int index = 1; index < ListBitmap->Count(); index++)
 			{
-			    index = 12;
-			    do
-			    {
-			        v16 = *(int**)((char*)&this->List1Bitmap8->ListPtr->Size + index);
-			        v20 = *(int*)((char*)v16 + 29) - table->UnknownP49;
-			        v21 = *(int*)((char*)v16 + 33) - table->UnknownP50;
-			        v22 = v16[3];
-			        v23 = v16[4];
-			        enclosing_box(&v24, &v20, &v24);
-			        index += 4;
-			        ++v15;
-			    } while (v15 < this->List1Bitmap8->ListPtr->Count);
+				auto bmp = static_cast<gdrv_bitmap8*>(ListBitmap->Get(index));
+				tmpRect.XPosition = bmp->XPosition - table->XOffset;
+				tmpRect.YPosition = bmp->YPosition - table->YOffset;
+				tmpRect.Width = bmp->Width;
+				tmpRect.Height = bmp->Height;
+				maths::enclosing_box(&bmp1Rect, &tmpRect, &bmp1Rect);
 			}
-			v17 = this->List1Bitmap8->ListPtr->Array[0];
-			this->Unknown7 = (int)render_create_sprite(
-			    visualCount > 0,
-			    this->List1Bitmap8->ListPtr->Array[0],
-			    listVal0,
-			    *(int*)(v17 + 29) - table->UnknownP49,
-			    *(int*)(v17 + 33) - table->UnknownP50,
-			    &v24);*/
+
+			RenderSprite = render::create_sprite(
+				visualCount > 0 ? VisualType::Sprite :VisualType::None,
+				rootBmp,
+				zMap,
+				rootBmp->XPosition - table->XOffset,
+				rootBmp->YPosition - table->YOffset,
+				&bmp1Rect);
 		}
 	}
-	this->GroupIndex = groupIndex;
+	GroupIndex = groupIndex;
 }
 
 
@@ -87,21 +82,21 @@ TPinballComponent::~TPinballComponent()
 	if (table)
 		table->ListP1->Delete(this);
 
-	delete List1Bitmap8;
-	delete List2Bitmap16;
+	delete ListBitmap;
+	delete ListZMap;
 }
 
 
 int TPinballComponent::Message(int message1, float message2)
 {
-	this->MessageField = message1;
+	MessageField = message1;
 	if (message1 == 1024)
-		this->MessageField = 0;
+		MessageField = 0;
 	return 0;
 }
 
-void TPinballComponent::put_scoring( int score1, int score2)
-{	
+void TPinballComponent::put_scoring(int score1, int score2)
+{
 }
 
 

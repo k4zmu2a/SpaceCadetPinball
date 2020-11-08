@@ -1,4 +1,6 @@
 #pragma once
+#include "gdrv.h"
+#include "zdrv.h"
 
 
 struct datFileStruct;
@@ -42,8 +44,8 @@ struct __declspec(align(4)) visualStruct
 	int Unknown14Flag;
 	int SoundIndex4;
 	int SoundIndex3;
-	char* Bitmap8;
-	char* Bitmap16;
+	gdrv_bitmap8* Bitmap;
+	zmap_header_type* ZMap;
 };
 
 

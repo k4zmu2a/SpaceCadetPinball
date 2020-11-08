@@ -17,7 +17,7 @@ scoreStruct* score::create(LPCSTR fieldName, int renderBgBmp)
 		return nullptr;
 	score->Unknown1 = -9999;
 	score->RenderBgBmp = renderBgBmp;
-	__int16* shortArr = (__int16*)partman::field_labeled(loader::loader_table, fieldName, ShortArray);
+	__int16* shortArr = (__int16*)partman::field_labeled(loader::loader_table, fieldName, datFieldTypes::ShortArray);
 	if (!shortArr)
 	{
 		memory::free(score);
@@ -32,7 +32,7 @@ scoreStruct* score::create(LPCSTR fieldName, int renderBgBmp)
 	int index = 10;
 	do
 	{
-		*bmpPtr = partman::field(loader::loader_table, groupIndex, Bitmap8bit);
+		*bmpPtr = partman::field(loader::loader_table, groupIndex, datFieldTypes::Bitmap8bit);
 		++bmpPtr;
 		++groupIndex;
 		--index;

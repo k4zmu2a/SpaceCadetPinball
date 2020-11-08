@@ -7,6 +7,7 @@
 #include "objlist_class.h"
 #include "partman.h"
 #include  "DatParser.h"
+#include "gdrv.h"
 #include "loader.h"
 #include "pinball.h"
 #include "score.h"
@@ -18,8 +19,11 @@ int main()
 	std::cout << "Hello World!\n";
 
 	pinball::hinst = GetModuleHandleA(nullptr);
-	char cmdLine[1];
-	WinMain(pinball::hinst, 0, cmdLine, 10);
+	char cmdLine[1]{};
+	//WinMain(pinball::hinst, 0, cmdLine, 10);
+
+	auto dib = gdrv::DibCreate(8, 1, 1);
+	gdrv::DibSetUsage(dib, 0, 1);
 
 	objlist_class d = objlist_class(2, 4);
 	for (int i = 0; i < 100; i++)
@@ -35,17 +39,17 @@ int main()
 	auto datFile = partman::load_records(dataFileName);
 	assert(datFile);
 
-	assert(partman::field_size_nth(datFile, 0, String, 0) == 43);
-	assert(partman::field_size_nth(datFile, 2, Palette, 0) == 1024);
-	assert(partman::field_size_nth(datFile, 101, FloatArray, 4) == 32);
+	assert(partman::field_size_nth(datFile, 0, datFieldTypes::String, 0) == 43);
+	assert(partman::field_size_nth(datFile, 2, datFieldTypes::Palette, 0) == 1024);
+	assert(partman::field_size_nth(datFile, 101, datFieldTypes::FloatArray, 4) == 32);
 
-	assert(strcmp(partman::field(datFile, 0, String), "3D-Pinball:  Copyright 1994, Cinematronics") == 0);
-	assert(strcmp(partman::field(datFile, 540, GroupName), "table_objects") == 0);
+	assert(strcmp(partman::field(datFile, 0, datFieldTypes::String), "3D-Pinball:  Copyright 1994, Cinematronics") == 0);
+	assert(strcmp(partman::field(datFile, 540, datFieldTypes::GroupName), "table_objects") == 0);
 
 	assert(partman::record_labeled(datFile, "background") == 2);
 	assert(partman::record_labeled(datFile, "a_bump1") == 372);
 
-	assert(memcmp(partman::field_labeled(datFile, "table_size", ShortArray), new short[2]{ 600, 416 }, 2 * 2) == 0);
+	assert(memcmp(partman::field_labeled(datFile, "table_size", datFieldTypes::ShortArray), new short[2]{ 600, 416 }, 2 * 2) == 0);
 
 	//loader::error(25, 26);
 	loader::loadfrom(datFile);
