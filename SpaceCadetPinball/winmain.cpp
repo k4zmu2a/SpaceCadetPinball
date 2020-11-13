@@ -160,6 +160,25 @@ int winmain::WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLi
 
 	while (true)
 	{
+		if(false)
+		{
+			auto plt = (PALETTEENTRY*)malloc(1024u);
+			auto gg = sizeof(LOGPALETTEx256);
+			auto pltPtr = &plt[10];
+			for (int i1 = 0, i2 = 0; i1 < 256 - 10; ++i1, i2 += 8)
+			{
+				unsigned char blue = i2, redGreen = i2;
+				if (i2 > 255)
+				{
+					blue = 255;
+					redGreen = i1;
+				}
+
+				*pltPtr++ = { redGreen, redGreen, blue };
+			}
+			gdrv::display_palette(plt);
+		}
+		
 		if (!ProcessWindowMessages() || bQuit)
 			break;
 		Sleep(8);
@@ -205,8 +224,8 @@ int winmain::ProcessWindowMessages()
 void winmain::memalloc_failure()
 {
 	/*midi_music_stop();
-	Sound_Close();
-	gdrv_uninit();*/
+	Sound_Close();*/
+	gdrv::uninit();
 	char* caption = pinball::get_rc_string(170, 0);
 	char* text = pinball::get_rc_string(179, 0);
 	MessageBoxA(nullptr, text, caption, 0x2030u);

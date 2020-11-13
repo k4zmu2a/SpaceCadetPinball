@@ -22,6 +22,7 @@ int main()
 	char cmdLine[1]{};
 	//WinMain(pinball::hinst, 0, cmdLine, 10);
 
+	gdrv::init(0, 0);
 	auto dib = gdrv::DibCreate(8, 1, 1);
 	gdrv::DibSetUsage(dib, 0, 1);
 
