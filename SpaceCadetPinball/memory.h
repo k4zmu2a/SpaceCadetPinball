@@ -11,3 +11,12 @@ public:
 	static int critical_allocation;
 	static void (*critical_callback)();
 };
+
+
+// Fill memory block with an integer value
+inline void memset32(void* ptr, unsigned int value, int count)
+{
+	auto p = (unsigned int*)ptr;
+	for (int i = 0; i < count; i++)
+		*p++ = value;
+}

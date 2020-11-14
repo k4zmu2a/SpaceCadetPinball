@@ -20,8 +20,7 @@ struct __declspec(align(4)) render_sprite_type_struct
 	zmap_header_type* ZMap;
 	char Unknown6_0;
 	VisualType VisualType;
-	char Unknown6_2;
-	char Unknown6_3;
+	short Depth;
 	int XPosition2;
 	int YPosition2;
 	int Bmp8Width2;
@@ -36,6 +35,8 @@ struct __declspec(align(4)) render_sprite_type_struct
 	int Unknown18;
 	visual_rect Rect;
 };
+
+static_assert(sizeof(render_sprite_type_struct) == 0x5c, "Wrong size render_sprite_type_struct");
 
 class render
 {

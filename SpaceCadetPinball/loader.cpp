@@ -451,8 +451,8 @@ int  loader::query_visual(int groupIndex, int groupIndexOffset, visualStruct* vi
 	visual->ZMap = bitmap16;
 	if (bitmap16)
 	{
-		bitmap16->BmpBufPtr1 = bitmap16->BmpBuffer;
-		visual->ZMap->bmpBufPtr2 = visual->ZMap->BmpBufPtr1;
+		bitmap16->ZPtr1 = bitmap16->ZBuffer;
+		visual->ZMap->ZPtr2 = visual->ZMap->ZPtr1;
 	}
 	shortArr = (__int16*)partman::field(loader_table, groupIndexSum2, datFieldTypes::ShortArray);
 	if (shortArr)
