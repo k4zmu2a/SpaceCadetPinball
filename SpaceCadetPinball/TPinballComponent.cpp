@@ -47,7 +47,7 @@ TPinballComponent::TPinballComponent(TPinballTable* table, int groupIndex, bool 
 			zMap = static_cast<zmap_header_type*>(ListZMap->Get(0));
 		if (ListBitmap)
 		{
-			visual_rect bmp1Rect{}, tmpRect{};
+			rectangle_type bmp1Rect{}, tmpRect{};
 			auto rootBmp = static_cast<gdrv_bitmap8*>(ListBitmap->Get(0));
 			bmp1Rect.XPosition = rootBmp->XPosition - table->XOffset;
 			bmp1Rect.YPosition = rootBmp->YPosition - table->YOffset;

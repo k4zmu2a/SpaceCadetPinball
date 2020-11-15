@@ -22,7 +22,7 @@ public:
 	static int pad(int width);
 	static int create_zmap(zmap_header_type* zmap, int width, int height);
 	static int destroy_zmap(zmap_header_type* zmap);
-	static void fill(zmap_header_type* zmap, int width, int height, int xOff, int yOff, __int16 fillChar);
+	static void fill(zmap_header_type* zmap, int width, int height, int xOff, int yOff, unsigned __int16 fillChar);
 	static void paint(int width, int height, gdrv_bitmap8* dstBmp, int dstBmpXOff, int dstBmpYOff,
 	                  zmap_header_type* dstZMap, int dstZMapXOff, int dstZMapYOff, gdrv_bitmap8* srcBmp, int srcBmpXOff,
 	                  int srcBmpYOff, zmap_header_type* srcZMap, int srcZMapXOff, int srcZMapYOff);

@@ -1,10 +1,11 @@
 #pragma once
+#include "gdrv.h"
 
 struct scoreStruct
 {
 	int Unknown1;
 	int Unknown2;
-	int RenderBgBmp;
+	gdrv_bitmap8* BackgroundBmp;
 	int Short1;
 	int Short2;
 	int Short3;
@@ -25,6 +26,6 @@ class score
 {
 public:
 	static int init();
-	static scoreStruct* create(LPCSTR fieldName, int renderBgBmp);
+	static scoreStruct* create(LPCSTR fieldName, gdrv_bitmap8* renderBgBmp);
 	static scoreStruct* dup(scoreStruct* score, int scoreIndex);
 };

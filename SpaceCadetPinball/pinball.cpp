@@ -4,7 +4,6 @@
 
 
 int pinball::quickFlag = 0;
-int pinball::render_background_bitmap = 0;
 TTextBox* pinball::InfoTextBox;
 TTextBox* pinball::MissTextBox;
 char pinball::getRcBuffer[6 * 256];

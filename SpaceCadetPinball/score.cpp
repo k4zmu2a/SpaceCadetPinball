@@ -10,13 +10,13 @@ int score::init()
 	return 1;
 }
 
-scoreStruct* score::create(LPCSTR fieldName, int renderBgBmp)
+scoreStruct* score::create(LPCSTR fieldName, gdrv_bitmap8* renderBgBmp)
 {
 	scoreStruct* score = (scoreStruct*)memory::allocate(sizeof(scoreStruct));
 	if (!score)
 		return nullptr;
 	score->Unknown1 = -9999;
-	score->RenderBgBmp = renderBgBmp;
+	score->BackgroundBmp = renderBgBmp;
 	__int16* shortArr = (__int16*)partman::field_labeled(loader::loader_table, fieldName, datFieldTypes::ShortArray);
 	if (!shortArr)
 	{

@@ -58,7 +58,7 @@ TPinballTable::TPinballTable(): TPinballComponent(nullptr, -1, false)
 	TLightGroup* lightGroupObj = new TLightGroup(this, 0);
 	this->LightGroup = lightGroupObj;
 
-	auto score1 = score::create("score1", pinball::render_background_bitmap);
+	auto score1 = score::create("score1", render::background_bitmap);
 	this->Score1 = score1;
 	this->Score2 = score1;
 	int scoreIndex = 1;
@@ -71,8 +71,8 @@ TPinballTable::TPinballTable(): TPinballComponent(nullptr, -1, false)
 	while (scoreIndex < 4);
 	this->UnknownP45 = 0;
 	this->UnknownP73 = 3;
-	this->ScoreBallcount = (int*)score::create("ballcount1", pinball::render_background_bitmap);
-	this->ScorePlayerNumber1 = (int*)score::create("player_number1", pinball::render_background_bitmap);
+	this->ScoreBallcount = (int*)score::create("ballcount1", render::background_bitmap);
+	this->ScorePlayerNumber1 = (int*)score::create("player_number1", render::background_bitmap);
 	int groupIndexObjects = loader::query_handle("table_objects");
 
 	short* shortArr = loader::query_iattribute(groupIndexObjects, 1025, &shortArrLength);

@@ -31,15 +31,11 @@ int zdrv::destroy_zmap(zmap_header_type* zmap)
 		return -1;
 	if (zmap->ZPtr1)
 		memory::free(zmap->ZPtr1);
-	zmap->Width = 0;
-	zmap->Height = 0;
-	zmap->Stride = 0;
-	zmap->ZPtr1 = nullptr;
-	zmap->ZPtr2 = nullptr;
+	memset(zmap, 0, sizeof(zmap_header_type));
 	return 0;
 }
 
-void zdrv::fill(zmap_header_type* zmap, int width, int height, int xOff, int yOff, __int16 fillChar)
+void zdrv::fill(zmap_header_type* zmap, int width, int height, int xOff, int yOff, unsigned __int16 fillChar)
 {
 	int fillCharInt = fillChar | (fillChar << 16);
 	auto zmapPtr = &zmap->ZPtr1[2 * (xOff + zmap->Stride * (zmap->Height - height - yOff))];
@@ -50,7 +46,7 @@ void zdrv::fill(zmap_header_type* zmap, int width, int height, int xOff, int yOf
 		unsigned int widthDiv2 = static_cast<unsigned int>(width) >> 1;
 		memset32(zmapPtr, fillCharInt, widthDiv2);
 
-		__int16* lastShort = (__int16*)&zmapPtr[2 * widthDiv2];
+		auto lastShort = &zmapPtr[2 * widthDiv2];
 		for (int i = widthMod2; i; --i)
 			*lastShort++ = fillChar;
 

@@ -1,7 +1,7 @@
 #pragma once
 
 
-struct __declspec(align(4)) visual_rect
+struct __declspec(align(4)) rectangle_type
 {
 	int XPosition;
 	int YPosition;
@@ -12,7 +12,7 @@ struct __declspec(align(4)) visual_rect
 class maths
 {
 public:
-	static void enclosing_box(visual_rect* rect1, visual_rect* rect2, visual_rect* dstRect);
-	
+	static void enclosing_box(rectangle_type* rect1, rectangle_type* rect2, rectangle_type* dstRect);
+	static int rectangle_clip(rectangle_type* rect1, rectangle_type* rect2, rectangle_type* dstRect);
+	static int overlapping_box(rectangle_type* rect1, rectangle_type* rect2, rectangle_type* dstRect);
 };
-

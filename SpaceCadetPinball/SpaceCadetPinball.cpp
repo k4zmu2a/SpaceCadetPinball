@@ -61,7 +61,7 @@ int main()
 	visualKickerStruct kicker1{};
 	loader::kicker(509, &kicker1);
 
-	auto score1 = score::create("score1", 117);
+	auto score1 = score::create("score1", nullptr);
 
 	auto pinballTable = new TPinballTable();
 	//pinballTable->find_component(1);
