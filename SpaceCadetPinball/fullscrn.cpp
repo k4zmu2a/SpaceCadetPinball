@@ -1,17 +1,56 @@
 #include "pch.h"
 #include "fullscrn.h"
+#include "render.h"
+#include "winmain.h"
 
 
 int fullscrn::screen_mode;
 HWND fullscrn::hWnd;
-tagRECT fullscrn::PubRect1;
+tagRECT fullscrn::WindowRect1, fullscrn::WindowRect2;
+rectangle_type fullscrn::WHRect;
 int fullscrn::fullscrn_flag1;
 int fullscrn::display_changed;
 int fullscrn::ChangeDisplay, fullscrn::SmthFullScrnFlag2;
 int fullscrn::trick;
 int fullscrn::MenuEnabled;
 HMENU fullscrn::MenuHandle;
-int fullscrn::xDest, fullscrn::yDest;
+
+void fullscrn::init(int width, int height, int isFullscreen, HWND winHandle, HMENU menuHandle, int changeDisplay)
+{
+	WHRect.XPosition = 0;
+	WHRect.YPosition = 0;
+	ChangeDisplay = changeDisplay;
+	hWnd = winHandle;
+	MenuHandle = menuHandle;
+	WHRect.Width = width;
+	WHRect.Height = height;
+
+	GetWindowRect(GetDesktopWindow(), &fullscrn::WindowRect1);
+	int widht2 = width + 2 * GetSystemMetrics(SM_CXBORDER);
+	int height2 = height + 2 * GetSystemMetrics(SM_CYBORDER);
+	int menuHeight = GetSystemMetrics(SM_CYMENU);
+	int captionHeight = GetSystemMetrics(SM_CYCAPTION);
+	int borderHeight = WindowRect1.bottom - WindowRect1.top - height2;
+
+	WindowRect2.bottom = borderHeight / 2 - 2 + height2 + 4;
+	WindowRect2.right = (WindowRect1.right - WindowRect1.left - widht2) / 2 - 2 + widht2 + 4;
+	WindowRect2.left = (WindowRect1.right - WindowRect1.left - widht2) / 2 - 2;
+	WindowRect2.top = borderHeight / 2 - (captionHeight + menuHeight) - 2;
+	MoveWindow(
+		hWnd,
+		(WindowRect1.right - WindowRect1.left - widht2) / 2 - 2,
+		WindowRect2.top,
+		widht2 + 4,
+		WindowRect2.bottom - WindowRect2.top,
+		0);
+	fullscrn_flag1 = 0;
+}
+
+void fullscrn::shutdown()
+{
+	if (display_changed)
+		set_screen_mode(0);
+}
 
 int fullscrn::set_screen_mode(int isFullscreen)
 {
@@ -22,7 +61,7 @@ int fullscrn::set_screen_mode(int isFullscreen)
 	if (isFullscreen)
 	{
 		if (IsWindowVisible(hWnd))
-			GetWindowRect(hWnd, &PubRect1);
+			GetWindowRect(hWnd, &WindowRect2);
 		enableFullscreen();
 		BYTE1(fullscrn_flag1) |= 0x80u;
 		InvalidateRect(hWnd, nullptr, 1);
@@ -104,10 +143,10 @@ int fullscrn::disableFullscreen()
 	SetWindowPos(
 		hWnd,
 		nullptr,
-		PubRect1.left,
-		PubRect1.top,
-		PubRect1.right - PubRect1.left,
-		PubRect1.bottom - PubRect1.top,
+		WindowRect2.left,
+		WindowRect2.top,
+		WindowRect2.right - WindowRect2.left,
+		WindowRect2.bottom - WindowRect2.top,
 		0x14u);
 	return 0;
 }
@@ -135,30 +174,188 @@ bool fullscrn::set_menu_mode(int menuEnabled)
 
 void fullscrn::GetWindowCenter()
 {
-	int yDestLoc; // eax
-	HWND v1; // eax
-	struct tagRECT Rect; // [esp+4h] [ebp-10h]
-
-	int dword_1025094 = 0, dword_1025098 = 0; // tmp, from render
+	int yPos; // eax
+	tagRECT Rect{}; // [esp+4h] [ebp-10h]
 
 	if (screen_mode)
 	{
-		v1 = GetDesktopWindow();
-		GetWindowRect(v1, &Rect);
-		xDest = (Rect.right - dword_1025094 - Rect.left) / 2;
-		yDestLoc = (Rect.bottom - dword_1025098 - Rect.top) / 2;
+		GetWindowRect(GetDesktopWindow(), &Rect);
+		render::vscreen.XPosition = (Rect.right - render::vscreen.Width - Rect.left) / 2;
+		yPos = (Rect.bottom - render::vscreen.Height - Rect.top) / 2;
 	}
 	else
 	{
-		xDest = 0;
-		yDestLoc = GetSystemMetrics(15);
+		render::vscreen.XPosition = 0;
+		yPos = GetSystemMetrics(15);
 	}
-	yDest = yDestLoc;
+	render::vscreen.YPosition = yPos;
 	if (MenuEnabled)
-		yDest -= GetSystemMetrics(15);
+		render::vscreen.YPosition -= GetSystemMetrics(15);
 }
 
 void fullscrn::force_redraw()
 {
 	BYTE1(fullscrn_flag1) |= 0x80u;
+}
+
+
+void fullscrn::center_in(HWND parent, HWND child)
+{
+	LONG right; // ebx
+	tagRECT childRect{}, parentRect{}, desktopRect{};
+
+	GetWindowRect(parent, &parentRect);
+	GetWindowRect(child, &childRect);
+	GetWindowRect(GetDesktopWindow(), &desktopRect);
+	if (display_changed)
+	{
+		desktopRect.bottom = 480;
+		desktopRect.left = 0;
+		desktopRect.top = 0;
+		right = 640;
+		desktopRect.right = 640;
+		parentRect.left = 0;
+		parentRect.top = 0;
+		parentRect.right = 640;
+		parentRect.bottom = 480;
+	}
+	else
+	{
+		right = desktopRect.right;
+	}
+
+	int childHeight = childRect.bottom - childRect.top;
+	int smthWidth = parentRect.left + (parentRect.right + childRect.left - childRect.right - parentRect.left) / 2;
+	int smthHeight = parentRect.top + (parentRect.bottom + childRect.top - childRect.bottom - parentRect.top) / 2;
+	if (childRect.right - childRect.left + smthWidth > right)
+		smthWidth = right - (childRect.right - childRect.left);
+	if (childHeight + smthHeight > desktopRect.bottom)
+		smthHeight = desktopRect.bottom - childHeight;
+	if (smthWidth < desktopRect.left)
+		smthWidth = desktopRect.left;
+	if (smthHeight < desktopRect.top)
+		smthHeight = desktopRect.top;
+	MoveWindow(child, smthWidth, smthHeight, childRect.right - childRect.left, childRect.bottom - childRect.top, 0);
+}
+
+int fullscrn::displaychange()
+{
+	int result = 0;
+	if (SmthFullScrnFlag2)
+	{
+		SmthFullScrnFlag2 = 0;
+	}
+	else
+	{
+		if (screen_mode && display_changed)
+		{
+			display_changed = 0;
+			screen_mode = 0;
+			setWindowFlagsDisDlg();
+			BYTE1(fullscrn_flag1) |= 0x80u;
+			InvalidateRect(hWnd, nullptr, 1);
+			set_menu_mode(1);
+			SetWindowPos(
+				hWnd,
+				nullptr,
+				WindowRect2.left,
+				WindowRect2.top,
+				WindowRect2.right - WindowRect2.left,
+				WindowRect2.bottom - WindowRect2.top,
+				0x1Cu);
+			result = 1;
+		}
+		else
+		{
+			SetWindowPos(
+				hWnd,
+				nullptr,
+				WindowRect2.left,
+				WindowRect2.top,
+				WindowRect2.right - WindowRect2.left,
+				WindowRect2.bottom - WindowRect2.top,
+				0x14u);
+		}
+		center_in(GetDesktopWindow(), hWnd);
+	}
+	return result;
+}
+
+void fullscrn::activate(int flag)
+{
+	if (screen_mode)
+	{
+		if (!flag)
+		{
+			set_screen_mode(0);
+			SetWindowPos(hWnd, (HWND)1, 0, 0, 0, 0, 0x13u);
+		}
+	}
+}
+
+void fullscrn::fillRect(int right, int bottom)
+{
+	// Weird reg usage, should be zero
+	int v2 = 0; // ebx
+	int v3 = 0; // edi
+
+	RECT rc;
+	HGDIOBJ brush = CreateSolidBrush(0);
+	if (brush)
+	{
+		HDC dc = winmain::_GetDC(hWnd);
+		HGDIOBJ brushHandle = SelectObject(dc, brush);
+		if (dc)
+		{
+			rc.right = right + v2 + 1;
+			rc.bottom = bottom + v3 + 1;
+			rc.left = v2;
+			rc.top = v3;
+			FillRect(dc, &rc, static_cast<HBRUSH>(brush));
+			ReleaseDC(hWnd, dc);
+		}
+		SelectObject(dc, brushHandle);
+		DeleteObject(brush);
+	}
+}
+
+int fullscrn::convert_mouse_pos(unsigned int mouseXY)
+{
+	unsigned __int16 x = mouseXY & 0xffFF - render::vscreen.XPosition;
+	unsigned __int16 y = (mouseXY >> 16) - render::vscreen.YPosition;
+	return x | y << 16;
+}
+
+void fullscrn::getminmaxinfo(MINMAXINFO* maxMin)
+{
+	maxMin->ptMaxSize.x = WindowRect2.right - WindowRect2.left;
+	maxMin->ptMaxSize.y = WindowRect2.bottom - WindowRect2.top;
+	maxMin->ptMaxPosition.x = WindowRect2.left;
+	maxMin->ptMaxPosition.y = WindowRect2.top;
+}
+
+void fullscrn::paint()
+{
+	int menuHeight;
+	if (screen_mode)
+	{
+		if ((fullscrn_flag1 & 0x8000) == 0 && fullscrn_flag1)
+		{
+			if (fullscrn_flag1 & 1)
+			{
+				menuHeight = GetSystemMetrics(SM_CYMENU);
+				fillRect(WindowRect1.right - 1, menuHeight);
+			}
+		}
+		else
+		{
+			if (MenuEnabled)
+				menuHeight = GetSystemMetrics(SM_CYMENU);
+			else
+				menuHeight = 0;
+			fillRect(WindowRect1.right, menuHeight + WindowRect1.bottom);
+		}
+	}
+	render::paint();
+	fullscrn_flag1 = 0;
 }
