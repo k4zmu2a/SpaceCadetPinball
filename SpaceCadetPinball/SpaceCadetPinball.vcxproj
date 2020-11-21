@@ -172,9 +172,12 @@
     <ClInclude Include="TBall.h" />
     <ClInclude Include="TBlocker.h" />
     <ClInclude Include="TBumper.h" />
+    <ClInclude Include="TCircle.h" />
+    <ClInclude Include="TCollisionComponent.h" />
     <ClInclude Include="TComponentGroup.h" />
     <ClInclude Include="TDemo.h" />
     <ClInclude Include="TDrain.h" />
+    <ClInclude Include="TEdgeSegment.h" />
     <ClInclude Include="TFlagSpinner.h" />
     <ClInclude Include="TFlipper.h" />
     <ClInclude Include="TGate.h" />
@@ -185,6 +188,7 @@
     <ClInclude Include="TLightBargraph.h" />
     <ClInclude Include="TLightGroup.h" />
     <ClInclude Include="TLightRollover.h" />
+    <ClInclude Include="TLine.h" />
     <ClInclude Include="TOneway.h" />
     <ClInclude Include="TPinballComponent.h" />
     <ClInclude Include="TPinballTable.h" />
@@ -228,9 +232,12 @@
     <ClCompile Include="TBall.cpp" />
     <ClCompile Include="TBlocker.cpp" />
     <ClCompile Include="TBumper.cpp" />
+    <ClCompile Include="TCircle.cpp" />
+    <ClCompile Include="TCollisionComponent.cpp" />
     <ClCompile Include="TComponentGroup.cpp" />
     <ClCompile Include="TDemo.cpp" />
     <ClCompile Include="TDrain.cpp" />
+    <ClCompile Include="TEdgeSegment.cpp" />
     <ClCompile Include="TFlagSpinner.cpp" />
     <ClCompile Include="TFlipper.cpp" />
     <ClCompile Include="TGate.cpp" />
@@ -241,6 +248,7 @@
     <ClCompile Include="TLightBargraph.cpp" />
     <ClCompile Include="TLightGroup.cpp" />
     <ClCompile Include="TLightRollover.cpp" />
+    <ClCompile Include="TLine.cpp" />
     <ClCompile Include="TOneway.cpp" />
     <ClCompile Include="TPinballComponent.cpp" />
     <ClCompile Include="TPinballTable.cpp" />

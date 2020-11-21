@@ -19,6 +19,18 @@
     <Filter Include="Source Files\PinballComponents">
       <UniqueIdentifier>{33813da8-81ac-449c-b19a-9756272519b9}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\TEdgeSegment">
+      <UniqueIdentifier>{0aa40751-a44a-400e-8809-ee817161e8e0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\TEdgeSegment">
+      <UniqueIdentifier>{d70e7fca-2294-41a4-9cf8-78052bdb9aa4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\TCollisionComponent">
+      <UniqueIdentifier>{01aed326-d2ec-457a-b99f-08ef32ed97fa}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\TCollisionComponent">
+      <UniqueIdentifier>{7ed2796a-da4b-4edd-8783-53e45d8d1c88}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="pch.h">
@@ -168,6 +180,18 @@
     <ClInclude Include="zdrv.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="TEdgeSegment.h">
+      <Filter>Header Files\TEdgeSegment</Filter>
+    </ClInclude>
+    <ClInclude Include="TCollisionComponent.h">
+      <Filter>Header Files\TCollisionComponent</Filter>
+    </ClInclude>
+    <ClInclude Include="TCircle.h">
+      <Filter>Header Files\TEdgeSegment</Filter>
+    </ClInclude>
+    <ClInclude Include="TLine.h">
+      <Filter>Header Files\TEdgeSegment</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="pch.cpp">
@@ -313,6 +337,18 @@
     </ClCompile>
     <ClCompile Include="zdrv.cpp">
       <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="TEdgeSegment.cpp">
+      <Filter>Source Files\TEdgeSegment</Filter>
+    </ClCompile>
+    <ClCompile Include="TCollisionComponent.cpp">
+      <Filter>Source Files\TCollisionComponent</Filter>
+    </ClCompile>
+    <ClCompile Include="TCircle.cpp">
+      <Filter>Source Files\TEdgeSegment</Filter>
+    </ClCompile>
+    <ClCompile Include="TLine.cpp">
+      <Filter>Source Files\TEdgeSegment</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
