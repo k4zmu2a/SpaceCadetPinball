@@ -1,11 +1,11 @@
 #pragma once
-#include "TPinballComponent.h"
+#include "TCollisionComponent.h"
+
 class TKickback :
-    public TPinballComponent
+	public TCollisionComponent
 {
 public:
-	TKickback(TPinballTable* table, int groupIndex) : TPinballComponent(table, groupIndex, false)
+	TKickback(TPinballTable* table, int groupIndex) : TCollisionComponent(table, groupIndex, true)
 	{
 	}
 };
-

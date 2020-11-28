@@ -30,6 +30,7 @@
 #include "TTextBox.h"
 #include "TTimer.h"
 #include "TTripwire.h"
+#include "TWall.h"
 
 TPinballTable::TPinballTable(): TPinballComponent(nullptr, -1, false)
 {
@@ -88,7 +89,7 @@ TPinballTable::TPinballTable(): TPinballComponent(nullptr, -1, false)
 			{
 			case 1000:
 			case 1010:
-				// auto wall = new TWall( this, groupIndex);
+				new TWall( this, groupIndex);
 				break;
 			case 1001:
 				this->Plunger = new TPlunger(this, groupIndex);

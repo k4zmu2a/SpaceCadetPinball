@@ -1,11 +1,11 @@
 #pragma once
-#include "TPinballComponent.h"
+#include "TCollisionComponent.h"
+
 class TKickout :
-    public TPinballComponent
+	public TCollisionComponent
 {
 public:
-	TKickout(TPinballTable* table, int groupIndex,int vectorType) : TPinballComponent(table, groupIndex, false)
+	TKickout(TPinballTable* table, int groupIndex, int vectorType) : TCollisionComponent(table, groupIndex, false)
 	{
 	}
 };
-

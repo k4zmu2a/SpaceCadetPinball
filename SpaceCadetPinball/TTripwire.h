@@ -1,11 +1,11 @@
 #pragma once
-#include "TPinballComponent.h"
+#include "TRollover.h"
+
 class TTripwire :
-    public TPinballComponent
+	public TRollover
 {
 public:
-	TTripwire(TPinballTable* table, int groupIndex) : TPinballComponent(table, groupIndex, false)
+	TTripwire(TPinballTable* table, int groupIndex) : TRollover(table, groupIndex)
 	{
 	}
 };
-

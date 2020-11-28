@@ -3,7 +3,7 @@
 #include "maths.h"
 #include "TBall.h"
 
-enum class wall_type
+enum class wall_type : int
 {
 	Circle = 0,
 	Line = 1,

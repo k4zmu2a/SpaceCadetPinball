@@ -1,11 +1,11 @@
 #pragma once
-#include "TPinballComponent.h"
+#include "TCollisionComponent.h"
+
 class TBumper :
-    public TPinballComponent
+	public TCollisionComponent
 {
 public:
-	TBumper(TPinballTable* table, int groupIndex) : TPinballComponent(table, groupIndex, false)
+	TBumper(TPinballTable* table, int groupIndex) : TCollisionComponent(table, groupIndex, true)
 	{
 	}
 };
-

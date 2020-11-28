@@ -1,11 +1,11 @@
 #pragma once
-#include "TPinballComponent.h"
+#include "TCollisionComponent.h"
+
 class TTableLayer :
-    public TPinballComponent
+	public TCollisionComponent
 {
 public:
-	TTableLayer(TPinballTable* table) : TPinballComponent(table, -1, false)
+	TTableLayer(TPinballTable* table) : TCollisionComponent(table, -1, false)
 	{
 	}
 };
-

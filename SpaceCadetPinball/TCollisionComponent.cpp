@@ -5,7 +5,7 @@
 #include "TPinballTable.h"
 
 
-TCollisionComponent::TCollisionComponent(TPinballTable* table, int groupIndex, int someFlag) : TPinballComponent(
+TCollisionComponent::TCollisionComponent(TPinballTable* table, int groupIndex, bool createWall) : TPinballComponent(
 	table, groupIndex, true)
 {
 	visualStruct visual{};
@@ -21,9 +21,9 @@ TCollisionComponent::TCollisionComponent(TPinballTable* table, int groupIndex, i
 	else
 	{
 		loader::query_visual(groupIndex, 0, &visual);
-		if (someFlag)
+		if (createWall)
 		{
-			float offset = table->UnknownP61F;
+			float offset = table->CollisionCompOffset;
 			float* floatArr = loader::query_float_attribute(groupIndex, 0, 600);
 			TEdgeSegment::install_wall(floatArr, this, &UnknownBaseFlag2, visual.Flag, offset, 0);
 		}

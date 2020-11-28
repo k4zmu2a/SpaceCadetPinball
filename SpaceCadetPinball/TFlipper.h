@@ -1,12 +1,11 @@
 #pragma once
-#include "TPinballComponent.h"
+#include "TCollisionComponent.h"
 
 class TFlipper :
-    public TPinballComponent
+	public TCollisionComponent
 {
 public:
-	TFlipper(TPinballTable* table, int groupIndex) : TPinballComponent(table, groupIndex, false)
+	TFlipper(TPinballTable* table, int groupIndex) : TCollisionComponent(table, groupIndex, false)
 	{
 	}
 };
-

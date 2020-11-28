@@ -1,11 +1,11 @@
 #pragma once
-#include "TPinballComponent.h"
+#include "TRollover.h"
+
 class TLightRollover :
-    public TPinballComponent
+	public TRollover
 {
 public:
-	TLightRollover(TPinballTable* table, int groupIndex) : TPinballComponent(table, groupIndex, false)
+	TLightRollover(TPinballTable* table, int groupIndex) : TRollover(table, groupIndex)
 	{
 	}
 };
-

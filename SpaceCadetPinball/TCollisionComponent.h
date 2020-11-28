@@ -15,6 +15,6 @@ public:
 	int SoundIndex2;
 	int SoundIndex1;
 
-	TCollisionComponent(TPinballTable* table, int groupIndex, int someFlag);
+	TCollisionComponent(TPinballTable* table, int groupIndex, bool createWall);
 	~TCollisionComponent();
 };

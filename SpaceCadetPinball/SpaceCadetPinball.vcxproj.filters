@@ -13,12 +13,6 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
-    <Filter Include="Header Files\PinballComponents">
-      <UniqueIdentifier>{9ee086c2-1a95-48fb-92d8-4b7e7f6682ff}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source Files\PinballComponents">
-      <UniqueIdentifier>{33813da8-81ac-449c-b19a-9756272519b9}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Header Files\TEdgeSegment">
       <UniqueIdentifier>{0aa40751-a44a-400e-8809-ee817161e8e0}</UniqueIdentifier>
     </Filter>
@@ -30,6 +24,12 @@
     </Filter>
     <Filter Include="Header Files\TCollisionComponent">
       <UniqueIdentifier>{7ed2796a-da4b-4edd-8783-53e45d8d1c88}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\TPinballComponent">
+      <UniqueIdentifier>{9ee086c2-1a95-48fb-92d8-4b7e7f6682ff}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\TPinballComponent">
+      <UniqueIdentifier>{33813da8-81ac-449c-b19a-9756272519b9}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -54,101 +54,38 @@
     <ClInclude Include="score.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="TDrain.h">
-      <Filter>Header Files\PinballComponents</Filter>
-    </ClInclude>
-    <ClInclude Include="TFlipper.h">
-      <Filter>Header Files\PinballComponents</Filter>
-    </ClInclude>
     <ClInclude Include="TPinballComponent.h">
-      <Filter>Header Files\PinballComponents</Filter>
-    </ClInclude>
-    <ClInclude Include="TPinballTable.h">
-      <Filter>Header Files\PinballComponents</Filter>
-    </ClInclude>
-    <ClInclude Include="TPlunger.h">
-      <Filter>Header Files\PinballComponents</Filter>
+      <Filter>Header Files\TPinballComponent</Filter>
     </ClInclude>
     <ClInclude Include="TBall.h">
-      <Filter>Header Files\PinballComponents</Filter>
+      <Filter>Header Files\TPinballComponent</Filter>
     </ClInclude>
     <ClInclude Include="resource.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="TBlocker.h">
-      <Filter>Header Files\PinballComponents</Filter>
-    </ClInclude>
-    <ClInclude Include="TBumper.h">
-      <Filter>Header Files\PinballComponents</Filter>
-    </ClInclude>
     <ClInclude Include="TComponentGroup.h">
-      <Filter>Header Files\PinballComponents</Filter>
-    </ClInclude>
-    <ClInclude Include="TDemo.h">
-      <Filter>Header Files\PinballComponents</Filter>
-    </ClInclude>
-    <ClInclude Include="TFlagSpinner.h">
-      <Filter>Header Files\PinballComponents</Filter>
-    </ClInclude>
-    <ClInclude Include="TGate.h">
-      <Filter>Header Files\PinballComponents</Filter>
-    </ClInclude>
-    <ClInclude Include="THole.h">
-      <Filter>Header Files\PinballComponents</Filter>
-    </ClInclude>
-    <ClInclude Include="TKickback.h">
-      <Filter>Header Files\PinballComponents</Filter>
-    </ClInclude>
-    <ClInclude Include="TKickout.h">
-      <Filter>Header Files\PinballComponents</Filter>
+      <Filter>Header Files\TPinballComponent</Filter>
     </ClInclude>
     <ClInclude Include="TLight.h">
-      <Filter>Header Files\PinballComponents</Filter>
+      <Filter>Header Files\TPinballComponent</Filter>
     </ClInclude>
     <ClInclude Include="TLightBargraph.h">
-      <Filter>Header Files\PinballComponents</Filter>
+      <Filter>Header Files\TPinballComponent</Filter>
     </ClInclude>
     <ClInclude Include="TLightGroup.h">
-      <Filter>Header Files\PinballComponents</Filter>
-    </ClInclude>
-    <ClInclude Include="TLightRollover.h">
-      <Filter>Header Files\PinballComponents</Filter>
-    </ClInclude>
-    <ClInclude Include="TOneway.h">
-      <Filter>Header Files\PinballComponents</Filter>
-    </ClInclude>
-    <ClInclude Include="TPopupTarget.h">
-      <Filter>Header Files\PinballComponents</Filter>
-    </ClInclude>
-    <ClInclude Include="TRamp.h">
-      <Filter>Header Files\PinballComponents</Filter>
-    </ClInclude>
-    <ClInclude Include="TRollover.h">
-      <Filter>Header Files\PinballComponents</Filter>
-    </ClInclude>
-    <ClInclude Include="TSink.h">
-      <Filter>Header Files\PinballComponents</Filter>
-    </ClInclude>
-    <ClInclude Include="TSoloTarget.h">
-      <Filter>Header Files\PinballComponents</Filter>
+      <Filter>Header Files\TPinballComponent</Filter>
     </ClInclude>
     <ClInclude Include="TSound.h">
-      <Filter>Header Files\PinballComponents</Filter>
-    </ClInclude>
-    <ClInclude Include="TTableLayer.h">
-      <Filter>Header Files\PinballComponents</Filter>
+      <Filter>Header Files\TPinballComponent</Filter>
     </ClInclude>
     <ClInclude Include="TTextBox.h">
-      <Filter>Header Files\PinballComponents</Filter>
+      <Filter>Header Files\TPinballComponent</Filter>
     </ClInclude>
     <ClInclude Include="TTimer.h">
-      <Filter>Header Files\PinballComponents</Filter>
-    </ClInclude>
-    <ClInclude Include="TTripwire.h">
-      <Filter>Header Files\PinballComponents</Filter>
+      <Filter>Header Files\TPinballComponent</Filter>
     </ClInclude>
     <ClInclude Include="TZmapList.h">
-      <Filter>Header Files\PinballComponents</Filter>
+      <Filter>Header Files\TPinballComponent</Filter>
     </ClInclude>
     <ClInclude Include="memory.h">
       <Filter>Header Files</Filter>
@@ -192,6 +129,72 @@
     <ClInclude Include="TLine.h">
       <Filter>Header Files\TEdgeSegment</Filter>
     </ClInclude>
+    <ClInclude Include="TWall.h">
+      <Filter>Header Files\TCollisionComponent</Filter>
+    </ClInclude>
+    <ClInclude Include="TBumper.h">
+      <Filter>Header Files\TCollisionComponent</Filter>
+    </ClInclude>
+    <ClInclude Include="TBlocker.h">
+      <Filter>Header Files\TCollisionComponent</Filter>
+    </ClInclude>
+    <ClInclude Include="TDemo.h">
+      <Filter>Header Files\TCollisionComponent</Filter>
+    </ClInclude>
+    <ClInclude Include="TDrain.h">
+      <Filter>Header Files\TCollisionComponent</Filter>
+    </ClInclude>
+    <ClInclude Include="TFlagSpinner.h">
+      <Filter>Header Files\TCollisionComponent</Filter>
+    </ClInclude>
+    <ClInclude Include="TFlipper.h">
+      <Filter>Header Files\TCollisionComponent</Filter>
+    </ClInclude>
+    <ClInclude Include="TGate.h">
+      <Filter>Header Files\TCollisionComponent</Filter>
+    </ClInclude>
+    <ClInclude Include="THole.h">
+      <Filter>Header Files\TCollisionComponent</Filter>
+    </ClInclude>
+    <ClInclude Include="TKickback.h">
+      <Filter>Header Files\TCollisionComponent</Filter>
+    </ClInclude>
+    <ClInclude Include="TKickout.h">
+      <Filter>Header Files\TCollisionComponent</Filter>
+    </ClInclude>
+    <ClInclude Include="TOneway.h">
+      <Filter>Header Files\TCollisionComponent</Filter>
+    </ClInclude>
+    <ClInclude Include="TPlunger.h">
+      <Filter>Header Files\TCollisionComponent</Filter>
+    </ClInclude>
+    <ClInclude Include="TPopupTarget.h">
+      <Filter>Header Files\TCollisionComponent</Filter>
+    </ClInclude>
+    <ClInclude Include="TRamp.h">
+      <Filter>Header Files\TCollisionComponent</Filter>
+    </ClInclude>
+    <ClInclude Include="TRollover.h">
+      <Filter>Header Files\TCollisionComponent</Filter>
+    </ClInclude>
+    <ClInclude Include="TSink.h">
+      <Filter>Header Files\TCollisionComponent</Filter>
+    </ClInclude>
+    <ClInclude Include="TSoloTarget.h">
+      <Filter>Header Files\TCollisionComponent</Filter>
+    </ClInclude>
+    <ClInclude Include="TTableLayer.h">
+      <Filter>Header Files\TCollisionComponent</Filter>
+    </ClInclude>
+    <ClInclude Include="TPinballTable.h">
+      <Filter>Header Files\TPinballComponent</Filter>
+    </ClInclude>
+    <ClInclude Include="TTripwire.h">
+      <Filter>Header Files\TCollisionComponent</Filter>
+    </ClInclude>
+    <ClInclude Include="TLightRollover.h">
+      <Filter>Header Files\TCollisionComponent</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="pch.cpp">
@@ -218,95 +221,35 @@
     <ClCompile Include="score.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="TDrain.cpp">
-      <Filter>Source Files\PinballComponents</Filter>
-    </ClCompile>
-    <ClCompile Include="TFlipper.cpp">
-      <Filter>Source Files\PinballComponents</Filter>
-    </ClCompile>
     <ClCompile Include="TPinballComponent.cpp">
-      <Filter>Source Files\PinballComponents</Filter>
+      <Filter>Source Files\TPinballComponent</Filter>
     </ClCompile>
     <ClCompile Include="TPinballTable.cpp">
-      <Filter>Source Files\PinballComponents</Filter>
-    </ClCompile>
-    <ClCompile Include="TPlunger.cpp">
-      <Filter>Source Files\PinballComponents</Filter>
+      <Filter>Source Files\TPinballComponent</Filter>
     </ClCompile>
     <ClCompile Include="TBall.cpp">
-      <Filter>Source Files\PinballComponents</Filter>
-    </ClCompile>
-    <ClCompile Include="TBlocker.cpp">
-      <Filter>Source Files\PinballComponents</Filter>
-    </ClCompile>
-    <ClCompile Include="TBumper.cpp">
-      <Filter>Source Files\PinballComponents</Filter>
+      <Filter>Source Files\TPinballComponent</Filter>
     </ClCompile>
     <ClCompile Include="TComponentGroup.cpp">
-      <Filter>Source Files\PinballComponents</Filter>
-    </ClCompile>
-    <ClCompile Include="TDemo.cpp">
-      <Filter>Source Files\PinballComponents</Filter>
-    </ClCompile>
-    <ClCompile Include="TFlagSpinner.cpp">
-      <Filter>Source Files\PinballComponents</Filter>
-    </ClCompile>
-    <ClCompile Include="TGate.cpp">
-      <Filter>Source Files\PinballComponents</Filter>
-    </ClCompile>
-    <ClCompile Include="THole.cpp">
-      <Filter>Source Files\PinballComponents</Filter>
-    </ClCompile>
-    <ClCompile Include="TKickback.cpp">
-      <Filter>Source Files\PinballComponents</Filter>
-    </ClCompile>
-    <ClCompile Include="TKickout.cpp">
-      <Filter>Source Files\PinballComponents</Filter>
+      <Filter>Source Files\TPinballComponent</Filter>
     </ClCompile>
     <ClCompile Include="TLight.cpp">
-      <Filter>Source Files\PinballComponents</Filter>
+      <Filter>Source Files\TPinballComponent</Filter>
     </ClCompile>
     <ClCompile Include="TLightBargraph.cpp">
-      <Filter>Source Files\PinballComponents</Filter>
+      <Filter>Source Files\TPinballComponent</Filter>
     </ClCompile>
     <ClCompile Include="TLightGroup.cpp">
-      <Filter>Source Files\PinballComponents</Filter>
-    </ClCompile>
-    <ClCompile Include="TLightRollover.cpp">
-      <Filter>Source Files\PinballComponents</Filter>
-    </ClCompile>
-    <ClCompile Include="TOneway.cpp">
-      <Filter>Source Files\PinballComponents</Filter>
-    </ClCompile>
-    <ClCompile Include="TPopupTarget.cpp">
-      <Filter>Source Files\PinballComponents</Filter>
-    </ClCompile>
-    <ClCompile Include="TRamp.cpp">
-      <Filter>Source Files\PinballComponents</Filter>
-    </ClCompile>
-    <ClCompile Include="TRollover.cpp">
-      <Filter>Source Files\PinballComponents</Filter>
-    </ClCompile>
-    <ClCompile Include="TSink.cpp">
-      <Filter>Source Files\PinballComponents</Filter>
-    </ClCompile>
-    <ClCompile Include="TSoloTarget.cpp">
-      <Filter>Source Files\PinballComponents</Filter>
+      <Filter>Source Files\TPinballComponent</Filter>
     </ClCompile>
     <ClCompile Include="TSound.cpp">
-      <Filter>Source Files\PinballComponents</Filter>
-    </ClCompile>
-    <ClCompile Include="TTableLayer.cpp">
-      <Filter>Source Files\PinballComponents</Filter>
+      <Filter>Source Files\TPinballComponent</Filter>
     </ClCompile>
     <ClCompile Include="TTextBox.cpp">
-      <Filter>Source Files\PinballComponents</Filter>
+      <Filter>Source Files\TPinballComponent</Filter>
     </ClCompile>
     <ClCompile Include="TTimer.cpp">
-      <Filter>Source Files\PinballComponents</Filter>
-    </ClCompile>
-    <ClCompile Include="TTripwire.cpp">
-      <Filter>Source Files\PinballComponents</Filter>
+      <Filter>Source Files\TPinballComponent</Filter>
     </ClCompile>
     <ClCompile Include="memory.cpp">
       <Filter>Source Files</Filter>
@@ -349,6 +292,69 @@
     </ClCompile>
     <ClCompile Include="TLine.cpp">
       <Filter>Source Files\TEdgeSegment</Filter>
+    </ClCompile>
+    <ClCompile Include="TWall.cpp">
+      <Filter>Source Files\TCollisionComponent</Filter>
+    </ClCompile>
+    <ClCompile Include="TBlocker.cpp">
+      <Filter>Source Files\TCollisionComponent</Filter>
+    </ClCompile>
+    <ClCompile Include="TBumper.cpp">
+      <Filter>Source Files\TCollisionComponent</Filter>
+    </ClCompile>
+    <ClCompile Include="TDemo.cpp">
+      <Filter>Source Files\TCollisionComponent</Filter>
+    </ClCompile>
+    <ClCompile Include="TDrain.cpp">
+      <Filter>Source Files\TCollisionComponent</Filter>
+    </ClCompile>
+    <ClCompile Include="TFlagSpinner.cpp">
+      <Filter>Source Files\TCollisionComponent</Filter>
+    </ClCompile>
+    <ClCompile Include="TFlipper.cpp">
+      <Filter>Source Files\TCollisionComponent</Filter>
+    </ClCompile>
+    <ClCompile Include="TGate.cpp">
+      <Filter>Source Files\TCollisionComponent</Filter>
+    </ClCompile>
+    <ClCompile Include="THole.cpp">
+      <Filter>Source Files\TCollisionComponent</Filter>
+    </ClCompile>
+    <ClCompile Include="TKickback.cpp">
+      <Filter>Source Files\TCollisionComponent</Filter>
+    </ClCompile>
+    <ClCompile Include="TKickout.cpp">
+      <Filter>Source Files\TCollisionComponent</Filter>
+    </ClCompile>
+    <ClCompile Include="TOneway.cpp">
+      <Filter>Source Files\TCollisionComponent</Filter>
+    </ClCompile>
+    <ClCompile Include="TPlunger.cpp">
+      <Filter>Source Files\TCollisionComponent</Filter>
+    </ClCompile>
+    <ClCompile Include="TPopupTarget.cpp">
+      <Filter>Source Files\TCollisionComponent</Filter>
+    </ClCompile>
+    <ClCompile Include="TRamp.cpp">
+      <Filter>Source Files\TCollisionComponent</Filter>
+    </ClCompile>
+    <ClCompile Include="TRollover.cpp">
+      <Filter>Source Files\TCollisionComponent</Filter>
+    </ClCompile>
+    <ClCompile Include="TSink.cpp">
+      <Filter>Source Files\TCollisionComponent</Filter>
+    </ClCompile>
+    <ClCompile Include="TSoloTarget.cpp">
+      <Filter>Source Files\TCollisionComponent</Filter>
+    </ClCompile>
+    <ClCompile Include="TTableLayer.cpp">
+      <Filter>Source Files\TCollisionComponent</Filter>
+    </ClCompile>
+    <ClCompile Include="TTripwire.cpp">
+      <Filter>Source Files\TCollisionComponent</Filter>
+    </ClCompile>
+    <ClCompile Include="TLightRollover.cpp">
+      <Filter>Source Files\TCollisionComponent</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

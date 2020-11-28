@@ -1,11 +1,11 @@
 #pragma once
-#include "TPinballComponent.h"
+#include "TCollisionComponent.h"
+
 class TOneway :
-    public TPinballComponent
+	public TCollisionComponent
 {
 public:
-	TOneway(TPinballTable* table, int groupIndex) : TPinballComponent(table, groupIndex, false)
+	TOneway(TPinballTable* table, int groupIndex) : TCollisionComponent(table, groupIndex, false)
 	{
 	}
 };
-

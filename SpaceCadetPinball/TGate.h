@@ -1,11 +1,11 @@
 #pragma once
-#include "TPinballComponent.h"
+#include "TCollisionComponent.h"
+
 class TGate :
-    public TPinballComponent
+	public TCollisionComponent
 {
 public:
-	TGate(TPinballTable* table, int groupIndex) : TPinballComponent(table, groupIndex, false)
+	TGate(TPinballTable* table, int groupIndex) : TCollisionComponent(table, groupIndex, true)
 	{
 	}
 };
-

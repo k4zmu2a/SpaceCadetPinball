@@ -26,6 +26,8 @@ int main()
 	auto dib = gdrv::DibCreate(8, 1, 1);
 	gdrv::DibSetUsage(dib, 0, 1);
 
+	render::init(0, 1, 2, 800, 600);
+
 	objlist_class d = objlist_class(2, 4);
 	for (int i = 0; i < 100; i++)
 	{

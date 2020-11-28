@@ -1,11 +1,11 @@
 #pragma once
-#include "TPinballComponent.h"
+#include "TLightGroup.h"
+
 class TLightBargraph :
-    public TPinballComponent
+	public TLightGroup
 {
 public:
-	TLightBargraph(TPinballTable* table, int groupIndex) : TPinballComponent(table, groupIndex, false)
+	TLightBargraph(TPinballTable* table, int groupIndex) : TLightGroup(table, groupIndex)
 	{
 	}
 };
-

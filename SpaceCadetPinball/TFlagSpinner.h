@@ -1,11 +1,11 @@
 #pragma once
-#include "TPinballComponent.h"
+#include "TCollisionComponent.h"
+
 class TFlagSpinner :
-    public TPinballComponent
+	public TCollisionComponent
 {
 public:
-	TFlagSpinner(TPinballTable* table, int groupIndex) : TPinballComponent(table, groupIndex, false)
+	TFlagSpinner(TPinballTable* table, int groupIndex) : TCollisionComponent(table, groupIndex, false)
 	{
 	}
 };
-

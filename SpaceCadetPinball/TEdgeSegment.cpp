@@ -16,18 +16,18 @@ TEdgeSegment* TEdgeSegment::install_wall(float* floatArr, TCollisionComponent* c
                                          float offset, int someValue)
 {
 	vector_type center{}, start{}, end{}, prevCenter{}, vec1{}, vec2{}, dstVec{};
-	TEdgeSegment* edge1;
+	TEdgeSegment* edge = nullptr;
 
-	wall_type wallType = static_cast<wall_type>(static_cast<int>(floor(*floatArr) - 1.0));
+	wall_type wallType = static_cast<wall_type>(static_cast<int>(floor(*floatArr) - 1.0f));
 	switch (wallType)
 	{
 	case wall_type::Circle:
 		{
 			center.X = floatArr[1];
 			center.Y = floatArr[2];
-
 			auto radius = offset + floatArr[3];
 			auto circle = new TCircle(collComp, flagPtr, visual_flag, &center, radius);
+			edge = circle;
 
 			if (circle)
 			{
@@ -36,7 +36,7 @@ TEdgeSegment* TEdgeSegment::install_wall(float* floatArr, TCollisionComponent* c
 			}
 
 			collComp->EdgeList->Add(circle);
-			return circle;
+			break;
 		}
 	case wall_type::Line:
 		{
@@ -44,8 +44,8 @@ TEdgeSegment* TEdgeSegment::install_wall(float* floatArr, TCollisionComponent* c
 			start.Y = floatArr[2];
 			end.X = floatArr[3];
 			end.Y = floatArr[4];
-
 			auto line = new TLine(collComp, flagPtr, visual_flag, &start, &end);
+			edge = line;
 
 			if (line)
 			{
@@ -54,7 +54,7 @@ TEdgeSegment* TEdgeSegment::install_wall(float* floatArr, TCollisionComponent* c
 				line->place_in_grid();
 				collComp->EdgeList->Add(line);
 			}
-			return line;
+			break;
 		}
 	default:
 		{
@@ -91,7 +91,7 @@ TEdgeSegment* TEdgeSegment::install_wall(float* floatArr, TCollisionComponent* c
 					if (dstVec.Z > 0.0 && offset > 0.0 ||
 						dstVec.Z < 0.0 && offset < 0.0)
 					{
-						auto radius = offset * 1.001;
+						float radius = offset * 1.001f;
 						auto circle = new TCircle(collComp, flagPtr, visual_flag, &center, radius);
 
 						if (circle)
@@ -108,6 +108,8 @@ TEdgeSegment* TEdgeSegment::install_wall(float* floatArr, TCollisionComponent* c
 				end.X = floatArrPtr[2];
 				end.Y = floatArrPtr[3];
 				auto line = new TLine(collComp, flagPtr, visual_flag, &start, &end);
+				edge = line;
+
 				if (line)
 				{
 					line->WallValue = someValue;
@@ -121,5 +123,5 @@ TEdgeSegment* TEdgeSegment::install_wall(float* floatArr, TCollisionComponent* c
 		}
 	}
 
-	return nullptr;
+	return edge;
 }

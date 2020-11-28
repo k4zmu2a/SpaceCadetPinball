@@ -73,7 +73,7 @@ public:
 	int UnknownP58;
 	int UnknownP59;
 	int UnknownP60;
-	float UnknownP61F;
+	float CollisionCompOffset;
 	int UnknownP62;
 	int UnknownP63;
 	int UnknownP64;
