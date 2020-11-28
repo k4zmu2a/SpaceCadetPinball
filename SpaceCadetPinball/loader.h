@@ -41,7 +41,7 @@ struct __declspec(align(4)) visualStruct
 	float* FloatArr;
 	int SoundIndex2;
 	visualKickerStruct Kicker;
-	int Unknown14Flag;
+	int Flag;
 	int SoundIndex4;
 	int SoundIndex3;
 	gdrv_bitmap8* Bitmap;

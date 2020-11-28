@@ -123,8 +123,8 @@ float maths::ray_intersect_circle(ray_type* ray, circle_type* circle)
 	// C - circle center
 	// R - circle radius
 	// L, C - O, vector between O and C
-	float Lx = circle->X - ray->Origin.X;
-	float Ly = circle->Y - ray->Origin.Y;
+	float Lx = circle->Center.X - ray->Origin.X;
+	float Ly = circle->Center.Y - ray->Origin.Y;
 
 	// Tca, L dot D, projection of L on D
 	float Tca = Ly * ray->Direction.Y + Lx * ray->Direction.X;
@@ -191,13 +191,13 @@ void maths::line_init(line_type* line, float x0, float y0, float x1, float y1)
 	}
 	if (lineDirection)
 	{
-		line->Origin.X = v9;
-		line->Origin.Y = v11;
+		line->OriginX = v9;
+		line->OriginY = v11;
 	}
 	else
 	{
-		line->Origin.Y = v9;
-		line->Origin.X = v11;
+		line->OriginY = v9;
+		line->OriginX = v11;
 	}
 }
 
@@ -216,27 +216,27 @@ float maths::ray_intersect_line(ray_type* ray, line_type* line)
 	{
 		result = -((ray->Origin.X * line->PerpendicularL.X + ray->Origin.Y * line->PerpendicularL.Y + line->PreComp1)
 			/ perpDot);
-		if (result >= -ray->Unknown7 && result <= ray->MaxDistance)
+		if (result >= -ray->MinDistance && result <= ray->MaxDistance)
 		{
-			line->Unknown9 = result * ray->Direction.X + ray->Origin.X;
+			line->CompTmp1 = result * ray->Direction.X + ray->Origin.X;
 			v4 = result * ray->Direction.Y + ray->Origin.Y;
 			line->Unknown10 = v4;
 			if (0.0 == line->Direction.X)
 			{
-				if (v4 >= line->Origin.X)
+				if (v4 >= line->OriginX)
 				{
-					v5 = v4 < line->Origin.Y;
-					v6 = v4 == line->Origin.Y;
+					v5 = v4 < line->OriginY;
+					v6 = v4 == line->OriginY;
 					if (v5 || v6)
 						return result;
 					return 1000000000.0;
 				}
 			}
-			else if (line->Origin.X <= line->Unknown9)
+			else if (line->OriginX <= line->CompTmp1)
 			{
-				v7 = line->Unknown9;
-				v5 = v7 < line->Origin.Y;
-				v6 = v7 == line->Origin.Y;
+				v7 = line->CompTmp1;
+				v5 = v7 < line->OriginY;
+				v6 = v7 == line->OriginY;
 				if (v5 || v6)
 					return result;
 				return 1000000000.0;
@@ -244,4 +244,11 @@ float maths::ray_intersect_line(ray_type* ray, line_type* line)
 		}
 	}
 	return 1000000000.0;
+}
+
+void maths::cross(vector_type* vec1, vector_type* vec2, vector_type* dstVec)
+{
+	dstVec->X = vec2->Z * vec1->Y - vec2->Y * vec1->Z;
+	dstVec->Y = vec2->X * vec1->Z - vec1->X * vec2->Z;
+	dstVec->Z = vec1->X * vec2->Y - vec2->X * vec1->Y;
 }

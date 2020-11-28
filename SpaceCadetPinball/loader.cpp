@@ -83,7 +83,7 @@ int loader::error(int errorCode, int captionCode)
 
 void  loader::default_vsi(visualStruct* visual)
 {
-	visual->Unknown14Flag = 0;
+	visual->Flag = 0;
 	visual->Kicker.Unknown1F = 8.9999999e10f;
 	visual->Kicker.SoundIndex = 0;
 	visual->Unknown1F = 0.94999999f;
@@ -509,7 +509,7 @@ int  loader::query_visual(int groupIndex, int groupIndexOffset, visualStruct* vi
 				shortValSub602 = shortVal - 602;
 				if (!shortValSub602)
 				{
-					visual2->Unknown14Flag |= 1 << *nextShortVal;
+					visual2->Flag |= 1 << *nextShortVal;
 					goto LABEL_31;
 				}
 				shortValSub1100 = shortValSub602 - 498;
@@ -537,8 +537,8 @@ int  loader::query_visual(int groupIndex, int groupIndexOffset, visualStruct* vi
 		}
 	}
 LABEL_33:
-	if (!visual2->Unknown14Flag)
-		visual2->Unknown14Flag = 1;
+	if (!visual2->Flag)
+		visual2->Flag = 1;
 	floatArr = (float*)partman::field(loader_table, groupIndexSum3, datFieldTypes::FloatArray);
 	if (!floatArr)
 		return 0;

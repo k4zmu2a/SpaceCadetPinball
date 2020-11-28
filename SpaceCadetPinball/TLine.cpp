@@ -5,19 +5,21 @@
 TLine::TLine(TCollisionComponent* collCmp, char* flagPtr, unsigned int visualFlag, float x0, float y0, float x1,
              float y1): TEdgeSegment(collCmp, flagPtr, visualFlag)
 {
-	Start.X = x0;
-	Start.Y = y0;
-	End.X = x1;
-	End.Y = y1;
+	this->X0 = x0;
+	this->Y0 = y0;
+	this->X1 = x1;
+	this->Y1 = y1;
 	maths::line_init(&Line, x0, y0, x1, y1);
 }
 
 TLine::TLine(TCollisionComponent* collCmp, char* flagPtr, unsigned int visualFlag, struct vector_type* start,
              struct vector_type* end) : TEdgeSegment(collCmp, flagPtr, visualFlag)
 {
-	Start = *start;
-	End = *end;
-	maths::line_init(&Line, Start.X, Start.Y, End.X, End.Y);
+	this->X0 = start->X;
+	this->Y0 = start->Y;
+	this->X1 = end->X;
+	this->Y1 = end->Y;
+	maths::line_init(&Line, X0, Y0, X1, Y1);
 }
 
 void TLine::Offset(float offset)
@@ -25,11 +27,11 @@ void TLine::Offset(float offset)
 	float offX = offset * Line.PerpendicularL.X;
 	float offY = offset * Line.PerpendicularL.Y;
 
-	Start.X += offX;
-	Start.Y += offY;
-	End.X += offX;
-	End.Y += offY;
-	maths::line_init(&Line, Start.X, Start.Y, End.X, End.Y);
+	X0 += offX;
+	Y0 += offY;
+	X1 += offX;
+	Y1 += offY;
+	maths::line_init(&Line, X0, Y0, X1, Y1);
 }
 
 double TLine::FindCollisionDistance(ray_type* ray)

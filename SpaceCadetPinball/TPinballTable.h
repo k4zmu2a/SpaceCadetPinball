@@ -73,7 +73,7 @@ public:
 	int UnknownP58;
 	int UnknownP59;
 	int UnknownP60;
-	int UnknownP61;
+	float UnknownP61F;
 	int UnknownP62;
 	int UnknownP63;
 	int UnknownP64;

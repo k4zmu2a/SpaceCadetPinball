@@ -4,6 +4,7 @@ struct vector_type
 {
 	float X;
 	float Y;
+	float Z;
 };
 
 
@@ -17,31 +18,26 @@ struct __declspec(align(4)) rectangle_type
 
 struct circle_type
 {
-	float X;
-	float Y;
-	float Unknown2;
+	vector_type Center;	
 	float RadiusSq;
 };
 
 struct __declspec(align(4)) ray_type
 {
 	vector_type Origin;
-	float Unknown2;
 	vector_type Direction;
-	float Unknown5;
 	float MaxDistance;
-	float Unknown7;
+	float MinDistance;
 };
 
 struct __declspec(align(4)) line_type
 {
 	vector_type PerpendicularL;
-	float Unknown2;
 	vector_type Direction;
-	float Unknown5;
 	float PreComp1;
-	vector_type Origin;
-	float Unknown9;
+	float OriginX;
+	float OriginY;
+	float CompTmp1;
 	float Unknown10;
 	float Unknown11;
 };
@@ -57,4 +53,5 @@ public:
 	static float normalize_2d(vector_type* vec);
 	static void line_init(line_type* line, float x0, float y0, float x1, float y1);
 	static float ray_intersect_line(ray_type* ray, line_type* line);
+	static void cross(vector_type* vec1, vector_type* vec2, vector_type* dstVec);
 };

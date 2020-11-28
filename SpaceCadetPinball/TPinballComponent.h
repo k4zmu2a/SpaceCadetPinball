@@ -2,11 +2,12 @@
 #include "render.h"
 #include "TZmapList.h"
 
+class TPinballTable;
 
 class TPinballComponent
 {
 public:
-	TPinballComponent(class TPinballTable* table, int groupIndex, bool loadVisuals);
+	TPinballComponent(TPinballTable* table, int groupIndex, bool loadVisuals);
 	virtual ~TPinballComponent();
 	virtual int Message(int message1, float message2);
 	virtual void put_scoring(int score1, int score2);

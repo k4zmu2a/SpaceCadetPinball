@@ -1,13 +1,11 @@
 #include "pch.h"
 #include "TCircle.h"
 
-TCircle::TCircle(TCollisionComponent* collComp, char* someFlagPtr, unsigned visualFlag, float* floatArr,
+TCircle::TCircle(TCollisionComponent* collComp, char* someFlagPtr, unsigned visualFlag, vector_type* center,
                  float radius): TEdgeSegment(collComp, someFlagPtr, visualFlag)
 {
 	Circle.RadiusSq = radius * radius;
-	Circle.X = *floatArr;
-	Circle.Y = floatArr[1];
-	Circle.Unknown2 = floatArr[2];
+	Circle.Center = *center;
 }
 
 double TCircle::FindCollisionDistance(ray_type* ray)

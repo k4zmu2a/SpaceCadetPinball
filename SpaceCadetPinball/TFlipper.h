@@ -1,5 +1,6 @@
 #pragma once
 #include "TPinballComponent.h"
+
 class TFlipper :
     public TPinballComponent
 {
