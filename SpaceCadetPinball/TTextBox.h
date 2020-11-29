@@ -10,4 +10,6 @@ public:
 	}
 
 	int Message(int a2, float a3) override;
+	void Clear();
+	void Display(char* text, float time);
 };

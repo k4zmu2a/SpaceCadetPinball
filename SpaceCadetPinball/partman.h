@@ -89,9 +89,6 @@ public:
 	static int field_size(datFileStruct* datFile, int groupIndex, datFieldTypes targetEntryType);
 	static int record_labeled(datFileStruct* datFile, LPCSTR targetGroupName);
 	static char* field_labeled(datFileStruct* datFile, LPCSTR lpString, datFieldTypes fieldType);
-
-	static int make_path_name(LPSTR lpFilename, LPCSTR lpString2, int nSize = 0x12Cu);
-
 private:
 	static short _field_size[];
 	static char _lread_char(HFILE hFile);

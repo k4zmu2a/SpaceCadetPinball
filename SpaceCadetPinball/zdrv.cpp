@@ -38,7 +38,7 @@ int zdrv::destroy_zmap(zmap_header_type* zmap)
 void zdrv::fill(zmap_header_type* zmap, int width, int height, int xOff, int yOff, unsigned __int16 fillChar)
 {
 	int fillCharInt = fillChar | (fillChar << 16);
-	auto zmapPtr = &zmap->ZPtr1[2 * (xOff + zmap->Stride * (zmap->Height - height - yOff))];
+	auto zmapPtr = &zmap->ZPtr1[xOff + zmap->Stride * (zmap->Height - height - yOff)];
 
 	for (int y = height; width > 0 && y > 0; y--)
 	{

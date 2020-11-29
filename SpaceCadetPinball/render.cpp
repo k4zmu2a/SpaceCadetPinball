@@ -31,7 +31,7 @@ void render::init(gdrv_bitmap8* bmp, float zMin, float zScaler, int width, int h
 	vscreen.YPosition = 0;
 	vscreen.XPosition = 0;
 	gdrv_bitmap8* ballBmp = ball_bitmap;
-	while (ballBmp <= &ball_bitmap[20])
+	while (ballBmp < &ball_bitmap[20])
 	{
 		gdrv::create_raw_bitmap(ballBmp, 64, 64, 1);
 		++ballBmp;

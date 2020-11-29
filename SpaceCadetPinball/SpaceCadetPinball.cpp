@@ -9,6 +9,7 @@
 #include  "DatParser.h"
 #include "gdrv.h"
 #include "loader.h"
+#include "pb.h"
 #include "pinball.h"
 #include "score.h"
 #include "TPinballTable.h"
@@ -17,16 +18,18 @@
 int main()
 {
 	std::cout << "Hello World!\n";
-
-	pinball::hinst = GetModuleHandleA(nullptr);
-	char cmdLine[1]{};
-	//WinMain(pinball::hinst, 0, cmdLine, 10);
+	{
+		// Testing with UI
+	/*	lstrcpyA(pinball::DatFileName, "PINBALL.DAT");
+		pinball::hinst = GetModuleHandleA(nullptr);
+		char cmdLine[1]{};
+		pb::init();
+		WinMain(pinball::hinst, 0, cmdLine, 10);*/
+	}
 
 	gdrv::init(0, 0);
 	auto dib = gdrv::DibCreate(8, 1, 1);
 	gdrv::DibSetUsage(dib, 0, 1);
-
-	render::init(0, 1, 2, 800, 600);
 
 	objlist_class d = objlist_class(2, 4);
 	for (int i = 0; i < 100; i++)
@@ -37,10 +40,9 @@ int main()
 
 	auto xx = sizeof(datFileHeader);
 
-	char dataFileName[300];
-	partman::make_path_name(dataFileName, "PINBALL.DAT");
-	auto datFile = partman::load_records(dataFileName);
-	assert(datFile);
+	lstrcpyA(pinball::DatFileName, "PINBALL.DAT");
+	pb::init();
+	auto datFile = pb::record_table;
 
 	assert(partman::field_size_nth(datFile, 0, datFieldTypes::String, 0) == 43);
 	assert(partman::field_size_nth(datFile, 2, datFieldTypes::Palette, 0) == 1024);
@@ -55,7 +57,6 @@ int main()
 	assert(memcmp(partman::field_labeled(datFile, "table_size", datFieldTypes::ShortArray), new short[2]{ 600, 416 }, 2 * 2) == 0);
 
 	//loader::error(25, 26);
-	loader::loadfrom(datFile);
 	loader::get_sound_id(18);
 	visualStruct visual1{};
 	loader::material(96, &visual1);
@@ -65,7 +66,7 @@ int main()
 
 	auto score1 = score::create("score1", nullptr);
 
-	auto pinballTable = new TPinballTable();
+	auto pinballTable = pb::MainTable;
 	//pinballTable->find_component(1);
 
 	for (int i = 0; i < 190; i++)

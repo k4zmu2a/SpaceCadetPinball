@@ -48,3 +48,12 @@ TCollisionComponent::~TCollisionComponent()
 	}
 	delete this->EdgeList;
 }
+
+
+void TCollisionComponent::port_draw()
+{
+	for (int index = EdgeList->Count() - 1; index >= 0; index--)
+	{
+		static_cast<TEdgeSegment*>(EdgeList->Get(index))->port_draw();
+	}
+}

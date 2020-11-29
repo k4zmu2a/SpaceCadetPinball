@@ -11,6 +11,10 @@ TEdgeSegment::TEdgeSegment(TCollisionComponent* collComp, char* someFlag, unsign
 	this->Unknown3_0 = 0;
 }
 
+void TEdgeSegment::port_draw()
+{
+}
+
 TEdgeSegment* TEdgeSegment::install_wall(float* floatArr, TCollisionComponent* collComp, char* flagPtr,
                                          unsigned int visual_flag,
                                          float offset, int someValue)

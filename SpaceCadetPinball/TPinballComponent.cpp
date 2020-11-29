@@ -95,6 +95,10 @@ int TPinballComponent::Message(int message1, float message2)
 	return 0;
 }
 
+void TPinballComponent::port_draw()
+{
+}
+
 void TPinballComponent::put_scoring(int score1, int score2)
 {
 }

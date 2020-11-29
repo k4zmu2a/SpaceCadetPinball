@@ -262,3 +262,12 @@ TPinballComponent* TPinballTable::find_component(int groupIndex)
 	MessageBoxA(nullptr, "Table cant find (lh):", Buffer, 0x2000u);
 	return nullptr;
 }
+
+
+void TPinballTable::port_draw()
+{
+	for (int index = ListP1->Count() - 1; index >= 0; index--)
+	{
+		static_cast<TPinballComponent*>(ListP1->Get(index))->port_draw();
+	}
+}

@@ -6,8 +6,13 @@
 #include "pinball.h"
 #include "options.h"
 #include "pb.h"
+#include "Sound.h"
 
 int winmain::iFrostUniqueMsg, winmain::return_value = 0, winmain::bQuit = 0;
+DWORD winmain::then, winmain::now;
+gdrv_bitmap8 winmain::gfr_display{};
+int winmain::DispFrameRate = 1, winmain::DispGRhistory = 1, winmain::single_step = 0;
+int winmain::has_focus = 1, winmain::last_mouse_x, winmain::last_mouse_y, winmain::mouse_down, winmain::no_time_loss;
 
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nShowCmd)
 {
@@ -152,36 +157,114 @@ int winmain::WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLi
 	}*/
 
 	pinball::adjust_priority(options::Options.PriorityAdj);
-	auto getTimeFunc = timeGetTime;
 	const auto startTime = timeGetTime();
 	MSG wndMessage{};
 	while (timeGetTime() >= startTime && timeGetTime() - startTime < 2000)
 		PeekMessageA(&wndMessage, pinball::hwnd_frame, 0, 0, 1u);
 
+	if (strstr(lpCmdLine, "-demo"))
+		pb::toggle_demo();
+	else
+		pb::replay_level(0);
+
+	DWORD someTimeCounter = 300u, prevTime = 0u;
+	then = timeGetTime();
 	while (true)
 	{
-		if(false)
+		if (!someTimeCounter)
 		{
-			auto plt = (PALETTEENTRY*)malloc(1024u);
-			auto gg = sizeof(LOGPALETTEx256);
-			auto pltPtr = &plt[10];
-			for (int i1 = 0, i2 = 0; i1 < 256 - 10; ++i1, i2 += 8)
+			someTimeCounter = 300;
+			if (DispFrameRate)
 			{
-				unsigned char blue = i2, redGreen = i2;
-				if (i2 > 255)
+				auto curTime = timeGetTime();
+				if (prevTime)
 				{
-					blue = 255;
-					redGreen = i1;
-				}
+					char buf[60];
+					sprintf_s(buf, "Frames/sec = %02.02f", 300.0f / (static_cast<float>(curTime - prevTime) * 0.001f));
+					SetWindowTextA(pinball::hwnd_frame, buf);
 
-				*pltPtr++ = { redGreen, redGreen, blue };
+					if (DispGRhistory)
+					{
+						if (!gfr_display.BmpBufPtr1)
+						{
+							auto plt = static_cast<PALETTEENTRY*>(malloc(1024u));
+							auto pltPtr = &plt[10];
+							for (int i1 = 0, i2 = 0; i1 < 256 - 10; ++i1, i2 += 8)
+							{
+								unsigned char blue = i2, redGreen = i2;
+								if (i2 > 255)
+								{
+									blue = 255;
+									redGreen = i1;
+								}
+
+								*pltPtr++ = {redGreen, redGreen, blue};
+							}
+							gdrv::display_palette(plt);
+							free(plt);
+							gdrv::create_bitmap(&gfr_display, 400, 15);
+						}
+
+						gdrv::blit(&gfr_display, 0, 0, 0, 0, 300, 10);
+						gdrv::fill_bitmap(&gfr_display, 300, 10, 0, 0, 0);
+					}
+				}
+				prevTime = curTime;
 			}
-			gdrv::display_palette(plt);
+			else
+			{
+				prevTime = 0;
+			}
 		}
-		
+
+		Sound::Idle();
 		if (!ProcessWindowMessages() || bQuit)
 			break;
-		Sleep(8);
+
+		if (has_focus)
+		{
+			if (mouse_down)
+			{
+				now = timeGetTime();
+				if (now - then >= 2)
+				{
+					POINT Point;
+					GetCursorPos(&Point);
+					pb::ballset(last_mouse_x - Point.x, Point.y - last_mouse_y);
+					SetCursorPos(last_mouse_x, last_mouse_y);
+				}
+			}
+			if (!single_step)
+			{
+				auto curTime = timeGetTime();
+				now = curTime;
+				if (no_time_loss)
+				{
+					then = curTime;
+					no_time_loss = 0;
+				}
+
+				if (curTime == then)
+				{
+					Sleep(8u);
+				}
+				else if (pb::frame(curTime - then))
+				{
+					if (gfr_display.BmpBufPtr1)
+					{
+						auto deltaT = now - then + 10;
+						auto fillChar = static_cast<char>(deltaT);
+						if (deltaT > 236)
+						{
+							fillChar = -7;
+						}
+						gdrv::fill_bitmap(&gfr_display, 1, 10, 299u - someTimeCounter, 0, fillChar);
+					}
+					--someTimeCounter;
+					then = now;
+				}
+			}
+		}
 	}
 
 	return return_value;
@@ -196,7 +279,7 @@ int winmain::ProcessWindowMessages()
 {
 	MSG Msg{}; // [esp+8h] [ebp-1Ch]
 
-	if (pinball::has_focus && !pinball::single_step)
+	if (has_focus && !single_step)
 	{
 		while (PeekMessageA(&Msg, nullptr, 0, 0, 1u))
 		{

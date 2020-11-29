@@ -99,7 +99,7 @@ datFileStruct* partman::load_records(LPCSTR lpFileName)
 				{
 					auto entryType = static_cast<datFieldTypes>(_lread_char(fileHandle));
 					entryData->EntryType = entryType;
-					int fieldSize = _field_size[(int)entryType];
+					int fieldSize = _field_size[static_cast<int>(entryType)];
 					if (fieldSize < 0)
 					{
 						fieldSize = _lread_long(fileHandle);
@@ -165,8 +165,8 @@ void partman::unload_records(datFileStruct* datFile)
 				{
 					if (entry->Buffer)
 					{
-						//if (HIWORD(entry->EntryType) == 1)
-						//gdrv_destroy_bitmap(entry->Buffer);
+						if (entry->EntryType == datFieldTypes::Bitmap8bit)
+							gdrv::destroy_bitmap((gdrv_bitmap8*)entry->Buffer);
 						memory::free(entry->Buffer);
 					}
 					++entryIndex;
@@ -321,30 +321,6 @@ char* partman::field_labeled(datFileStruct* datFile, LPCSTR lpString, datFieldTy
 	else
 		result = field(datFile, groupIndex, fieldType);
 	return result;
-}
-
-
-int partman::make_path_name(LPSTR lpFilename, LPCSTR lpString2, int nSize)
-{
-	int nameSize = GetModuleFileNameA(nullptr, lpFilename, nSize);
-	if (!nameSize || nameSize == nSize)
-		return 1;
-	for (CHAR* i = &lpFilename[nameSize]; i > lpFilename; --i)
-	{
-		if (*i == '\\' || *i == ':')
-		{
-			i[1] = 0;
-			break;
-		}
-		--nameSize;
-	}
-	if (nameSize + 13 < nSize)
-	{
-		lstrcatA(lpFilename, lpString2);
-		return 0;
-	}
-	lstrcatA(lpFilename, "?");
-	return 1;
 }
 
 char partman::_lread_char(HFILE hFile)

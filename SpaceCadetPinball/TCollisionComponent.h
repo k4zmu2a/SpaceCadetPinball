@@ -17,4 +17,5 @@ public:
 
 	TCollisionComponent(TPinballTable* table, int groupIndex, bool createWall);
 	~TCollisionComponent();
+	void port_draw() override;
 };

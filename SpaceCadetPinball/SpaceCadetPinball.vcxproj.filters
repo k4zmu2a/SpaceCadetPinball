@@ -195,6 +195,12 @@
     <ClInclude Include="TLightRollover.h">
       <Filter>Header Files\TCollisionComponent</Filter>
     </ClInclude>
+    <ClInclude Include="proj.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="timer.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="pch.cpp">
@@ -355,6 +361,12 @@
     </ClCompile>
     <ClCompile Include="TLightRollover.cpp">
       <Filter>Source Files\TCollisionComponent</Filter>
+    </ClCompile>
+    <ClCompile Include="proj.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="timer.cpp">
+      <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

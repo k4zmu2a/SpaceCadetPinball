@@ -54,4 +54,5 @@ public:
 	static void line_init(line_type* line, float x0, float y0, float x1, float y1);
 	static float ray_intersect_line(ray_type* ray, line_type* line);
 	static void cross(vector_type* vec1, vector_type* vec2, vector_type* dstVec);
+	static float magnitude(vector_type* vec);
 };

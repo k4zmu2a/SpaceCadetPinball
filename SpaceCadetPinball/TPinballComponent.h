@@ -10,6 +10,7 @@ public:
 	TPinballComponent(TPinballTable* table, int groupIndex, bool loadVisuals);
 	virtual ~TPinballComponent();
 	virtual int Message(int message1, float message2);
+	virtual void port_draw();
 	virtual void put_scoring(int score1, int score2);
 	virtual int get_scoring(int score1);
 

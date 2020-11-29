@@ -48,3 +48,8 @@ scoreStruct* score::dup(scoreStruct* score, int scoreIndex)
 		memcpy(result, score, sizeof(scoreStruct));
 	return result;
 }
+
+HRSRC score::load_msg_font(LPCSTR lpName)
+{
+	return nullptr;
+}

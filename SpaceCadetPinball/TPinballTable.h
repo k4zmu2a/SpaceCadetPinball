@@ -14,6 +14,7 @@ public:
 	~TPinballTable();
 	TPinballComponent* find_component(LPCSTR componentName);
 	TPinballComponent* find_component(int groupIndex);
+	void port_draw() override;
 
 	TFlipper* FlipperL;
 	TFlipper* FlipperR;

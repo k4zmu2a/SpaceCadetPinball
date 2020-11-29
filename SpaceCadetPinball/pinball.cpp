@@ -14,8 +14,6 @@ char pinball::DatFileName[300]{};
 int pinball::LeftShift = -1;
 int pinball::RightShift = -1;
 HWND pinball::hwnd_frame = nullptr;
-int pinball::has_focus = 1;
-int pinball::single_step = 0;
 
 
 char* pinball::get_rc_string(int uID, int a2)
@@ -30,8 +28,8 @@ char* pinball::get_rc_string(int uID, int a2)
 
 int pinball::get_rc_int(int uID, int* dst)
 {
-	char buffer[50]; 
-	int result = LoadStringA(pinball::hinst, uID, buffer, 255);
+	char buffer[50];
+	int result = LoadStringA(hinst, uID, buffer, 255);
 	if (!result)
 		return result;
 	*dst = atoi(buffer);
@@ -105,4 +103,27 @@ HANDLE pinball::adjust_priority(int priority)
 		break;
 	}
 	return result;
+}
+
+int pinball::make_path_name(LPSTR lpFilename, LPCSTR lpString2, int nSize)
+{
+	int nameSize = GetModuleFileNameA(nullptr, lpFilename, nSize);
+	if (!nameSize || nameSize == nSize)
+		return 1;
+	for (CHAR* i = &lpFilename[nameSize]; i > lpFilename; --i)
+	{
+		if (*i == '\\' || *i == ':')
+		{
+			i[1] = 0;
+			break;
+		}
+		--nameSize;
+	}
+	if (nameSize + 13 < nSize)
+	{
+		lstrcatA(lpFilename, lpString2);
+		return 0;
+	}
+	lstrcatA(lpFilename, "?");
+	return 1;
 }

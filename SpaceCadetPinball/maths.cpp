@@ -252,3 +252,14 @@ void maths::cross(vector_type* vec1, vector_type* vec2, vector_type* dstVec)
 	dstVec->Y = vec2->X * vec1->Z - vec1->X * vec2->Z;
 	dstVec->Z = vec1->X * vec2->Y - vec2->X * vec1->Y;
 }
+
+float maths::magnitude(vector_type* vec)
+{
+	float result;
+	auto magSq = vec->X * vec->X + vec->Y * vec->Y + vec->Z * vec->Z;
+	if (magSq == 0.0)
+		result = 0.0;
+	else
+		result = sqrt(magSq);
+	return result;
+}

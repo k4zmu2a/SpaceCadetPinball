@@ -165,6 +165,7 @@
     <ClInclude Include="pb.h" />
     <ClInclude Include="pch.h" />
     <ClInclude Include="pinball.h" />
+    <ClInclude Include="proj.h" />
     <ClInclude Include="render.h" />
     <ClInclude Include="resource.h" />
     <ClInclude Include="score.h" />
@@ -182,6 +183,7 @@
     <ClInclude Include="TFlipper.h" />
     <ClInclude Include="TGate.h" />
     <ClInclude Include="THole.h" />
+    <ClInclude Include="timer.h" />
     <ClInclude Include="TKickback.h" />
     <ClInclude Include="TKickout.h" />
     <ClInclude Include="TLight.h" />
@@ -226,6 +228,7 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="pinball.cpp" />
+    <ClCompile Include="proj.cpp" />
     <ClCompile Include="render.cpp" />
     <ClCompile Include="score.cpp" />
     <ClCompile Include="Sound.cpp" />
@@ -243,6 +246,7 @@
     <ClCompile Include="TFlipper.cpp" />
     <ClCompile Include="TGate.cpp" />
     <ClCompile Include="THole.cpp" />
+    <ClCompile Include="timer.cpp" />
     <ClCompile Include="TKickback.cpp" />
     <ClCompile Include="TKickout.cpp" />
     <ClCompile Include="TLight.cpp" />
