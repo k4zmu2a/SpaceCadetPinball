@@ -206,9 +206,10 @@ int gdrv::display_palette(PALETTEENTRY* plt)
 	{
 		if (plt)
 		{
-			pltDst->peRed = pltSrc->peRed;
+			// Todo: verify RGB order
+			pltDst->peRed = pltSrc->peBlue;
 			pltDst->peGreen = pltSrc->peGreen;
-			pltDst->peBlue = pltSrc->peBlue;
+			pltDst->peBlue = pltSrc->peRed;
 		}
 		pltDst->peFlags = 4;
 		pltSrc++;

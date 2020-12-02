@@ -15,6 +15,7 @@
 #include <cassert>
 #include <cmath>
 #include <CommCtrl.h>
+#include <htmlhelp.h>
 //#include <cstdlib>
 
 // Use (void) to silent unused warnings.

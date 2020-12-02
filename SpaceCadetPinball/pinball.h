@@ -9,7 +9,6 @@ public:
 	static TTextBox* MissTextBox;
 	static HINSTANCE hinst;
 	static char WindowName[2];
-	static char DatFileName[300];
 	static int RightShift;
 	static int LeftShift;
 	static HWND hwnd_frame;

@@ -1,6 +1,9 @@
 #include "pch.h"
 #include "options.h"
+
+#include "fullscrn.h"
 #include "memory.h"
+#include "midi.h"
 #include "pinball.h"
 #include "Sound.h"
 
@@ -185,10 +188,62 @@ void options::set_string(LPCSTR optPath, LPCSTR lpValueName, LPCSTR value)
 }
 
 
-HMENU options::menu_check(UINT uIDCheckItem, int value)
+void options::menu_check(UINT uIDCheckItem, int check)
 {
-	HMENU result = MenuHandle;
 	if (MenuHandle)
-		result = (HMENU)CheckMenuItem(MenuHandle, uIDCheckItem, value != 0 ? 8 : 0);
-	return result;
+		CheckMenuItem(MenuHandle, uIDCheckItem, check != 0 ? 8 : 0);
+}
+
+void options::menu_set(UINT uIDEnableItem, int enable)
+{
+	if (MenuHandle)
+		EnableMenuItem(MenuHandle, uIDEnableItem, enable == 0);
+}
+
+
+void options::toggle(UINT uIDCheckItem)
+{
+	int newValue;
+	switch (uIDCheckItem)
+	{
+	case 0xC9u:
+		newValue = Options.Sounds == 0;
+		Options.Sounds = Options.Sounds == 0;
+		Sound::Enable(0, 7, newValue);
+		menu_check(uIDCheckItem, newValue);
+		return;
+	case 0xCAu:
+		newValue = Options.Music == 0;
+		Options.Music = Options.Music == 0;
+		if (!newValue)
+			midi::music_stop();
+		else
+			midi::play_pb_theme(0);
+		menu_check(uIDCheckItem, newValue);
+		return;
+	case 0x193u:
+		newValue = Options.FullScreen == 0;
+		Options.FullScreen = Options.FullScreen == 0;
+		fullscrn::set_screen_mode(newValue);
+		menu_check(uIDCheckItem, newValue);
+		return;
+	}
+	if (uIDCheckItem > 407 && uIDCheckItem <= 411)
+	{
+		Options.Players = uIDCheckItem - 407;
+		menu_check(0x198u, uIDCheckItem == 408);
+		menu_check(0x199u, Options.Players == 2);
+		menu_check(0x19Au, Options.Players == 3);
+		menu_check(0x19Bu, Options.Players == 4);
+	}
+}
+
+void options::keyboard()
+{
+	DialogBoxParamA(pinball::hinst, "KEYMAPPER", pinball::hwnd_frame, KeyMapDlgProc, 0);
+}
+
+INT_PTR _stdcall options::KeyMapDlgProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
+{
+	return 0;
 }

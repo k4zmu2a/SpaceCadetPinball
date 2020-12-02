@@ -10,7 +10,6 @@ char pinball::getRcBuffer[6 * 256];
 int pinball::rc_string_slot = 0;
 HINSTANCE pinball::hinst;
 char pinball::WindowName[2]{};
-char pinball::DatFileName[300]{};
 int pinball::LeftShift = -1;
 int pinball::RightShift = -1;
 HWND pinball::hwnd_frame = nullptr;

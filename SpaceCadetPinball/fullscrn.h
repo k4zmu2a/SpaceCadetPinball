@@ -28,6 +28,7 @@ public:
 	static int convert_mouse_pos(unsigned int mouseXY);
 	static void getminmaxinfo(MINMAXINFO* maxMin);
 	static void paint();
+	static bool set_menu_mode(int menuEnabled);
 private :
 	static int MenuEnabled;
 	static HMENU MenuHandle;
@@ -37,6 +38,5 @@ private :
 	static int setWindowFlagsDisDlg();
 	static int enableFullscreen();
 	static int disableFullscreen();
-	static bool set_menu_mode(int menuEnabled);
 	static void fillRect(int right, int bottom);
 };

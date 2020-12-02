@@ -14,17 +14,16 @@
 #include "score.h"
 #include "TPinballTable.h"
 #include "TTextBox.h"
+#include "winmain.h"
 
 int main()
 {
 	std::cout << "Hello World!\n";
 	{
 		// Testing with UI
-	/*	lstrcpyA(pinball::DatFileName, "PINBALL.DAT");
-		pinball::hinst = GetModuleHandleA(nullptr);
 		char cmdLine[1]{};
 		pb::init();
-		WinMain(pinball::hinst, 0, cmdLine, 10);*/
+		WinMain(pinball::hinst, 0, cmdLine, 10);
 	}
 
 	gdrv::init(0, 0);
@@ -40,7 +39,7 @@ int main()
 
 	auto xx = sizeof(datFileHeader);
 
-	lstrcpyA(pinball::DatFileName, "PINBALL.DAT");
+	lstrcpyA(winmain::DatFileName, "PINBALL.DAT");
 	pb::init();
 	auto datFile = pb::record_table;
 

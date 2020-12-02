@@ -7,6 +7,7 @@ class pb
 public:
 	static int time_ticks;
 	static int ball_speed_limit;
+	static int cheat_mode, game_mode;
 	static datFileStruct* record_table;
 	static TPinballTable* MainTable;
 
@@ -19,6 +20,18 @@ public:
 	static void replay_level(int demoMode);
 	static void ballset(int x, int y);
 	static int frame(int time);
+	static void window_size(int* width, int* height);
+	static void pause_continue();
+	static void loose_focus();
+	static void keyup(int key);
+	static void keydown(int key);
+	static void ctrl_bdoor_controller(int key);
+	static int mode_countdown(int time);
+	static int cheat_bump_rank();
+	static void launch_ball();
+	static int end_game();
+	static void high_scores();
 private :
-	static int demo_mode;
+	static int demo_mode, mode_countdown_;
+	static float time_now, time_next;
 };

@@ -3,16 +3,20 @@
 
 #include "fullscrn.h"
 #include "memory.h"
+#include "midi.h"
 #include "pinball.h"
 #include "options.h"
 #include "pb.h"
 #include "Sound.h"
 
-int winmain::iFrostUniqueMsg, winmain::return_value = 0, winmain::bQuit = 0;
+int winmain::return_value = 0, winmain::bQuit = 0, winmain::activated;
 DWORD winmain::then, winmain::now;
+UINT winmain::iFrostUniqueMsg;
 gdrv_bitmap8 winmain::gfr_display{};
 int winmain::DispFrameRate = 1, winmain::DispGRhistory = 1, winmain::single_step = 0;
 int winmain::has_focus = 1, winmain::last_mouse_x, winmain::last_mouse_y, winmain::mouse_down, winmain::no_time_loss;
+char winmain::DatFileName[300]{};
+HCURSOR winmain::mouse_hsave;
 
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nShowCmd)
 {
@@ -89,7 +93,7 @@ int winmain::WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLi
 
 	pinball::quickFlag = strstr(lpCmdLine, "-quick") != nullptr;
 	pinball::hinst = hInstance;
-	options::get_string(regSpaceCadet, "Pinball Data", pinball::DatFileName, pinball::get_rc_string(168, 0), 300);
+	options::get_string(regSpaceCadet, "Pinball Data", DatFileName, pinball::get_rc_string(168, 0), 300);
 
 	iFrostUniqueMsg = RegisterWindowMessageA("PinballThemeSwitcherUniqueMsgString");
 	auto windowHandle = FindWindowA(pinball::get_rc_string(167, 0), nullptr);
@@ -272,6 +276,364 @@ int winmain::WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLi
 
 LRESULT CALLBACK winmain::message_handler(HWND hWnd, UINT Msg, WPARAM wParam, LPARAM lParam)
 {
+	if (Msg == iFrostUniqueMsg)
+	{
+		if (IsIconic(hWnd))
+			ShowWindow(hWnd, 9);
+		SetForegroundWindow(hWnd);
+		return 0;
+	}
+
+	if (Msg <= WM_ACTIVATEAPP)
+	{
+		switch (Msg)
+		{
+		case WM_ACTIVATEAPP:
+			if (wParam)
+			{
+				activated = 1;
+				Sound::Activate();
+				if (options::Options.Music && !single_step)
+					midi::play_pb_theme(0);
+				no_time_loss = 1;
+				pinball::adjust_priority(options::Options.PriorityAdj);
+			}
+			else
+			{
+				activated = 0;
+				fullscrn::activate(0);
+				options::menu_check(0x193u, 0);
+				options::Options.FullScreen = 0;
+				SetThreadPriority(GetCurrentThread(), 0);
+				Sound::Deactivate();
+				midi::music_stop();
+			}
+
+			return DefWindowProcA(hWnd, Msg, wParam, lParam);
+		case WM_KILLFOCUS:
+			has_focus = 0;
+			gdrv::get_focus();
+			pb::loose_focus();
+			return DefWindowProcA(hWnd, Msg, wParam, lParam);
+		case WM_CREATE:
+			{
+				RECT rect{};
+				++memory::critical_allocation;
+
+				GetWindowRect(GetDesktopWindow(), &rect);
+				int width = rect.right - rect.left;
+				int height = rect.bottom - rect.top;
+				pb::window_size(&width, &height);
+
+				auto prevCursor = SetCursor(LoadCursorA(nullptr, (LPCSTR)IDC_WAIT));
+				gdrv::init(pinball::hinst, hWnd);
+
+				auto voiceCount = options::get_int(nullptr, "Voices", 8);
+				if (!Sound::Init(pinball::hinst, voiceCount, nullptr))
+					options::menu_set(0xC9u, 0);
+				Sound::Activate();
+
+				if (!pinball::quickFlag && !midi::music_init(hWnd))
+					options::menu_set(0xCAu, 0);
+
+				if (pb::init())
+					_exit(0);
+				SetCursor(prevCursor);
+				auto changeDisplayFg = options::get_int(nullptr, "Change Display", 1);
+				auto menuHandle = GetMenu(hWnd);
+				fullscrn::init(width, static_cast<int>(height), options::Options.FullScreen, hWnd, menuHandle,
+				               changeDisplayFg);
+
+				--memory::critical_allocation;
+				return DefWindowProcA(hWnd, Msg, wParam, lParam);
+			}
+		case WM_MOVE:
+			no_time_loss = 1;
+			return DefWindowProcA(hWnd, Msg, wParam, lParam);
+		case WM_SETFOCUS:
+			has_focus = 1;
+			no_time_loss = 1;
+			gdrv::get_focus();
+			fullscrn::force_redraw();
+			pb::paint();
+			return DefWindowProcA(hWnd, Msg, wParam, lParam);
+		case WM_PAINT:
+			{
+				PAINTSTRUCT paint{};
+				_BeginPaint(hWnd, &paint);
+				fullscrn::paint();
+				EndPaint(hWnd, &paint);
+				break;
+			}
+		case WM_CLOSE:
+		case WM_QUIT:
+		case WM_DESTROY:
+			end_pause();
+			bQuit = 1;
+			PostQuitMessage(0);
+			fullscrn::shutdown();
+			return DefWindowProcA(hWnd, Msg, wParam, lParam);
+		case WM_ERASEBKGND:
+			break;
+		default:
+			return DefWindowProcA(hWnd, Msg, wParam, lParam);
+		}
+		return 0;
+	}
+
+	if (Msg <= WM_MENUSELECT)
+	{
+		switch (Msg)
+		{
+		case WM_MENUSELECT:
+			if (lParam)
+				return DefWindowProcA(hWnd, Msg, wParam, lParam);
+			if (fullscrn::screen_mode)
+				fullscrn::set_menu_mode(0);
+			return 0;
+		case WM_SYSKEYDOWN:
+			no_time_loss = 1;
+			if (fullscrn::screen_mode)
+				fullscrn::set_menu_mode(1);
+			return DefWindowProcA(hWnd, Msg, wParam, lParam);
+		case WM_GETMINMAXINFO:
+			fullscrn::getminmaxinfo((MINMAXINFO*)lParam);
+			return DefWindowProcA(hWnd, Msg, wParam, lParam);
+		case WM_DISPLAYCHANGE:
+			if (fullscrn::displaychange())
+			{
+				options::Options.FullScreen = 0;
+				options::menu_check(0x193u, 0);
+			}
+			return DefWindowProcA(hWnd, Msg, wParam, lParam);
+		case WM_KEYUP:
+			pb::keyup(wParam);
+			return DefWindowProcA(hWnd, Msg, wParam, lParam);
+		case WM_KEYDOWN:
+			if (!(lParam & 0x40000000))
+				pb::keydown(wParam);
+			switch (wParam)
+			{
+			case VK_ESCAPE:
+				if (options::Options.FullScreen)
+					options::toggle(0x193u);
+				SendMessageA(pinball::hwnd_frame, 0x112u, 0xF020u, 0);
+				break;
+			case VK_F1:
+				help_introduction(pinball::hinst, hWnd);
+				break;
+			case VK_F2:
+				new_game();
+				break;
+			case VK_F3:
+				pause();
+				break;
+			case VK_F4:
+				options::toggle(0x193u);
+				break;
+			case VK_F8:
+				if (!single_step)
+					pause();
+				options::keyboard();
+				break;
+			}
+			if (!pb::cheat_mode)
+				return DefWindowProcA(hWnd, Msg, wParam, lParam);
+			switch (wParam)
+			{
+			case 'H':
+				DispGRhistory = 1;
+				return DefWindowProcA(hWnd, Msg, wParam, lParam);
+			case 'Y':
+				SetWindowTextA(hWnd, "Pinball");
+				DispFrameRate = DispFrameRate == 0;
+				return DefWindowProcA(hWnd, Msg, wParam, lParam);
+			case VK_F1:
+				pb::frame(10);
+				return DefWindowProcA(hWnd, Msg, wParam, lParam);
+			case VK_F15:
+				single_step = single_step == 0;
+				if (single_step == 0)
+					no_time_loss = 1;
+				return DefWindowProcA(hWnd, Msg, wParam, lParam);
+			default:
+				return DefWindowProcA(hWnd, Msg, wParam, lParam);
+			}
+		case WM_SYSCOMMAND:
+			switch (wParam & 0xFFF0)
+			{
+			case SC_MOVE:
+				if (fullscrn::screen_mode)
+					return 0;
+			case SC_MINIMIZE:
+				if (!single_step)
+					pause();
+				return DefWindowProcA(hWnd, Msg, wParam, lParam);
+			case SC_SCREENSAVE:
+				fullscrn::activate(0);
+				return DefWindowProcA(hWnd, Msg, wParam, lParam);
+			default: break;
+			}
+			end_pause();
+			return DefWindowProcA(hWnd, Msg, wParam, lParam);
+		case WM_INITMENU:
+			no_time_loss = 1;
+			return DefWindowProcA(hWnd, Msg, wParam, lParam);
+		case WM_COMMAND:
+			no_time_loss = 1;
+			switch (wParam)
+			{
+			case 0x191u:
+				end_pause();
+				pb::launch_ball();
+				break;
+			case 0x192u:
+				pause();
+				break;
+			case 0x193u:
+				if (!single_step)
+					pause();
+				options::toggle(wParam);
+				break;
+			case 0x194u:
+				end_pause();
+				pb::toggle_demo();
+				break;
+			case 0x195u:
+				{
+					if (!single_step)
+						pause();
+					auto tmpBuf = memory::allocate(0x1F4u);
+					if (tmpBuf)
+					{
+						char cmdLine[0x1F4u];
+						options::get_string(nullptr, "Shell Exe", tmpBuf, pinball::WindowName, 500);
+						sprintf_s(
+							cmdLine,
+							"%s %s%lX  %s%lX",
+							tmpBuf,
+							"select=",
+							(int)pinball::hwnd_frame,
+							"confirm=",
+							(int)pinball::hwnd_frame
+							* (int)pinball::hwnd_frame
+							* (int)pinball::hwnd_frame
+							* (int)pinball::hwnd_frame
+							* (int)pinball::hwnd_frame
+							* (int)pinball::hwnd_frame
+							* (int)pinball::hwnd_frame);
+						if (static_cast<int>(WinExec(cmdLine, 5u)) < 32)
+						{
+							auto caption = pinball::get_rc_string(170, 0);
+							auto text = pinball::get_rc_string(171, 0);
+							MessageBoxA(pinball::hwnd_frame, text, caption, 0x2010u);
+						}
+						memory::free(tmpBuf);
+					}
+					break;
+				}
+			case 0x196u:
+				if (!single_step)
+					pause();
+				options::keyboard();
+				break;
+			case 0x198u:
+			case 0x199u:
+			case 0x19Au:
+			case 0x19Bu:
+				options::toggle(wParam);
+				new_game();
+				break;
+			case 301:
+				if (!single_step)
+					pause();
+				help_introduction(pinball::hinst, hWnd);
+				return DefWindowProcA(hWnd, Msg, wParam, lParam);
+			case 0x6A:
+				pb::end_game();
+				return DefWindowProcA(hWnd, Msg, wParam, lParam);
+			case 201:
+			case 202:
+				if (!single_step)
+					pause();
+				options::toggle(wParam);
+				break;
+			case 204:
+				if (!single_step)
+					pause();
+				options::keyboard();
+				break;
+			case 0x69u:
+				PostMessageA(hWnd, 0x12u, 0, 0);
+				return DefWindowProcA(hWnd, Msg, wParam, lParam);
+			case 0x65u:
+				new_game();
+				return DefWindowProcA(hWnd, Msg, wParam, lParam);
+			case 0x66u:
+				if (!single_step)
+					pause();
+				a_dialog(pinball::hinst, hWnd);
+				return DefWindowProcA(hWnd, Msg, wParam, lParam);
+			case 0x67u:
+				if (!single_step)
+					pause();
+				pb::high_scores();
+				return DefWindowProcA(hWnd, Msg, wParam, lParam);
+			case 1:
+				midi::restart_midi_seq(lParam);
+			default:
+				break;
+			}
+			return DefWindowProcA(hWnd, Msg, wParam, lParam);
+		case WM_LBUTTONDOWN:
+			if (pb::game_mode)
+			{
+				if (pb::cheat_mode)
+				{
+					mouse_down = 1;
+					mouse_hsave = SetCursor(nullptr);
+					auto lParam2 = fullscrn::convert_mouse_pos(lParam);
+					last_mouse_x = static_cast<unsigned __int16>(lParam2);
+					last_mouse_y = static_cast<unsigned int>(lParam2) >> 16;
+					SetCapture(hWnd);
+				}
+				return DefWindowProcA(hWnd, Msg, wParam, lParam);
+			}
+			break;
+		case WM_LBUTTONUP:
+			if (mouse_down)
+			{
+				mouse_down = 0;
+				SetCursor(mouse_hsave);
+				ReleaseCapture();
+			}
+			return DefWindowProcA(hWnd, Msg, wParam, lParam);
+		case WM_RBUTTONDOWN:
+		case WM_MBUTTONDOWN:
+			if (pb::game_mode)
+				return DefWindowProcA(hWnd, Msg, wParam, lParam);
+			break;
+		case WM_POWERBROADCAST:
+			if (wParam == 4 && options::Options.FullScreen)
+			{
+				options::Options.FullScreen = 0;
+				options::menu_check(0x193u, 0);
+				fullscrn::set_screen_mode(options::Options.FullScreen);
+			}
+			return DefWindowProcA(hWnd, Msg, wParam, lParam);
+		case WM_PALETTECHANGED:
+			InvalidateRect(hWnd, nullptr, 0);
+			return DefWindowProcA(hWnd, Msg, wParam, lParam);
+		case WM_POINTERDEVICEINRANGE | LB_ADDSTRING:
+			if (wParam == 1)
+				midi::restart_midi_seq(lParam);
+			return DefWindowProcA(hWnd, Msg, wParam, lParam);
+		default:
+			return DefWindowProcA(hWnd, Msg, wParam, lParam);
+		}
+	}
+
+	pb::mode_countdown(-1);
 	return DefWindowProcA(hWnd, Msg, wParam, lParam);
 }
 
@@ -306,8 +668,8 @@ int winmain::ProcessWindowMessages()
 
 void winmain::memalloc_failure()
 {
-	/*midi_music_stop();
-	Sound_Close();*/
+	midi::music_stop();
+	Sound::Close();
 	gdrv::uninit();
 	char* caption = pinball::get_rc_string(170, 0);
 	char* text = pinball::get_rc_string(179, 0);
@@ -346,4 +708,58 @@ int winmain::a_dialog(HINSTANCE hInstance, HWND hWnd)
 	lstrcpyA(szOtherStuff, pinball::get_rc_string(102, 0));
 	auto icon = LoadIconA(hInstance, "ICON_1");
 	return ShellAboutA(hWnd, appName, szOtherStuff, icon);
+}
+
+void winmain::end_pause()
+{
+	if (single_step)
+	{
+		if (fullscrn::screen_mode)
+			fullscrn::set_menu_mode(0);
+		pb::pause_continue();
+		no_time_loss = 1;
+	}
+}
+
+void winmain::new_game()
+{
+	end_pause();
+	HCURSOR prevCursor = SetCursor(LoadCursorA(nullptr, (LPCSTR)IDC_WAIT));
+	pb::replay_level(0);
+	SetCursor(prevCursor);
+}
+
+void winmain::pause()
+{
+	if (fullscrn::screen_mode)
+	{
+		if (single_step)
+			fullscrn::set_menu_mode(0);
+		else
+			fullscrn::set_menu_mode(1);
+	}
+	pb::pause_continue();
+	no_time_loss = 1;
+}
+
+void winmain::help_introduction(HINSTANCE a1, HWND a2)
+{
+	char* buf1 = memory::allocate(0x1F4u);
+	if (buf1)
+	{
+		char* buf2 = memory::allocate(0x1F4u);
+		if (buf2)
+		{
+			options::get_string(nullptr, "HelpFile", buf1, pinball::get_rc_string(178, 0), 500);
+			options::get_string(pinball::get_rc_string(166, 0), "HelpFile", buf1, buf1, 500);
+			lstrcpyA(buf2, buf1);
+			memory::free(buf1);
+			HtmlHelpA(GetDesktopWindow(), buf2, 0, 0);
+			memory::free(buf2);
+		}
+		else
+		{
+			memory::free(buf1);
+		}
+	}
 }

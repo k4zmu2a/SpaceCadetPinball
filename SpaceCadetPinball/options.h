@@ -33,8 +33,12 @@ public:
 	static void set_int(LPCSTR optPath, LPCSTR lpValueName, int data);
 	static void get_string(LPCSTR optPath, LPCSTR lpValueName, LPSTR lpString1, LPCSTR lpString2, int iMaxLength);
 	static void set_string(LPCSTR optPath, LPCSTR lpValueName, LPCSTR value);
-	static HMENU menu_check(UINT uIDCheckItem, int value);
-	
+	static void menu_check(UINT uIDCheckItem, int check);
+	static void menu_set(UINT uIDEnableItem, int enable);
+	static void toggle(UINT uIDCheckItem);
+	static void keyboard();
+	static INT_PTR _stdcall KeyMapDlgProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam);
+
 	static optionsStruct Options;
 private:
 	static LPCSTR OptionsRegPath;
