@@ -4,6 +4,7 @@
 #include "memory.h"
 #include "partman.h"
 
+score_msg_font_type* score::msg_fontp;
 
 int score::init()
 {

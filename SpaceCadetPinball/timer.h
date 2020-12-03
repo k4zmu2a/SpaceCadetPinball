@@ -14,6 +14,8 @@ class timer
 {
 public:
 	static int init(int count);
+	static int kill(int timer);
+	static int set(float time, int caller, int callback);
 
 private:
 	static timer_struct timer_struct;

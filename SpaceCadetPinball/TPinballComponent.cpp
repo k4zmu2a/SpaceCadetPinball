@@ -87,10 +87,10 @@ TPinballComponent::~TPinballComponent()
 }
 
 
-int TPinballComponent::Message(int message1, float message2)
+int TPinballComponent::Message(int code, float value)
 {
-	MessageField = message1;
-	if (message1 == 1024)
+	MessageField = code;
+	if (code == 1024)
 		MessageField = 0;
 	return 0;
 }
@@ -107,4 +107,8 @@ void TPinballComponent::put_scoring(int score1, int score2)
 int TPinballComponent::get_scoring(int score1)
 {
 	return 0;
+}
+
+void TPinballComponent::control_handler(int code, TPinballComponent* cmp)
+{
 }

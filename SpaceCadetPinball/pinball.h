@@ -7,11 +7,9 @@ public:
 	static int quickFlag;
 	static TTextBox* InfoTextBox;
 	static TTextBox* MissTextBox;
-	static HINSTANCE hinst;
 	static char WindowName[2];
 	static int RightShift;
 	static int LeftShift;
-	static HWND hwnd_frame;
 
 	static char* get_rc_string(int uID, int a2);
 	static int get_rc_int(int uID, int* dst);

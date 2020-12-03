@@ -17,15 +17,16 @@
 #include "winmain.h"
 
 int main()
-{
-	std::cout << "Hello World!\n";
+{	
 	{
 		// Testing with UI
 		char cmdLine[1]{};
 		pb::init();
-		WinMain(pinball::hinst, 0, cmdLine, 10);
+		WinMain(winmain::hinst, 0, cmdLine, 10);
+		return 0;
 	}
-
+	
+	std::cout << "Hello World!\n";
 	gdrv::init(0, 0);
 	auto dib = gdrv::DibCreate(8, 1, 1);
 	gdrv::DibSetUsage(dib, 0, 1);

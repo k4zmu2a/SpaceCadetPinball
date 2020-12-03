@@ -6,6 +6,8 @@ class winmain
 public:
 	static char DatFileName[300];
 	static int single_step;
+	static HINSTANCE hinst;
+	static HWND hwnd_frame;
 
 	static int WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nShowCmd);
 	static LRESULT CALLBACK message_handler(HWND hWnd, UINT Msg, WPARAM wParam, LPARAM lParam);

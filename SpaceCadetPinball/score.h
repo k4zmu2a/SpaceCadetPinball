@@ -22,9 +22,15 @@ struct scoreStruct
 	char* Bitmap8Bit10;
 };
 
+struct score_msg_font_type
+{
+	
+};
+
 class score
 {
 public:
+	static score_msg_font_type* msg_fontp;
 	static int init();
 	static scoreStruct* create(LPCSTR fieldName, gdrv_bitmap8* renderBgBmp);
 	static scoreStruct* dup(scoreStruct* score, int scoreIndex);

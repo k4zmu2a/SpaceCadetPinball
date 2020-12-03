@@ -207,6 +207,9 @@
     <ClInclude Include="nudge.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="TTextBoxMessage.h">
+      <Filter>Header Files\TPinballComponent</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="pch.cpp">
@@ -379,6 +382,9 @@
     </ClCompile>
     <ClCompile Include="nudge.cpp">
       <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="TTextBoxMessage.cpp">
+      <Filter>Source Files\TPinballComponent</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

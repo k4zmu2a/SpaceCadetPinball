@@ -58,7 +58,7 @@ int pb::init()
 	}
 
 	render::init(nullptr, zMin, zScaler, tableSize[0], tableSize[1]);
-	gdrv::fill_bitmap(&render::vscreen, render::vscreen.Width, render::vscreen.Height, 0, 0, 0xff); // temp
+	gdrv::fill_bitmap(&render::vscreen, render::vscreen.Width, render::vscreen.Height, 0, 0, (char)0xff); // temp
 	gdrv::copy_bitmap(
 		&render::vscreen,
 		backgroundBmp->Width,
@@ -323,7 +323,7 @@ void pb::keydown(int key)
 		case 'M':
 			char buffer[20];
 			sprintf_s(buffer, "%ld", memory::use_total);
-			MessageBoxA(pinball::hwnd_frame, buffer, "Mem:", 0x2000u);
+			MessageBoxA(winmain::hwnd_frame, buffer, "Mem:", 0x2000u);
 			break;
 		case 'R':
 			cheat_bump_rank();

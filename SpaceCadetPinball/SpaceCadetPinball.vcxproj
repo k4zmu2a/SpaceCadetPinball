@@ -206,6 +206,7 @@
     <ClInclude Include="TSound.h" />
     <ClInclude Include="TTableLayer.h" />
     <ClInclude Include="TTextBox.h" />
+    <ClInclude Include="TTextBoxMessage.h" />
     <ClInclude Include="TTimer.h" />
     <ClInclude Include="TTripwire.h" />
     <ClInclude Include="TWall.h" />
@@ -271,6 +272,7 @@
     <ClCompile Include="TSound.cpp" />
     <ClCompile Include="TTableLayer.cpp" />
     <ClCompile Include="TTextBox.cpp" />
+    <ClCompile Include="TTextBoxMessage.cpp" />
     <ClCompile Include="TTimer.cpp" />
     <ClCompile Include="TTripwire.cpp" />
     <ClCompile Include="TWall.cpp" />

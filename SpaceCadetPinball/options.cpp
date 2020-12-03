@@ -6,6 +6,7 @@
 #include "midi.h"
 #include "pinball.h"
 #include "Sound.h"
+#include "winmain.h"
 
 LPCSTR options::OptionsRegPath;
 LPSTR options::OptionsRegPathCur;
@@ -68,7 +69,7 @@ void options::init(HMENU menuHandle)
 			if (MenuHandle)
 			{
 				DeleteMenu(MenuHandle, 0x195u, 0);
-				DrawMenuBar(pinball::hwnd_frame);
+				DrawMenuBar(winmain::hwnd_frame);
 			}
 		}
 		memory::free(tmpBuf);
@@ -240,7 +241,7 @@ void options::toggle(UINT uIDCheckItem)
 
 void options::keyboard()
 {
-	DialogBoxParamA(pinball::hinst, "KEYMAPPER", pinball::hwnd_frame, KeyMapDlgProc, 0);
+	DialogBoxParamA(winmain::hinst, "KEYMAPPER", winmain::hwnd_frame, KeyMapDlgProc, 0);
 }
 
 INT_PTR _stdcall options::KeyMapDlgProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)

@@ -36,3 +36,13 @@ int timer::init(int count)
 	timer_struct.buffer2 = buf;
 	return 0;
 }
+
+int timer::kill(int timer)
+{
+	return 0;
+}
+
+int timer::set(float time, int caller, int callback)
+{
+	return 0;
+}

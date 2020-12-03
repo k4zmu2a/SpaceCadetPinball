@@ -9,14 +9,29 @@
 #include "pb.h"
 #include "Sound.h"
 
-int winmain::return_value = 0, winmain::bQuit = 0, winmain::activated;
-DWORD winmain::then, winmain::now;
-UINT winmain::iFrostUniqueMsg;
-gdrv_bitmap8 winmain::gfr_display{};
-int winmain::DispFrameRate = 1, winmain::DispGRhistory = 1, winmain::single_step = 0;
-int winmain::has_focus = 1, winmain::last_mouse_x, winmain::last_mouse_y, winmain::mouse_down, winmain::no_time_loss;
-char winmain::DatFileName[300]{};
+HINSTANCE winmain::hinst = nullptr;
+HWND winmain::hwnd_frame = nullptr;
 HCURSOR winmain::mouse_hsave;
+
+int winmain::return_value = 0;
+int winmain::bQuit = 0;
+int winmain::activated;
+int winmain::DispFrameRate = 1;
+int winmain::DispGRhistory = 0;
+int winmain::single_step = 0;
+int winmain::has_focus = 1;
+int winmain::last_mouse_x;
+int winmain::last_mouse_y;
+int winmain::mouse_down;
+int winmain::no_time_loss;
+
+DWORD winmain::then;
+DWORD winmain::now;
+UINT winmain::iFrostUniqueMsg;
+
+gdrv_bitmap8 winmain::gfr_display{};
+char winmain::DatFileName[300]{};
+
 
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nShowCmd)
 {
@@ -41,7 +56,7 @@ int winmain::WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLi
 		}
 
 		options::set_int(regSpaceCadet, "Table Version", 1u);
-		GetModuleFileNameA(pinball::hinst, tmpBuf, 0x1F4u);
+		GetModuleFileNameA(hinst, tmpBuf, 0x1F4u);
 		options::set_string(regSpaceCadet, "Table Exe", tmpBuf);
 		options::set_string(regSpaceCadet, "Table Name", pinball::get_rc_string(169, 0));
 		options::set_string(nullptr, "Last Table Played", regSpaceCadet);
@@ -92,7 +107,7 @@ int winmain::WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLi
 	--memory::critical_allocation;
 
 	pinball::quickFlag = strstr(lpCmdLine, "-quick") != nullptr;
-	pinball::hinst = hInstance;
+	hinst = hInstance;
 	options::get_string(regSpaceCadet, "Pinball Data", DatFileName, pinball::get_rc_string(168, 0), 300);
 
 	iFrostUniqueMsg = RegisterWindowMessageA("PinballThemeSwitcherUniqueMsgString");
@@ -132,7 +147,7 @@ int winmain::WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLi
 	lstrcpyA(windowName, pinball::get_rc_string(38, 0));
 	windowHandle = CreateWindowExA(0, windowClass, windowName, 0x3CA0000u, 0, 0, 640, 480, nullptr, nullptr, hInstance,
 	                               nullptr);
-	pinball::hwnd_frame = windowHandle;
+	hwnd_frame = windowHandle;
 	if (!windowHandle)
 	{
 		PostQuitMessage(0);
@@ -150,9 +165,9 @@ int winmain::WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLi
 		options::menu_check(0x193u, 1);
 	}
 
-	ShowWindow(pinball::hwnd_frame, nShowCmd);
+	ShowWindow(hwnd_frame, nShowCmd);
 	fullscrn::set_screen_mode(options::Options.FullScreen);
-	UpdateWindow(pinball::hwnd_frame);
+	UpdateWindow(hwnd_frame);
 
 	/*if (tmpBuf) //Close splash
 	{
@@ -163,8 +178,8 @@ int winmain::WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLi
 	pinball::adjust_priority(options::Options.PriorityAdj);
 	const auto startTime = timeGetTime();
 	MSG wndMessage{};
-	while (timeGetTime() >= startTime && timeGetTime() - startTime < 2000)
-		PeekMessageA(&wndMessage, pinball::hwnd_frame, 0, 0, 1u);
+	while (timeGetTime() >= startTime && timeGetTime() - startTime < 0)// Don't wait for now, was 2000
+		PeekMessageA(&wndMessage, hwnd_frame, 0, 0, 1u);
 
 	if (strstr(lpCmdLine, "-demo"))
 		pb::toggle_demo();
@@ -185,7 +200,7 @@ int winmain::WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLi
 				{
 					char buf[60];
 					sprintf_s(buf, "Frames/sec = %02.02f", 300.0f / (static_cast<float>(curTime - prevTime) * 0.001f));
-					SetWindowTextA(pinball::hwnd_frame, buf);
+					SetWindowTextA(hwnd_frame, buf);
 
 					if (DispGRhistory)
 					{
@@ -326,10 +341,10 @@ LRESULT CALLBACK winmain::message_handler(HWND hWnd, UINT Msg, WPARAM wParam, LP
 				pb::window_size(&width, &height);
 
 				auto prevCursor = SetCursor(LoadCursorA(nullptr, (LPCSTR)IDC_WAIT));
-				gdrv::init(pinball::hinst, hWnd);
+				gdrv::init(hinst, hWnd);
 
 				auto voiceCount = options::get_int(nullptr, "Voices", 8);
-				if (!Sound::Init(pinball::hinst, voiceCount, nullptr))
+				if (!Sound::Init(hinst, voiceCount, nullptr))
 					options::menu_set(0xC9u, 0);
 				Sound::Activate();
 
@@ -417,10 +432,10 @@ LRESULT CALLBACK winmain::message_handler(HWND hWnd, UINT Msg, WPARAM wParam, LP
 			case VK_ESCAPE:
 				if (options::Options.FullScreen)
 					options::toggle(0x193u);
-				SendMessageA(pinball::hwnd_frame, 0x112u, 0xF020u, 0);
+				SendMessageA(hwnd_frame, 0x112u, 0xF020u, 0);
 				break;
 			case VK_F1:
-				help_introduction(pinball::hinst, hWnd);
+				help_introduction(hinst, hWnd);
 				break;
 			case VK_F2:
 				new_game();
@@ -465,6 +480,7 @@ LRESULT CALLBACK winmain::message_handler(HWND hWnd, UINT Msg, WPARAM wParam, LP
 			case SC_MOVE:
 				if (fullscrn::screen_mode)
 					return 0;
+				break;
 			case SC_MINIMIZE:
 				if (!single_step)
 					pause();
@@ -513,20 +529,20 @@ LRESULT CALLBACK winmain::message_handler(HWND hWnd, UINT Msg, WPARAM wParam, LP
 							"%s %s%lX  %s%lX",
 							tmpBuf,
 							"select=",
-							(int)pinball::hwnd_frame,
+							(int)hwnd_frame,
 							"confirm=",
-							(int)pinball::hwnd_frame
-							* (int)pinball::hwnd_frame
-							* (int)pinball::hwnd_frame
-							* (int)pinball::hwnd_frame
-							* (int)pinball::hwnd_frame
-							* (int)pinball::hwnd_frame
-							* (int)pinball::hwnd_frame);
+							(int)hwnd_frame
+							* (int)hwnd_frame
+							* (int)hwnd_frame
+							* (int)hwnd_frame
+							* (int)hwnd_frame
+							* (int)hwnd_frame
+							* (int)hwnd_frame);
 						if (static_cast<int>(WinExec(cmdLine, 5u)) < 32)
 						{
 							auto caption = pinball::get_rc_string(170, 0);
 							auto text = pinball::get_rc_string(171, 0);
-							MessageBoxA(pinball::hwnd_frame, text, caption, 0x2010u);
+							MessageBoxA(hwnd_frame, text, caption, 0x2010u);
 						}
 						memory::free(tmpBuf);
 					}
@@ -547,7 +563,7 @@ LRESULT CALLBACK winmain::message_handler(HWND hWnd, UINT Msg, WPARAM wParam, LP
 			case 301:
 				if (!single_step)
 					pause();
-				help_introduction(pinball::hinst, hWnd);
+				help_introduction(hinst, hWnd);
 				return DefWindowProcA(hWnd, Msg, wParam, lParam);
 			case 0x6A:
 				pb::end_game();
@@ -572,7 +588,7 @@ LRESULT CALLBACK winmain::message_handler(HWND hWnd, UINT Msg, WPARAM wParam, LP
 			case 0x66u:
 				if (!single_step)
 					pause();
-				a_dialog(pinball::hinst, hWnd);
+				a_dialog(hinst, hWnd);
 				return DefWindowProcA(hWnd, Msg, wParam, lParam);
 			case 0x67u:
 				if (!single_step)
@@ -655,7 +671,7 @@ int winmain::ProcessWindowMessages()
 		}
 		return 1;
 	}
-	GetMessageA(&Msg, pinball::hwnd_frame, 0, 0);
+	GetMessageA(&Msg, hwnd_frame, 0, 0);
 	TranslateMessage(&Msg);
 	DispatchMessageA(&Msg);
 	if (Msg.message == 18)

@@ -9,10 +9,11 @@ class TPinballComponent
 public:
 	TPinballComponent(TPinballTable* table, int groupIndex, bool loadVisuals);
 	virtual ~TPinballComponent();
-	virtual int Message(int message1, float message2);
+	virtual int Message(int code, float value);
 	virtual void port_draw();
 	virtual void put_scoring(int score1, int score2);
 	virtual int get_scoring(int score1);
+	static void control_handler(int code, TPinballComponent* cmp);
 
 	int VfTable;
 	__int8 UnknownBaseFlag1;

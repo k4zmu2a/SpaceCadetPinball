@@ -1,6 +1,7 @@
 #include "pch.h"
 #include "gdrv.h"
 #include "memory.h"
+#include "pinball.h"
 #include "winmain.h"
 
 HPALETTE gdrv::palette_handle = nullptr;
@@ -10,6 +11,9 @@ LOGPALETTEx256 gdrv::current_palette{};
 int gdrv::sequence_handle;
 HDC gdrv::sequence_hdc;
 int gdrv::use_wing = 0;
+int gdrv::grtext_blue = 0;
+int gdrv::grtext_green = 0;
+int gdrv::grtext_red = -1;
 
 
 int gdrv::init(HINSTANCE hInst, HWND hWnd)
@@ -389,4 +393,31 @@ void gdrv::copy_bitmap_w_transparency(gdrv_bitmap8* dstBmp, int width, int heigh
 		srcPtr += srcBmp->Stride - width;
 		dstPtr += dstBmp->Stride - width;
 	}
+}
+
+
+void gdrv::grtext_draw_ttext_in_box(LPCSTR text, int xOff, int yOff, int width, int height, int a6)
+{
+	tagRECT rc{};
+
+	HDC dc = GetDC(hwnd);
+	rc.left = xOff;
+	rc.right = width + xOff;
+	rc.top = yOff;
+	rc.bottom = height + yOff;
+	if (grtext_red < 0)
+	{
+		grtext_blue = 255;
+		grtext_green = 255;
+		grtext_red = 255;
+		const char* fontColor = pinball::get_rc_string(189, 0);
+		if (fontColor)
+			sscanf_s(fontColor, "%d %d %d", &grtext_red, &grtext_green, &grtext_blue);
+	}
+	int prevMode = SetBkMode(dc, 1);
+	COLORREF color = SetTextColor(dc, (grtext_red) | (grtext_green << 8) | (grtext_blue << 16));
+	DrawTextA(dc, text, lstrlenA(text), &rc, 0x810u);
+	SetBkMode(dc, prevMode);
+	SetTextColor(dc, color);
+	ReleaseDC(hwnd, dc);
 }

@@ -42,8 +42,6 @@ class gdrv
 {
 public:
 	static HPALETTE palette_handle;
-	static HINSTANCE hinst;
-	static HWND hwnd;
 	static LOGPALETTEx256 current_palette;
 	static int sequence_handle;
 	static HDC sequence_hdc;
@@ -70,5 +68,11 @@ public:
 	                        int srcXOff, int srcYOff);
 	static void copy_bitmap_w_transparency(gdrv_bitmap8* dstBmp, int width, int height, int xOff, int yOff,
 	                                       gdrv_bitmap8* srcBmp, int srcXOff, int srcYOff);
+	static void grtext_draw_ttext_in_box(LPCSTR text, int xOff, int yOff, int width, int height, int a6);
 private:
+	static HWND hwnd;
+	static HINSTANCE hinst;
+	static int grtext_blue;
+	static int grtext_green;
+	static int grtext_red;
 };
