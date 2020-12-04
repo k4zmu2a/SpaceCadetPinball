@@ -5,6 +5,7 @@
 #include "memory.h"
 #include "midi.h"
 #include "pinball.h"
+#include "resource.h"
 #include "Sound.h"
 #include "winmain.h"
 
@@ -68,12 +69,26 @@ void options::init(HMENU menuHandle)
 		{
 			if (MenuHandle)
 			{
-				DeleteMenu(MenuHandle, 0x195u, 0);
+				DeleteMenu(MenuHandle, Menu1_Select_Table, 0);
 				DrawMenuBar(winmain::hwnd_frame);
 			}
 		}
 		memory::free(tmpBuf);
 	}
+}
+
+void options::uninit()
+{
+	set_int(nullptr, "Sounds", Options.Sounds);
+	set_int(nullptr, "Music", Options.Music);
+	set_int(nullptr, "FullScreen", Options.FullScreen);
+	set_int(nullptr, "Players", Options.Players);
+	set_int(nullptr, "Left Flippper key", Options.LeftFlipperKey);
+	set_int(nullptr, "Right Flipper key", Options.RightFlipperKey);
+	set_int(nullptr, "Plunger key", Options.PlungerKey);
+	set_int(nullptr, "Left Table Bump key", Options.LeftTableBumpKey);
+	set_int(nullptr, "Right Table Bump key", Options.RightTableBumpKey);
+	set_int(nullptr, "Bottom Table Bump key", Options.BottomTableBumpKey);
 }
 
 void options::path_init(LPCSTR regPath)
@@ -207,13 +222,13 @@ void options::toggle(UINT uIDCheckItem)
 	int newValue;
 	switch (uIDCheckItem)
 	{
-	case 0xC9u:
+	case Menu1_Sounds:
 		newValue = Options.Sounds == 0;
 		Options.Sounds = Options.Sounds == 0;
 		Sound::Enable(0, 7, newValue);
 		menu_check(uIDCheckItem, newValue);
 		return;
-	case 0xCAu:
+	case Menu1_Music:
 		newValue = Options.Music == 0;
 		Options.Music = Options.Music == 0;
 		if (!newValue)
@@ -222,7 +237,7 @@ void options::toggle(UINT uIDCheckItem)
 			midi::play_pb_theme(0);
 		menu_check(uIDCheckItem, newValue);
 		return;
-	case 0x193u:
+	case Menu1_Full_Screen:
 		newValue = Options.FullScreen == 0;
 		Options.FullScreen = Options.FullScreen == 0;
 		fullscrn::set_screen_mode(newValue);
@@ -232,7 +247,7 @@ void options::toggle(UINT uIDCheckItem)
 	if (uIDCheckItem > 407 && uIDCheckItem <= 411)
 	{
 		Options.Players = uIDCheckItem - 407;
-		menu_check(0x198u, uIDCheckItem == 408);
+		menu_check(0x198u, Options.Players == 1);
 		menu_check(0x199u, Options.Players == 2);
 		menu_check(0x19Au, Options.Players == 3);
 		menu_check(0x19Bu, Options.Players == 4);

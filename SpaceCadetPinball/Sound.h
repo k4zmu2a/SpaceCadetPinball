@@ -9,4 +9,6 @@ public:
 	static void Activate();
 	static void Deactivate();
 	static void Close();
+	static int SubFactor(int a1, int a2);
+	static int AddFactor(int a1, int a2);
 };

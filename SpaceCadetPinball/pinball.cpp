@@ -25,7 +25,7 @@ char* pinball::get_rc_string(int uID, int a2)
 
 int pinball::get_rc_int(int uID, int* dst)
 {
-	char buffer[50];
+	char buffer[255];
 	int result = LoadStringA(winmain::hinst, uID, buffer, 255);
 	if (!result)
 		return result;
@@ -38,7 +38,7 @@ void pinball::FindShiftKeys()
 {
 	signed int i; // esi
 	int rightShift; // eax   
-	CHAR stringBuf[10]; // [esp+Ch] [ebp-18h]
+	CHAR stringBuf[20]; // [esp+Ch] [ebp-18h]
 
 	RightShift = -1;
 	LeftShift = -1;

@@ -12,6 +12,7 @@ public:
 	static TPinballTable* MainTable;
 
 	static int init();
+	static int uninit();
 	static void reset_table();
 	static void firsttime_setup();
 	static void paint();

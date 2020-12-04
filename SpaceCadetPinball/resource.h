@@ -104,10 +104,14 @@
 #define IDS_STRING200                   99
 #define IDS_STRING201                   100
 #define IDS_STRING202                   101
+#define Menu1_New_Game                  101
 #define IDS_STRING203                   102
+#define Menu1_About_Pinball             102
 #define IDS_STRING204                   103
+#define Menu1_High_Scores               103
 #define IDS_STRING205                   104
 #define IDS_STRING206                   105
+#define Menu1_Exit                      105
 #define IDS_STRING207                   106
 #define IDS_STRING208                   107
 #define IDS_STRING209                   108
@@ -191,13 +195,27 @@
 #define IDS_STRING287                   187
 #define IDS_STRING288                   188
 #define IDS_STRING289                   189
+#define Menu1_Sounds                    201
+#define Menu1_Music                     202
+#define Menu1_Help_Topics               301
+#define Menu1_Launch_Ball               401
+#define Menu1_Pause_Resume_Game         402
+#define Menu1_Full_Screen               403
+#define Menu1_Demo                      404
+#define Menu1_Select_Table              405
+#define Menu1_Player_Controls           406
+#define Menu1_1Player                   408
+#define Menu1_2Players                  409
+#define Menu1_3Players                  410
+#define Menu1_4Players                  411
+#define ID_GAME_D                       40003
 
 // Next default values for new objects
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NEXT_RESOURCE_VALUE        201
-#define _APS_NEXT_COMMAND_VALUE         40002
+#define _APS_NEXT_COMMAND_VALUE         40004
 #define _APS_NEXT_CONTROL_VALUE         1001
 #define _APS_NEXT_SYMED_VALUE           101
 #endif

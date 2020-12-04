@@ -54,3 +54,7 @@ HRSRC score::load_msg_font(LPCSTR lpName)
 {
 	return nullptr;
 }
+
+void score::unload_msg_font()
+{
+}

@@ -1,12 +1,21 @@
 #pragma once
 
+struct __declspec(align(4)) timer_sub_struct
+{
+	int TargetTime;
+	void* Caller;
+	void (* Callback)(int, void*);
+	timer_sub_struct* NextTimer;
+	int TimerId;
+};
+
 struct __declspec(align(4)) timer_struct
 {
-	int target2;
-	int count;
-	int target;
-	char* buffer2;
-	char* buffer1;
+	timer_sub_struct* NextTimer;
+	int MaxCount;
+	int Count;
+	timer_sub_struct* LastTimer;
+	timer_sub_struct* TimerMem;
 };
 
 
@@ -14,10 +23,12 @@ class timer
 {
 public:
 	static int init(int count);
-	static int kill(int timer);
-	static int set(float time, int caller, int callback);
+	static void uninit();
+	static int kill(int timerId);
+	static int set(float time, void* caller, void (* callback)(int, void*));
+	static int check();
 
 private:
-	static timer_struct timer_struct;
-	static int setCount;
+	static timer_struct timerStruct;
+	static int set_count;
 };

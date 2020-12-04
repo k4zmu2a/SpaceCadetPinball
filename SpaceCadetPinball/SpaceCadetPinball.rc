@@ -64,36 +64,36 @@ MENU_1 MENU
 BEGIN
     POPUP "&Game"
     BEGIN
-        MENUITEM "&New Game\tF2",               101
-        MENUITEM "&Launch Ball",                401
-        MENUITEM "&Pause/Resume Game\tF3",      402
+        MENUITEM "&New Game\tF2",               Menu1_New_Game
+        MENUITEM "&Launch Ball",                Menu1_Launch_Ball
+        MENUITEM "&Pause/Resume Game\tF3",      Menu1_Pause_Resume_Game
         MENUITEM SEPARATOR
-        MENUITEM "&High Scores...",             103
-        MENUITEM "&Demo",                       404
-        MENUITEM "E&xit",                       105
+        MENUITEM "&High Scores...",             Menu1_High_Scores
+        MENUITEM "&Demo",                       Menu1_Demo
+        MENUITEM "E&xit",                       Menu1_Exit
     END
     POPUP "&Options"
     BEGIN
-        MENUITEM "&Full Screen\tF4",            403
-        MENUITEM "Select &Table",               405
+        MENUITEM "&Full Screen\tF4",            Menu1_Full_Screen
+        MENUITEM "Select &Table",               Menu1_Select_Table
         POPUP "Select &Players"
         BEGIN
-            MENUITEM "&1 Player",                   408
-            MENUITEM "&2 Players",                  409
-            MENUITEM "&3 Players",                  410
-            MENUITEM "&4 Players",                  411
+            MENUITEM "&1 Player",                   Menu1_1Player
+            MENUITEM "&2 Players",                  Menu1_2Players
+            MENUITEM "&3 Players",                  Menu1_3Players
+            MENUITEM "&4 Players",                  Menu1_4Players
         END
         MENUITEM SEPARATOR
-        MENUITEM "&Sounds",                     201
-        MENUITEM "&Music",                      202
+        MENUITEM "&Sounds",                     Menu1_Sounds
+        MENUITEM "&Music",                      Menu1_Music
         MENUITEM SEPARATOR
-        MENUITEM "P&layer Controls...\tF8",     406
+        MENUITEM "P&layer Controls...\tF8",     Menu1_Player_Controls
     END
     POPUP "&Help"
     BEGIN
-        MENUITEM "&Help Topics\tF1",            301
+        MENUITEM "&Help Topics\tF1",            Menu1_Help_Topics
         MENUITEM SEPARATOR
-        MENUITEM "&About Pinball",              102
+        MENUITEM "&About Pinball",              Menu1_About_Pinball
     END
 END
 

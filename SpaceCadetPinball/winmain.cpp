@@ -8,6 +8,7 @@
 #include "options.h"
 #include "pb.h"
 #include "Sound.h"
+#include "resource.h"
 
 HINSTANCE winmain::hinst = nullptr;
 HWND winmain::hwnd_frame = nullptr;
@@ -68,6 +69,7 @@ int winmain::WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLi
 			if (tmpBuf2)
 			{
 				char Buffer[40];
+				bool setOption = false;
 				for (int i = 0; i < 32700; ++i)
 				{
 					sprintf_s(Buffer, "Table%d", i);
@@ -76,12 +78,15 @@ int winmain::WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLi
 						break;
 					options::get_string(tmpBuf, "Table Name", tmpBuf2, pinball::WindowName, 500);
 					if (!lstrcmpA(tmpBuf2, pinball::get_rc_string(169, 0)))
-						goto LABEL_15;
+					{
+						setOption = false;
+						break;
+					}
 					if (!*tmpBuf2)
 						break;
 				}
-				options::set_string(nullptr, Buffer, regSpaceCadet);
-			LABEL_15:
+				if (setOption)
+					options::set_string(nullptr, Buffer, regSpaceCadet);
 				memory::free(tmpBuf2);
 			}
 			memory::free(tmpBuf);
@@ -111,7 +116,8 @@ int winmain::WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLi
 	options::get_string(regSpaceCadet, "Pinball Data", DatFileName, pinball::get_rc_string(168, 0), 300);
 
 	iFrostUniqueMsg = RegisterWindowMessageA("PinballThemeSwitcherUniqueMsgString");
-	auto windowHandle = FindWindowA(pinball::get_rc_string(167, 0), nullptr);
+	auto windowClass = pinball::get_rc_string(167, 0);
+	auto windowHandle = FindWindowA(windowClass, nullptr);
 	if (windowHandle)
 	{
 		SendMessageA(windowHandle, iFrostUniqueMsg, 0, 0);
@@ -125,8 +131,7 @@ int winmain::WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLi
 	picce.dwSize = 8;
 	picce.dwICC = 5885;
 	InitCommonControlsEx(&picce);
-
-	auto windowClass = pinball::get_rc_string(167, 0);
+	
 	WNDCLASSA WndClass{};
 	WndClass.style = 4104;
 	WndClass.lpfnWndProc = message_handler;
@@ -178,7 +183,7 @@ int winmain::WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLi
 	pinball::adjust_priority(options::Options.PriorityAdj);
 	const auto startTime = timeGetTime();
 	MSG wndMessage{};
-	while (timeGetTime() >= startTime && timeGetTime() - startTime < 0)// Don't wait for now, was 2000
+	while (timeGetTime() >= startTime && timeGetTime() - startTime < 0) // Don't wait for now, was 2000
 		PeekMessageA(&wndMessage, hwnd_frame, 0, 0, 1u);
 
 	if (strstr(lpCmdLine, "-demo"))
@@ -277,7 +282,7 @@ int winmain::WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLi
 						{
 							fillChar = -7;
 						}
-						gdrv::fill_bitmap(&gfr_display, 1, 10, 299u - someTimeCounter, 0, fillChar);
+						gdrv::fill_bitmap(&gfr_display, 1, 10, 299 - someTimeCounter, 0, fillChar);
 					}
 					--someTimeCounter;
 					then = now;
@@ -286,6 +291,15 @@ int winmain::WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLi
 		}
 	}
 
+	gdrv::destroy_bitmap(&gfr_display);
+	options::uninit();
+	midi::music_shutdown();
+	pb::uninit();
+	Sound::Close();
+	gdrv::uninit();
+	DestroyWindow(hwnd_frame);
+	options::path_uninit();
+	UnregisterClassA(windowClass, hinst);
 	return return_value;
 }
 
@@ -499,23 +513,18 @@ LRESULT CALLBACK winmain::message_handler(HWND hWnd, UINT Msg, WPARAM wParam, LP
 			no_time_loss = 1;
 			switch (wParam)
 			{
-			case 0x191u:
+			case Menu1_Launch_Ball:
 				end_pause();
 				pb::launch_ball();
 				break;
-			case 0x192u:
+			case Menu1_Pause_Resume_Game:
 				pause();
 				break;
-			case 0x193u:
-				if (!single_step)
-					pause();
-				options::toggle(wParam);
-				break;
-			case 0x194u:
+			case Menu1_Demo:
 				end_pause();
 				pb::toggle_demo();
 				break;
-			case 0x195u:
+			case Menu1_Select_Table:
 				{
 					if (!single_step)
 						pause();
@@ -548,55 +557,53 @@ LRESULT CALLBACK winmain::message_handler(HWND hWnd, UINT Msg, WPARAM wParam, LP
 					}
 					break;
 				}
-			case 0x196u:
-				if (!single_step)
-					pause();
-				options::keyboard();
-				break;
-			case 0x198u:
-			case 0x199u:
-			case 0x19Au:
-			case 0x19Bu:
+			case Menu1_1Player:
+			case Menu1_2Players:
+			case Menu1_3Players:
+			case Menu1_4Players:
 				options::toggle(wParam);
 				new_game();
 				break;
-			case 301:
+			case Menu1_Help_Topics:
 				if (!single_step)
 					pause();
 				help_introduction(hinst, hWnd);
-				return DefWindowProcA(hWnd, Msg, wParam, lParam);
-			case 0x6A:
+				break;
+			case 106: // End game button?
 				pb::end_game();
-				return DefWindowProcA(hWnd, Msg, wParam, lParam);
-			case 201:
-			case 202:
+				break;
+			case Menu1_Full_Screen:
+			case Menu1_Sounds:
+			case Menu1_Music:
 				if (!single_step)
 					pause();
 				options::toggle(wParam);
 				break;
-			case 204:
+			case Menu1_Player_Controls:
+			case 204: // Second controls button?
 				if (!single_step)
 					pause();
 				options::keyboard();
 				break;
-			case 0x69u:
-				PostMessageA(hWnd, 0x12u, 0, 0);
-				return DefWindowProcA(hWnd, Msg, wParam, lParam);
-			case 0x65u:
+			case Menu1_Exit:
+				PostMessageA(hWnd, WM_QUIT, 0, 0);
+				break;
+			case Menu1_New_Game:
 				new_game();
-				return DefWindowProcA(hWnd, Msg, wParam, lParam);
-			case 0x66u:
+				break;
+			case Menu1_About_Pinball:
 				if (!single_step)
 					pause();
 				a_dialog(hinst, hWnd);
-				return DefWindowProcA(hWnd, Msg, wParam, lParam);
-			case 0x67u:
+				break;
+			case Menu1_High_Scores:
 				if (!single_step)
 					pause();
 				pb::high_scores();
-				return DefWindowProcA(hWnd, Msg, wParam, lParam);
-			case 1:
+				break;
+			case 1: // Unknown button
 				midi::restart_midi_seq(lParam);
+				break;
 			default:
 				break;
 			}

@@ -58,7 +58,8 @@ int pb::init()
 	}
 
 	render::init(nullptr, zMin, zScaler, tableSize[0], tableSize[1]);
-	gdrv::fill_bitmap(&render::vscreen, render::vscreen.Width, render::vscreen.Height, 0, 0, (char)0xff); // temp
+	gdrv::fill_bitmap(&render::vscreen, render::vscreen.Width, render::vscreen.Height, 0, 0,
+	                  static_cast<char>(0xff)); // temp
 	gdrv::copy_bitmap(
 		&render::vscreen,
 		backgroundBmp->Width,
@@ -88,6 +89,21 @@ int pb::init()
 	//ball_speed_limit = v11 * 200.0;
 
 	--memory::critical_allocation;
+	return 0;
+}
+
+int pb::uninit()
+{
+	score::unload_msg_font();
+	loader::unload();
+	partman::unload_records(record_table);
+	//high_score_write(highscore_table, (int)&pb_state);
+	if (MainTable)
+		delete MainTable;
+	MainTable = nullptr;
+	gdrv::get_focus();
+	timer::uninit();
+	render::uninit();
 	return 0;
 }
 
@@ -166,7 +182,7 @@ int pb::frame(int time)
 				v2 = 0.0;
 			nudge_count = v2;
 		}*/
-		//timer::check();
+		timer::check();
 		render::update();
 		//score::update(MainTable->Score1);
 		/*if (!MainTable->UnknownP83)

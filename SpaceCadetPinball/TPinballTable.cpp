@@ -219,7 +219,7 @@ TPinballTable::~TPinballTable()
 	{
 		//if (i)
 		//(*(void(__thiscall**)(TLightGroup*, int))(*(_DWORD*)i + 16))(i, 1);
-		if (!ListP1->Count())
+		//if (!ListP1->Count())
 			break;
 	}
 	delete ListP2;

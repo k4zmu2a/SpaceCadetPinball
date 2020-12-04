@@ -27,6 +27,7 @@ class options
 {
 public:
 	static void init(HMENU menuHandle);
+	static void uninit();
 	static void path_init(LPCSTR regPath);
 	static void path_uninit();
 	static int get_int(LPCSTR optPath, LPCSTR lpValueName, int defaultValue);

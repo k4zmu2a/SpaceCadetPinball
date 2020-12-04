@@ -8,4 +8,6 @@ public:
 	TRamp(TPinballTable* table, int groupIndex) : TCollisionComponent(table, groupIndex, false)
 	{
 	}
+
+	void port_draw() override;
 };

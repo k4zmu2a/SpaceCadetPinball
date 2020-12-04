@@ -6,4 +6,5 @@ public:
 	static MCIERROR music_stop();
 	static int music_init(HWND hwnd);
 	static MCIERROR restart_midi_seq(int param);
+	static MCIERROR music_shutdown();
 };

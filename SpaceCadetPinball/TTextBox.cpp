@@ -50,8 +50,9 @@ int TTextBox::Message(int code, float value)
 	return 0;
 }
 
-void TTextBox::TimerExpired(int a2, TTextBox* tb)
+void TTextBox::TimerExpired(int timerId, void* caller)
 {
+	auto tb = static_cast<TTextBox*>(caller);
 	TTextBoxMessage* message = tb->Message1;
 	tb->Timer = 0;
 	if (message)
@@ -117,7 +118,7 @@ void TTextBox::Display(char* text, float time)
 			if (time == -1.0)
 				Timer = -1;
 			else
-				Timer = timer::set(time, (int)this, (int)TimerExpired);
+				Timer = timer::set(time, this, TimerExpired);
 		}
 	}
 	else
@@ -205,11 +206,11 @@ void TTextBox::Draw()
 				int timer;
 				if (timeLeft >= 0.25f)
 				{
-					timer = timer::set(timeLeft, (int)this2, (int)TimerExpired);
+					timer = timer::set(timeLeft, this2, TimerExpired);
 				}
 				else
 				{
-					timer = timer::set(0.25, (int)this2, (int)TimerExpired);
+					timer = timer::set(0.25, this2, TimerExpired);
 				}
 				this2->Timer = timer;
 				goto LABEL_18;

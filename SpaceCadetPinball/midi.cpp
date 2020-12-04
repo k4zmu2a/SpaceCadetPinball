@@ -3,20 +3,25 @@
 
 MCIERROR midi::play_pb_theme(int flag)
 {
-    return MCIERROR();
+	return MCIERROR();
 }
 
 MCIERROR midi::music_stop()
 {
-    return MCIERROR();
+	return MCIERROR();
 }
 
 int midi::music_init(HWND hwnd)
 {
-    return 1;
+	return 1;
 }
 
 MCIERROR midi::restart_midi_seq(int param)
 {
-    return MCIERROR();
+	return MCIERROR();
+}
+
+MCIERROR midi::music_shutdown()
+{
+	return MCIERROR();
 }

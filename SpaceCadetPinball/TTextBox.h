@@ -24,5 +24,5 @@ public:
 	void Display(char* text, float time);
 	void Draw();
 
-	static void TimerExpired(int a2, TTextBox* tb);
+	static void TimerExpired(int timerId, void* tb);
 };
