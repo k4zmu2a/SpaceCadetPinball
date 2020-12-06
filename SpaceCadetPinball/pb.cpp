@@ -1,6 +1,7 @@
 #include "pch.h"
 #include "pb.h"
 
+#include "high_score.h"
 #include "memory.h"
 #include "pinball.h"
 #include "proj.h"
@@ -11,12 +12,14 @@
 #include "options.h"
 #include "timer.h"
 #include "winmain.h"
+#include "resource.h"
 
 TPinballTable* pb::MainTable = nullptr;
 datFileStruct* pb::record_table = nullptr;
 int pb::time_ticks = 0, pb::demo_mode = 0, pb::cheat_mode = 0, pb::game_mode = 2, pb::mode_countdown_, pb::
-    ball_speed_limit;
+    ball_speed_limit, pb::state;
 float pb::time_now, pb::time_next;
+char pb::highscore_table[32];
 
 int pb::init()
 {
@@ -58,8 +61,7 @@ int pb::init()
 	}
 
 	render::init(nullptr, zMin, zScaler, tableSize[0], tableSize[1]);
-	gdrv::fill_bitmap(&render::vscreen, render::vscreen.Width, render::vscreen.Height, 0, 0,
-	                  static_cast<char>(0xff)); // temp
+	gdrv::fill_bitmap(&render::vscreen, render::vscreen.Width, render::vscreen.Height, 0, 0, '\xFF'); // temp
 	gdrv::copy_bitmap(
 		&render::vscreen,
 		backgroundBmp->Width,
@@ -84,7 +86,7 @@ int pb::init()
 
 	MainTable = new TPinballTable();
 
-	//high_score_read(highscore_table, (int)&pb_state);
+	high_score::read(highscore_table, &state);
 	//v11 = *(float*)((char*)MainTable->ListP2.ListPtr->Array[0] + 154);
 	//ball_speed_limit = v11 * 200.0;
 
@@ -97,7 +99,7 @@ int pb::uninit()
 	score::unload_msg_font();
 	loader::unload();
 	partman::unload_records(record_table);
-	//high_score_write(highscore_table, (int)&pb_state);
+	high_score::write(highscore_table, &state);
 	if (MainTable)
 		delete MainTable;
 	MainTable = nullptr;
@@ -128,6 +130,52 @@ void pb::paint()
 
 void pb::mode_change(int mode)
 {
+	switch (mode)
+	{
+	case 1:
+		if (demo_mode)
+		{
+			options::menu_set(Menu1_Launch_Ball, 0);
+			options::menu_set(Menu1_High_Scores, 0);
+			options::menu_check(Menu1_Demo, 1);
+			if (MainTable)
+			{
+				/*v2 = MainTable->UnknownP48;
+				if (v2)
+					*(_BYTE*)(v2 + 5) = 1;*/
+			}
+		}
+		else
+		{
+			options::menu_set(Menu1_High_Scores, 1);
+			options::menu_set(Menu1_Launch_Ball, 1);
+			options::menu_check(Menu1_Demo, 0);
+			if (MainTable)
+			{
+				/*v1 = MainTable->UnknownP48;
+				if (v1)
+					*(_BYTE*)(v1 + 5) = 0;*/
+			}
+		}
+		break;
+	case 2:
+		options::menu_set(Menu1_Launch_Ball, 0);
+		if (!demo_mode)
+		{
+			options::menu_set(Menu1_High_Scores, 1);
+			options::menu_check(Menu1_Demo, 0);
+		}
+		if (MainTable && MainTable->LightGroup)
+			MainTable->LightGroup->Message(29, 1.4f);
+		break;
+	case 3:
+	case 4:
+		options::menu_set(Menu1_Launch_Ball, 0);
+		options::menu_set(Menu1_High_Scores, 0);
+		mode_countdown_ = 5000;
+		break;
+	}
+	game_mode = mode;
 }
 
 void pb::toggle_demo()
@@ -151,8 +199,8 @@ void pb::replay_level(int demoMode)
 {
 	demo_mode = demoMode;
 	mode_change(1);
-	//if (options::Options.Music)
-	midi::play_pb_theme(0);
+	if (options::Options.Music)
+		midi::play_pb_theme(0);
 	MainTable->Message(1014, static_cast<float>(options::Options.Players));
 }
 
@@ -388,6 +436,7 @@ int pb::cheat_bump_rank()
 
 void pb::launch_ball()
 {
+	MainTable->Plunger->Message(1017, 0.0f);
 }
 
 int pb::end_game()
@@ -397,4 +446,5 @@ int pb::end_game()
 
 void pb::high_scores()
 {
+	high_score::show_high_score_dialog(highscore_table);
 }

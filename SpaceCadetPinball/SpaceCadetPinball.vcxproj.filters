@@ -210,6 +210,9 @@
     <ClInclude Include="TTextBoxMessage.h">
       <Filter>Header Files\TPinballComponent</Filter>
     </ClInclude>
+    <ClInclude Include="high_score.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="pch.cpp">
@@ -385,6 +388,9 @@
     </ClCompile>
     <ClCompile Include="TTextBoxMessage.cpp">
       <Filter>Source Files\TPinballComponent</Filter>
+    </ClCompile>
+    <ClCompile Include="high_score.cpp">
+      <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

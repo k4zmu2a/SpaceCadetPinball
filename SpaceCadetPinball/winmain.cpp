@@ -131,7 +131,7 @@ int winmain::WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLi
 	picce.dwSize = 8;
 	picce.dwICC = 5885;
 	InitCommonControlsEx(&picce);
-	
+
 	WNDCLASSA WndClass{};
 	WndClass.style = 4104;
 	WndClass.lpfnWndProc = message_handler;
@@ -167,7 +167,7 @@ int winmain::WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLi
 	if (strstr(lpCmdLine, "-fullscreen"))
 	{
 		options::Options.FullScreen = 1;
-		options::menu_check(0x193u, 1);
+		options::menu_check(Menu1_Full_Screen, 1);
 	}
 
 	ShowWindow(hwnd_frame, nShowCmd);
@@ -331,7 +331,7 @@ LRESULT CALLBACK winmain::message_handler(HWND hWnd, UINT Msg, WPARAM wParam, LP
 			{
 				activated = 0;
 				fullscrn::activate(0);
-				options::menu_check(0x193u, 0);
+				options::menu_check(Menu1_Full_Screen, 0);
 				options::Options.FullScreen = 0;
 				SetThreadPriority(GetCurrentThread(), 0);
 				Sound::Deactivate();
@@ -359,11 +359,11 @@ LRESULT CALLBACK winmain::message_handler(HWND hWnd, UINT Msg, WPARAM wParam, LP
 
 				auto voiceCount = options::get_int(nullptr, "Voices", 8);
 				if (!Sound::Init(hinst, voiceCount, nullptr))
-					options::menu_set(0xC9u, 0);
+					options::menu_set(Menu1_Sounds, 0);
 				Sound::Activate();
 
 				if (!pinball::quickFlag && !midi::music_init(hWnd))
-					options::menu_set(0xCAu, 0);
+					options::menu_set(Menu1_Music, 0);
 
 				if (pb::init())
 					_exit(0);
@@ -432,7 +432,7 @@ LRESULT CALLBACK winmain::message_handler(HWND hWnd, UINT Msg, WPARAM wParam, LP
 			if (fullscrn::displaychange())
 			{
 				options::Options.FullScreen = 0;
-				options::menu_check(0x193u, 0);
+				options::menu_check(Menu1_Full_Screen, 0);
 			}
 			return DefWindowProcA(hWnd, Msg, wParam, lParam);
 		case WM_KEYUP:
@@ -640,7 +640,7 @@ LRESULT CALLBACK winmain::message_handler(HWND hWnd, UINT Msg, WPARAM wParam, LP
 			if (wParam == 4 && options::Options.FullScreen)
 			{
 				options::Options.FullScreen = 0;
-				options::menu_check(0x193u, 0);
+				options::menu_check(Menu1_Full_Screen, 0);
 				fullscrn::set_screen_mode(options::Options.FullScreen);
 			}
 			return DefWindowProcA(hWnd, Msg, wParam, lParam);

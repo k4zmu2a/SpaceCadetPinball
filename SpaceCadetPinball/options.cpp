@@ -53,14 +53,14 @@ void options::init(HMENU menuHandle)
 	Options.LeftTableBumpKey = get_int(nullptr, "Left Table Bump key", Options.LeftTableBumpKey);
 	Options.RightTableBumpKey = get_int(nullptr, "Right Table Bump key", Options.RightTableBumpKey);
 	Options.BottomTableBumpKey = get_int(nullptr, "Bottom Table Bump key", Options.BottomTableBumpKey);
-	menu_check(0xC9u, Options.Sounds);
+	menu_check(Menu1_Sounds, Options.Sounds);
 	Sound::Enable(0, 7, Options.Sounds);
-	menu_check(0xCAu, Options.Music);
-	menu_check(0x193u, Options.FullScreen);
-	menu_check(0x198u, Options.Players == 1);
-	menu_check(0x199u, Options.Players == 2);
-	menu_check(0x19Au, Options.Players == 3);
-	menu_check(0x19Bu, Options.Players == 4);
+	menu_check(Menu1_Music, Options.Music);
+	menu_check(Menu1_Full_Screen, Options.FullScreen);
+	menu_check(Menu1_1Player, Options.Players == 1);
+	menu_check(Menu1_2Players, Options.Players == 2);
+	menu_check(Menu1_3Players, Options.Players == 3);
+	menu_check(Menu1_4Players, Options.Players == 4);
 	auto tmpBuf = memory::allocate(0x1F4u);
 	if (tmpBuf)
 	{
@@ -247,10 +247,10 @@ void options::toggle(UINT uIDCheckItem)
 	if (uIDCheckItem > 407 && uIDCheckItem <= 411)
 	{
 		Options.Players = uIDCheckItem - 407;
-		menu_check(0x198u, Options.Players == 1);
-		menu_check(0x199u, Options.Players == 2);
-		menu_check(0x19Au, Options.Players == 3);
-		menu_check(0x19Bu, Options.Players == 4);
+		menu_check(Menu1_1Player, Options.Players == 1);
+		menu_check(Menu1_2Players, Options.Players == 2);
+		menu_check(Menu1_3Players, Options.Players == 3);
+		menu_check(Menu1_4Players, Options.Players == 4);
 	}
 }
 

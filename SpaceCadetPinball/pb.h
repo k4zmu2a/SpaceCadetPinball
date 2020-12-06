@@ -35,4 +35,6 @@ public:
 private :
 	static int demo_mode, mode_countdown_;
 	static float time_now, time_next;
+	static char highscore_table[32];
+	static int state;
 };
