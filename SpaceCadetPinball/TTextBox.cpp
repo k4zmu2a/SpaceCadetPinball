@@ -196,6 +196,65 @@ void TTextBox::Draw()
 						255);
 					return;
 				}
+				auto text = this2->Message1->Text;
+				for (auto y = this2->OffsetY; ; y += font->Height)
+				{
+					auto curChar = *text;
+					if (!curChar || y + font->Height > this2->OffsetY + this2->Height)
+						break;
+
+					auto totalWidth = 0;
+					char* textEndSpace = nullptr;
+					auto textEnd = text;
+					while (true)
+					{
+						auto maskedChar = curChar & 0x7F;
+						if (!maskedChar || maskedChar == '\n')
+							break;
+						auto charBmp = font->Chars[maskedChar];
+						if (charBmp)
+						{
+							auto width = charBmp->Width + font->GapWidth + totalWidth;
+							if (width > this2->Width)
+							{
+								if (textEndSpace)
+									textEnd = textEndSpace;
+								break;
+							}
+							if (*textEnd == ' ')
+								textEndSpace = textEnd;
+							curChar = *(textEnd + 1);
+							totalWidth = width;
+							++textEnd;
+						}
+						else
+						{
+							curChar = *textEnd;
+						}
+					}
+
+					auto offX = this2->OffsetX;
+					while (text < textEnd)
+					{
+						auto charBmp = font->Chars[*text++ & 0x7F];
+						if (charBmp)
+						{
+							auto height = charBmp->Height;
+							auto width = charBmp->Width;
+							if (render::background_bitmap)
+								gdrv::copy_bitmap_w_transparency(&render::vscreen, width, height, offX, y, charBmp, 0, 0);
+							else
+								gdrv::copy_bitmap(&render::vscreen, width, height, offX, y, charBmp, 0, 0);
+							font = this2->Font;
+							offX += charBmp->Width + font->GapWidth;
+						}
+					}
+					while ((*text & 0x7F) == ' ')
+						++text;
+					if ((*text & 0x7F) == '\n')
+						++text;
+				}
+				break;
 			}
 		}
 		else

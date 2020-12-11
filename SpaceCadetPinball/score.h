@@ -24,7 +24,19 @@ struct scoreStruct
 
 struct score_msg_font_type
 {
+	int GapWidth;
+	int Height;
+	gdrv_bitmap8* Chars[128];
 };
+
+struct score_font_rc
+{
+	short Header0;
+	short Header1;
+	short Height;
+	char SomeLen[128];
+};
+
 
 class score
 {
@@ -33,6 +45,6 @@ public:
 	static int init();
 	static scoreStruct* create(LPCSTR fieldName, gdrv_bitmap8* renderBgBmp);
 	static scoreStruct* dup(scoreStruct* score, int scoreIndex);
-	static HRSRC load_msg_font(LPCSTR lpName);
+	static void load_msg_font(LPCSTR lpName);
 	static void unload_msg_font();
 };

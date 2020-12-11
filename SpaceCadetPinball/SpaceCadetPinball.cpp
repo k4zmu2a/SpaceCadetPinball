@@ -21,8 +21,7 @@ int main()
 	{
 		// Testing with UI
 		char cmdLine[1]{};
-		pb::init();
-		WinMain(winmain::hinst, 0, cmdLine, 10);
+		WinMain(GetModuleHandleA(nullptr), 0, cmdLine, 10);
 		return 0;
 	}
 	

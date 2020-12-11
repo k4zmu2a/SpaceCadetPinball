@@ -139,7 +139,7 @@ int winmain::WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLi
 	WndClass.cbWndExtra = 0;
 	WndClass.hInstance = hInstance;
 	WndClass.hIcon = LoadIconA(hInstance, "ICON_1");
-	WndClass.hCursor = LoadCursorA(nullptr, (LPCSTR)0x7F00);
+	WndClass.hCursor = LoadCursorA(nullptr, IDC_ARROW);
 	WndClass.hbrBackground = (HBRUSH)16;
 	WndClass.lpszMenuName = "MENU_1";
 	WndClass.lpszClassName = windowClass;
@@ -354,7 +354,7 @@ LRESULT CALLBACK winmain::message_handler(HWND hWnd, UINT Msg, WPARAM wParam, LP
 				int height = rect.bottom - rect.top;
 				pb::window_size(&width, &height);
 
-				auto prevCursor = SetCursor(LoadCursorA(nullptr, (LPCSTR)IDC_WAIT));
+				auto prevCursor = SetCursor(LoadCursorA(nullptr, IDC_WAIT));
 				gdrv::init(hinst, hWnd);
 
 				auto voiceCount = options::get_int(nullptr, "Voices", 8);
@@ -747,7 +747,7 @@ void winmain::end_pause()
 void winmain::new_game()
 {
 	end_pause();
-	HCURSOR prevCursor = SetCursor(LoadCursorA(nullptr, (LPCSTR)IDC_WAIT));
+	HCURSOR prevCursor = SetCursor(LoadCursorA(nullptr, IDC_WAIT));
 	pb::replay_level(0);
 	SetCursor(prevCursor);
 }
