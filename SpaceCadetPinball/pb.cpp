@@ -19,7 +19,7 @@ datFileStruct* pb::record_table = nullptr;
 int pb::time_ticks = 0, pb::demo_mode = 0, pb::cheat_mode = 0, pb::game_mode = 2, pb::mode_countdown_, pb::
     ball_speed_limit, pb::state;
 float pb::time_now, pb::time_next;
-char pb::highscore_table[32];
+high_score_struct pb::highscore_table[5];
 
 int pb::init()
 {

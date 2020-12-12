@@ -113,7 +113,219 @@ PBMSG_FT                RCDATA                  "PB_MSGFT.bin"
 
 // Icon with lowest ID value placed first to ensure application icon
 // remains consistent on all systems.
-ICON_1               ICON                    "icon_1.ico"
+ICON_1                  ICON                    "icon_1.ico"
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Dialog
+//
+
+DIALOG_1 DIALOG 18, 18, 157, 78
+STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION
+CAPTION "About"
+BEGIN
+    CTEXT           "3D-Pinball for Windows",-1,11,6,135,8
+    CTEXT           "Version 1.0",-1,40,37,76,8
+    ICON            "ICON_1",-1,69,18,16,16
+    DEFPUSHBUTTON   "Ok",1,66,60,24,12
+END
+
+DLG_HIGHSCORES DIALOGEX 20, 22, 274, 141
+STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | DS_CONTEXTHELP | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "High Scores"
+FONT 8, "MS Shell Dlg", 0, 0, 0x0
+BEGIN
+    DEFPUSHBUTTON   "OK",DLG_HIGHSCORES_Ok,109,120,50,14
+    PUSHBUTTON      "Cancel",DLG_HIGHSCORES_Cancel,163,120,50,14
+    PUSHBUTTON      "&Clear",DLG_HIGHSCORES_Clear,217,120,50,14
+    LTEXT           "Name",701,49,7,24,8
+    LTEXT           "Score",702,200,7,20,8
+    LTEXT           "Rank",703,13,7,20,8
+    RTEXT           "1",704,13,31,16,12
+    RTEXT           "2",705,13,47,16,12
+    RTEXT           "3",706,13,63,16,12
+    RTEXT           "4",707,13,79,16,12
+    RTEXT           "5",708,13,95,16,12
+    LTEXT           "",DLG_HIGHSCORES_StaticName1,49,31,120,12
+    LTEXT           "",DLG_HIGHSCORES_StaticName2,49,47,120,12
+    LTEXT           "",DLG_HIGHSCORES_StaticName3,49,63,120,12
+    LTEXT           "",DLG_HIGHSCORES_StaticName4,49,79,120,12
+    LTEXT           "",DLG_HIGHSCORES_StaticName5,49,95,120,12
+    RTEXT           "",DLG_HIGHSCORES_Score1,180,31,58,12
+    RTEXT           "",DLG_HIGHSCORES_Score2,180,47,58,12
+    RTEXT           "",DLG_HIGHSCORES_Score3,180,63,58,12
+    RTEXT           "",DLG_HIGHSCORES_Score4,180,79,58,12
+    RTEXT           "",DLG_HIGHSCORES_Score5,180,95,58,12
+    EDITTEXT        DLG_HIGHSCORES_EditName1,47,29,120,12,WS_DISABLED
+    EDITTEXT        DLG_HIGHSCORES_EditName2,47,45,120,12,WS_DISABLED
+    EDITTEXT        DLG_HIGHSCORES_EditName3,47,61,120,12,WS_DISABLED
+    EDITTEXT        DLG_HIGHSCORES_EditName4,47,77,120,12,WS_DISABLED
+    EDITTEXT        DLG_HIGHSCORES_EditName5,47,93,120,12,WS_DISABLED
+    CONTROL         "",606,"Static",SS_BLACKFRAME,7,21,259,92
+END
+
+EDIT_COMPONENTS DIALOG 0, 0, 312, 94
+STYLE DS_MODALFRAME | WS_POPUP | WS_VISIBLE | WS_CLIPSIBLINGS | WS_CAPTION | WS_SYSMENU
+CAPTION "Edit Pinball Components FOR TESTING ONLY"
+BEGIN
+    LISTBOX         100,1,12,68,79,LBS_SORT | WS_VSCROLL | WS_TABSTOP
+    DEFPUSHBUTTON   "OK",1,81,75,41,14
+    GROUPBOX        "",103,136,0,175,93
+    EDITTEXT        130,141,10,34,12
+    EDITTEXT        131,141,23,34,12
+    EDITTEXT        132,141,36,34,12
+    EDITTEXT        133,141,49,34,12
+    EDITTEXT        134,141,62,34,12
+    EDITTEXT        135,141,75,34,12
+    LTEXT           "Text",136,178,12,130,8
+    LTEXT           "Text",137,178,25,130,8
+    LTEXT           "Text",138,178,38,130,8
+    LTEXT           "Text",139,178,51,130,8
+    LTEXT           "Text",140,178,64,130,8
+    LTEXT           "Text",141,178,77,130,8
+    EDITTEXT        149,142,10,38,12
+    EDITTEXT        150,142,23,38,12
+    EDITTEXT        151,142,36,38,12
+    EDITTEXT        152,142,49,38,12
+    EDITTEXT        153,142,62,38,12
+    EDITTEXT        154,142,75,38,12
+    LTEXT           "1",156,184,12,120,8
+    LTEXT           "2",157,184,25,120,8
+    LTEXT           "3",158,184,38,120,8
+    LTEXT           "4",159,184,51,120,8
+    LTEXT           "5",160,184,64,120,8
+    LTEXT           "6",161,184,77,120,8
+    PUSHBUTTON      "Reset",163,81,56,41,12
+    LTEXT           "Text",164,146,26,162,8
+    LTEXT           "Text",165,146,54,162,8
+    LTEXT           "Text",166,146,81,162,8
+    PUSHBUTTON      "Change...",167,245,10,62,14
+    PUSHBUTTON      "Change...",168,245,38,62,14
+    PUSHBUTTON      "Change...",169,245,65,62,14
+    CONTROL         "Sound Effects",170,"Button",BS_AUTORADIOBUTTON | WS_TABSTOP,74,10,58,10
+    CONTROL         "Physics",171,"Button",BS_AUTORADIOBUTTON | WS_TABSTOP,73,24,59,10
+    CONTROL         "Scoring",172,"Button",BS_AUTORADIOBUTTON | WS_TABSTOP,73,38,40,10
+    LTEXT           "Text",173,146,13,97,8
+    LTEXT           "Text",174,146,41,97,8
+    LTEXT           "Text",175,146,68,97,8
+    LTEXT           "Components:",176,2,3,43,8
+END
+
+KEYMAPPER DIALOG 2, 9, 284, 183
+STYLE DS_SETFONT | DS_MODALFRAME | DS_CONTEXTHELP | WS_POPUP | WS_VISIBLE | WS_CLIPSIBLINGS | WS_CAPTION | WS_SYSMENU
+CAPTION "3D Pinball: Player Controls"
+FONT 8, "MS Shell Dlg"
+BEGIN
+    PUSHBUTTON      "OK",1,119,163,50,14
+    PUSHBUTTON      "Cancel",2,173,163,50,14
+    PUSHBUTTON      "&Default",501,227,163,50,14
+    LTEXT           "&Left Flipper",901,20,87,39,10
+    COMBOBOX        401,66,85,53,70,CBS_DROPDOWNLIST | WS_VSCROLL | WS_TABSTOP
+    LTEXT           "Right &Flipper",902,146,87,44,10
+    COMBOBOX        402,192,85,53,70,CBS_DROPDOWNLIST | WS_VSCROLL | WS_TABSTOP
+    LTEXT           "Left &Table Bump",904,20,107,34,17
+    COMBOBOX        404,66,108,53,70,CBS_DROPDOWNLIST | WS_VSCROLL | WS_TABSTOP
+    LTEXT           "&Right Table Bump",905,146,107,38,19
+    COMBOBOX        405,192,108,53,70,CBS_DROPDOWNLIST | WS_VSCROLL | WS_TABSTOP
+    LTEXT           "&BottomTable Bump",906,20,131,41,18
+    COMBOBOX        406,66,133,53,70,CBS_DROPDOWNLIST | WS_VSCROLL | WS_TABSTOP
+    LTEXT           "&Plunger",903,146,136,39,8
+    COMBOBOX        403,192,133,53,70,CBS_DROPDOWNLIST | WS_VSCROLL | WS_TABSTOP
+    LTEXT           "To change game controls, choose the control options you want, click the Arrow buttons to change specific keys, and then choose OK.",801,14,17,249,18
+    LTEXT           "To restore 3D Pinball to its original settings, choose Default, and then choose OK. To use the Arrow keys on the numeric keypad, make sure NUMLOCK is off.",802,14,38,256,25
+    GROUPBOX        "Control Options",908,7,71,269,87
+    GROUPBOX        "Instructions",909,7,5,269,61
+END
+
+XXDLG_HIGHSCORES DIALOG 20, 22, 211, 116
+STYLE DS_MODALFRAME | DS_CONTEXTHELP | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "High Scores"
+BEGIN
+    DEFPUSHBUTTON   "OK",1,32,97,33,14,BS_LEFTTEXT
+    PUSHBUTTON      "Cancel",2,89,97,33,14
+    PUSHBUTTON      "&Clear",112,146,97,33,14
+    LTEXT           "Name",-1,51,8,24,8
+    LTEXT           "Score",-1,160,8,20,8
+    LTEXT           "Rank",-1,15,8,20,8
+    RTEXT           "1",-1,15,28,16,12
+    RTEXT           "2",-1,15,40,16,12
+    RTEXT           "3",-1,15,52,16,12
+    RTEXT           "4",-1,15,64,16,12
+    RTEXT           "5",-1,15,76,16,12
+    LTEXT           "",401,51,28,88,12
+    LTEXT           "",402,51,40,88,12
+    LTEXT           "",403,51,52,88,12
+    LTEXT           "",404,51,64,88,12
+    LTEXT           "",405,51,76,88,12
+    RTEXT           "",501,140,28,58,12
+    RTEXT           "",502,140,40,58,12
+    RTEXT           "",503,140,52,58,12
+    RTEXT           "",504,140,64,58,12
+    RTEXT           "",505,140,76,58,12
+    EDITTEXT        601,49,26,88,12,WS_DISABLED
+    EDITTEXT        602,49,38,88,12,WS_DISABLED
+    EDITTEXT        603,49,50,88,12,WS_DISABLED
+    EDITTEXT        604,49,62,88,12,WS_DISABLED
+    EDITTEXT        605,49,74,88,12,WS_DISABLED
+    CONTROL         "",-1,"Static",SS_BLACKFRAME,9,22,195,69
+END
+
+XXKEYMAPPER DIALOG 2, 9, 277, 158
+STYLE DS_SETFONT | DS_MODALFRAME | DS_CONTEXTHELP | WS_POPUP | WS_VISIBLE | WS_CLIPSIBLINGS | WS_CAPTION | WS_SYSMENU
+CAPTION "3D Pinball: Player Controls"
+FONT 8, "MS Shell Dlg"
+BEGIN
+    PUSHBUTTON      "OK",1,221,84,50,14
+    PUSHBUTTON      "Cancel",2,221,105,50,14
+    PUSHBUTTON      "Default",501,221,127,50,14
+    COMBOBOX        401,50,82,53,70,CBS_DROPDOWNLIST | WS_VSCROLL | WS_TABSTOP
+    COMBOBOX        402,157,82,53,70,CBS_DROPDOWNLIST | WS_VSCROLL | WS_TABSTOP
+    COMBOBOX        404,50,105,53,70,CBS_DROPDOWNLIST | WS_VSCROLL | WS_TABSTOP
+    COMBOBOX        405,157,105,53,70,CBS_DROPDOWNLIST | WS_VSCROLL | WS_TABSTOP
+    COMBOBOX        406,50,130,53,70,CBS_DROPDOWNLIST | WS_VSCROLL | WS_TABSTOP
+    COMBOBOX        403,157,130,53,70,CBS_DROPDOWNLIST | WS_VSCROLL | WS_TABSTOP
+    RTEXT           "Plunger",811,114,133,39,8
+    RTEXT           "Right Flipper",807,107,84,46,10
+    CTEXT           "Left Table Bump",912,12,102,34,19
+    CTEXT           "Right Table Bump",914,115,102,38,19
+    LTEXT           "To change game controls, choose the control options you want, click the Arrow buttons to change specific keys, and then choose OK.",801,12,13,249,18
+    LTEXT           "To restore 3D Pinball to its original settings, choose Default, and then choose OK. To use the Arrow keys on the numeric keypad, make sure NUMLOCK is off.",802,12,32,256,25
+    GROUPBOX        "Control Options",908,5,67,214,87
+    RTEXT           "Left Flipper",803,9,84,39,10
+    GROUPBOX        "Instructions",909,5,1,265,61
+    CTEXT           "BottomTable Bump",916,7,127,41,19
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// DESIGNINFO
+//
+
+#ifdef APSTUDIO_INVOKED
+GUIDELINES DESIGNINFO
+BEGIN
+    "DIALOG_1", DIALOG
+    BEGIN
+    END
+
+    "DLG_HIGHSCORES", DIALOG
+    BEGIN
+    END
+END
+#endif    // APSTUDIO_INVOKED
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// AFX_DIALOG_LAYOUT
+//
+
+DLG_HIGHSCORES AFX_DIALOG_LAYOUT
+BEGIN
+    0
+END
 
 
 /////////////////////////////////////////////////////////////////////////////

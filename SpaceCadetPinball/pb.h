@@ -1,4 +1,5 @@
 #pragma once
+#include "high_score.h"
 #include "partman.h"
 #include "TPinballTable.h"
 
@@ -35,6 +36,6 @@ public:
 private :
 	static int demo_mode, mode_countdown_;
 	static float time_now, time_next;
-	static char highscore_table[32];
+	static high_score_struct highscore_table[5];
 	static int state;
 };

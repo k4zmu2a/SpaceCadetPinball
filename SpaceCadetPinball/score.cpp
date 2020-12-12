@@ -3,6 +3,7 @@
 #include "loader.h"
 #include "memory.h"
 #include "partman.h"
+#include "TDrain.h"
 #include "winmain.h"
 
 score_msg_font_type* score::msg_fontp;
@@ -17,7 +18,7 @@ scoreStruct* score::create(LPCSTR fieldName, gdrv_bitmap8* renderBgBmp)
 	scoreStruct* score = (scoreStruct*)memory::allocate(sizeof(scoreStruct));
 	if (!score)
 		return nullptr;
-	score->Unknown1 = -9999;
+	score->Score = -9999;
 	score->BackgroundBmp = renderBgBmp;
 	__int16* shortArr = (__int16*)partman::field_labeled(loader::loader_table, fieldName, datFieldTypes::ShortArray);
 	if (!shortArr)
@@ -26,20 +27,17 @@ scoreStruct* score::create(LPCSTR fieldName, gdrv_bitmap8* renderBgBmp)
 		return nullptr;
 	}
 	int groupIndex = *shortArr++;
-	score->Short1 = *shortArr++;
-	score->Short2 = *shortArr++;
-	score->Short3 = *shortArr++;
-	score->Short4 = *shortArr;
-	char** bmpPtr = &score->Bitmap8Bit1;
-	int index = 10;
-	do
+	score->OffsetX = *shortArr++;
+	score->OffsetY = *shortArr++;
+	score->Width = *shortArr++;
+	score->Height = *shortArr;
+
+	for (int index = 0; index < 10; index++)
 	{
-		*bmpPtr = partman::field(loader::loader_table, groupIndex, datFieldTypes::Bitmap8bit);
-		++bmpPtr;
+		score->CharBmp[index] = reinterpret_cast<gdrv_bitmap8*>(partman::field(
+			loader::loader_table, groupIndex, datFieldTypes::Bitmap8bit));
 		++groupIndex;
-		--index;
 	}
-	while (index);
 	return score;
 }
 
@@ -148,5 +146,143 @@ void score::unload_msg_font()
 			}
 		}
 		msg_fontp = nullptr;
+	}
+}
+
+void score::erase(scoreStruct* score, int blitFlag)
+{
+	if (score)
+	{
+		if (score->BackgroundBmp)
+			gdrv::copy_bitmap(
+				&render::vscreen,
+				score->Width,
+				score->Height,
+				score->OffsetX,
+				score->OffsetY,
+				score->BackgroundBmp,
+				score->OffsetX,
+				score->OffsetY);
+		else
+			gdrv::fill_bitmap(&render::vscreen, score->Width, score->Height, score->OffsetX, score->OffsetY, 0);
+		if (blitFlag)
+			gdrv::blit(
+				&render::vscreen,
+				score->OffsetX,
+				score->OffsetY,
+				score->OffsetX + render::vscreen.XPosition,
+				score->OffsetY + render::vscreen.YPosition,
+				score->Width,
+				score->Height);
+	}
+}
+
+void score::set(scoreStruct* score, int value)
+{
+	if (score)
+	{
+		score->Score = value;
+		score->DirtyFlag = true;
+	}
+}
+
+
+void score::update(scoreStruct* score)
+{
+	char scoreBuf[12];
+	if (score && score->DirtyFlag && score->Score <= 1000000000)
+	{
+		score->DirtyFlag = false;
+		int x = score->Width + score->OffsetX;
+		int y = score->OffsetY;
+		erase(score, 0);
+		if (score->Score >= 0)
+		{
+			_ltoa_s(score->Score, scoreBuf, 10);
+			int len = strlen(scoreBuf);
+			for (int index = len - 1; index >= 0; index--)
+			{
+				unsigned char curChar = scoreBuf[index];
+				curChar -= '0';
+				gdrv_bitmap8* bmp = score->CharBmp[curChar];
+				x -= bmp->Width;
+				int height = bmp->Height;
+				int width = bmp->Width;
+				if (render::background_bitmap)
+					gdrv::copy_bitmap_w_transparency(&render::vscreen, width, height, x, y, bmp, 0, 0);
+				else
+					gdrv::copy_bitmap(&render::vscreen, width, height, x, y, bmp, 0, 0);
+			}
+		}
+		gdrv::blit(
+			&render::vscreen,
+			score->OffsetX,
+			score->OffsetY,
+			score->OffsetX + render::vscreen.XPosition,
+			score->OffsetY + render::vscreen.YPosition,
+			score->Width,
+			score->Height);
+	}
+}
+
+void score::string_format(int score, char* str)
+{
+	CHAR separator[12];
+
+	if (score == -999)
+	{
+		*str = 0;
+	}
+	else
+	{
+		lstrcpyA(separator, ",");
+
+		HKEY phkResult;
+		DWORD dwDisposition;
+		if (!RegCreateKeyExA(
+			HKEY_CURRENT_USER,
+			"Control Panel\\International",
+			0,
+			nullptr,
+			0,
+			KEY_ALL_ACCESS,
+			nullptr,
+			&phkResult,
+			&dwDisposition))
+		{
+			DWORD cbData = 10;
+			RegQueryValueExA(phkResult, "sThousand", nullptr, nullptr, (LPBYTE)separator, &cbData);
+			RegCloseKey(phkResult);
+		}
+		int scoreMillions = score % 1000000000 / 1000000;
+		if (score / 1000000000 <= 0)
+		{
+			if (static_cast<int>(scoreMillions) <= 0)
+			{
+				if (score % 1000000 / 1000 <= 0)
+					sprintf_s(str, 36, "%ld", score);
+				else
+					sprintf_s(str, 36, "%ld%s%03ld", score % 1000000 / 1000, separator, score % 1000);
+			}
+			else
+			{
+				sprintf_s(str, 36, "%ld%s%03ld%s%03ld", scoreMillions, separator, score % 1000000 / 1000, separator,
+				          score % 1000);
+			}
+		}
+		else
+		{
+			sprintf_s(
+				str,
+				36,
+				"%ld%s%03ld%s%03ld%s%03ld",
+				score / 1000000000,
+				separator,
+				scoreMillions,
+				separator,
+				score % 1000000 / 1000,
+				separator,
+				score % 1000);
+		}
 	}
 }
