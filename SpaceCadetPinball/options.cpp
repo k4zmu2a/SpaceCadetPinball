@@ -4,7 +4,6 @@
 #include "fullscrn.h"
 #include "memory.h"
 #include "midi.h"
-#include "pinball.h"
 #include "resource.h"
 #include "Sound.h"
 #include "winmain.h"
@@ -14,6 +13,60 @@ LPSTR options::OptionsRegPathCur;
 HMENU options::MenuHandle;
 optionsStruct options::Options;
 
+winhelp_entry options::keymap_help[18]
+{
+	winhelp_entry{0x1F5, 0x3EA},
+	winhelp_entry{0x191, 0x3EC},
+	winhelp_entry{0x192, 0x3ED},
+	winhelp_entry{0x193, 0x3F1},
+	winhelp_entry{0x194, 0x3EE},
+	winhelp_entry{0x195, 0x3EF},
+	winhelp_entry{0x196, 0x3F0},
+	winhelp_entry{0x385, 0x3EC},
+	winhelp_entry{0x386, 0x3ED},
+	winhelp_entry{0x387, 0x3F1},
+	winhelp_entry{0x388, 0x3EE},
+	winhelp_entry{0x389, 0x3EF},
+	winhelp_entry{0x38A, 0x3F0},
+	winhelp_entry{0x38C, -1},
+	winhelp_entry{0x38D, -1},
+	winhelp_entry{0x321, -1},
+	winhelp_entry{0x322, -1},
+	winhelp_entry{0, 0},
+};
+
+short options::vk_list[28]
+{
+	0x8041,
+	0x5A,
+	0x8030,
+	0x39,
+	0x402E,
+	0x402F,
+	0x403B,
+	0x4027,
+	0x405B,
+	0x405D,
+	0x20,
+	0x0D,
+	0x9,
+	0x14,
+	0x25,
+	0x27,
+	0x26,
+	0x28,
+	0x2D,
+	0x2E,
+	0x24,
+	0x23,
+	0x21,
+	0x22,
+	0x90,
+	0x91,
+	0x13,
+	-1
+};
+
 void options::init(HMENU menuHandle)
 {
 	MenuHandle = menuHandle;
@@ -22,25 +75,25 @@ void options::init(HMENU menuHandle)
 	Options.FullScreen = 0;
 	Options.Average = 5;
 	Options.PriorityAdj = 2;
-	Options.LeftFlipperKey2 = 90;
-	Options.RightFlipperKey2 = 191;
-	Options.PlungerKey2 = 32;
-	Options.LeftTableBumpKey2 = 88;
-	Options.RightTableBumpKey2 = 190;
-	Options.BottomTableBumpKey2 = 38;
-	pinball::get_rc_int(159, &Options.LeftFlipperKey2);
-	pinball::get_rc_int(160, &Options.RightFlipperKey2);
-	pinball::get_rc_int(161, &Options.PlungerKey2);
-	pinball::get_rc_int(162, &Options.LeftTableBumpKey2);
-	pinball::get_rc_int(163, &Options.RightTableBumpKey2);
-	pinball::get_rc_int(164, &Options.BottomTableBumpKey2);
-	Options.LeftFlipperKey = Options.LeftFlipperKey2;
-	Options.RightFlipperKey = Options.RightFlipperKey2;
-	Options.PlungerKey = Options.PlungerKey2;
-	Options.LeftTableBumpKey = Options.LeftTableBumpKey2;
-	Options.RightTableBumpKey = Options.RightTableBumpKey2;
+	Options.LeftFlipperKeyDft = 90;
+	Options.RightFlipperKeyDft = 191;
+	Options.PlungerKeyDft = 32;
+	Options.LeftTableBumpKeyDft = 88;
+	Options.RightTableBumpKeyDft = 190;
+	Options.BottomTableBumpKeyDft = 38;
+	pinball::get_rc_int(159, &Options.LeftFlipperKeyDft);
+	pinball::get_rc_int(160, &Options.RightFlipperKeyDft);
+	pinball::get_rc_int(161, &Options.PlungerKeyDft);
+	pinball::get_rc_int(162, &Options.LeftTableBumpKeyDft);
+	pinball::get_rc_int(163, &Options.RightTableBumpKeyDft);
+	pinball::get_rc_int(164, &Options.BottomTableBumpKeyDft);
+	Options.LeftFlipperKey = Options.LeftFlipperKeyDft;
+	Options.RightFlipperKey = Options.RightFlipperKeyDft;
+	Options.PlungerKey = Options.PlungerKeyDft;
+	Options.LeftTableBumpKey = Options.LeftTableBumpKeyDft;
+	Options.RightTableBumpKey = Options.RightTableBumpKeyDft;
 	Options.Players = 1;
-	Options.BottomTableBumpKey = Options.BottomTableBumpKey2;
+	Options.BottomTableBumpKey = Options.BottomTableBumpKeyDft;
 	Options.Sounds = get_int(nullptr, "Sounds", Options.Sounds);
 	Options.Music = get_int(nullptr, "Music", Options.Music);
 	Options.Average = get_int(nullptr, "Average", Options.Average);
@@ -261,5 +314,189 @@ void options::keyboard()
 
 INT_PTR _stdcall options::KeyMapDlgProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
 {
+	char keyName[20];
+	int keyBindings[6];
+	char rcString[256];
+
+	switch (msg)
+	{
+	case WM_HELP:
+		WinHelpA(static_cast<HWND>(reinterpret_cast<HELPINFO*>(lParam)->hItemHandle), "pinball.hlp", HELP_WM_HELP,
+		         (ULONG_PTR)keymap_help);
+		return 1;
+	case WM_CONTEXTMENU:
+		WinHelpA((HWND)wParam, "pinball.hlp", HELP_CONTEXTMENU, (ULONG_PTR)keymap_help);
+		return 1;
+	case WM_INITDIALOG:
+		for (auto vkPtr = vk_list; *vkPtr != -1; vkPtr++)
+		{
+			short vk = *vkPtr;
+			auto vk2And = vk & 0x4000;
+			auto vkChar = static_cast<unsigned __int8>(vk);
+			unsigned short maxVk;
+
+			if (vk2And)
+			{
+				auto index = 128;
+				do
+				{
+					if (vkChar == MapVirtualKeyA(index, MAPVK_VK_TO_CHAR))
+						break;
+					++index;
+				}
+				while (index < 256);
+
+				if (index == 256)
+				{
+					continue;
+				}
+
+				keyName[0] = static_cast<char>(vkChar);
+				keyName[1] = 0;
+				vkChar = index;
+				maxVk = index;
+			}
+			else
+			{
+				if (vk >= 0)
+				{
+					maxVk = vkChar;
+				}
+				else
+				{
+					++vkPtr;
+					maxVk = *vkPtr;
+				}
+				if (vkChar > maxVk)
+				{
+					continue;
+				}
+			}
+
+			for (int curVK = vkChar; curVK <= maxVk; curVK++)
+			{
+				if (vk2And || get_vk_key_name(curVK, keyName))
+				{
+					auto ind = SendDlgItemMessageA(hDlg, KEYMAPPER_FlipperL,CB_INSERTSTRING, -1, (LPARAM)keyName);
+					SendDlgItemMessageA(hDlg, KEYMAPPER_FlipperL, CB_SETITEMDATA, ind, curVK);
+					if (curVK == Options.LeftFlipperKey)
+						SendDlgItemMessageA(hDlg, KEYMAPPER_FlipperL, CB_SETCURSEL, ind, 0);
+					ind = SendDlgItemMessageA(hDlg, KEYMAPPER_FlipperR, CB_INSERTSTRING, -1, (LPARAM)keyName);
+					SendDlgItemMessageA(hDlg, KEYMAPPER_FlipperR, CB_SETITEMDATA, ind, curVK);
+					if (curVK == Options.RightFlipperKey)
+						SendDlgItemMessageA(hDlg, KEYMAPPER_FlipperR, CB_SETCURSEL, ind, 0);
+					ind = SendDlgItemMessageA(hDlg, KEYMAPPER_Plunger, CB_INSERTSTRING, -1, (LPARAM)keyName);
+					SendDlgItemMessageA(hDlg, KEYMAPPER_Plunger, CB_SETITEMDATA, ind, curVK);
+					if (curVK == Options.PlungerKey)
+						SendDlgItemMessageA(hDlg, KEYMAPPER_Plunger, CB_SETCURSEL, ind, 0);
+					ind = SendDlgItemMessageA(hDlg, KEYMAPPER_BumpLeft, CB_INSERTSTRING, -1, (LPARAM)keyName);
+					SendDlgItemMessageA(hDlg, KEYMAPPER_BumpLeft, CB_SETITEMDATA, ind, curVK);
+					if (curVK == Options.LeftTableBumpKey)
+						SendDlgItemMessageA(hDlg, KEYMAPPER_BumpLeft, CB_SETCURSEL, ind, 0);
+					ind = SendDlgItemMessageA(hDlg, KEYMAPPER_BumpRight, CB_INSERTSTRING, -1, (LPARAM)keyName);
+					SendDlgItemMessageA(hDlg, KEYMAPPER_BumpRight, CB_SETITEMDATA, ind, curVK);
+					if (curVK == Options.RightTableBumpKey)
+						SendDlgItemMessageA(hDlg, KEYMAPPER_BumpRight, CB_SETCURSEL, ind, 0);
+					ind = SendDlgItemMessageA(hDlg, KEYMAPPER_BumpBottom, CB_INSERTSTRING, -1, (LPARAM)keyName);
+					SendDlgItemMessageA(hDlg, KEYMAPPER_BumpBottom, CB_SETITEMDATA, ind, curVK);
+					if (curVK == Options.BottomTableBumpKey)
+						SendDlgItemMessageA(hDlg, KEYMAPPER_BumpBottom, CB_SETCURSEL, ind, 0);
+				}
+			}
+		}
+		return 1;
+	case WM_COMMAND:
+		switch (wParam)
+		{
+		case KEYMAPPER_Ok:
+			{
+				auto ind = SendDlgItemMessageA(hDlg, KEYMAPPER_FlipperL, CB_GETCURSEL, 0, 0);
+				keyBindings[0] = SendDlgItemMessageA(hDlg, KEYMAPPER_FlipperL, CB_GETITEMDATA, ind, 0);
+				ind = SendDlgItemMessageA(hDlg, KEYMAPPER_FlipperR, CB_GETCURSEL, 0, 0);
+				keyBindings[1] = SendDlgItemMessageA(hDlg, KEYMAPPER_FlipperR, CB_GETITEMDATA, ind, 0);
+				ind = SendDlgItemMessageA(hDlg, KEYMAPPER_Plunger, CB_GETCURSEL, 0, 0);
+				keyBindings[2] = SendDlgItemMessageA(hDlg, KEYMAPPER_Plunger, CB_GETITEMDATA, ind, 0);
+				ind = SendDlgItemMessageA(hDlg, KEYMAPPER_BumpLeft, CB_GETCURSEL, 0, 0);
+				keyBindings[3] = SendDlgItemMessageA(hDlg, KEYMAPPER_BumpLeft, CB_GETITEMDATA, ind, 0);
+				ind = SendDlgItemMessageA(hDlg, KEYMAPPER_BumpRight, CB_GETCURSEL, 0, 0);
+				keyBindings[4] = SendDlgItemMessageA(hDlg, KEYMAPPER_BumpRight, CB_GETITEMDATA, ind, 0);
+				ind = SendDlgItemMessageA(hDlg, KEYMAPPER_BumpBottom, CB_GETCURSEL, 0, 0);
+				keyBindings[5] = SendDlgItemMessageA(hDlg, KEYMAPPER_BumpBottom, CB_GETITEMDATA, ind, 0);
+
+				auto sameKeyBound = 0;
+				auto index = 1;
+				auto optPtr = keyBindings;
+				while (!sameKeyBound)
+				{
+					for (auto keyInd = index; keyInd < 6; keyInd++)
+					{
+						if (sameKeyBound)
+							break;
+						if (*optPtr == keyBindings[keyInd])
+						{
+							lstrcpyA(rcString, pinball::get_rc_string(43, 0));
+							MessageBoxA(hDlg, pinball::get_rc_string(39, 0), rcString, 0x2000u);
+							sameKeyBound = 1;
+						}
+					}
+					++index;
+					++optPtr;
+					if (index - 1 >= 5)
+					{
+						if (sameKeyBound)
+							return 1;
+						Options.LeftFlipperKey = keyBindings[0];
+						Options.RightFlipperKey = keyBindings[1];
+						Options.PlungerKey = keyBindings[2];
+						Options.LeftTableBumpKey = keyBindings[3];
+						Options.RightTableBumpKey = keyBindings[4];
+						Options.BottomTableBumpKey = keyBindings[5];
+						EndDialog(hDlg, wParam);
+						return 1;
+					}
+				}
+				return 1;
+			}
+		case KEYMAPPER_Cancel:
+			EndDialog(hDlg, wParam);
+			return 1;
+		case KEYMAPPER_Default:
+			{
+				auto name = (LPARAM)get_vk_key_name(Options.LeftFlipperKeyDft, keyName);
+				auto ind = SendDlgItemMessageA(hDlg, KEYMAPPER_FlipperL, CB_FINDSTRINGEXACT, 0, name);
+				SendDlgItemMessageA(hDlg, KEYMAPPER_FlipperL, CB_SETCURSEL, ind, 0);
+				name = (LPARAM)get_vk_key_name(Options.RightFlipperKeyDft, keyName);
+				ind = SendDlgItemMessageA(hDlg, KEYMAPPER_FlipperR, CB_FINDSTRINGEXACT, 0, name);
+				SendDlgItemMessageA(hDlg, KEYMAPPER_FlipperR, CB_SETCURSEL, ind, 0);
+				name = (LPARAM)get_vk_key_name(Options.PlungerKeyDft, keyName);
+				ind = SendDlgItemMessageA(hDlg, KEYMAPPER_Plunger, CB_FINDSTRINGEXACT, 0, name);
+				SendDlgItemMessageA(hDlg, KEYMAPPER_Plunger, CB_SETCURSEL, ind, 0);
+				name = (LPARAM)get_vk_key_name(Options.LeftTableBumpKeyDft, keyName);
+				ind = SendDlgItemMessageA(hDlg, KEYMAPPER_BumpLeft, CB_FINDSTRINGEXACT, 0, name);
+				SendDlgItemMessageA(hDlg, KEYMAPPER_BumpLeft, CB_SETCURSEL, ind, 0);
+				name = (LPARAM)get_vk_key_name(Options.RightTableBumpKeyDft, keyName);
+				ind = SendDlgItemMessageA(hDlg, KEYMAPPER_BumpRight, CB_FINDSTRINGEXACT, 0, name);
+				SendDlgItemMessageA(hDlg, KEYMAPPER_BumpRight, CB_SETCURSEL, ind, 0);
+				name = (LPARAM)get_vk_key_name(Options.BottomTableBumpKeyDft, keyName);
+				ind = SendDlgItemMessageA(hDlg, KEYMAPPER_BumpBottom, CB_FINDSTRINGEXACT, 0, name);
+				SendDlgItemMessageA(hDlg, KEYMAPPER_BumpBottom, CB_SETCURSEL, ind, 0);
+				return 0;
+			}
+		default:
+			return 0;
+		}
+	default:
+		break;
+	}
+
 	return 0;
+}
+
+
+LPSTR options::get_vk_key_name(unsigned __int16 vk, LPSTR keyName)
+{
+	LONG scanCode = MapVirtualKeyA(vk, MAPVK_VK_TO_VSC) << 16;
+	if (vk >= 0x21u && vk <= 0x2Eu)
+		scanCode |= 0x1000000u;
+	return GetKeyNameTextA(scanCode, keyName, 19) != 0 ? keyName : nullptr;
 }

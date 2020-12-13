@@ -5,8 +5,10 @@
 #define IDS_STRING101                   0
 #define IDS_STRING102                   1
 #define DLG_HIGHSCORES_Ok               1
+#define KEYMAPPER_Ok                    1
 #define IDS_STRING103                   2
 #define DLG_HIGHSCORES_Cancel           2
+#define KEYMAPPER_Cancel                2
 #define IDS_STRING104                   3
 #define IDS_STRING105                   4
 #define IDS_STRING106                   5
@@ -203,20 +205,27 @@
 #define Menu1_Help_Topics               301
 #define Menu1_Launch_Ball               401
 #define DLG_HIGHSCORES_StaticName1      401
+#define KEYMAPPER_FlipperL              401
 #define Menu1_Pause_Resume_Game         402
 #define DLG_HIGHSCORES_StaticName2      402
+#define KEYMAPPER_FlipperR              402
 #define Menu1_Full_Screen               403
 #define DLG_HIGHSCORES_StaticName3      403
+#define KEYMAPPER_Plunger               403
 #define Menu1_Demo                      404
 #define DLG_HIGHSCORES_StaticName4      404
+#define KEYMAPPER_BumpLeft              404
 #define Menu1_Select_Table              405
 #define DLG_HIGHSCORES_StaticName5      405
+#define KEYMAPPER_BumpRight             405
 #define Menu1_Player_Controls           406
+#define KEYMAPPER_BumpBottom            406
 #define Menu1_1Player                   408
 #define Menu1_2Players                  409
 #define Menu1_3Players                  410
 #define Menu1_4Players                  411
 #define DLG_HIGHSCORES_Score1           501
+#define KEYMAPPER_Default               501
 #define DLG_HIGHSCORES_Score2           502
 #define DLG_HIGHSCORES_Score3           503
 #define DLG_HIGHSCORES_Score4           504
@@ -231,9 +240,9 @@
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
-#define _APS_NEXT_RESOURCE_VALUE        203
+#define _APS_NEXT_RESOURCE_VALUE        204
 #define _APS_NEXT_COMMAND_VALUE         40004
 #define _APS_NEXT_CONTROL_VALUE         1001
-#define _APS_NEXT_SYMED_VALUE           101
+#define _APS_NEXT_SYMED_VALUE           102
 #endif
 #endif

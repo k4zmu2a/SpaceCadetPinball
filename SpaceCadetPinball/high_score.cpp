@@ -4,7 +4,6 @@
 #include "fullscrn.h"
 #include "memory.h"
 #include "options.h"
-#include "pinball.h"
 #include "resource.h"
 #include "winmain.h"
 
@@ -14,7 +13,7 @@ int high_score::position;
 LPCSTR high_score::default_name;
 high_score_struct* high_score::dlg_hst;
 
-winhelp_entry high_score::winHelpArgs[21]
+winhelp_entry high_score::help[21]
 {
 	winhelp_entry{0x70, 0x3E9},
 	winhelp_entry{0x191, 0x3EB},
@@ -201,10 +200,11 @@ INT_PTR __stdcall high_score::HighScore(HWND hWnd, UINT msg, WPARAM wParam, LPAR
 		SendMessageA(hWnd, WM_COMMAND, WM_DESTROY, 0);
 		break;
 	case WM_HELP:
-		WinHelpA(*(HWND*)(lParam + 12), "pinball.hlp", HELP_WM_HELP, (ULONG_PTR)winHelpArgs);
+		WinHelpA(static_cast<HWND>(reinterpret_cast<HELPINFO*>(lParam)->hItemHandle), "pinball.hlp", HELP_WM_HELP,
+		         (ULONG_PTR)help);
 		break;
 	case WM_CONTEXTMENU:
-		WinHelpA((HWND)wParam, "pinball.hlp", HELP_CONTEXTMENU, (ULONG_PTR)winHelpArgs);
+		WinHelpA((HWND)wParam, "pinball.hlp", HELP_CONTEXTMENU, (ULONG_PTR)help);
 		break;
 	case WM_INITDIALOG:
 		show_high_scores(hWnd, dlg_hst);

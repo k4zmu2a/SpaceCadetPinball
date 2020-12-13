@@ -1,15 +1,10 @@
 #pragma once
+#include "pinball.h"
 
 struct high_score_struct
 {
 	char Name[32];
 	int Score;
-};
-
-struct winhelp_entry
-{
-	int ControlId;
-	int ContextId;
 };
 
 
@@ -34,5 +29,5 @@ private :
 	static int position;
 	static LPCSTR default_name;
 	static high_score_struct* dlg_hst;
-	static winhelp_entry winHelpArgs[21];
+	static winhelp_entry help[21];
 };

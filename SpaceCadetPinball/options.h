@@ -1,4 +1,5 @@
 #pragma once
+#include "pinball.h"
 
 struct __declspec(align(4)) optionsStruct
 {
@@ -14,12 +15,12 @@ struct __declspec(align(4)) optionsStruct
 	int LeftTableBumpKey;
 	int RightTableBumpKey;
 	int BottomTableBumpKey;
-	int LeftFlipperKey2;
-	int RightFlipperKey2;
-	int PlungerKey2;
-	int LeftTableBumpKey2;
-	int RightTableBumpKey2;
-	int BottomTableBumpKey2;
+	int LeftFlipperKeyDft;
+	int RightFlipperKeyDft;
+	int PlungerKeyDft;
+	int LeftTableBumpKeyDft;
+	int RightTableBumpKeyDft;
+	int BottomTableBumpKeyDft;
 };
 
 
@@ -37,8 +38,10 @@ public:
 	static void menu_check(UINT uIDCheckItem, int check);
 	static void menu_set(UINT uIDEnableItem, int enable);
 	static void toggle(UINT uIDCheckItem);
+
 	static void keyboard();
 	static INT_PTR _stdcall KeyMapDlgProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam);
+	static LPSTR get_vk_key_name(unsigned __int16 vk, LPSTR keyName);
 
 	static optionsStruct Options;
 private:
@@ -47,4 +50,6 @@ private:
 	static LPCSTR path(LPCSTR regPath);
 	static void path_free();
 	static HMENU MenuHandle;
+	static winhelp_entry keymap_help[18];
+	static short vk_list[28];
 };
