@@ -213,6 +213,9 @@
     <ClInclude Include="high_score.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="control.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="pch.cpp">
@@ -390,6 +393,9 @@
       <Filter>Source Files\TPinballComponent</Filter>
     </ClCompile>
     <ClCompile Include="high_score.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="control.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

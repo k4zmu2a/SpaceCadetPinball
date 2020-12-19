@@ -93,6 +93,7 @@
       <ConformanceMode>true</ConformanceMode>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
       <BufferSecurityCheck>true</BufferSecurityCheck>
+      <PreprocessToFile>false</PreprocessToFile>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -155,6 +156,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="control.h" />
     <ClInclude Include="DatParser.h" />
     <ClInclude Include="fullscrn.h" />
     <ClInclude Include="gdrv.h" />
@@ -217,6 +219,7 @@
     <ClInclude Include="zdrv.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="control.cpp" />
     <ClCompile Include="DatParser.cpp" />
     <ClCompile Include="fullscrn.cpp" />
     <ClCompile Include="gdrv.cpp" />

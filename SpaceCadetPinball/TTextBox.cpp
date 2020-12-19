@@ -61,7 +61,7 @@ void TTextBox::TimerExpired(int timerId, void* caller)
 		delete message;
 		tb->Message1 = nextMessage;
 		tb->Draw();
-		control_handler(60, tb);
+		control::handler(60, tb);
 	}
 }
 

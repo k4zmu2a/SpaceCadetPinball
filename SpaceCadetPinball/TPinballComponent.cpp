@@ -99,16 +99,11 @@ void TPinballComponent::port_draw()
 {
 }
 
-void TPinballComponent::put_scoring(int score1, int score2)
+void TPinballComponent::put_scoring(int scoreId, int value)
 {
 }
-
 
 int TPinballComponent::get_scoring(int score1)
 {
 	return 0;
-}
-
-void TPinballComponent::control_handler(int code, TPinballComponent* cmp)
-{
 }

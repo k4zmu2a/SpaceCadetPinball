@@ -2,6 +2,7 @@
 #include "TPinballTable.h"
 
 
+#include "control.h"
 #include "loader.h"
 #include "memory.h"
 #include "pinball.h"
@@ -89,7 +90,7 @@ TPinballTable::TPinballTable(): TPinballComponent(nullptr, -1, false)
 			{
 			case 1000:
 			case 1010:
-				new TWall( this, groupIndex);
+				new TWall(this, groupIndex);
 				break;
 			case 1001:
 				this->Plunger = new TPlunger(this, groupIndex);
@@ -183,9 +184,9 @@ TPinballTable::TPinballTable(): TPinballComponent(nullptr, -1, false)
 	}
 
 	//build_occlude_list();
-	pinball::InfoTextBox = static_cast<TTextBox*>(find_component("info_text_box"));
-	pinball::MissTextBox = static_cast<TTextBox*>(find_component("mission_text_box"));
-	//control_make_links(this);
+	pinball::InfoTextBox = dynamic_cast<TTextBox*>(find_component("info_text_box"));
+	pinball::MissTextBox = dynamic_cast<TTextBox*>(find_component("mission_text_box"));
+	control::make_links(this);
 }
 
 
@@ -220,7 +221,7 @@ TPinballTable::~TPinballTable()
 		//if (i)
 		//(*(void(__thiscall**)(TLightGroup*, int))(*(_DWORD*)i + 16))(i, 1);
 		//if (!ListP1->Count())
-			break;
+		break;
 	}
 	delete ListP2;
 	delete ListP1;

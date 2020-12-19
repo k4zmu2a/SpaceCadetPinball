@@ -1,4 +1,6 @@
 #pragma once
+
+#include "control.h"
 #include "render.h"
 #include "TZmapList.h"
 
@@ -11,9 +13,8 @@ public:
 	virtual ~TPinballComponent();
 	virtual int Message(int code, float value);
 	virtual void port_draw();
-	virtual void put_scoring(int score1, int score2);
+	virtual void put_scoring(int scoreId, int value);
 	virtual int get_scoring(int score1);
-	static void control_handler(int code, TPinballComponent* cmp);
 
 	int VfTable;
 	__int8 UnknownBaseFlag1;
@@ -21,7 +22,7 @@ public:
 	int MessageField;
 	char* GroupName;
 	int Unknown4;
-	int Unknown5;
+	component_control* Control;
 	int GroupIndex;
 	render_sprite_type_struct* RenderSprite;
 	TPinballTable* PinballTable;
