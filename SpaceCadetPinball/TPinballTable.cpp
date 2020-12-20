@@ -56,9 +56,8 @@ TPinballTable::TPinballTable(): TPinballComponent(nullptr, -1, false)
 	ListP2->Add(ballObj);
 	if (ballObj)
 		ballObj->UnknownBaseFlag2 = 0;
-	TTableLayer* tableLayerObj = new TTableLayer(this);
-	TLightGroup* lightGroupObj = new TLightGroup(this, 0);
-	this->LightGroup = lightGroupObj;
+	new TTableLayer(this);
+	this->LightGroup = new TLightGroup(this, 0);
 
 	auto score1 = score::create("score1", render::background_bitmap);
 	this->Score1 = score1;
@@ -71,7 +70,7 @@ TPinballTable::TPinballTable(): TPinballComponent(nullptr, -1, false)
 		scorePtr += 7;
 	}
 	while (scoreIndex < 4);
-	this->UnknownP45 = 0;
+	this->CurrentPlayer = 0;
 	this->UnknownP73 = 3;
 	this->ScoreBallcount = (int*)score::create("ballcount1", render::background_bitmap);
 	this->ScorePlayerNumber1 = (int*)score::create("player_number1", render::background_bitmap);
@@ -192,7 +191,6 @@ TPinballTable::TPinballTable(): TPinballComponent(nullptr, -1, false)
 
 TPinballTable::~TPinballTable()
 {
-	//this->VfTable = (TPinballComponent_vtbl*)&TPinballTable::`vftable';
 	scoreStruct** scorePtr = &Score2;
 	int index = 4;
 	do
@@ -216,12 +214,10 @@ TPinballTable::~TPinballTable()
 		memory::free(ScoreBallcount);
 		ScoreBallcount = nullptr;
 	}
-	for (auto i = LightGroup; ; i = static_cast<TLightGroup*>(ListP1->Get(0)))
+	delete LightGroup;
+	while (ListP1->Count() > 0)
 	{
-		//if (i)
-		//(*(void(__thiscall**)(TLightGroup*, int))(*(_DWORD*)i + 16))(i, 1);
-		//if (!ListP1->Count())
-		break;
+		delete static_cast<TPinballComponent*>(ListP1->Get(0));
 	}
 	delete ListP2;
 	delete ListP1;

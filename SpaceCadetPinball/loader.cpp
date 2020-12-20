@@ -88,7 +88,7 @@ void  loader::default_vsi(visualStruct* visual)
 	visual->Kicker.SoundIndex = 0;
 	visual->Unknown1F = 0.94999999f;
 	visual->Unknown2F = 0.60000002f;
-	visual->FloatArrSizeDiv8Sub2 = 0;
+	visual->FloatArrCount = 0;
 	visual->SoundIndex2 = 0;
 	visual->Bitmap = 0;
 	visual->ZMap = 0;
@@ -545,23 +545,23 @@ LABEL_33:
 	nextFloatVal = floatArr + 1;
 	if (*floatArr != 600.0)
 		return 0;
-	visual2->FloatArrSizeDiv8Sub2 = (partman::field_size(loader_table, groupIndexSum3, datFieldTypes::FloatArray) >> 2)/ 2- 2;
+	visual2->FloatArrCount = (partman::field_size(loader_table, groupIndexSum3, datFieldTypes::FloatArray) >> 2)/ 2- 2;
 	floatVal = (__int64)(floor(*nextFloatVal) - 1.0);
 	floatArrPtr = nextFloatVal + 1;
 	if ((int)floatVal)
 	{
 		if ((int)floatVal == 1)
 		{
-			visual2->FloatArrSizeDiv8Sub2 = 2;
+			visual2->FloatArrCount = 2;
 		}
-		else if ((int)floatVal != visual2->FloatArrSizeDiv8Sub2)
+		else if ((int)floatVal != visual2->FloatArrCount)
 		{
 			return error(8, 18);
 		}
 	}
 	else
 	{
-		visual2->FloatArrSizeDiv8Sub2 = 1;
+		visual2->FloatArrCount = 1;
 	}
 	visual2->FloatArr = floatArrPtr;
 	return 0;

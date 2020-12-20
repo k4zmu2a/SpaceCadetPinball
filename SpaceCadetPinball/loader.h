@@ -37,7 +37,7 @@ struct __declspec(align(4)) visualStruct
 {
 	float Unknown1F;
 	float Unknown2F;
-	int FloatArrSizeDiv8Sub2;
+	int FloatArrCount;
 	float* FloatArr;
 	int SoundIndex2;
 	visualKickerStruct Kicker;

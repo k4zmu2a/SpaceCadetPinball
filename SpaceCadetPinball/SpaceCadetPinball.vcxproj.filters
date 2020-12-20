@@ -216,6 +216,9 @@
     <ClInclude Include="control.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="TEdgeManager.h">
+      <Filter>Header Files\TPinballComponent</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="pch.cpp">
@@ -397,6 +400,9 @@
     </ClCompile>
     <ClCompile Include="control.cpp">
       <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="TEdgeManager.cpp">
+      <Filter>Source Files\TPinballComponent</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
