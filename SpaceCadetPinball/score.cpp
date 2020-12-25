@@ -3,6 +3,7 @@
 #include "loader.h"
 #include "memory.h"
 #include "partman.h"
+#include "render.h"
 #include "TDrain.h"
 #include "winmain.h"
 
@@ -15,12 +16,13 @@ int score::init()
 
 scoreStruct* score::create(LPCSTR fieldName, gdrv_bitmap8* renderBgBmp)
 {
-	scoreStruct* score = (scoreStruct*)memory::allocate(sizeof(scoreStruct));
+	auto score = reinterpret_cast<scoreStruct*>(memory::allocate(sizeof(scoreStruct)));
 	if (!score)
 		return nullptr;
 	score->Score = -9999;
 	score->BackgroundBmp = renderBgBmp;
-	__int16* shortArr = (__int16*)partman::field_labeled(loader::loader_table, fieldName, datFieldTypes::ShortArray);
+	auto shortArr = reinterpret_cast<__int16*>(partman::field_labeled(loader::loader_table, fieldName,
+	                                                                  datFieldTypes::ShortArray));
 	if (!shortArr)
 	{
 		memory::free(score);

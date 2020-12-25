@@ -3,6 +3,7 @@
 #include "memory.h"
 #include "partman.h"
 #include "pinball.h"
+#include "Sound.h"
 #include "zdrv.h"
 
 
@@ -132,7 +133,7 @@ void loader::unload()
 		soundListStruct* soundListPtr = &sound_list[1];
 		do
 		{
-			//Sound_FreeSound(soundListPtr->WavePtr);
+			Sound::FreeSound(soundListPtr->WavePtr);
 			++index;
 			++soundListPtr;
 		}
@@ -166,7 +167,7 @@ int loader::get_sound_id(int groupIndex)
 		if (!sound_list[soundIndex].Loaded && !sound_list[soundIndex].WavePtr)
 		{
 			int soundGroupId = sound_list[soundIndex].GroupIndex;
-			sound_list[soundIndex].Volume = 0.0;
+			sound_list[soundIndex].Duration = 0.0;
 			if (soundGroupId > 0 && !pinball::quickFlag)
 			{
 				__int16* value = (__int16*)partman::field(loader_table, soundGroupId, datFieldTypes::ShortValue);
@@ -174,9 +175,9 @@ int loader::get_sound_id(int groupIndex)
 				{
 					const CHAR* fileName = partman::field(loader_table, soundGroupId, datFieldTypes::String);
 					HFILE hFile = _lopen(fileName, 0);
-					sound_list[soundIndex].Volume = (float)((double)(_llseek(hFile, 0, 2)) * 0.0000909090909090909);
+					sound_list[soundIndex].Duration = (float)((double)_llseek(hFile, 0, 2) * 0.0000909090909090909);
 					_lclose(hFile);
-					//sound_list[soundIndex4].WavePtr = Sound_LoadWaveFile(lpName);
+					sound_list[soundIndex].WavePtr = Sound::LoadWaveFile(fileName);
 				}
 			}
 		}
@@ -320,12 +321,12 @@ int loader::material(int groupIndex, visualStruct* visual)
 }
 
 
-double loader::play_sound(int soundIndex)
+float loader::play_sound(int soundIndex)
 {
 	if (soundIndex <= 0)
 		return 0.0;
-	//Sound_PlaySound(sound_list[soundIndex].WavePtr, 0, 7, 5, 0);
-	return sound_list[soundIndex].Volume;
+	Sound::PlaySound((int)sound_list[soundIndex].WavePtr, 0, 7, 5, 0);
+	return sound_list[soundIndex].Duration;
 }
 
 int loader::state_id(int groupIndex, int groupIndexOffset)

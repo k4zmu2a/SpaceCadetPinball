@@ -1,6 +1,9 @@
 #include "pch.h"
 #include "TTextBox.h"
+
+#include "control.h"
 #include "loader.h"
+#include "render.h"
 #include "score.h"
 #include "timer.h"
 

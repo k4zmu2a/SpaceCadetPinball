@@ -16,7 +16,7 @@ struct soundListStruct
 	char* WavePtr;
 	int GroupIndex;
 	int Loaded;
-	float Volume;
+	float Duration;
 	char* PtrToSmth;
 };
 
@@ -66,7 +66,7 @@ public:
 	static char* query_name(int groupIndex);
 	static float* query_float_attribute(int groupIndex, int groupIndexOffset, int firstValue);
 	static __int16* query_iattribute(int groupIndex, int firstValue, int* arraySize);
-	static double play_sound(int soundIndex);
+	static float play_sound(int soundIndex);
 	static datFileStruct* loader_table;
 private:
 	static errorMsg loader_errors[];	

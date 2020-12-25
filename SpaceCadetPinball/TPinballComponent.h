@@ -1,10 +1,13 @@
 #pragma once
 
-#include "control.h"
-#include "render.h"
-#include "TZmapList.h"
-
+struct render_sprite_type_struct;
+struct component_control;
 class TPinballTable;
+class TZmapList;
+
+enum class message_code
+{
+};
 
 class TPinballComponent
 {
@@ -16,7 +19,6 @@ public:
 	virtual void put_scoring(int scoreId, int value);
 	virtual int get_scoring(int score1);
 
-	int VfTable;
 	__int8 UnknownBaseFlag1;
 	__int8 UnknownBaseFlag2;
 	int MessageField;

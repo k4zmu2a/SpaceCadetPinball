@@ -13,6 +13,8 @@
 #include "timer.h"
 #include "winmain.h"
 #include "resource.h"
+#include "TLightGroup.h"
+#include "TPlunger.h"
 
 TPinballTable* pb::MainTable = nullptr;
 datFileStruct* pb::record_table = nullptr;
@@ -355,19 +357,19 @@ void pb::keydown(int key)
 		}
 		if (key == options::Options.LeftTableBumpKey)
 		{
-			if (!MainTable->UnknownP83)
+			if (!MainTable->TiltLockFlag)
 				nudge::nudge_right();
 			return;
 		}
 		if (key == options::Options.RightTableBumpKey)
 		{
-			if (!MainTable->UnknownP83)
+			if (!MainTable->TiltLockFlag)
 				nudge::nudge_left();
 			return;
 		}
 		if (key == options::Options.BottomTableBumpKey)
 		{
-			if (!MainTable->UnknownP83)
+			if (!MainTable->TiltLockFlag)
 				nudge::nudge_up();
 			return;
 		}

@@ -3,6 +3,7 @@
 
 #include "loader.h"
 #include "proj.h"
+#include "render.h"
 #include "TLine.h"
 #include "TPinballTable.h"
 

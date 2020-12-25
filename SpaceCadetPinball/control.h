@@ -30,6 +30,7 @@ public:
 	static TPinballTable* TableG;
 	static component_info score_components[88];
 	static component_tag* simple_components[142];
+	static int table_control_flag;
 
 	static void make_links(TPinballTable* table);
 	static TPinballComponent* make_component_link(component_tag* tag);
@@ -93,4 +94,6 @@ public:
 	static void MedalTargetControl(int code, TPinballComponent* caller);
 	static void MultiplierTargetControl(int code, TPinballComponent* caller);
 	static void BallDrainControl(int code, TPinballComponent* caller);
+
+	static void table_control_handler(int code);	
 };

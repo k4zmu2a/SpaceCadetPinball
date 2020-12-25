@@ -3,14 +3,16 @@
 #include "TEdgeManager.h"
 
 
-
+class TPinballTable;
+class TEdgeManager;
+struct gdrv_bitmap8;
 
 class TTableLayer :
 	public TCollisionComponent
 {
 public:
-	static TEdgeManager *edge_manager;
-	
+	static TEdgeManager* edge_manager;
+
 	TTableLayer(TPinballTable* table);
 	~TTableLayer() override;
 

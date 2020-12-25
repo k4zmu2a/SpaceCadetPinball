@@ -39,3 +39,17 @@ int Sound::AddFactor(int a1, int a2)
 {
 	return a1 + a2;
 }
+
+void Sound::PlaySoundA(int a1, int a2, int a3, unsigned short a4, short a5)
+{
+}
+
+CHAR* Sound::LoadWaveFile(LPCSTR lpName)
+{
+	return nullptr;
+}
+
+LPCVOID Sound::FreeSound(LPCVOID pMem)
+{
+	return nullptr;
+}

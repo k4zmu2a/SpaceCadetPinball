@@ -1,5 +1,7 @@
 #include "pch.h"
 #include "control.h"
+
+#include "objlist_class.h"
 #include "TPinballTable.h"
 
 int control_bump_scores1[] = {500, 1000, 1500, 2000};
@@ -500,6 +502,8 @@ component_tag* control::simple_components[142]
 	&control_soundwave7_tag
 };
 
+int control::table_control_flag;
+
 
 void control::make_links(TPinballTable* table)
 {
@@ -558,7 +562,8 @@ void control::handler(int code, TPinballComponent* cmp)
 			{
 				cmp->put_scoring(scoreInd, control->Scores[scoreInd]);
 				++scoreInd;
-			} while (scoreInd < control->ScoreCount);
+			}
+			while (scoreInd < control->ScoreCount);
 		}
 		control->ControlFunc(code, cmp);
 	}
@@ -795,4 +800,13 @@ void control::MultiplierTargetControl(int code, TPinballComponent* caller)
 
 void control::BallDrainControl(int code, TPinballComponent* caller)
 {
+}
+
+void control::table_control_handler(int code)
+{
+	if (code == 1011)
+	{
+		table_control_flag = 0;
+		control_lite77_tag.Component->Message(7, 0.0);
+	}
 }

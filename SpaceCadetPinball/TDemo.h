@@ -5,7 +5,5 @@ class TDemo :
 	public TCollisionComponent
 {
 public:
-	TDemo(TPinballTable* table, int groupIndex) : TCollisionComponent(table, groupIndex, false)
-	{
-	}
+	TDemo(TPinballTable* table, int groupIndex);
 };
