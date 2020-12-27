@@ -91,7 +91,7 @@ BITMAPINFO* gdrv::DibCreate(__int16 bpp, int width, int height)
 
 void gdrv::DibSetUsage(BITMAPINFO* dib, HPALETTE hpal, int someFlag)
 {
-	tagPALETTEENTRY pPalEntries[256]; // [esp+4h] [ebp-400h]
+	tagPALETTEENTRY pPalEntries[256];
 
 	if (!hpal)
 		hpal = static_cast<HPALETTE>(GetStockObject(DEFAULT_PALETTE));
@@ -140,7 +140,7 @@ void gdrv::DibSetUsage(BITMAPINFO* dib, HPALETTE hpal, int someFlag)
 
 int gdrv::create_bitmap_dib(gdrv_bitmap8* bmp, int width, int height)
 {
-	char* bmpBufPtr; // ecx
+	char* bmpBufPtr;
 	auto dib = DibCreate(8, width, height);
 	DibSetUsage(dib, palette_handle, 1);
 
@@ -210,7 +210,6 @@ int gdrv::display_palette(PALETTEENTRY* plt)
 	{
 		if (plt)
 		{
-			// Todo: verify RGB order
 			pltDst->peRed = pltSrc->peBlue;
 			pltDst->peGreen = pltSrc->peGreen;
 			pltDst->peBlue = pltSrc->peRed;

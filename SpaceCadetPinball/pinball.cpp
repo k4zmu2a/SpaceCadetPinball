@@ -36,9 +36,9 @@ int pinball::get_rc_int(int uID, int* dst)
 
 void pinball::FindShiftKeys()
 {
-	signed int i; // esi
-	int rightShift; // eax   
-	CHAR stringBuf[20]; // [esp+Ch] [ebp-18h]
+	signed int i;
+	int rightShift;   
+	CHAR stringBuf[20];
 
 	RightShift = -1;
 	LeftShift = -1;

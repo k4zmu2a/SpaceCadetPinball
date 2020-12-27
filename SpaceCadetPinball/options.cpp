@@ -187,7 +187,7 @@ void options::path_free()
 
 int options::get_int(LPCSTR optPath, LPCSTR lpValueName, int defaultValue)
 {
-	DWORD dwDisposition; // [esp+4h] [ebp-8h]	
+	DWORD dwDisposition;	
 
 	HKEY result = (HKEY)defaultValue, Data = (HKEY)defaultValue;
 	if (!OptionsRegPath)
@@ -205,7 +205,7 @@ int options::get_int(LPCSTR optPath, LPCSTR lpValueName, int defaultValue)
 
 void options::set_int(LPCSTR optPath, LPCSTR lpValueName, int data)
 {
-	DWORD dwDisposition; // [esp+4h] [ebp-4h]
+	DWORD dwDisposition;
 
 	if (OptionsRegPath)
 	{
@@ -240,7 +240,7 @@ void options::get_string(LPCSTR optPath, LPCSTR lpValueName, LPSTR lpString1, LP
 
 void options::set_string(LPCSTR optPath, LPCSTR lpValueName, LPCSTR value)
 {
-	DWORD dwDisposition; // [esp+4h] [ebp-4h]
+	DWORD dwDisposition;
 
 	if (OptionsRegPath)
 	{

@@ -6,14 +6,14 @@ float proj::d_, proj::centerx, proj::centery;
 
 void proj::init(float* mat4x3, float d, float centerX, float centerY)
 {
-	//for (auto colIndex = 0; colIndex < 4; ++colIndex)
-	//{
-	//	// Todo: out of bounds read from mat4x3?
-	//	for (int rowIndex = colIndex, i = 4; i > 0; rowIndex += 4, --i)
-	//	{
-	//		((float*)&matrix)[rowIndex] = mat4x3[rowIndex];
-	//	}
-	//}
+	/*for (auto colIndex = 0; colIndex < 4; ++colIndex)
+	{
+		// Todo: out of bounds read from mat4x3?
+		for (int rowIndex = colIndex, i = 4; i > 0; rowIndex += 4, --i)
+		{
+			((float*)&matrix)[rowIndex] = mat4x3[rowIndex];
+		}
+	}*/
 	memcpy(&matrix, mat4x3, sizeof(float) * 4 * 3);
 
 	matrix.Row3.X = 0.0;

@@ -15,7 +15,7 @@ struct __declspec(align(4)) render_sprite_type_struct
 	rectangle_type BmpRect;
 	gdrv_bitmap8* Bmp;
 	zmap_header_type* ZMap;
-	char Unknown6_0;
+	char UnknownFlag;
 	VisualType VisualType;
 	__int16 Depth;
 	rectangle_type BmpRectCopy;
@@ -62,4 +62,5 @@ public:
 	static void paint_balls();
 	static void unpaint_balls();
 	static void shift(int offsetX, int offsetY, int xSrc, int ySrc, int DestWidth, int DestHeight);
+	static void build_occlude_list();
 };

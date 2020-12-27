@@ -7,6 +7,7 @@ class TZmapList;
 
 enum class message_code
 {
+	Reset = 1024,
 };
 
 class TPinballComponent

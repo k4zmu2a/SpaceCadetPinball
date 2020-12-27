@@ -153,7 +153,7 @@ void render::update()
 			rect->Width = dirtyRect->Width;
 			rect->Height = dirtyRect->Height;
 
-			if (sprite->Unknown6_0 != 0)
+			if (sprite->UnknownFlag != 0)
 				remove_sprite(sprite);
 		}
 
@@ -228,7 +228,7 @@ render_sprite_type_struct* render::create_sprite(VisualType visualType, gdrv_bit
 	sprite->BmpRect.XPosition = xPosition;
 	sprite->Bmp = bmp;
 	sprite->VisualType = visualType;
-	sprite->Unknown6_0 = 0;
+	sprite->UnknownFlag = 0;
 	sprite->SpriteArray = nullptr;
 	sprite->SpriteCount = 0;
 	if (rect)
@@ -395,7 +395,7 @@ void render::repaint(struct render_sprite_type_struct* sprite)
 	for (int index = 0; index < sprite->SpriteCount; index++)
 	{
 		render_sprite_type_struct* curSprite = sprite->SpriteArray[index];
-		if (!curSprite->Unknown6_0 && curSprite->Bmp)
+		if (!curSprite->UnknownFlag && curSprite->Bmp)
 		{
 			if (maths::rectangle_clip(&curSprite->BmpRect, &sprite->DirtyRect, &clipRect))
 				zdrv::paint(
@@ -522,4 +522,53 @@ void render::shift(int offsetX, int offsetY, int xSrc, int ySrc, int DestWidth, 
 		DestWidth,
 		DestHeight);
 	unpaint_balls();
+}
+
+void render::build_occlude_list()
+{
+	++memory::critical_allocation;
+	render_sprite_type_struct** spriteArr = nullptr;
+	auto spritePtr1 = sprite_list;
+	for (int index = 0; index < many_sprites; ++index, ++spritePtr1)
+	{
+		auto curSprite = *spritePtr1;
+		if ((*spritePtr1)->SpriteArray)
+		{
+			memory::free((*spritePtr1)->SpriteArray);
+			curSprite->SpriteArray = nullptr;
+			curSprite->SpriteCount = 0;
+		}
+		if (!curSprite->UnknownFlag && curSprite->BoundingRect.Width != -1)
+		{
+			if (!spriteArr)
+				spriteArr = reinterpret_cast<render_sprite_type_struct**>(memory::allocate(0xFA0u));
+			int occludeCount = 0;
+			auto spritePtr2 = sprite_list;
+			for (int i = 0; i < many_sprites; ++i, ++spritePtr2)
+			{
+				auto sprite = *spritePtr2;
+				if (!sprite->UnknownFlag
+					&& sprite->BoundingRect.Width != -1
+					&& maths::rectangle_clip(&curSprite->BoundingRect, &sprite->BoundingRect, nullptr)
+					&& spriteArr)
+				{
+					spriteArr[occludeCount++] = sprite;
+				}
+			}
+			if (!curSprite->UnknownFlag && curSprite->Bmp && occludeCount < 2)
+				occludeCount = 0;
+			if (occludeCount)
+			{
+				curSprite->SpriteArray = reinterpret_cast<render_sprite_type_struct**>(memory::realloc(
+					spriteArr, 4 * occludeCount));
+				curSprite->SpriteCount = occludeCount;
+				spriteArr = nullptr;
+			}
+		}
+	}
+
+	if (spriteArr)
+		memory::free(spriteArr);
+
+	--memory::critical_allocation;
 }

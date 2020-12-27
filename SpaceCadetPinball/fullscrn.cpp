@@ -40,9 +40,10 @@ void fullscrn::init(int width, int height, int isFullscreen, HWND winHandle, HME
 		hWnd,
 		(WindowRect1.right - WindowRect1.left - widht2) / 2 - 2,
 		WindowRect2.top,
-		widht2 + 4,
-		WindowRect2.bottom - WindowRect2.top,
+		widht2 + 4 + 10,
+		WindowRect2.bottom - WindowRect2.top + 10,
 		0);
+	// Todo: WH + 10 hack: original request 640x480 window but somehow receives 650x490, even thought spyxx says it is 640x480
 	fullscrn_flag1 = 0;
 }
 
@@ -94,8 +95,8 @@ int fullscrn::setWindowFlagsDisDlg()
 
 int fullscrn::enableFullscreen()
 {
-	tagRECT Rect{}; // [esp+Ch] [ebp-B0h]
-	DEVMODEA DevMode{}; // [esp+1Ch] [ebp-A0h]
+	tagRECT Rect{};
+	DEVMODEA DevMode{};
 
 	if (ChangeDisplay && !display_changed)
 	{
@@ -153,7 +154,7 @@ int fullscrn::disableFullscreen()
 
 bool fullscrn::set_menu_mode(int menuEnabled)
 {
-	BOOL result; // eax
+	BOOL result;
 
 	MenuEnabled = menuEnabled;
 	GetWindowCenter();
@@ -174,8 +175,8 @@ bool fullscrn::set_menu_mode(int menuEnabled)
 
 void fullscrn::GetWindowCenter()
 {
-	int yPos; // eax
-	tagRECT Rect{}; // [esp+4h] [ebp-10h]
+	int yPos;
+	tagRECT Rect{};
 
 	if (screen_mode)
 	{
@@ -201,7 +202,7 @@ void fullscrn::force_redraw()
 
 void fullscrn::center_in(HWND parent, HWND child)
 {
-	LONG right; // ebx
+	LONG right;
 	tagRECT childRect{}, parentRect{}, desktopRect{};
 
 	GetWindowRect(parent, &parentRect);
@@ -296,8 +297,8 @@ void fullscrn::activate(int flag)
 void fullscrn::fillRect(int right, int bottom)
 {
 	// Weird reg usage, should be zero
-	int v2 = 0; // ebx
-	int v3 = 0; // edi
+	int v2 = 0;
+	int v3 = 0;
 
 	RECT rc;
 	HGDIOBJ brush = CreateSolidBrush(0);

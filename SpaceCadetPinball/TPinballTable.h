@@ -65,8 +65,8 @@ public:
 	int YOffset;
 	int Width;
 	int Height;
-	objlist_class* ListP1;
-	objlist_class* ListP2;
+	objlist_class* ComponentList;
+	objlist_class* BallList;
 	TLightGroup* LightGroup;
 	float TableAngleMult;
 	float TableAngle1;

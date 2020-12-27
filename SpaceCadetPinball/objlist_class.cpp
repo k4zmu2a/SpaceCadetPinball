@@ -88,7 +88,6 @@ int objlist_class::objlist_delete_object(objlist_struct1* ptrToStruct, void* val
 		if (--index < 0)
 			return 0;
 	}
-	//ptrToStruct->Array[index] = *(&ptrToStruct->Count + count);
 	ptrToStruct->Array[index] = ptrToStruct->Array[count - 1];
 	--ptrToStruct->Count;
 	return 1;

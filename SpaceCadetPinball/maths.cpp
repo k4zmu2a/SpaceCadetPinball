@@ -81,10 +81,10 @@ int maths::rectangle_clip(rectangle_type* rect1, rectangle_type* rect2, rectangl
 
 int maths::overlapping_box(rectangle_type* rect1, rectangle_type* rect2, rectangle_type* dstRect)
 {
-	int v3; // esi
-	int v4; // edi
-	int v6; // esi
-	int v7; // edi
+	int v3;
+	int v4;
+	int v6;
+	int v7;
 
 	if (rect1->XPosition >= rect2->XPosition)
 	{
@@ -166,9 +166,9 @@ float maths::normalize_2d(vector_type* vec)
 
 void maths::line_init(line_type* line, float x0, float y0, float x1, float y1)
 {
-	float v9; // st7
-	bool lineDirection; // pf
-	float v11; // eax
+	float v9;
+	bool lineDirection;
+	float v11;
 
 	line->Direction.X = x1 - x0;
 	line->Direction.Y = y1 - y0;
@@ -204,12 +204,12 @@ void maths::line_init(line_type* line, float x0, float y0, float x1, float y1)
 float maths::ray_intersect_line(ray_type* ray, line_type* line)
 {
 	// Similar to https://rootllama.wordpress.com/2014/06/20/ray-line-segment-intersection-test-in-2d/
-	float perpDot; // st7
-	float result; // st7
-	float v4; // st6
-	bool v5; // c0
-	bool v6; // c3
-	float v7; // st6
+	float perpDot;
+	float result;
+	float v4;
+	bool v5;
+	bool v6;
+	float v7;
 
 	perpDot = line->PerpendicularL.Y * ray->Direction.Y + ray->Direction.X * line->PerpendicularL.X;
 	if (perpDot < 0.0)
@@ -262,4 +262,10 @@ float maths::magnitude(vector_type* vec)
 	else
 		result = sqrt(magSq);
 	return result;
+}
+
+void maths::vector_add(vector_type* vec1Dst, vector_type* vec2)
+{
+	vec1Dst->X += vec2->X;
+	vec1Dst->Y += vec2->Y;
 }

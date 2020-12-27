@@ -13,14 +13,15 @@
 #include "timer.h"
 #include "winmain.h"
 #include "resource.h"
+#include "TBall.h"
+#include "TDemo.h"
 #include "TLightGroup.h"
 #include "TPlunger.h"
 
 TPinballTable* pb::MainTable = nullptr;
 datFileStruct* pb::record_table = nullptr;
-int pb::time_ticks = 0, pb::demo_mode = 0, pb::cheat_mode = 0, pb::game_mode = 2, pb::mode_countdown_, pb::
-    ball_speed_limit, pb::state;
-float pb::time_now, pb::time_next;
+int pb::time_ticks = 0, pb::demo_mode = 0, pb::cheat_mode = 0, pb::game_mode = 2, pb::mode_countdown_, pb::state;
+float pb::time_now, pb::time_next, pb::ball_speed_limit;
 high_score_struct pb::highscore_table[5];
 
 int pb::init()
@@ -63,7 +64,6 @@ int pb::init()
 	}
 
 	render::init(nullptr, zMin, zScaler, tableSize[0], tableSize[1]);
-	gdrv::fill_bitmap(&render::vscreen, render::vscreen.Width, render::vscreen.Height, 0, 0, '\xFF'); // temp
 	gdrv::copy_bitmap(
 		&render::vscreen,
 		backgroundBmp->Width,
@@ -89,9 +89,7 @@ int pb::init()
 	MainTable = new TPinballTable();
 
 	high_score::read(highscore_table, &state);
-	//v11 = *(float*)((char*)MainTable->ListP2.ListPtr->Array[0] + 154);
-	//ball_speed_limit = v11 * 200.0;
-
+	ball_speed_limit = static_cast<TBall*>(MainTable->BallList->Get(0))->Offset * 200.0f;
 	--memory::critical_allocation;
 	return 0;
 }
@@ -142,9 +140,8 @@ void pb::mode_change(int mode)
 			options::menu_check(Menu1_Demo, 1);
 			if (MainTable)
 			{
-				/*v2 = MainTable->UnknownP48;
-				if (v2)
-					*(_BYTE*)(v2 + 5) = 1;*/
+				if (MainTable->Demo)
+					MainTable->Demo->UnknownBaseFlag2 = 1;
 			}
 		}
 		else
@@ -154,9 +151,8 @@ void pb::mode_change(int mode)
 			options::menu_check(Menu1_Demo, 0);
 			if (MainTable)
 			{
-				/*v1 = MainTable->UnknownP48;
-				if (v1)
-					*(_BYTE*)(v1 + 5) = 0;*/
+				if (MainTable->Demo)
+					MainTable->Demo->UnknownBaseFlag2 = 0;
 			}
 		}
 		break;
@@ -208,6 +204,10 @@ void pb::replay_level(int demoMode)
 
 void pb::ballset(int x, int y)
 {
+	TBall* ball = static_cast<TBall*>(MainTable->BallList->Get(0));
+	ball->Acceleration.X = x * 30.0f;
+	ball->Acceleration.Y = y * 30.0f;
+	ball->Speed = maths::normalize_2d(&ball->Acceleration);
 }
 
 int pb::frame(int time)
@@ -221,30 +221,29 @@ int pb::frame(int time)
 		//pb::timed_frame(time_now, timeMul, 1);
 		time_now = time_next;
 		time_ticks += time;
-		/*if (nudged_left || nudged_right || nudged_up)
+		if (nudge::nudged_left || nudge::nudged_right || nudge::nudged_up)
 		{
-			nudge_count = timeMul * 4.0 + nudge_count;
+			nudge::nudge_count = timeMul * 4.0f + nudge::nudge_count;
 		}
 		else
 		{
-			v2 = nudge_count - timeMul;
-			if (v2 <= 0.0)
-				v2 = 0.0;
-			nudge_count = v2;
-		}*/
+			auto nudgeDec = nudge::nudge_count - timeMul;
+			if (nudgeDec <= 0.0)
+				nudgeDec = 0.0;
+			nudge::nudge_count = nudgeDec;
+		}
 		timer::check();
 		render::update();
-		//score::update(MainTable->Score1);
-		/*if (!MainTable->UnknownP83)
+		score::update(MainTable->CurScoreStruct);
+		if (!MainTable->TiltLockFlag)
 		{
-			if (nudge_count > 0.5)
+			if (nudge::nudge_count > 0.5)
 			{
-				v3 = pinball:: get_rc_string(25, 0);
-				pinball::InfoTextBox->Display( v3, 2.0);
+				pinball::InfoTextBox->Display(pinball::get_rc_string(25, 0), 2.0);
 			}
-			if (nudge_count > 1.0)
-				TPinballTable::tilt(MainTable, v1, time_now);
-		}*/
+			if (nudge::nudge_count > 1.0)
+				MainTable->tilt(time_now);
+		}
 	}
 	return 1;
 }
@@ -316,15 +315,15 @@ void pb::keyup(int key)
 		}
 		else if (key == options::Options.LeftTableBumpKey)
 		{
-			nudge::un_nudge_right(0, 0);
+			nudge::un_nudge_right(0, nullptr);
 		}
 		else if (key == options::Options.RightTableBumpKey)
 		{
-			nudge::un_nudge_left(0, 0);
+			nudge::un_nudge_left(0, nullptr);
 		}
 		else if (key == options::Options.BottomTableBumpKey)
 		{
-			nudge::un_nudge_up(0, 0);
+			nudge::un_nudge_up(0, nullptr);
 		}
 	}
 }
@@ -379,12 +378,38 @@ void pb::keydown(int key)
 		switch (key)
 		{
 		case 'B':
-			/**/
+			TBall* ball;
+			if (MainTable->BallList->Count() <= 0)
+			{
+				ball = new TBall(MainTable);
+			}
+			else
+			{
+				for (auto index = 0; ;)
+				{
+					ball = static_cast<TBall*>(MainTable->BallList->Get(index));
+					if (!ball->UnknownBaseFlag2)
+						break;
+					++index;
+					if (index >= MainTable->BallList->Count())
+					{
+						ball = new TBall(MainTable);
+						break;
+					}
+				}
+			}
+			ball->Position.X = 1.0;
+			ball->UnknownBaseFlag2 = 1;
+			ball->Position.Z = ball->Offset;
+			ball->Position.Y = 1.0;
+			ball->Acceleration.Z = 0.0;
+			ball->Acceleration.Y = 0.0;
+			ball->Acceleration.X = 0.0;
 			break;
 		case 'H':
-			/*auto v1 = get_rc_string(26, 0);
-			lstrcpyA(&String1, v1);
-			show_and_set_high_score_dialog(highscore_table, 1000000000, 1, &String1);*/
+			char String1[200];
+			lstrcpyA(String1, pinball::get_rc_string(26, 0));
+			high_score::show_and_set_high_score_dialog(highscore_table, 1000000000, 1, String1);
 			break;
 		case 'M':
 			char buffer[20];
@@ -449,4 +474,29 @@ int pb::end_game()
 void pb::high_scores()
 {
 	high_score::show_high_score_dialog(highscore_table);
+}
+
+void pb::tilt_no_more()
+{
+	if (MainTable->TiltLockFlag)
+		pinball::InfoTextBox->Clear();
+	MainTable->TiltLockFlag = 0;
+	nudge::nudge_count = -2.0;
+}
+
+bool pb::chk_highscore()
+{
+	if (demo_mode)
+		return false;
+	int playerIndex = MainTable->PlayerCount - 1;
+	if (playerIndex < 0)
+		return false;
+	for (int i = playerIndex;
+	     high_score::get_score_position(highscore_table, MainTable->PlayerScores[i].ScoreStruct->Score) < 0;
+	     --i)
+	{
+		if (--playerIndex < 0)
+			return false;
+	}
+	return true;
 }

@@ -42,9 +42,6 @@
     <ClInclude Include="partman.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="DatParser.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="loader.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -231,9 +228,6 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="partman.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="DatParser.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="loader.cpp">

@@ -8,7 +8,7 @@
 
 TPinballComponent::TPinballComponent(TPinballTable* table, int groupIndex, bool loadVisuals)
 {
-	visualStruct visual{}; // [esp+Ch] [ebp-6Ch]
+	visualStruct visual{};
 
 	MessageField = 0;
 	UnknownBaseFlag1 = 0;
@@ -18,7 +18,7 @@ TPinballComponent::TPinballComponent(TPinballTable* table, int groupIndex, bool 
 	ListBitmap = nullptr;
 	ListZMap = nullptr;
 	if (table)
-		table->ListP1->Add(this);
+		table->ComponentList->Add(this);
 	if (groupIndex >= 0)
 		GroupName = loader::query_name(groupIndex);
 	if (loadVisuals && groupIndex >= 0)
@@ -80,7 +80,7 @@ TPinballComponent::~TPinballComponent()
 {
 	TPinballTable* table = PinballTable;
 	if (table)
-		table->ListP1->Delete(this);
+		table->ComponentList->Delete(this);
 
 	delete ListBitmap;
 	delete ListZMap;

@@ -157,7 +157,6 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="control.h" />
-    <ClInclude Include="DatParser.h" />
     <ClInclude Include="fullscrn.h" />
     <ClInclude Include="gdrv.h" />
     <ClInclude Include="high_score.h" />
@@ -221,7 +220,6 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="control.cpp" />
-    <ClCompile Include="DatParser.cpp" />
     <ClCompile Include="fullscrn.cpp" />
     <ClCompile Include="gdrv.cpp" />
     <ClCompile Include="high_score.cpp" />

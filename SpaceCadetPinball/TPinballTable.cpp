@@ -47,8 +47,8 @@ TPinballTable::TPinballTable(): TPinballComponent(nullptr, -1, false)
 {
 	int shortArrLength;
 
-	ListP1 = new objlist_class(32, 16);
-	ListP2 = new objlist_class(3, 1);
+	ComponentList = new objlist_class(32, 16);
+	BallList = new objlist_class(3, 1);
 	CurScoreStruct = nullptr;
 	ScoreBallcount = nullptr;
 	ScorePlayerNumber1 = nullptr;
@@ -62,7 +62,7 @@ TPinballTable::TPinballTable(): TPinballComponent(nullptr, -1, false)
 	MultiballFlag = 0;
 
 	auto ballObj = new TBall(this);
-	ListP2->Add(ballObj);
+	BallList->Add(ballObj);
 	if (ballObj)
 		ballObj->UnknownBaseFlag2 = 0;
 	new TTableLayer(this);
@@ -188,7 +188,7 @@ TPinballTable::TPinballTable(): TPinballComponent(nullptr, -1, false)
 		}
 	}
 
-	//build_occlude_list();
+	render::build_occlude_list();
 	pinball::InfoTextBox = dynamic_cast<TTextBox*>(find_component("info_text_box"));
 	pinball::MissTextBox = dynamic_cast<TTextBox*>(find_component("mission_text_box"));
 	control::make_links(this);
@@ -212,22 +212,22 @@ TPinballTable::~TPinballTable()
 		ScoreBallcount = nullptr;
 	}
 	delete LightGroup;
-	while (ListP1->Count() > 0)
+	while (ComponentList->Count() > 0)
 	{
-		delete static_cast<TPinballComponent*>(ListP1->Get(0));
+		delete static_cast<TPinballComponent*>(ComponentList->Get(0));
 	}
-	delete ListP2;
-	delete ListP1;
+	delete BallList;
+	delete ComponentList;
 }
 
 TPinballComponent* TPinballTable::find_component(LPCSTR componentName)
 {
-	int objCount = ListP1->Count();
+	int objCount = ComponentList->Count();
 	if (objCount > 0)
 	{
 		for (int index = 0; index < objCount; ++index)
 		{
-			TPinballComponent* obj = static_cast<TPinballComponent*>(ListP1->Get(index));
+			TPinballComponent* obj = static_cast<TPinballComponent*>(ComponentList->Get(index));
 			const CHAR* groupName = obj->GroupName;
 			if (groupName && !lstrcmpA(groupName, componentName))
 			{
@@ -242,12 +242,12 @@ TPinballComponent* TPinballTable::find_component(LPCSTR componentName)
 TPinballComponent* TPinballTable::find_component(int groupIndex)
 {
 	char Buffer[33];
-	int objCount = ListP1->Count();
+	int objCount = ComponentList->Count();
 	if (objCount > 0)
 	{
 		for (int index = 0; index < objCount; ++index)
 		{
-			TPinballComponent* obj = static_cast<TPinballComponent*>(ListP1->Get(index));
+			TPinballComponent* obj = static_cast<TPinballComponent*>(ComponentList->Get(index));
 			if (obj->GroupIndex == groupIndex)
 				return obj;
 		}
@@ -305,11 +305,11 @@ void TPinballTable::tilt(float time)
 		pinball::MissTextBox->Clear();
 		pinball::InfoTextBox->Display(pinball::get_rc_string(35, 0), -1.0);
 		loader::play_sound(this2->SoundIndex3);
-		this2->TiltTimeoutTimer = timer::set(30.0, this2, TPinballTable::tilt_timeout);
+		this2->TiltTimeoutTimer = timer::set(30.0, this2, tilt_timeout);
 
-		for (int i = 0; i < ListP1->Count(); i++)
+		for (int i = 0; i < ComponentList->Count(); i++)
 		{
-			static_cast<TPinballComponent*>(ListP1->Get(i))->Message(1011, time);
+			static_cast<TPinballComponent*>(ComponentList->Get(i))->Message(1011, time);
 		}
 		this2->LightGroup->Message(8, 0);
 		this2->TiltLockFlag = 1;
@@ -320,9 +320,9 @@ void TPinballTable::tilt(float time)
 
 void TPinballTable::port_draw()
 {
-	for (int index = ListP1->Count() - 1; index >= 0; index--)
+	for (int index = ComponentList->Count() - 1; index >= 0; index--)
 	{
-		static_cast<TPinballComponent*>(ListP1->Get(index))->port_draw();
+		static_cast<TPinballComponent*>(ComponentList->Get(index))->port_draw();
 	}
 }
 
@@ -362,9 +362,9 @@ int TPinballTable::Message(int code, float value)
 	case 1008:
 	case 1009:
 	case 1010:
-		for (int i = 0; i < ListP1->Count(); i++)
+		for (int i = 0; i < ComponentList->Count(); i++)
 		{
-			static_cast<TPinballComponent*>(ListP1->Get(i))->Message(code, value);
+			static_cast<TPinballComponent*>(ComponentList->Get(i))->Message(code, value);
 		}
 		break;
 	case 1012:
@@ -406,10 +406,10 @@ int TPinballTable::Message(int code, float value)
 		{
 			UnknownP6 = 0;
 			Message(1024, 0.0);
-			/*v8 = (char*)this2->ListP2.ListPtr->Array[0];
-			*(float*)(v8 + 46) = 0.0;
-			*(float*)(v8 + 42) = 0.0;
-			*(_DWORD*)(v8 + 50) = -1085485875;*/
+			auto ball = static_cast<TBall*>(BallList->Get(0));
+			ball->Position.Y = 0.0;
+			ball->Position.X = 0.0;
+			ball->Position.Z = -0.8f;
 
 			auto playerCount = static_cast<int>(floor(value));
 			PlayerCount = playerCount;
@@ -513,9 +513,9 @@ int TPinballTable::Message(int code, float value)
 			score::set(ScorePlayerNumber1, nextPlayer + 1);
 			score::update(ScorePlayerNumber1);
 
-			for (int i = 0; i < ListP1->Count(); i++)
+			for (int i = 0; i < ComponentList->Count(); i++)
 			{
-				static_cast<TPinballComponent*>(ListP1->Get(i))->Message(1020, static_cast<float>(nextPlayer));
+				static_cast<TPinballComponent*>(ComponentList->Get(i))->Message(1020, static_cast<float>(nextPlayer));
 			}
 
 			char* textboxText = nullptr;
@@ -564,9 +564,9 @@ int TPinballTable::Message(int code, float value)
 		EndGameTimeoutTimer = timer::set(3.0, this, EndGame_timeout);
 		break;
 	case 1024:
-		for (int i = 0; i < ListP1->Count(); i++)
+		for (int i = 0; i < ComponentList->Count(); i++)
 		{
-			static_cast<TPinballComponent*>(ListP1->Get(i))->Message(1024, 0);
+			static_cast<TPinballComponent*>(ComponentList->Get(i))->Message(1024, 0);
 		}
 		if (ReplayTimer)
 			timer::kill(ReplayTimer);
@@ -608,9 +608,9 @@ void TPinballTable::EndGame_timeout(int timerId, void* caller)
 	table->EndGameTimeoutTimer = 0;
 	pb::end_game();
 
-	for (int i = 0; i < table->ListP1->Count(); i++)
+	for (int i = 0; i < table->ComponentList->Count(); i++)
 	{
-		static_cast<TPinballComponent*>(table->ListP1->Get(i))->Message(1022, 0);
+		static_cast<TPinballComponent*>(table->ComponentList->Get(i))->Message(1022, 0);
 	}
 	if (table->Demo)
 		table->Demo->Message(1022, 0.0);
@@ -635,12 +635,6 @@ void TPinballTable::replay_timer_callback(int timerId, void* caller)
 void TPinballTable::tilt_timeout(int timerId, void* caller)
 {
 	auto table = static_cast<TPinballTable*>(caller);
-
-	objlist_struct1* v2; // eax
-	void** v3; // edi
-	int v4; // ebx
-	char v5; // [esp+14h] [ebp-Ch]
-
 	table->TiltTimeoutTimer = 0;
 	if (table->TiltLockFlag)
 	{

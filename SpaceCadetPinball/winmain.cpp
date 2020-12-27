@@ -370,7 +370,7 @@ LRESULT CALLBACK winmain::message_handler(HWND hWnd, UINT Msg, WPARAM wParam, LP
 				SetCursor(prevCursor);
 				auto changeDisplayFg = options::get_int(nullptr, "Change Display", 1);
 				auto menuHandle = GetMenu(hWnd);
-				fullscrn::init(width, static_cast<int>(height), options::Options.FullScreen, hWnd, menuHandle,
+				fullscrn::init(width, height, options::Options.FullScreen, hWnd, menuHandle,
 				               changeDisplayFg);
 
 				--memory::critical_allocation;
@@ -662,7 +662,7 @@ LRESULT CALLBACK winmain::message_handler(HWND hWnd, UINT Msg, WPARAM wParam, LP
 
 int winmain::ProcessWindowMessages()
 {
-	MSG Msg{}; // [esp+8h] [ebp-1Ch]
+	MSG Msg{};
 
 	if (has_focus && !single_step)
 	{

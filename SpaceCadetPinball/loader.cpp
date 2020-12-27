@@ -415,28 +415,28 @@ int loader::kicker(int groupIndex, visualKickerStruct* kicker)
 
 int  loader::query_visual(int groupIndex, int groupIndexOffset, visualStruct* visual)
 {
-	visualStruct* visual2; // edi
-	int groupIndexSum; // eax
-	int groupIndexSum2; // ebx
-	zmap_header_type* bitmap16; // eax
-	__int16* shortArr; // esi
-	unsigned int shortArrSize; // eax
-	int index; // ebx
-	int shortVal; // ecx
-	__int16* nextShortVal; // esi
-	int nextIndex; // ebx
-	int shortValSub100; // ecx
-	int shortValSub300; // ecx
-	int shortValSub304; // ecx
-	int shortValSub602; // ecx
-	int shortValSub1100; // ecx
-	int shortValSub1101; // ecx
-	float* floatArr; // eax
-	float* nextFloatVal; // esi
-	__int64 floatVal; // rax
-	float* floatArrPtr; // esi
-	int groupIndexSum3; // [esp+1Ch] [ebp+8h]
-	int shortArrLength; // [esp+24h] [ebp+10h]
+	visualStruct* visual2; 
+	int groupIndexSum; 
+	int groupIndexSum2; 
+	zmap_header_type* bitmap16; 
+	__int16* shortArr; 
+	unsigned int shortArrSize; 
+	int index; 
+	int shortVal; 
+	__int16* nextShortVal; 
+	int nextIndex; 
+	int shortValSub100; 
+	int shortValSub300; 
+	int shortValSub304; 
+	int shortValSub602; 
+	int shortValSub1100; 
+	int shortValSub1101; 
+	float* floatArr; 
+	float* nextFloatVal; 
+	__int64 floatVal; 
+	float* floatArrPtr; 
+	int groupIndexSum3; 
+	int shortArrLength; 
 
 	visual2 = visual;
 	default_vsi(visual);

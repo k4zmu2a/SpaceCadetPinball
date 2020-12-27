@@ -77,7 +77,6 @@ struct dat8BitBmpHeader
 static_assert(sizeof(dat8BitBmpHeader) == 14, "Wrong size of dat8BitBmpHeader");
 
 
-//typedef const char* LPCSTR;
 class partman
 {
 public:

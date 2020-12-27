@@ -533,7 +533,7 @@ TPinballComponent* control::make_component_link(component_tag* tag)
 	if (tag->Component)
 		return tag->Component;
 
-	auto compList = TableG->ListP1;
+	auto compList = TableG->ComponentList;
 	for (int index = 0; index < compList->Count(); index++)
 	{
 		auto comp = static_cast<TPinballComponent*>(compList->Get(index));

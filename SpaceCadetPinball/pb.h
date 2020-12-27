@@ -7,7 +7,7 @@ class pb
 {
 public:
 	static int time_ticks;
-	static int ball_speed_limit;
+	static float ball_speed_limit;
 	static int cheat_mode, game_mode;
 	static datFileStruct* record_table;
 	static TPinballTable* MainTable;
@@ -33,6 +33,8 @@ public:
 	static void launch_ball();
 	static int end_game();
 	static void high_scores();
+	static void tilt_no_more();
+	static bool chk_highscore();
 private :
 	static int demo_mode, mode_countdown_;
 	static float time_now, time_next;
