@@ -1,11 +1,56 @@
 #pragma once
 #include "TPinballComponent.h"
-class TLight :
-    public TPinballComponent
+
+struct gdrv_bitmap8;
+
+struct __declspec(align(4)) flasher_type
 {
-public:
-	TLight(TPinballTable* table, int groupIndex) : TPinballComponent(table, groupIndex, true)
-	{
-	}
+	render_sprite_type_struct* Sprite;
+	gdrv_bitmap8* BmpArr[2];
+	int Unknown3;
+	int Unknown4;
+	float TimerDelay[2];
+	int Timer;
+	int BmpIndex;
 };
 
+
+struct __declspec(align(4)) TLight_player_backup
+{
+	int MessageField;
+	int BmpIndex1;
+	int FlasherActive;
+	int Unknown3;
+	int Unknown4;
+	int BmpIndex2;
+};
+
+
+class TLight :
+	public TPinballComponent
+{
+public:
+	TLight(TPinballTable* table, int groupIndex);
+	int Message(int code, float value) override;
+	void Reset();
+	void schedule_timeout(float time);
+
+	static void TimerExpired(int timerId, void* caller);
+	static void flasher_stop(flasher_type* flash, int bmpIndex);
+	static void flasher_start(struct flasher_type* flash, int bmpIndex);	
+	static void flasher_callback(int timerId, void* caller);
+
+	flasher_type Flasher;
+	int BmpIndex1;
+	int FlasherActive;
+	int FlasherFlag1;
+	int FlasherFlag2;
+	int Unknown13;
+	int BmpIndex2;
+	float FlasherDelay[2];
+	int Timer1;
+	int Timer2;
+	int Unknown19;
+	float Unknown20F;
+	TLight_player_backup PlayerData[4];
+};

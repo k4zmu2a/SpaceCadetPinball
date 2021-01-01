@@ -241,7 +241,7 @@ TPinballComponent* TPinballTable::find_component(LPCSTR componentName)
 
 TPinballComponent* TPinballTable::find_component(int groupIndex)
 {
-	char Buffer[33];
+	char Buffer[40];
 	int objCount = ComponentList->Count();
 	if (objCount > 0)
 	{

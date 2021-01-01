@@ -11,7 +11,7 @@ rectangle_type fullscrn::WHRect;
 int fullscrn::fullscrn_flag1;
 int fullscrn::display_changed;
 int fullscrn::ChangeDisplay, fullscrn::SmthFullScrnFlag2;
-int fullscrn::trick;
+int fullscrn::trick = 1;
 int fullscrn::MenuEnabled;
 HMENU fullscrn::MenuHandle;
 
