@@ -1,0 +1,5084 @@
+Hello World!
+pbwdlist - 3D Pinball for Windows DAT file listing program
+by AdrienTD
+
+File: D:\dark\program\c++\test\SpaceCadetPinball\Debug\PINBALL.DAT
+
+-- Header --
+File signature:	PARTOUT(4.0)RESOURCE
+App name:	3D-Pinball
+Description:	Space Cadet Table
+File size:	928700
+Num. groups:	541
+Size of body:	928517
+Unknown value:	0
+
+-- Body --
+Group 0:	num entries: 1, location: 0xB7
+		- type: 9, size: 43
+		  String: 3D-Pinball:  Copyright 1994, Cinematronics
+
+Group 1:	num entries: 2, location: 0xE8
+		- type: 3, size: 11
+		  Group name: table_size
+		- type: 10, size: 4
+		  Shorts: 600 416
+
+Group 2:	num entries: 3, location: 0x102
+		- type: 1, size: 80390
+		  Bitmap, width: 203, height: 394
+		- type: 3, size: 11
+		  Group name: background
+		- type: 5, size: 1024
+		  Palette
+
+Group 3:	num entries: 2, location: 0x13F23
+		- type: 3, size: 12
+		  Group name: camera_info
+		- type: 11, size: 60
+		  Floats: 1.000000 0.000000 0.000000 0.000000 0.000000 -0.913545 0.406737 3.791398 0.000000 -0.406737 -0.913545 24.675402 -400.000702 19.501307 4303.969727
+
+Group 4:	num entries: 2, location: 0x13F76
+		- type: 0, value: 202
+		- type: 9, size: 4
+		  String: ...
+
+Group 5:	num entries: 2, location: 0x13F83
+		- type: 1, size: 366
+		  Bitmap, width: 15, height: 22
+		- type: 3, size: 6
+		  Group name: font1
+
+Group 6:	num entries: 1, location: 0x14102
+		- type: 1, size: 366
+		  Bitmap, width: 15, height: 22
+
+Group 7:	num entries: 1, location: 0x14276
+		- type: 1, size: 366
+		  Bitmap, width: 15, height: 22
+
+Group 8:	num entries: 1, location: 0x143EA
+		- type: 1, size: 366
+		  Bitmap, width: 15, height: 22
+
+Group 9:	num entries: 1, location: 0x1455E
+		- type: 1, size: 366
+		  Bitmap, width: 15, height: 22
+
+Group 10:	num entries: 1, location: 0x146D2
+		- type: 1, size: 366
+		  Bitmap, width: 15, height: 22
+
+Group 11:	num entries: 1, location: 0x14846
+		- type: 1, size: 366
+		  Bitmap, width: 15, height: 22
+
+Group 12:	num entries: 1, location: 0x149BA
+		- type: 1, size: 366
+		  Bitmap, width: 15, height: 22
+
+Group 13:	num entries: 1, location: 0x14B2E
+		- type: 1, size: 366
+		  Bitmap, width: 15, height: 22
+
+Group 14:	num entries: 1, location: 0x14CA2
+		- type: 1, size: 366
+		  Bitmap, width: 15, height: 22
+
+Group 15:	num entries: 2, location: 0x14E16
+		- type: 3, size: 7
+		  Group name: score1
+		- type: 10, size: 10
+		  Shorts: 5 433 197 135 22
+
+Group 16:	num entries: 2, location: 0x14E32
+		- type: 3, size: 11
+		  Group name: ballcount1
+		- type: 10, size: 10
+		  Shorts: 5 553 152 15 22
+
+Group 17:	num entries: 2, location: 0x14E52
+		- type: 3, size: 15
+		  Group name: player_number1
+		- type: 10, size: 10
+		  Shorts: 5 403 197 15 22
+
+Group 18:	num entries: 2, location: 0x14E76
+		- type: 0, value: 202
+		- type: 9, size: 11
+		  String: sound1.wav
+
+Group 19:	num entries: 2, location: 0x14E8A
+		- type: 0, value: 202
+		- type: 9, size: 11
+		  String: sound2.wav
+
+Group 20:	num entries: 2, location: 0x14E9E
+		- type: 0, value: 202
+		- type: 9, size: 11
+		  String: sound3.wav
+
+Group 21:	num entries: 2, location: 0x14EB2
+		- type: 0, value: 202
+		- type: 9, size: 11
+		  String: sound4.wav
+
+Group 22:	num entries: 2, location: 0x14EC6
+		- type: 0, value: 202
+		- type: 9, size: 11
+		  String: sound5.wav
+
+Group 23:	num entries: 2, location: 0x14EDA
+		- type: 0, value: 202
+		- type: 9, size: 11
+		  String: sound7.wav
+
+Group 24:	num entries: 2, location: 0x14EEE
+		- type: 0, value: 202
+		- type: 9, size: 11
+		  String: sound8.wav
+
+Group 25:	num entries: 2, location: 0x14F02
+		- type: 0, value: 202
+		- type: 9, size: 11
+		  String: sound9.wav
+
+Group 26:	num entries: 2, location: 0x14F16
+		- type: 0, value: 202
+		- type: 9, size: 12
+		  String: sound12.wav
+
+Group 27:	num entries: 2, location: 0x14F2B
+		- type: 0, value: 202
+		- type: 9, size: 12
+		  String: sound14.wav
+
+Group 28:	num entries: 2, location: 0x14F40
+		- type: 0, value: 202
+		- type: 9, size: 12
+		  String: sound16.wav
+
+Group 29:	num entries: 2, location: 0x14F55
+		- type: 0, value: 202
+		- type: 9, size: 12
+		  String: sound17.wav
+
+Group 30:	num entries: 2, location: 0x14F6A
+		- type: 0, value: 202
+		- type: 9, size: 12
+		  String: sound18.wav
+
+Group 31:	num entries: 2, location: 0x14F7F
+		- type: 0, value: 202
+		- type: 9, size: 12
+		  String: sound19.wav
+
+Group 32:	num entries: 2, location: 0x14F94
+		- type: 0, value: 202
+		- type: 9, size: 12
+		  String: sound20.wav
+
+Group 33:	num entries: 2, location: 0x14FA9
+		- type: 0, value: 202
+		- type: 9, size: 12
+		  String: sound21.wav
+
+Group 34:	num entries: 2, location: 0x14FBE
+		- type: 0, value: 202
+		- type: 9, size: 12
+		  String: sound22.wav
+
+Group 35:	num entries: 2, location: 0x14FD3
+		- type: 0, value: 202
+		- type: 9, size: 12
+		  String: sound24.wav
+
+Group 36:	num entries: 2, location: 0x14FE8
+		- type: 0, value: 202
+		- type: 9, size: 12
+		  String: sound25.wav
+
+Group 37:	num entries: 2, location: 0x14FFD
+		- type: 0, value: 202
+		- type: 9, size: 12
+		  String: sound26.wav
+
+Group 38:	num entries: 2, location: 0x15012
+		- type: 0, value: 202
+		- type: 9, size: 12
+		  String: sound27.wav
+
+Group 39:	num entries: 2, location: 0x15027
+		- type: 0, value: 202
+		- type: 9, size: 12
+		  String: sound28.wav
+
+Group 40:	num entries: 2, location: 0x1503C
+		- type: 0, value: 202
+		- type: 9, size: 12
+		  String: sound29.wav
+
+Group 41:	num entries: 2, location: 0x15051
+		- type: 0, value: 202
+		- type: 9, size: 12
+		  String: sound30.wav
+
+Group 42:	num entries: 2, location: 0x15066
+		- type: 0, value: 202
+		- type: 9, size: 12
+		  String: sound34.wav
+
+Group 43:	num entries: 2, location: 0x1507B
+		- type: 0, value: 202
+		- type: 9, size: 12
+		  String: sound35.wav
+
+Group 44:	num entries: 2, location: 0x15090
+		- type: 0, value: 202
+		- type: 9, size: 12
+		  String: sound36.wav
+
+Group 45:	num entries: 2, location: 0x150A5
+		- type: 0, value: 202
+		- type: 9, size: 12
+		  String: sound37.wav
+
+Group 46:	num entries: 2, location: 0x150BA
+		- type: 0, value: 202
+		- type: 9, size: 12
+		  String: sound38.wav
+
+Group 47:	num entries: 2, location: 0x150CF
+		- type: 0, value: 202
+		- type: 9, size: 12
+		  String: sound39.wav
+
+Group 48:	num entries: 2, location: 0x150E4
+		- type: 0, value: 202
+		- type: 9, size: 12
+		  String: sound43.wav
+
+Group 49:	num entries: 2, location: 0x150F9
+		- type: 0, value: 202
+		- type: 9, size: 12
+		  String: sound44.wav
+
+Group 50:	num entries: 2, location: 0x1510E
+		- type: 0, value: 202
+		- type: 9, size: 12
+		  String: sound45.wav
+
+Group 51:	num entries: 2, location: 0x15123
+		- type: 0, value: 202
+		- type: 9, size: 12
+		  String: sound49.wav
+
+Group 52:	num entries: 2, location: 0x15138
+		- type: 0, value: 202
+		- type: 9, size: 13
+		  String: sound49D.wav
+
+Group 53:	num entries: 2, location: 0x1514E
+		- type: 0, value: 202
+		- type: 9, size: 12
+		  String: sound50.wav
+
+Group 54:	num entries: 2, location: 0x15163
+		- type: 0, value: 202
+		- type: 9, size: 12
+		  String: sound52.wav
+
+Group 55:	num entries: 2, location: 0x15178
+		- type: 0, value: 202
+		- type: 9, size: 12
+		  String: sound54.wav
+
+Group 56:	num entries: 2, location: 0x1518D
+		- type: 0, value: 202
+		- type: 9, size: 12
+		  String: sound55.wav
+
+Group 57:	num entries: 2, location: 0x151A2
+		- type: 0, value: 202
+		- type: 9, size: 12
+		  String: sound57.wav
+
+Group 58:	num entries: 2, location: 0x151B7
+		- type: 0, value: 202
+		- type: 9, size: 12
+		  String: sound59.wav
+
+Group 59:	num entries: 2, location: 0x151CC
+		- type: 0, value: 202
+		- type: 9, size: 12
+		  String: sound62.wav
+
+Group 60:	num entries: 2, location: 0x151E1
+		- type: 0, value: 202
+		- type: 9, size: 13
+		  String: sound104.wav
+
+Group 61:	num entries: 2, location: 0x151F7
+		- type: 0, value: 202
+		- type: 9, size: 13
+		  String: sound105.wav
+
+Group 62:	num entries: 2, location: 0x1520D
+		- type: 0, value: 202
+		- type: 9, size: 13
+		  String: sound108.wav
+
+Group 63:	num entries: 2, location: 0x15223
+		- type: 0, value: 202
+		- type: 9, size: 13
+		  String: sound111.wav
+
+Group 64:	num entries: 2, location: 0x15239
+		- type: 0, value: 202
+		- type: 9, size: 13
+		  String: sound131.wav
+
+Group 65:	num entries: 3, location: 0x1524F
+		- type: 0, value: 200
+		- type: 3, size: 11
+		  Group name: soundwave3
+		- type: 10, size: 4
+		  Shorts: 1100 20
+
+Group 66:	num entries: 3, location: 0x1526C
+		- type: 0, value: 200
+		- type: 3, size: 11
+		  Group name: soundwave7
+		- type: 10, size: 4
+		  Shorts: 1100 23
+
+Group 67:	num entries: 3, location: 0x15289
+		- type: 0, value: 200
+		- type: 3, size: 11
+		  Group name: soundwave8
+		- type: 10, size: 4
+		  Shorts: 1100 24
+
+Group 68:	num entries: 3, location: 0x152A6
+		- type: 0, value: 200
+		- type: 3, size: 11
+		  Group name: soundwave9
+		- type: 10, size: 4
+		  Shorts: 1100 25
+
+Group 69:	num entries: 3, location: 0x152C3
+		- type: 0, value: 200
+		- type: 3, size: 12
+		  Group name: soundwave10
+		- type: 10, size: 4
+		  Shorts: 1100 55
+
+Group 70:	num entries: 3, location: 0x152E1
+		- type: 0, value: 200
+		- type: 3, size: 12
+		  Group name: soundwave14
+		- type: 10, size: 4
+		  Shorts: 1100 27
+
+Group 71:	num entries: 3, location: 0x152FF
+		- type: 0, value: 200
+		- type: 3, size: 12
+		  Group name: soundwave21
+		- type: 10, size: 4
+		  Shorts: 1100 33
+
+Group 72:	num entries: 3, location: 0x1531D
+		- type: 0, value: 200
+		- type: 3, size: 12
+		  Group name: soundwave23
+		- type: 10, size: 4
+		  Shorts: 1100 31
+
+Group 73:	num entries: 3, location: 0x1533B
+		- type: 0, value: 200
+		- type: 3, size: 12
+		  Group name: soundwave24
+		- type: 10, size: 4
+		  Shorts: 1100 35
+
+Group 74:	num entries: 3, location: 0x15359
+		- type: 0, value: 200
+		- type: 3, size: 12
+		  Group name: soundwave25
+		- type: 10, size: 4
+		  Shorts: 1100 36
+
+Group 75:	num entries: 3, location: 0x15377
+		- type: 0, value: 200
+		- type: 3, size: 12
+		  Group name: soundwave26
+		- type: 10, size: 4
+		  Shorts: 1100 37
+
+Group 76:	num entries: 3, location: 0x15395
+		- type: 0, value: 200
+		- type: 3, size: 12
+		  Group name: soundwave27
+		- type: 10, size: 4
+		  Shorts: 1100 38
+
+Group 77:	num entries: 3, location: 0x153B3
+		- type: 0, value: 200
+		- type: 3, size: 12
+		  Group name: soundwave28
+		- type: 10, size: 4
+		  Shorts: 1100 39
+
+Group 78:	num entries: 3, location: 0x153D1
+		- type: 0, value: 200
+		- type: 3, size: 12
+		  Group name: soundwave30
+		- type: 10, size: 4
+		  Shorts: 1100 41
+
+Group 79:	num entries: 3, location: 0x153EF
+		- type: 0, value: 200
+		- type: 3, size: 12
+		  Group name: soundwave35
+		- type: 10, size: 4
+		  Shorts: 1100 43
+
+Group 80:	num entries: 3, location: 0x1540D
+		- type: 0, value: 200
+		- type: 3, size: 12
+		  Group name: soundwave36
+		- type: 10, size: 4
+		  Shorts: 1100 44
+
+Group 81:	num entries: 3, location: 0x1542B
+		- type: 0, value: 200
+		- type: 3, size: 12
+		  Group name: soundwave37
+		- type: 10, size: 4
+		  Shorts: 1100 45
+
+Group 82:	num entries: 3, location: 0x15449
+		- type: 0, value: 200
+		- type: 3, size: 12
+		  Group name: soundwave38
+		- type: 10, size: 4
+		  Shorts: 1100 46
+
+Group 83:	num entries: 3, location: 0x15467
+		- type: 0, value: 200
+		- type: 3, size: 12
+		  Group name: soundwave39
+		- type: 10, size: 4
+		  Shorts: 1100 47
+
+Group 84:	num entries: 3, location: 0x15485
+		- type: 0, value: 200
+		- type: 3, size: 12
+		  Group name: soundwave40
+		- type: 10, size: 4
+		  Shorts: 1100 32
+
+Group 85:	num entries: 3, location: 0x154A3
+		- type: 0, value: 200
+		- type: 3, size: 12
+		  Group name: soundwave41
+		- type: 10, size: 4
+		  Shorts: 1100 40
+
+Group 86:	num entries: 3, location: 0x154C1
+		- type: 0, value: 200
+		- type: 3, size: 12
+		  Group name: soundwave44
+		- type: 10, size: 4
+		  Shorts: 1100 49
+
+Group 87:	num entries: 3, location: 0x154DF
+		- type: 0, value: 200
+		- type: 3, size: 12
+		  Group name: soundwave45
+		- type: 10, size: 4
+		  Shorts: 1100 50
+
+Group 88:	num entries: 3, location: 0x154FD
+		- type: 0, value: 200
+		- type: 3, size: 12
+		  Group name: soundwave46
+		- type: 10, size: 4
+		  Shorts: 1100 50
+
+Group 89:	num entries: 3, location: 0x1551B
+		- type: 0, value: 200
+		- type: 3, size: 12
+		  Group name: soundwave47
+		- type: 10, size: 4
+		  Shorts: 1100 50
+
+Group 90:	num entries: 3, location: 0x15539
+		- type: 0, value: 200
+		- type: 3, size: 12
+		  Group name: soundwave48
+		- type: 10, size: 4
+		  Shorts: 1100 50
+
+Group 91:	num entries: 3, location: 0x15557
+		- type: 0, value: 200
+		- type: 3, size: 13
+		  Group name: soundwave49D
+		- type: 10, size: 4
+		  Shorts: 1100 52
+
+Group 92:	num entries: 3, location: 0x15576
+		- type: 0, value: 200
+		- type: 3, size: 12
+		  Group name: soundwave50
+		- type: 10, size: 4
+		  Shorts: 1100 53
+
+Group 93:	num entries: 3, location: 0x15594
+		- type: 0, value: 200
+		- type: 3, size: 12
+		  Group name: soundwave59
+		- type: 10, size: 4
+		  Shorts: 1100 58
+
+Group 94:	num entries: 3, location: 0x155B2
+		- type: 0, value: 200
+		- type: 3, size: 12
+		  Group name: soundwave52
+		- type: 10, size: 4
+		  Shorts: 1100 54
+
+Group 95:	num entries: 2, location: 0x155D0
+		- type: 0, value: 300
+		- type: 11, size: 16
+		  Floats: 301.000000 0.800000 302.000000 0.500000
+
+Group 96:	num entries: 2, location: 0x155E9
+		- type: 0, value: 300
+		- type: 11, size: 16
+		  Floats: 301.000000 0.600000 302.000000 0.600000
+
+Group 97:	num entries: 2, location: 0x15602
+		- type: 0, value: 300
+		- type: 11, size: 16
+		  Floats: 301.000000 0.900000 302.000000 0.500000
+
+Group 98:	num entries: 2, location: 0x1561B
+		- type: 0, value: 300
+		- type: 11, size: 16
+		  Floats: 301.000000 0.900000 302.000000 0.800000
+
+Group 99:	num entries: 2, location: 0x15634
+		- type: 0, value: 400
+		- type: 11, size: 48
+		  Floats: 401.000000 5.000000 402.000000 4.000000 403.000000 0.200000 404.000000 0.000000 1.000000 0.000000 405.000000 0.100000
+
+Group 100:	num entries: 8, location: 0x1566D
+		- type: 0, value: 200
+		- type: 3, size: 5
+		  Group name: demo
+		- type: 11, size: 20
+		  Floats: 407.000000 0.200000 0.100000 0.400000 0.200000
+		- type: 11, size: 28
+		  Floats: 1400.000000 2.000000 2.033889 10.792982 2.598346 11.562697 -1.000000
+		- type: 11, size: 44
+		  Floats: 1401.000000 4.000000 0.677603 12.805509 0.256446 11.723067 2.059548 10.767327 0.677603 12.805509 -1.000000
+		- type: 11, size: 28
+		  Floats: 1402.000000 2.000000 -2.621116 11.640288 -2.073763 10.819259 -1.000000
+		- type: 11, size: 44
+		  Floats: 1403.000000 4.000000 -2.053741 10.852212 -0.133833 11.716638 -0.609419 12.826353 -2.053741 10.852212 -1.000000
+		- type: 11, size: 28
+		  Floats: 1404.000000 2.000000 -7.946257 11.169894 -6.381269 11.169894 -1.000000
+
+Group 101:	num entries: 9, location: 0x15759
+		- type: 0, value: 200
+		- type: 3, size: 5
+		  Group name: ramp
+		- type: 10, size: 4
+		  Shorts: 602 1
+		- type: 11, size: 944
+		  Floats: 1300.000000 18.000000 0.004391 0.005337 1.051996 4.394761 -0.676098 4.217121 -0.529171 4.110733 -1.750702 0.006914 -2.259304 0.000000 0.000000 -0.023910 0.012817 1.181428 4.394761 -0.676098 4.110733 -1.750702 4.616566 -0.806760 0.027119 -0.492072 0.000000 0.000000 0.150404 -0.007380 0.429514 4.217121 -0.529171 4.039313 -0.370893 4.110733 -1.750702 0.149462 3.092562 0.000000 0.000000 -0.023405 -0.016377 1.128246 4.039313 -0.370893 3.764290 -1.590560 4.110733 -1.750702 0.028558 0.610523 0.000000 0.000000 -0.014824 -0.018312 1.092866 4.039313 -0.370893 3.473296 -1.436682 3.764290 -1.590560 0.023552 0.890263 0.000000 0.000000 0.351872 -0.213056 -0.460565 3.912348 -0.187517 3.473296 -1.436682 4.039313 -0.370893 0.390250 2.597144 0.000000 0.000000 0.080848 -0.117798 0.617638 3.912348 -0.187517 3.204413 -1.265853 3.473296 -1.436682 0.141912 2.172291 0.000000 0.000000 0.141450 -0.157583 0.373082 3.912348 -0.187517 2.962543 -1.084353 3.204413 -1.265853 0.208673 2.302297 0.000000 0.000000 0.315896 -0.342332 -0.344055 3.777676 -0.006016 2.962543 -1.084353 3.912348 -0.187517 0.435926 2.316054 0.000000 0.000000 0.240364 -0.285236 -0.058375 3.777676 -0.006016 2.738754 -0.881499 2.962543 -1.084353 0.357022 2.271028 0.000000 0.000000 0.333295 -0.395516 -0.410101 3.581364 0.463746 2.738754 -0.881499 3.777676 -0.006016 0.477330 2.271028 0.000000 0.000000 0.434552 -0.458939 -0.743327 3.581364 0.463746 2.317832 -0.443756 2.738754 -0.881499 0.563638 2.328907 0.000000 0.000000 0.350259 -0.341576 -0.495869 3.581364 0.463746 2.089921 -0.155489 2.317832 -0.443756 0.455002 2.368744 0.000000 0.000000 0.394156 -0.447304 -0.604050 3.463918 0.752020 2.089921 -0.155489 3.581364 0.463746 0.537611 2.293117 0.000000 0.000000 0.280413 -0.275093 -0.339560 3.463918 0.752020 1.826709 0.171080 2.089921 -0.155489 0.374302 2.365771 0.000000 0.000000 0.414907 -0.654124 -0.520396 3.381792 0.997584 1.826709 0.171080 3.463918 0.752020 0.659068 2.136051 0.000000 0.000000 0.168357 -0.190236 -0.149384 3.381792 0.997584 1.556096 0.591874 1.826709 0.171080 0.248773 2.295255 0.000000 0.000000 0.318152 -0.864312 0.016490 3.296382 1.232470 1.556096 0.591874 3.381792 0.997584 0.744301 1.923502 0.000000 0.000000
+		- type: 11, size: 8
+		  Floats: 701.000000 0.200000
+		- type: 11, size: 36
+		  Floats: 1301.000000 0.000000 1.000000 2.000000 3.267362 1.277511 1.516801 0.640562 -1.000000
+		- type: 11, size: 36
+		  Floats: 1302.000000 2.000000 1.000000 2.000000 4.177419 -1.807743 4.654555 -0.850463 -1.000000
+		- type: 11, size: 32
+		  Floats: 1303.000000 2.000000 2.000000 6.684728 -1.751842 6.117420 -0.918833 -1.000000
+		- type: 11, size: 8
+		  Floats: 1305.000000 0.000000
+
+Group 102:	num entries: 3, location: 0x15BB6
+		- type: 0, value: 200
+		- type: 10, size: 4
+		  Shorts: 300 95
+		- type: 11, size: 92
+		  Floats: 600.000000 10.000000 3.361502 1.258216 3.298904 1.245697 3.549296 0.419405 2.359937 -0.394366 1.608764 0.632238 1.508607 0.582160 2.059468 -0.181534 2.510172 -0.732394 3.712050 0.244132 3.361502 1.258216 -1.000000
+
+Group 103:	num entries: 3, location: 0x15C24
+		- type: 0, value: 200
+		- type: 10, size: 12
+		  Shorts: 602 2 602 1 300 97
+		- type: 11, size: 508
+		  Floats: 600.000000 62.000000 5.649534 -2.052910 5.247671 -2.026120 4.475475 -1.877480 3.774172 -1.570674 3.380426 -1.378779 3.024025 -1.088438 2.756117 -0.874111 2.354254 -0.472247 1.818436 0.143944 1.550526 0.545807 1.040356 1.344515 3.174448 2.087308 3.318726 1.242371 3.479471 0.706553 3.693798 0.224316 3.934916 -0.177547 4.229616 -0.525829 4.631479 -0.820529 5.140507 -1.034856 5.620176 -1.105353 5.905317 -1.059072 6.185719 -0.893177 6.399679 -0.659783 6.480053 -0.472247 6.506844 -0.204338 6.480053 -0.043593 6.394907 0.195335 6.246264 0.382887 6.085512 0.480116 5.520372 0.713898 5.191509 0.972269 5.033344 1.215580 4.845808 1.590652 4.792225 1.912143 4.792225 5.127051 4.845808 5.448543 4.952971 5.716452 5.274462 6.118315 5.381626 6.359433 5.403137 6.654133 5.408414 7.511985 5.515583 7.724548 5.676323 7.891046 5.890650 7.937126 6.131774 7.858509 6.276490 7.649213 6.340766 7.441064 6.332821 6.651386 6.362331 6.364923 6.485613 6.094022 6.731941 5.762001 7.270487 5.362653 7.474062 5.100266 7.605270 4.778770 7.645565 4.473308 7.644152 -0.043593 7.568562 -0.552620 7.361563 -1.068990 7.059540 -1.446256 6.640799 -1.785001 6.185352 -1.972538 5.649534 -2.052910 -1.000000
+
+Group 104:	num entries: 10, location: 0x15E3A
+		- type: 0, value: 200
+		- type: 3, size: 10
+		  Group name: ramp_hole
+		- type: 10, size: 4
+		  Shorts: 602 2
+		- type: 11, size: 24
+		  Floats: 600.000000 1.000000 5.870174 7.607636 0.325772 0.000000
+		- type: 11, size: 20
+		  Floats: 408.000000 5.870174 7.607636 0.325772 0.000000
+		- type: 11, size: 8
+		  Floats: 1304.000000 1.000000
+		- type: 11, size: 8
+		  Floats: 306.000000 0.100000
+		- type: 11, size: 8
+		  Floats: 305.000000 10.000000
+		- type: 11, size: 8
+		  Floats: 701.000000 0.200000
+		- type: 11, size: 8
+		  Floats: 407.000000 0.050000
+
+Group 105:	num entries: 9, location: 0x15ECD
+		- type: 0, value: 200
+		- type: 3, size: 8
+		  Group name: s_ramp9
+		- type: 10, size: 4
+		  Shorts: 602 1
+		- type: 11, size: 112
+		  Floats: 1300.000000 2.000000 0.000000 0.000000 -5.000000 -5.407835 -1.032808 -6.374070 -1.032808 -3.044567 -10.786441 0.000000 1.570796 0.000000 0.000000 0.000000 0.000000 -5.000000 -3.044567 -10.786441 -6.374070 -1.032808 -3.747841 -10.334387 0.000000 1.570796 0.000000 0.000000
+		- type: 11, size: 8
+		  Floats: 701.000000 0.200000
+		- type: 11, size: 36
+		  Floats: 1301.000000 0.000000 0.000000 2.000000 -3.751826 -10.333077 -3.045506 -10.781628 0.000000
+		- type: 11, size: 36
+		  Floats: 1302.000000 0.000000 1.000000 2.000000 -5.392737 -1.017711 -6.404264 -1.032808 0.000000
+		- type: 11, size: 32
+		  Floats: 1303.000000 1.000000 2.000000 -5.392737 -1.017711 -6.404264 -1.032808 0.000000
+		- type: 11, size: 8
+		  Floats: 1305.000000 1.000000
+
+Group 106:	num entries: 3, location: 0x15FED
+		- type: 0, value: 200
+		- type: 10, size: 8
+		  Shorts: 602 1 300 97
+		- type: 11, size: 52
+		  Floats: 600.000000 5.000000 -6.477385 -0.578226 -5.449155 -0.578217 -2.961915 -11.096388 -3.665188 -10.747626 -6.477385 -0.578226 -5.000000
+
+Group 107:	num entries: 9, location: 0x16037
+		- type: 0, value: 200
+		- type: 1, size: 172974
+		  Bitmap, width: 365, height: 470
+		- type: 3, size: 6
+		  Group name: table
+		- type: 10, size: 24
+		  Shorts: 100 1 300 95 400 99 1100 18 1101 19 406 62
+		- type: 11, size: 52
+		  Floats: 600.000000 5.000000 8.000000 15.000000 -8.000000 15.000000 -8.000000 -14.000000 8.000000 -14.000000 8.000000 15.000000 -1.250000
+		- type: 11, size: 16
+		  Floats: 305.000000 25.000000 0.500000 1.570796
+		- type: 11, size: 8
+		  Floats: 701.000000 0.200000
+		- type: 11, size: 12
+		  Floats: 700.000000 183.000000 238.000000
+		- type: 12, size: 345934
+		  Special bitmap
+
+Group 108:	num entries: 6, location: 0x94BD5
+		- type: 0, value: 200
+		- type: 1, size: 122
+		  Bitmap, width: 9, height: 9
+		- type: 3, size: 5
+		  Group name: ball
+		- type: 10, size: 4
+		  Shorts: 100 7
+		- type: 11, size: 8
+		  Floats: 500.000000 0.300000
+		- type: 11, size: 16
+		  Floats: 501.000000 0.000000 -13.500000 0.300000
+
+Group 109:	num entries: 3, location: 0x94C8D
+		- type: 0, value: 201
+		- type: 1, size: 134
+		  Bitmap, width: 10, height: 10
+		- type: 11, size: 16
+		  Floats: 501.000000 0.000000 -1.500000 0.300000
+
+Group 110:	num entries: 3, location: 0x94D31
+		- type: 0, value: 201
+		- type: 1, size: 146
+		  Bitmap, width: 11, height: 11
+		- type: 11, size: 16
+		  Floats: 501.000000 0.000000 0.300000 0.300000
+
+Group 111:	num entries: 3, location: 0x94DE1
+		- type: 0, value: 201
+		- type: 1, size: 158
+		  Bitmap, width: 12, height: 12
+		- type: 11, size: 16
+		  Floats: 501.000000 0.000000 7.500000 0.300000
+
+Group 112:	num entries: 3, location: 0x94E9D
+		- type: 0, value: 201
+		- type: 1, size: 222
+		  Bitmap, width: 13, height: 13
+		- type: 11, size: 16
+		  Floats: 501.000000 0.000000 10.500000 0.300000
+
+Group 113:	num entries: 3, location: 0x94F99
+		- type: 0, value: 201
+		- type: 1, size: 238
+		  Bitmap, width: 14, height: 14
+		- type: 11, size: 16
+		  Floats: 501.000000 0.000000 12.500000 0.300000
+
+Group 114:	num entries: 3, location: 0x950A5
+		- type: 0, value: 201
+		- type: 1, size: 254
+		  Bitmap, width: 15, height: 15
+		- type: 11, size: 16
+		  Floats: 501.000000 0.000000 13.500000 0.300000
+
+Group 115:	num entries: 6, location: 0x951C1
+		- type: 0, value: 200
+		- type: 1, size: 222
+		  Bitmap, width: 13, height: 13
+		- type: 3, size: 6
+		  Group name: lite1
+		- type: 11, size: 8
+		  Floats: 901.000000 0.100000
+		- type: 11, size: 8
+		  Floats: 900.000000 0.100000
+		- type: 12, size: 430
+		  Special bitmap
+
+Group 116:	num entries: 7, location: 0x95480
+		- type: 0, value: 200
+		- type: 1, size: 110
+		  Bitmap, width: 10, height: 8
+		- type: 3, size: 6
+		  Group name: lite2
+		- type: 10, size: 4
+		  Shorts: 100 3
+		- type: 11, size: 8
+		  Floats: 901.000000 0.100000
+		- type: 11, size: 8
+		  Floats: 900.000000 0.100000
+		- type: 12, size: 206
+		  Special bitmap
+
+Group 117:	num entries: 3, location: 0x955F8
+		- type: 0, value: 201
+		- type: 1, size: 110
+		  Bitmap, width: 10, height: 8
+		- type: 12, size: 206
+		  Special bitmap
+
+Group 118:	num entries: 3, location: 0x95742
+		- type: 0, value: 201
+		- type: 1, size: 110
+		  Bitmap, width: 10, height: 8
+		- type: 12, size: 206
+		  Special bitmap
+
+Group 119:	num entries: 7, location: 0x9588C
+		- type: 0, value: 200
+		- type: 1, size: 158
+		  Bitmap, width: 12, height: 12
+		- type: 3, size: 6
+		  Group name: lite3
+		- type: 10, size: 4
+		  Shorts: 100 3
+		- type: 11, size: 8
+		  Floats: 901.000000 0.100000
+		- type: 11, size: 8
+		  Floats: 900.000000 0.100000
+		- type: 12, size: 302
+		  Special bitmap
+
+Group 120:	num entries: 3, location: 0x95A94
+		- type: 0, value: 201
+		- type: 1, size: 158
+		  Bitmap, width: 12, height: 12
+		- type: 12, size: 302
+		  Special bitmap
+
+Group 121:	num entries: 3, location: 0x95C6E
+		- type: 0, value: 201
+		- type: 1, size: 158
+		  Bitmap, width: 12, height: 12
+		- type: 12, size: 302
+		  Special bitmap
+
+Group 122:	num entries: 7, location: 0x95E48
+		- type: 0, value: 200
+		- type: 1, size: 110
+		  Bitmap, width: 9, height: 8
+		- type: 3, size: 6
+		  Group name: lite4
+		- type: 10, size: 4
+		  Shorts: 100 3
+		- type: 11, size: 8
+		  Floats: 901.000000 0.100000
+		- type: 11, size: 8
+		  Floats: 900.000000 0.100000
+		- type: 12, size: 206
+		  Special bitmap
+
+Group 123:	num entries: 3, location: 0x95FC0
+		- type: 0, value: 201
+		- type: 1, size: 110
+		  Bitmap, width: 9, height: 8
+		- type: 12, size: 206
+		  Special bitmap
+
+Group 124:	num entries: 3, location: 0x9610A
+		- type: 0, value: 201
+		- type: 1, size: 110
+		  Bitmap, width: 9, height: 8
+		- type: 12, size: 206
+		  Special bitmap
+
+Group 125:	num entries: 6, location: 0x96254
+		- type: 0, value: 200
+		- type: 1, size: 78
+		  Bitmap, width: 8, height: 8
+		- type: 3, size: 6
+		  Group name: lite5
+		- type: 11, size: 8
+		  Floats: 901.000000 0.200000
+		- type: 11, size: 8
+		  Floats: 900.000000 0.100000
+		- type: 12, size: 142
+		  Special bitmap
+
+Group 126:	num entries: 6, location: 0x96363
+		- type: 0, value: 200
+		- type: 1, size: 110
+		  Bitmap, width: 9, height: 8
+		- type: 3, size: 6
+		  Group name: lite6
+		- type: 11, size: 8
+		  Floats: 901.000000 0.200000
+		- type: 11, size: 8
+		  Floats: 900.000000 0.100000
+		- type: 12, size: 206
+		  Special bitmap
+
+Group 127:	num entries: 6, location: 0x964D2
+		- type: 0, value: 200
+		- type: 1, size: 134
+		  Bitmap, width: 9, height: 10
+		- type: 3, size: 6
+		  Group name: lite7
+		- type: 11, size: 8
+		  Floats: 901.000000 0.200000
+		- type: 11, size: 8
+		  Floats: 900.000000 0.100000
+		- type: 12, size: 254
+		  Special bitmap
+
+Group 128:	num entries: 6, location: 0x96689
+		- type: 0, value: 200
+		- type: 1, size: 86
+		  Bitmap, width: 9, height: 6
+		- type: 3, size: 6
+		  Group name: lite8
+		- type: 11, size: 8
+		  Floats: 901.000000 0.100000
+		- type: 11, size: 8
+		  Floats: 900.000000 0.100000
+		- type: 12, size: 158
+		  Special bitmap
+
+Group 129:	num entries: 6, location: 0x967B0
+		- type: 0, value: 200
+		- type: 1, size: 98
+		  Bitmap, width: 9, height: 7
+		- type: 3, size: 6
+		  Group name: lite9
+		- type: 11, size: 8
+		  Floats: 901.000000 0.100000
+		- type: 11, size: 8
+		  Floats: 900.000000 0.100000
+		- type: 12, size: 182
+		  Special bitmap
+
+Group 130:	num entries: 6, location: 0x968FB
+		- type: 0, value: 200
+		- type: 1, size: 86
+		  Bitmap, width: 9, height: 6
+		- type: 3, size: 7
+		  Group name: lite10
+		- type: 11, size: 8
+		  Floats: 901.000000 0.100000
+		- type: 11, size: 8
+		  Floats: 900.000000 0.100000
+		- type: 12, size: 158
+		  Special bitmap
+
+Group 131:	num entries: 6, location: 0x96A23
+		- type: 0, value: 200
+		- type: 1, size: 122
+		  Bitmap, width: 10, height: 9
+		- type: 3, size: 7
+		  Group name: lite11
+		- type: 11, size: 8
+		  Floats: 901.000000 0.100000
+		- type: 11, size: 8
+		  Floats: 900.000000 0.100000
+		- type: 12, size: 230
+		  Special bitmap
+
+Group 132:	num entries: 6, location: 0x96BB7
+		- type: 0, value: 200
+		- type: 1, size: 122
+		  Bitmap, width: 10, height: 9
+		- type: 3, size: 7
+		  Group name: lite12
+		- type: 11, size: 8
+		  Floats: 901.000000 0.100000
+		- type: 11, size: 8
+		  Floats: 900.000000 0.100000
+		- type: 12, size: 230
+		  Special bitmap
+
+Group 133:	num entries: 6, location: 0x96D4B
+		- type: 0, value: 200
+		- type: 1, size: 110
+		  Bitmap, width: 10, height: 8
+		- type: 3, size: 7
+		  Group name: lite13
+		- type: 11, size: 8
+		  Floats: 901.000000 0.100000
+		- type: 11, size: 8
+		  Floats: 900.000000 0.100000
+		- type: 12, size: 206
+		  Special bitmap
+
+Group 134:	num entries: 6, location: 0x96EBB
+		- type: 0, value: 200
+		- type: 1, size: 146
+		  Bitmap, width: 11, height: 11
+		- type: 3, size: 7
+		  Group name: lite16
+		- type: 11, size: 8
+		  Floats: 901.000000 0.100000
+		- type: 11, size: 8
+		  Floats: 900.000000 0.100000
+		- type: 12, size: 278
+		  Special bitmap
+
+Group 135:	num entries: 6, location: 0x97097
+		- type: 0, value: 200
+		- type: 1, size: 146
+		  Bitmap, width: 11, height: 11
+		- type: 3, size: 7
+		  Group name: lite17
+		- type: 11, size: 8
+		  Floats: 901.000000 0.100000
+		- type: 11, size: 8
+		  Floats: 900.000000 0.100000
+		- type: 12, size: 278
+		  Special bitmap
+
+Group 136:	num entries: 6, location: 0x97273
+		- type: 0, value: 200
+		- type: 1, size: 146
+		  Bitmap, width: 11, height: 11
+		- type: 3, size: 7
+		  Group name: lite18
+		- type: 11, size: 8
+		  Floats: 901.000000 0.100000
+		- type: 11, size: 8
+		  Floats: 900.000000 0.100000
+		- type: 12, size: 278
+		  Special bitmap
+
+Group 137:	num entries: 6, location: 0x9744F
+		- type: 0, value: 200
+		- type: 1, size: 70
+		  Bitmap, width: 8, height: 7
+		- type: 3, size: 7
+		  Group name: lite19
+		- type: 11, size: 8
+		  Floats: 901.000000 0.100000
+		- type: 11, size: 8
+		  Floats: 900.000000 0.100000
+		- type: 12, size: 126
+		  Special bitmap
+
+Group 138:	num entries: 6, location: 0x97547
+		- type: 0, value: 200
+		- type: 1, size: 62
+		  Bitmap, width: 7, height: 6
+		- type: 3, size: 7
+		  Group name: lite20
+		- type: 11, size: 8
+		  Floats: 901.000000 0.100000
+		- type: 11, size: 8
+		  Floats: 900.000000 0.100000
+		- type: 12, size: 110
+		  Special bitmap
+
+Group 139:	num entries: 6, location: 0x97627
+		- type: 0, value: 200
+		- type: 1, size: 302
+		  Bitmap, width: 21, height: 12
+		- type: 3, size: 7
+		  Group name: lite21
+		- type: 11, size: 8
+		  Floats: 901.000000 0.100000
+		- type: 11, size: 8
+		  Floats: 900.000000 0.100000
+		- type: 12, size: 590
+		  Special bitmap
+
+Group 140:	num entries: 6, location: 0x979D7
+		- type: 0, value: 200
+		- type: 1, size: 154
+		  Bitmap, width: 20, height: 7
+		- type: 3, size: 7
+		  Group name: lite22
+		- type: 11, size: 8
+		  Floats: 901.000000 0.100000
+		- type: 11, size: 8
+		  Floats: 900.000000 0.100000
+		- type: 12, size: 294
+		  Special bitmap
+
+Group 141:	num entries: 6, location: 0x97BCB
+		- type: 0, value: 200
+		- type: 1, size: 214
+		  Bitmap, width: 20, height: 10
+		- type: 3, size: 7
+		  Group name: lite23
+		- type: 11, size: 8
+		  Floats: 901.000000 0.100000
+		- type: 11, size: 8
+		  Floats: 900.000000 0.100000
+		- type: 12, size: 414
+		  Special bitmap
+
+Group 142:	num entries: 6, location: 0x97E73
+		- type: 0, value: 200
+		- type: 1, size: 254
+		  Bitmap, width: 18, height: 12
+		- type: 3, size: 7
+		  Group name: lite24
+		- type: 11, size: 8
+		  Floats: 901.000000 0.100000
+		- type: 11, size: 8
+		  Floats: 900.000000 0.100000
+		- type: 12, size: 494
+		  Special bitmap
+
+Group 143:	num entries: 6, location: 0x98193
+		- type: 0, value: 200
+		- type: 1, size: 238
+		  Bitmap, width: 13, height: 14
+		- type: 3, size: 7
+		  Group name: lite25
+		- type: 11, size: 8
+		  Floats: 901.000000 0.100000
+		- type: 11, size: 8
+		  Floats: 900.000000 0.100000
+		- type: 12, size: 462
+		  Special bitmap
+
+Group 144:	num entries: 6, location: 0x98483
+		- type: 0, value: 200
+		- type: 1, size: 238
+		  Bitmap, width: 13, height: 14
+		- type: 3, size: 7
+		  Group name: lite26
+		- type: 11, size: 8
+		  Floats: 901.000000 0.100000
+		- type: 11, size: 8
+		  Floats: 900.000000 0.100000
+		- type: 12, size: 462
+		  Special bitmap
+
+Group 145:	num entries: 6, location: 0x98773
+		- type: 0, value: 200
+		- type: 1, size: 146
+		  Bitmap, width: 11, height: 11
+		- type: 3, size: 7
+		  Group name: lite27
+		- type: 11, size: 8
+		  Floats: 901.000000 0.100000
+		- type: 11, size: 8
+		  Floats: 900.000000 0.100000
+		- type: 12, size: 278
+		  Special bitmap
+
+Group 146:	num entries: 6, location: 0x9894F
+		- type: 0, value: 200
+		- type: 1, size: 146
+		  Bitmap, width: 11, height: 11
+		- type: 3, size: 7
+		  Group name: lite28
+		- type: 11, size: 8
+		  Floats: 901.000000 0.100000
+		- type: 11, size: 8
+		  Floats: 900.000000 0.100000
+		- type: 12, size: 278
+		  Special bitmap
+
+Group 147:	num entries: 6, location: 0x98B2B
+		- type: 0, value: 200
+		- type: 1, size: 182
+		  Bitmap, width: 12, height: 14
+		- type: 3, size: 7
+		  Group name: lite29
+		- type: 11, size: 8
+		  Floats: 901.000000 0.400000
+		- type: 11, size: 8
+		  Floats: 900.000000 0.100000
+		- type: 12, size: 350
+		  Special bitmap
+
+Group 148:	num entries: 6, location: 0x98D73
+		- type: 0, value: 200
+		- type: 1, size: 182
+		  Bitmap, width: 12, height: 14
+		- type: 3, size: 7
+		  Group name: lite30
+		- type: 11, size: 8
+		  Floats: 901.000000 0.400000
+		- type: 11, size: 8
+		  Floats: 900.000000 0.100000
+		- type: 12, size: 350
+		  Special bitmap
+
+Group 149:	num entries: 6, location: 0x98FBB
+		- type: 0, value: 200
+		- type: 1, size: 98
+		  Bitmap, width: 9, height: 7
+		- type: 3, size: 7
+		  Group name: lite38
+		- type: 11, size: 8
+		  Floats: 901.000000 0.100000
+		- type: 11, size: 8
+		  Floats: 900.000000 0.100000
+		- type: 12, size: 182
+		  Special bitmap
+
+Group 150:	num entries: 6, location: 0x99107
+		- type: 0, value: 200
+		- type: 1, size: 110
+		  Bitmap, width: 9, height: 8
+		- type: 3, size: 7
+		  Group name: lite39
+		- type: 11, size: 8
+		  Floats: 901.000000 0.100000
+		- type: 11, size: 8
+		  Floats: 900.000000 0.100000
+		- type: 12, size: 206
+		  Special bitmap
+
+Group 151:	num entries: 6, location: 0x99277
+		- type: 0, value: 200
+		- type: 1, size: 98
+		  Bitmap, width: 9, height: 7
+		- type: 3, size: 7
+		  Group name: lite40
+		- type: 11, size: 8
+		  Floats: 901.000000 0.100000
+		- type: 11, size: 8
+		  Floats: 900.000000 0.100000
+		- type: 12, size: 182
+		  Special bitmap
+
+Group 152:	num entries: 6, location: 0x993C3
+		- type: 0, value: 200
+		- type: 1, size: 134
+		  Bitmap, width: 10, height: 10
+		- type: 3, size: 7
+		  Group name: lite44
+		- type: 11, size: 8
+		  Floats: 901.000000 0.100000
+		- type: 11, size: 8
+		  Floats: 900.000000 0.100000
+		- type: 12, size: 254
+		  Special bitmap
+
+Group 153:	num entries: 6, location: 0x9957B
+		- type: 0, value: 200
+		- type: 1, size: 134
+		  Bitmap, width: 11, height: 10
+		- type: 3, size: 7
+		  Group name: lite45
+		- type: 11, size: 8
+		  Floats: 901.000000 0.100000
+		- type: 11, size: 8
+		  Floats: 900.000000 0.100000
+		- type: 12, size: 254
+		  Special bitmap
+
+Group 154:	num entries: 6, location: 0x99733
+		- type: 0, value: 200
+		- type: 1, size: 134
+		  Bitmap, width: 11, height: 10
+		- type: 3, size: 7
+		  Group name: lite46
+		- type: 11, size: 8
+		  Floats: 901.000000 0.100000
+		- type: 11, size: 8
+		  Floats: 900.000000 0.100000
+		- type: 12, size: 254
+		  Special bitmap
+
+Group 155:	num entries: 6, location: 0x998EB
+		- type: 0, value: 200
+		- type: 1, size: 146
+		  Bitmap, width: 11, height: 11
+		- type: 3, size: 7
+		  Group name: lite47
+		- type: 11, size: 8
+		  Floats: 901.000000 0.100000
+		- type: 11, size: 8
+		  Floats: 900.000000 0.100000
+		- type: 12, size: 278
+		  Special bitmap
+
+Group 156:	num entries: 6, location: 0x99AC7
+		- type: 0, value: 200
+		- type: 1, size: 146
+		  Bitmap, width: 11, height: 11
+		- type: 3, size: 7
+		  Group name: lite48
+		- type: 11, size: 8
+		  Floats: 901.000000 0.100000
+		- type: 11, size: 8
+		  Floats: 900.000000 0.100000
+		- type: 12, size: 278
+		  Special bitmap
+
+Group 157:	num entries: 6, location: 0x99CA3
+		- type: 0, value: 200
+		- type: 1, size: 146
+		  Bitmap, width: 11, height: 11
+		- type: 3, size: 7
+		  Group name: lite49
+		- type: 11, size: 8
+		  Floats: 901.000000 0.100000
+		- type: 11, size: 8
+		  Floats: 900.000000 0.100000
+		- type: 12, size: 278
+		  Special bitmap
+
+Group 158:	num entries: 6, location: 0x99E7F
+		- type: 0, value: 200
+		- type: 1, size: 134
+		  Bitmap, width: 11, height: 10
+		- type: 3, size: 7
+		  Group name: lite50
+		- type: 11, size: 8
+		  Floats: 901.000000 0.100000
+		- type: 11, size: 8
+		  Floats: 900.000000 0.100000
+		- type: 12, size: 254
+		  Special bitmap
+
+Group 159:	num entries: 6, location: 0x9A037
+		- type: 0, value: 200
+		- type: 1, size: 134
+		  Bitmap, width: 11, height: 10
+		- type: 3, size: 7
+		  Group name: lite51
+		- type: 11, size: 8
+		  Floats: 901.000000 0.100000
+		- type: 11, size: 8
+		  Floats: 900.000000 0.100000
+		- type: 12, size: 254
+		  Special bitmap
+
+Group 160:	num entries: 6, location: 0x9A1EF
+		- type: 0, value: 200
+		- type: 1, size: 134
+		  Bitmap, width: 11, height: 10
+		- type: 3, size: 7
+		  Group name: lite52
+		- type: 11, size: 8
+		  Floats: 901.000000 0.100000
+		- type: 11, size: 8
+		  Floats: 900.000000 0.100000
+		- type: 12, size: 254
+		  Special bitmap
+
+Group 161:	num entries: 6, location: 0x9A3A7
+		- type: 0, value: 200
+		- type: 1, size: 158
+		  Bitmap, width: 10, height: 12
+		- type: 3, size: 7
+		  Group name: lite54
+		- type: 11, size: 8
+		  Floats: 901.000000 0.100000
+		- type: 11, size: 8
+		  Floats: 900.000000 0.100000
+		- type: 12, size: 302
+		  Special bitmap
+
+Group 162:	num entries: 6, location: 0x9A5A7
+		- type: 0, value: 200
+		- type: 1, size: 158
+		  Bitmap, width: 10, height: 12
+		- type: 3, size: 7
+		  Group name: lite55
+		- type: 11, size: 8
+		  Floats: 901.000000 0.100000
+		- type: 11, size: 8
+		  Floats: 900.000000 0.100000
+		- type: 12, size: 302
+		  Special bitmap
+
+Group 163:	num entries: 6, location: 0x9A7A7
+		- type: 0, value: 200
+		- type: 1, size: 158
+		  Bitmap, width: 10, height: 12
+		- type: 3, size: 7
+		  Group name: lite56
+		- type: 11, size: 8
+		  Floats: 901.000000 0.100000
+		- type: 11, size: 8
+		  Floats: 900.000000 0.100000
+		- type: 12, size: 302
+		  Special bitmap
+
+Group 164:	num entries: 6, location: 0x9A9A7
+		- type: 0, value: 200
+		- type: 1, size: 122
+		  Bitmap, width: 10, height: 9
+		- type: 3, size: 7
+		  Group name: lite58
+		- type: 11, size: 8
+		  Floats: 901.000000 0.100000
+		- type: 11, size: 8
+		  Floats: 900.000000 0.100000
+		- type: 12, size: 230
+		  Special bitmap
+
+Group 165:	num entries: 6, location: 0x9AB3B
+		- type: 0, value: 200
+		- type: 1, size: 122
+		  Bitmap, width: 10, height: 9
+		- type: 3, size: 7
+		  Group name: lite59
+		- type: 11, size: 8
+		  Floats: 901.000000 0.100000
+		- type: 11, size: 8
+		  Floats: 900.000000 0.100000
+		- type: 12, size: 230
+		  Special bitmap
+
+Group 166:	num entries: 6, location: 0x9ACCF
+		- type: 0, value: 200
+		- type: 1, size: 122
+		  Bitmap, width: 10, height: 9
+		- type: 3, size: 7
+		  Group name: lite60
+		- type: 11, size: 8
+		  Floats: 901.000000 0.100000
+		- type: 11, size: 8
+		  Floats: 900.000000 0.100000
+		- type: 12, size: 230
+		  Special bitmap
+
+Group 167:	num entries: 6, location: 0x9AE63
+		- type: 0, value: 200
+		- type: 1, size: 134
+		  Bitmap, width: 10, height: 10
+		- type: 3, size: 7
+		  Group name: lite61
+		- type: 11, size: 8
+		  Floats: 901.000000 0.100000
+		- type: 11, size: 8
+		  Floats: 900.000000 0.100000
+		- type: 12, size: 254
+		  Special bitmap
+
+Group 168:	num entries: 6, location: 0x9B01B
+		- type: 0, value: 200
+		- type: 1, size: 134
+		  Bitmap, width: 11, height: 10
+		- type: 3, size: 7
+		  Group name: lite62
+		- type: 11, size: 8
+		  Floats: 901.000000 0.200000
+		- type: 11, size: 8
+		  Floats: 900.000000 0.200000
+		- type: 12, size: 254
+		  Special bitmap
+
+Group 169:	num entries: 6, location: 0x9B1D3
+		- type: 0, value: 200
+		- type: 1, size: 98
+		  Bitmap, width: 9, height: 7
+		- type: 3, size: 7
+		  Group name: lite63
+		- type: 11, size: 8
+		  Floats: 901.000000 0.100000
+		- type: 11, size: 8
+		  Floats: 900.000000 0.100000
+		- type: 12, size: 182
+		  Special bitmap
+
+Group 170:	num entries: 6, location: 0x9B31F
+		- type: 0, value: 200
+		- type: 1, size: 98
+		  Bitmap, width: 9, height: 7
+		- type: 3, size: 7
+		  Group name: lite64
+		- type: 11, size: 8
+		  Floats: 901.000000 0.100000
+		- type: 11, size: 8
+		  Floats: 900.000000 0.100000
+		- type: 12, size: 182
+		  Special bitmap
+
+Group 171:	num entries: 6, location: 0x9B46B
+		- type: 0, value: 200
+		- type: 1, size: 98
+		  Bitmap, width: 9, height: 7
+		- type: 3, size: 7
+		  Group name: lite65
+		- type: 11, size: 8
+		  Floats: 901.000000 0.100000
+		- type: 11, size: 8
+		  Floats: 900.000000 0.100000
+		- type: 12, size: 182
+		  Special bitmap
+
+Group 172:	num entries: 6, location: 0x9B5B7
+		- type: 0, value: 200
+		- type: 1, size: 98
+		  Bitmap, width: 9, height: 7
+		- type: 3, size: 7
+		  Group name: lite66
+		- type: 11, size: 8
+		  Floats: 901.000000 0.100000
+		- type: 11, size: 8
+		  Floats: 900.000000 0.100000
+		- type: 12, size: 182
+		  Special bitmap
+
+Group 173:	num entries: 6, location: 0x9B703
+		- type: 0, value: 200
+		- type: 1, size: 334
+		  Bitmap, width: 19, height: 16
+		- type: 3, size: 7
+		  Group name: lite67
+		- type: 11, size: 8
+		  Floats: 901.000000 0.100000
+		- type: 11, size: 8
+		  Floats: 900.000000 0.100000
+		- type: 12, size: 654
+		  Special bitmap
+
+Group 174:	num entries: 6, location: 0x9BB13
+		- type: 0, value: 200
+		- type: 1, size: 314
+		  Bitmap, width: 18, height: 15
+		- type: 3, size: 7
+		  Group name: lite68
+		- type: 11, size: 8
+		  Floats: 901.000000 0.100000
+		- type: 11, size: 8
+		  Floats: 900.000000 0.100000
+		- type: 12, size: 614
+		  Special bitmap
+
+Group 175:	num entries: 6, location: 0x9BEE7
+		- type: 0, value: 200
+		- type: 1, size: 274
+		  Bitmap, width: 17, height: 13
+		- type: 3, size: 7
+		  Group name: lite69
+		- type: 11, size: 8
+		  Floats: 901.000000 0.100000
+		- type: 11, size: 8
+		  Floats: 900.000000 0.100000
+		- type: 12, size: 534
+		  Special bitmap
+
+Group 176:	num entries: 6, location: 0x9C243
+		- type: 0, value: 200
+		- type: 1, size: 70
+		  Bitmap, width: 8, height: 7
+		- type: 3, size: 7
+		  Group name: lite70
+		- type: 11, size: 8
+		  Floats: 901.000000 0.100000
+		- type: 11, size: 8
+		  Floats: 900.000000 0.100000
+		- type: 12, size: 126
+		  Special bitmap
+
+Group 177:	num entries: 6, location: 0x9C33B
+		- type: 0, value: 200
+		- type: 1, size: 62
+		  Bitmap, width: 8, height: 6
+		- type: 3, size: 7
+		  Group name: lite71
+		- type: 11, size: 8
+		  Floats: 901.000000 0.100000
+		- type: 11, size: 8
+		  Floats: 900.000000 0.100000
+		- type: 12, size: 110
+		  Special bitmap
+
+Group 178:	num entries: 6, location: 0x9C41B
+		- type: 0, value: 200
+		- type: 1, size: 86
+		  Bitmap, width: 9, height: 6
+		- type: 3, size: 7
+		  Group name: lite72
+		- type: 11, size: 8
+		  Floats: 901.000000 0.100000
+		- type: 11, size: 8
+		  Floats: 900.000000 0.100000
+		- type: 12, size: 158
+		  Special bitmap
+
+Group 179:	num entries: 6, location: 0x9C543
+		- type: 0, value: 200
+		- type: 1, size: 238
+		  Bitmap, width: 15, height: 14
+		- type: 3, size: 7
+		  Group name: lite77
+		- type: 11, size: 8
+		  Floats: 901.000000 0.800000
+		- type: 11, size: 8
+		  Floats: 900.000000 0.200000
+		- type: 12, size: 462
+		  Special bitmap
+
+Group 180:	num entries: 6, location: 0x9C833
+		- type: 0, value: 200
+		- type: 1, size: 2462
+		  Bitmap, width: 33, height: 68
+		- type: 3, size: 7
+		  Group name: lite84
+		- type: 11, size: 8
+		  Floats: 901.000000 0.800000
+		- type: 11, size: 8
+		  Floats: 900.000000 0.200000
+		- type: 12, size: 4910
+		  Special bitmap
+
+Group 181:	num entries: 6, location: 0x9E533
+		- type: 0, value: 200
+		- type: 1, size: 2462
+		  Bitmap, width: 33, height: 68
+		- type: 3, size: 7
+		  Group name: lite85
+		- type: 11, size: 8
+		  Floats: 901.000000 0.800000
+		- type: 11, size: 8
+		  Floats: 900.000000 0.200000
+		- type: 12, size: 4910
+		  Special bitmap
+
+Group 182:	num entries: 6, location: 0xA0233
+		- type: 0, value: 200
+		- type: 1, size: 134
+		  Bitmap, width: 10, height: 10
+		- type: 3, size: 8
+		  Group name: lite101
+		- type: 11, size: 8
+		  Floats: 901.000000 0.100000
+		- type: 11, size: 8
+		  Floats: 900.000000 0.100000
+		- type: 12, size: 254
+		  Special bitmap
+
+Group 183:	num entries: 6, location: 0xA03EC
+		- type: 0, value: 200
+		- type: 1, size: 134
+		  Bitmap, width: 10, height: 10
+		- type: 3, size: 8
+		  Group name: lite102
+		- type: 11, size: 8
+		  Floats: 901.000000 0.100000
+		- type: 11, size: 8
+		  Floats: 900.000000 0.100000
+		- type: 12, size: 254
+		  Special bitmap
+
+Group 184:	num entries: 6, location: 0xA05A5
+		- type: 0, value: 200
+		- type: 1, size: 122
+		  Bitmap, width: 10, height: 9
+		- type: 3, size: 8
+		  Group name: lite103
+		- type: 11, size: 8
+		  Floats: 901.000000 0.100000
+		- type: 11, size: 8
+		  Floats: 900.000000 0.100000
+		- type: 12, size: 230
+		  Special bitmap
+
+Group 185:	num entries: 6, location: 0xA073A
+		- type: 0, value: 200
+		- type: 1, size: 110
+		  Bitmap, width: 9, height: 8
+		- type: 3, size: 8
+		  Group name: lite104
+		- type: 11, size: 8
+		  Floats: 901.000000 0.100000
+		- type: 11, size: 8
+		  Floats: 900.000000 0.100000
+		- type: 12, size: 206
+		  Special bitmap
+
+Group 186:	num entries: 6, location: 0xA08AB
+		- type: 0, value: 200
+		- type: 1, size: 110
+		  Bitmap, width: 9, height: 8
+		- type: 3, size: 8
+		  Group name: lite105
+		- type: 11, size: 8
+		  Floats: 901.000000 0.100000
+		- type: 11, size: 8
+		  Floats: 900.000000 0.100000
+		- type: 12, size: 206
+		  Special bitmap
+
+Group 187:	num entries: 6, location: 0xA0A1C
+		- type: 0, value: 200
+		- type: 1, size: 98
+		  Bitmap, width: 9, height: 7
+		- type: 3, size: 8
+		  Group name: lite106
+		- type: 11, size: 8
+		  Floats: 901.000000 0.100000
+		- type: 11, size: 8
+		  Floats: 900.000000 0.100000
+		- type: 12, size: 182
+		  Special bitmap
+
+Group 188:	num entries: 6, location: 0xA0B69
+		- type: 0, value: 200
+		- type: 1, size: 98
+		  Bitmap, width: 9, height: 7
+		- type: 3, size: 8
+		  Group name: lite107
+		- type: 11, size: 8
+		  Floats: 901.000000 0.100000
+		- type: 11, size: 8
+		  Floats: 900.000000 0.100000
+		- type: 12, size: 182
+		  Special bitmap
+
+Group 189:	num entries: 6, location: 0xA0CB6
+		- type: 0, value: 200
+		- type: 1, size: 98
+		  Bitmap, width: 10, height: 7
+		- type: 3, size: 8
+		  Group name: lite108
+		- type: 11, size: 8
+		  Floats: 901.000000 0.100000
+		- type: 11, size: 8
+		  Floats: 900.000000 0.100000
+		- type: 12, size: 182
+		  Special bitmap
+
+Group 190:	num entries: 6, location: 0xA0E03
+		- type: 0, value: 200
+		- type: 1, size: 110
+		  Bitmap, width: 9, height: 8
+		- type: 3, size: 8
+		  Group name: lite109
+		- type: 11, size: 8
+		  Floats: 901.000000 0.100000
+		- type: 11, size: 8
+		  Floats: 900.000000 0.100000
+		- type: 12, size: 206
+		  Special bitmap
+
+Group 191:	num entries: 6, location: 0xA0F74
+		- type: 0, value: 200
+		- type: 1, size: 122
+		  Bitmap, width: 9, height: 9
+		- type: 3, size: 8
+		  Group name: lite110
+		- type: 11, size: 8
+		  Floats: 901.000000 0.100000
+		- type: 11, size: 8
+		  Floats: 900.000000 0.100000
+		- type: 12, size: 230
+		  Special bitmap
+
+Group 192:	num entries: 6, location: 0xA1109
+		- type: 0, value: 200
+		- type: 1, size: 254
+		  Bitmap, width: 14, height: 15
+		- type: 3, size: 8
+		  Group name: lite130
+		- type: 11, size: 8
+		  Floats: 901.000000 0.100000
+		- type: 11, size: 8
+		  Floats: 900.000000 0.100000
+		- type: 12, size: 494
+		  Special bitmap
+
+Group 193:	num entries: 6, location: 0xA142A
+		- type: 0, value: 200
+		- type: 1, size: 254
+		  Bitmap, width: 17, height: 12
+		- type: 3, size: 8
+		  Group name: lite131
+		- type: 11, size: 8
+		  Floats: 901.000000 0.100000
+		- type: 11, size: 8
+		  Floats: 900.000000 0.100000
+		- type: 12, size: 494
+		  Special bitmap
+
+Group 194:	num entries: 6, location: 0xA174B
+		- type: 0, value: 200
+		- type: 1, size: 238
+		  Bitmap, width: 14, height: 14
+		- type: 3, size: 8
+		  Group name: lite132
+		- type: 11, size: 8
+		  Floats: 901.000000 0.100000
+		- type: 11, size: 8
+		  Floats: 900.000000 0.100000
+		- type: 12, size: 462
+		  Special bitmap
+
+Group 195:	num entries: 6, location: 0xA1A3C
+		- type: 0, value: 200
+		- type: 1, size: 222
+		  Bitmap, width: 16, height: 13
+		- type: 3, size: 8
+		  Group name: lite133
+		- type: 11, size: 8
+		  Floats: 901.000000 0.100000
+		- type: 11, size: 8
+		  Floats: 900.000000 0.100000
+		- type: 12, size: 430
+		  Special bitmap
+
+Group 196:	num entries: 6, location: 0xA1CFD
+		- type: 0, value: 200
+		- type: 1, size: 122
+		  Bitmap, width: 10, height: 9
+		- type: 3, size: 8
+		  Group name: lite144
+		- type: 11, size: 8
+		  Floats: 901.000000 0.100000
+		- type: 11, size: 8
+		  Floats: 900.000000 0.100000
+		- type: 12, size: 230
+		  Special bitmap
+
+Group 197:	num entries: 6, location: 0xA1E92
+		- type: 0, value: 200
+		- type: 1, size: 134
+		  Bitmap, width: 10, height: 10
+		- type: 3, size: 8
+		  Group name: lite145
+		- type: 11, size: 8
+		  Floats: 901.000000 0.100000
+		- type: 11, size: 8
+		  Floats: 900.000000 0.100000
+		- type: 12, size: 254
+		  Special bitmap
+
+Group 198:	num entries: 6, location: 0xA204B
+		- type: 0, value: 200
+		- type: 1, size: 134
+		  Bitmap, width: 11, height: 10
+		- type: 3, size: 8
+		  Group name: lite146
+		- type: 11, size: 8
+		  Floats: 901.000000 0.100000
+		- type: 11, size: 8
+		  Floats: 900.000000 0.100000
+		- type: 12, size: 254
+		  Special bitmap
+
+Group 199:	num entries: 6, location: 0xA2204
+		- type: 0, value: 200
+		- type: 1, size: 134
+		  Bitmap, width: 11, height: 10
+		- type: 3, size: 8
+		  Group name: lite147
+		- type: 11, size: 8
+		  Floats: 901.000000 0.100000
+		- type: 11, size: 8
+		  Floats: 900.000000 0.100000
+		- type: 12, size: 254
+		  Special bitmap
+
+Group 200:	num entries: 6, location: 0xA23BD
+		- type: 0, value: 200
+		- type: 1, size: 158
+		  Bitmap, width: 11, height: 12
+		- type: 3, size: 8
+		  Group name: lite148
+		- type: 11, size: 8
+		  Floats: 901.000000 0.100000
+		- type: 11, size: 8
+		  Floats: 900.000000 0.100000
+		- type: 12, size: 302
+		  Special bitmap
+
+Group 201:	num entries: 6, location: 0xA25BE
+		- type: 0, value: 200
+		- type: 1, size: 158
+		  Bitmap, width: 11, height: 12
+		- type: 3, size: 8
+		  Group name: lite149
+		- type: 11, size: 8
+		  Floats: 901.000000 0.100000
+		- type: 11, size: 8
+		  Floats: 900.000000 0.100000
+		- type: 12, size: 302
+		  Special bitmap
+
+Group 202:	num entries: 6, location: 0xA27BF
+		- type: 0, value: 200
+		- type: 1, size: 146
+		  Bitmap, width: 11, height: 11
+		- type: 3, size: 8
+		  Group name: lite150
+		- type: 11, size: 8
+		  Floats: 901.000000 0.100000
+		- type: 11, size: 8
+		  Floats: 900.000000 0.100000
+		- type: 12, size: 278
+		  Special bitmap
+
+Group 203:	num entries: 6, location: 0xA299C
+		- type: 0, value: 200
+		- type: 1, size: 134
+		  Bitmap, width: 11, height: 10
+		- type: 3, size: 8
+		  Group name: lite151
+		- type: 11, size: 8
+		  Floats: 901.000000 0.100000
+		- type: 11, size: 8
+		  Floats: 900.000000 0.100000
+		- type: 12, size: 254
+		  Special bitmap
+
+Group 204:	num entries: 6, location: 0xA2B55
+		- type: 0, value: 200
+		- type: 1, size: 134
+		  Bitmap, width: 11, height: 10
+		- type: 3, size: 8
+		  Group name: lite152
+		- type: 11, size: 8
+		  Floats: 901.000000 0.100000
+		- type: 11, size: 8
+		  Floats: 900.000000 0.100000
+		- type: 12, size: 254
+		  Special bitmap
+
+Group 205:	num entries: 6, location: 0xA2D0E
+		- type: 0, value: 200
+		- type: 1, size: 134
+		  Bitmap, width: 10, height: 10
+		- type: 3, size: 8
+		  Group name: lite154
+		- type: 11, size: 8
+		  Floats: 901.000000 0.100000
+		- type: 11, size: 8
+		  Floats: 900.000000 0.100000
+		- type: 12, size: 254
+		  Special bitmap
+
+Group 206:	num entries: 6, location: 0xA2EC7
+		- type: 0, value: 200
+		- type: 1, size: 134
+		  Bitmap, width: 10, height: 10
+		- type: 3, size: 8
+		  Group name: lite155
+		- type: 11, size: 8
+		  Floats: 901.000000 0.100000
+		- type: 11, size: 8
+		  Floats: 900.000000 0.100000
+		- type: 12, size: 254
+		  Special bitmap
+
+Group 207:	num entries: 6, location: 0xA3080
+		- type: 0, value: 200
+		- type: 1, size: 134
+		  Bitmap, width: 11, height: 10
+		- type: 3, size: 8
+		  Group name: lite156
+		- type: 11, size: 8
+		  Floats: 901.000000 0.100000
+		- type: 11, size: 8
+		  Floats: 900.000000 0.100000
+		- type: 12, size: 254
+		  Special bitmap
+
+Group 208:	num entries: 6, location: 0xA3239
+		- type: 0, value: 200
+		- type: 1, size: 134
+		  Bitmap, width: 11, height: 10
+		- type: 3, size: 8
+		  Group name: lite157
+		- type: 11, size: 8
+		  Floats: 901.000000 0.100000
+		- type: 11, size: 8
+		  Floats: 900.000000 0.100000
+		- type: 12, size: 254
+		  Special bitmap
+
+Group 209:	num entries: 6, location: 0xA33F2
+		- type: 0, value: 200
+		- type: 1, size: 146
+		  Bitmap, width: 12, height: 11
+		- type: 3, size: 8
+		  Group name: lite158
+		- type: 11, size: 8
+		  Floats: 901.000000 0.100000
+		- type: 11, size: 8
+		  Floats: 900.000000 0.100000
+		- type: 12, size: 278
+		  Special bitmap
+
+Group 210:	num entries: 6, location: 0xA35CF
+		- type: 0, value: 200
+		- type: 1, size: 146
+		  Bitmap, width: 11, height: 11
+		- type: 3, size: 8
+		  Group name: lite159
+		- type: 11, size: 8
+		  Floats: 901.000000 0.100000
+		- type: 11, size: 8
+		  Floats: 900.000000 0.100000
+		- type: 12, size: 278
+		  Special bitmap
+
+Group 211:	num entries: 6, location: 0xA37AC
+		- type: 0, value: 200
+		- type: 1, size: 146
+		  Bitmap, width: 12, height: 11
+		- type: 3, size: 8
+		  Group name: lite160
+		- type: 11, size: 8
+		  Floats: 901.000000 0.100000
+		- type: 11, size: 8
+		  Floats: 900.000000 0.100000
+		- type: 12, size: 278
+		  Special bitmap
+
+Group 212:	num entries: 6, location: 0xA3989
+		- type: 0, value: 200
+		- type: 1, size: 134
+		  Bitmap, width: 11, height: 10
+		- type: 3, size: 8
+		  Group name: lite161
+		- type: 11, size: 8
+		  Floats: 901.000000 0.100000
+		- type: 11, size: 8
+		  Floats: 900.000000 0.100000
+		- type: 12, size: 254
+		  Special bitmap
+
+Group 213:	num entries: 6, location: 0xA3B42
+		- type: 0, value: 200
+		- type: 1, size: 134
+		  Bitmap, width: 10, height: 10
+		- type: 3, size: 8
+		  Group name: lite162
+		- type: 11, size: 8
+		  Floats: 901.000000 0.100000
+		- type: 11, size: 8
+		  Floats: 900.000000 0.100000
+		- type: 12, size: 254
+		  Special bitmap
+
+Group 214:	num entries: 6, location: 0xA3CFB
+		- type: 0, value: 200
+		- type: 1, size: 70
+		  Bitmap, width: 8, height: 7
+		- type: 3, size: 8
+		  Group name: lite169
+		- type: 11, size: 8
+		  Floats: 901.000000 0.100000
+		- type: 11, size: 8
+		  Floats: 900.000000 0.100000
+		- type: 12, size: 126
+		  Special bitmap
+
+Group 215:	num entries: 6, location: 0xA3DF4
+		- type: 0, value: 200
+		- type: 1, size: 70
+		  Bitmap, width: 8, height: 7
+		- type: 3, size: 8
+		  Group name: lite170
+		- type: 11, size: 8
+		  Floats: 901.000000 0.100000
+		- type: 11, size: 8
+		  Floats: 900.000000 0.100000
+		- type: 12, size: 126
+		  Special bitmap
+
+Group 216:	num entries: 6, location: 0xA3EED
+		- type: 0, value: 200
+		- type: 1, size: 70
+		  Bitmap, width: 8, height: 7
+		- type: 3, size: 8
+		  Group name: lite171
+		- type: 11, size: 8
+		  Floats: 901.000000 0.100000
+		- type: 11, size: 8
+		  Floats: 900.000000 0.100000
+		- type: 12, size: 126
+		  Special bitmap
+
+Group 217:	num entries: 6, location: 0xA3FE6
+		- type: 0, value: 200
+		- type: 1, size: 122
+		  Bitmap, width: 10, height: 9
+		- type: 3, size: 8
+		  Group name: lite185
+		- type: 11, size: 8
+		  Floats: 901.000000 0.100000
+		- type: 11, size: 8
+		  Floats: 900.000000 0.100000
+		- type: 12, size: 230
+		  Special bitmap
+
+Group 218:	num entries: 6, location: 0xA417B
+		- type: 0, value: 200
+		- type: 1, size: 110
+		  Bitmap, width: 11, height: 8
+		- type: 3, size: 8
+		  Group name: lite186
+		- type: 11, size: 8
+		  Floats: 901.000000 0.100000
+		- type: 11, size: 8
+		  Floats: 900.000000 0.100000
+		- type: 12, size: 206
+		  Special bitmap
+
+Group 219:	num entries: 6, location: 0xA42EC
+		- type: 0, value: 200
+		- type: 1, size: 98
+		  Bitmap, width: 11, height: 7
+		- type: 3, size: 8
+		  Group name: lite187
+		- type: 11, size: 8
+		  Floats: 901.000000 0.100000
+		- type: 11, size: 8
+		  Floats: 900.000000 0.100000
+		- type: 12, size: 182
+		  Special bitmap
+
+Group 220:	num entries: 6, location: 0xA4439
+		- type: 0, value: 200
+		- type: 1, size: 86
+		  Bitmap, width: 11, height: 6
+		- type: 3, size: 8
+		  Group name: lite188
+		- type: 11, size: 8
+		  Floats: 901.000000 0.100000
+		- type: 11, size: 8
+		  Floats: 900.000000 0.100000
+		- type: 12, size: 158
+		  Special bitmap
+
+Group 221:	num entries: 6, location: 0xA4562
+		- type: 0, value: 200
+		- type: 1, size: 98
+		  Bitmap, width: 10, height: 7
+		- type: 3, size: 8
+		  Group name: lite189
+		- type: 11, size: 8
+		  Floats: 901.000000 0.100000
+		- type: 11, size: 8
+		  Floats: 900.000000 0.100000
+		- type: 12, size: 182
+		  Special bitmap
+
+Group 222:	num entries: 6, location: 0xA46AF
+		- type: 0, value: 200
+		- type: 1, size: 78
+		  Bitmap, width: 7, height: 8
+		- type: 3, size: 8
+		  Group name: lite190
+		- type: 11, size: 8
+		  Floats: 901.000000 0.100000
+		- type: 11, size: 8
+		  Floats: 900.000000 0.100000
+		- type: 12, size: 142
+		  Special bitmap
+
+Group 223:	num entries: 6, location: 0xA47C0
+		- type: 0, value: 200
+		- type: 1, size: 122
+		  Bitmap, width: 11, height: 9
+		- type: 3, size: 8
+		  Group name: lite191
+		- type: 11, size: 8
+		  Floats: 901.000000 0.100000
+		- type: 11, size: 8
+		  Floats: 900.000000 0.100000
+		- type: 12, size: 230
+		  Special bitmap
+
+Group 224:	num entries: 4, location: 0xA4955
+		- type: 0, value: 200
+		- type: 3, size: 8
+		  Group name: lite192
+		- type: 11, size: 8
+		  Floats: 901.000000 0.100000
+		- type: 11, size: 8
+		  Floats: 900.000000 0.100000
+
+Group 225:	num entries: 6, location: 0xA4980
+		- type: 0, value: 200
+		- type: 1, size: 86
+		  Bitmap, width: 11, height: 6
+		- type: 3, size: 8
+		  Group name: lite193
+		- type: 11, size: 8
+		  Floats: 901.000000 0.100000
+		- type: 11, size: 8
+		  Floats: 900.000000 0.100000
+		- type: 12, size: 158
+		  Special bitmap
+
+Group 226:	num entries: 6, location: 0xA4AA9
+		- type: 0, value: 200
+		- type: 1, size: 98
+		  Bitmap, width: 10, height: 7
+		- type: 3, size: 8
+		  Group name: lite194
+		- type: 11, size: 8
+		  Floats: 901.000000 0.100000
+		- type: 11, size: 8
+		  Floats: 900.000000 0.100000
+		- type: 12, size: 182
+		  Special bitmap
+
+Group 227:	num entries: 6, location: 0xA4BF6
+		- type: 0, value: 200
+		- type: 1, size: 134
+		  Bitmap, width: 9, height: 10
+		- type: 3, size: 8
+		  Group name: lite195
+		- type: 11, size: 8
+		  Floats: 901.000000 0.100000
+		- type: 11, size: 8
+		  Floats: 900.000000 0.100000
+		- type: 12, size: 254
+		  Special bitmap
+
+Group 228:	num entries: 6, location: 0xA4DAF
+		- type: 0, value: 200
+		- type: 1, size: 146
+		  Bitmap, width: 10, height: 11
+		- type: 3, size: 8
+		  Group name: lite196
+		- type: 11, size: 8
+		  Floats: 901.000000 0.100000
+		- type: 11, size: 8
+		  Floats: 900.000000 0.100000
+		- type: 12, size: 278
+		  Special bitmap
+
+Group 229:	num entries: 6, location: 0xA4F8C
+		- type: 0, value: 200
+		- type: 1, size: 110
+		  Bitmap, width: 10, height: 8
+		- type: 3, size: 8
+		  Group name: lite198
+		- type: 11, size: 8
+		  Floats: 901.000000 0.100000
+		- type: 11, size: 8
+		  Floats: 900.000000 0.100000
+		- type: 12, size: 206
+		  Special bitmap
+
+Group 230:	num entries: 6, location: 0xA50FD
+		- type: 0, value: 200
+		- type: 1, size: 170
+		  Bitmap, width: 12, height: 13
+		- type: 3, size: 8
+		  Group name: lite199
+		- type: 11, size: 8
+		  Floats: 901.000000 0.100000
+		- type: 11, size: 8
+		  Floats: 900.000000 0.100000
+		- type: 12, size: 326
+		  Special bitmap
+
+Group 231:	num entries: 6, location: 0xA5322
+		- type: 0, value: 200
+		- type: 1, size: 170
+		  Bitmap, width: 12, height: 13
+		- type: 3, size: 8
+		  Group name: lite200
+		- type: 11, size: 8
+		  Floats: 901.000000 0.100000
+		- type: 11, size: 8
+		  Floats: 900.000000 0.100000
+		- type: 12, size: 326
+		  Special bitmap
+
+Group 232:	num entries: 6, location: 0xA5547
+		- type: 0, value: 200
+		- type: 1, size: 206
+		  Bitmap, width: 15, height: 12
+		- type: 3, size: 8
+		  Group name: lite300
+		- type: 11, size: 8
+		  Floats: 901.000000 0.100000
+		- type: 11, size: 8
+		  Floats: 900.000000 0.100000
+		- type: 12, size: 398
+		  Special bitmap
+
+Group 233:	num entries: 6, location: 0xA57D8
+		- type: 0, value: 200
+		- type: 1, size: 238
+		  Bitmap, width: 13, height: 14
+		- type: 3, size: 8
+		  Group name: lite301
+		- type: 11, size: 8
+		  Floats: 901.000000 0.100000
+		- type: 11, size: 8
+		  Floats: 900.000000 0.100000
+		- type: 12, size: 462
+		  Special bitmap
+
+Group 234:	num entries: 6, location: 0xA5AC9
+		- type: 0, value: 200
+		- type: 1, size: 238
+		  Bitmap, width: 14, height: 14
+		- type: 3, size: 8
+		  Group name: lite302
+		- type: 11, size: 8
+		  Floats: 901.000000 0.100000
+		- type: 11, size: 8
+		  Floats: 900.000000 0.100000
+		- type: 12, size: 462
+		  Special bitmap
+
+Group 235:	num entries: 6, location: 0xA5DBA
+		- type: 0, value: 200
+		- type: 1, size: 190
+		  Bitmap, width: 13, height: 11
+		- type: 3, size: 8
+		  Group name: lite303
+		- type: 11, size: 8
+		  Floats: 901.000000 0.100000
+		- type: 11, size: 8
+		  Floats: 900.000000 0.100000
+		- type: 12, size: 366
+		  Special bitmap
+
+Group 236:	num entries: 6, location: 0xA601B
+		- type: 0, value: 200
+		- type: 1, size: 146
+		  Bitmap, width: 11, height: 11
+		- type: 3, size: 8
+		  Group name: lite304
+		- type: 11, size: 8
+		  Floats: 901.000000 0.100000
+		- type: 11, size: 8
+		  Floats: 900.000000 0.100000
+		- type: 12, size: 278
+		  Special bitmap
+
+Group 237:	num entries: 6, location: 0xA61F8
+		- type: 0, value: 200
+		- type: 1, size: 146
+		  Bitmap, width: 12, height: 11
+		- type: 3, size: 8
+		  Group name: lite305
+		- type: 11, size: 8
+		  Floats: 901.000000 0.100000
+		- type: 11, size: 8
+		  Floats: 900.000000 0.100000
+		- type: 12, size: 278
+		  Special bitmap
+
+Group 238:	num entries: 6, location: 0xA63D5
+		- type: 0, value: 200
+		- type: 1, size: 122
+		  Bitmap, width: 10, height: 9
+		- type: 3, size: 8
+		  Group name: lite306
+		- type: 11, size: 8
+		  Floats: 901.000000 0.100000
+		- type: 11, size: 8
+		  Floats: 900.000000 0.100000
+		- type: 12, size: 230
+		  Special bitmap
+
+Group 239:	num entries: 6, location: 0xA656A
+		- type: 0, value: 200
+		- type: 1, size: 98
+		  Bitmap, width: 11, height: 7
+		- type: 3, size: 8
+		  Group name: lite307
+		- type: 11, size: 8
+		  Floats: 901.000000 0.100000
+		- type: 11, size: 8
+		  Floats: 900.000000 0.100000
+		- type: 12, size: 182
+		  Special bitmap
+
+Group 240:	num entries: 6, location: 0xA66B7
+		- type: 0, value: 200
+		- type: 1, size: 122
+		  Bitmap, width: 10, height: 9
+		- type: 3, size: 8
+		  Group name: lite308
+		- type: 11, size: 8
+		  Floats: 901.000000 0.100000
+		- type: 11, size: 8
+		  Floats: 900.000000 0.100000
+		- type: 12, size: 230
+		  Special bitmap
+
+Group 241:	num entries: 6, location: 0xA684C
+		- type: 0, value: 200
+		- type: 1, size: 134
+		  Bitmap, width: 11, height: 10
+		- type: 3, size: 8
+		  Group name: lite309
+		- type: 11, size: 8
+		  Floats: 901.000000 0.100000
+		- type: 11, size: 8
+		  Floats: 900.000000 0.100000
+		- type: 12, size: 254
+		  Special bitmap
+
+Group 242:	num entries: 6, location: 0xA6A05
+		- type: 0, value: 200
+		- type: 1, size: 122
+		  Bitmap, width: 10, height: 9
+		- type: 3, size: 8
+		  Group name: lite310
+		- type: 11, size: 8
+		  Floats: 901.000000 0.100000
+		- type: 11, size: 8
+		  Floats: 900.000000 0.100000
+		- type: 12, size: 230
+		  Special bitmap
+
+Group 243:	num entries: 6, location: 0xA6B9A
+		- type: 0, value: 200
+		- type: 1, size: 158
+		  Bitmap, width: 13, height: 9
+		- type: 3, size: 8
+		  Group name: lite311
+		- type: 11, size: 8
+		  Floats: 901.000000 0.100000
+		- type: 11, size: 8
+		  Floats: 900.000000 0.100000
+		- type: 12, size: 302
+		  Special bitmap
+
+Group 244:	num entries: 6, location: 0xA6D9B
+		- type: 0, value: 200
+		- type: 1, size: 134
+		  Bitmap, width: 11, height: 10
+		- type: 3, size: 8
+		  Group name: lite312
+		- type: 11, size: 8
+		  Floats: 901.000000 0.100000
+		- type: 11, size: 8
+		  Floats: 900.000000 0.100000
+		- type: 12, size: 254
+		  Special bitmap
+
+Group 245:	num entries: 6, location: 0xA6F54
+		- type: 0, value: 200
+		- type: 1, size: 158
+		  Bitmap, width: 13, height: 9
+		- type: 3, size: 8
+		  Group name: lite313
+		- type: 11, size: 8
+		  Floats: 901.000000 0.100000
+		- type: 11, size: 8
+		  Floats: 900.000000 0.100000
+		- type: 12, size: 302
+		  Special bitmap
+
+Group 246:	num entries: 6, location: 0xA7155
+		- type: 0, value: 200
+		- type: 1, size: 158
+		  Bitmap, width: 13, height: 9
+		- type: 3, size: 8
+		  Group name: lite314
+		- type: 11, size: 8
+		  Floats: 901.000000 0.100000
+		- type: 11, size: 8
+		  Floats: 900.000000 0.100000
+		- type: 12, size: 302
+		  Special bitmap
+
+Group 247:	num entries: 6, location: 0xA7356
+		- type: 0, value: 200
+		- type: 1, size: 146
+		  Bitmap, width: 11, height: 11
+		- type: 3, size: 8
+		  Group name: lite315
+		- type: 11, size: 8
+		  Floats: 901.000000 0.100000
+		- type: 11, size: 8
+		  Floats: 900.000000 0.100000
+		- type: 12, size: 278
+		  Special bitmap
+
+Group 248:	num entries: 6, location: 0xA7533
+		- type: 0, value: 200
+		- type: 1, size: 158
+		  Bitmap, width: 12, height: 12
+		- type: 3, size: 8
+		  Group name: lite316
+		- type: 11, size: 8
+		  Floats: 901.000000 0.100000
+		- type: 11, size: 8
+		  Floats: 900.000000 0.100000
+		- type: 12, size: 302
+		  Special bitmap
+
+Group 249:	num entries: 6, location: 0xA7734
+		- type: 0, value: 200
+		- type: 1, size: 134
+		  Bitmap, width: 12, height: 10
+		- type: 3, size: 8
+		  Group name: lite317
+		- type: 11, size: 8
+		  Floats: 901.000000 0.100000
+		- type: 11, size: 8
+		  Floats: 900.000000 0.100000
+		- type: 12, size: 254
+		  Special bitmap
+
+Group 250:	num entries: 6, location: 0xA78ED
+		- type: 0, value: 200
+		- type: 1, size: 158
+		  Bitmap, width: 11, height: 12
+		- type: 3, size: 8
+		  Group name: lite318
+		- type: 11, size: 8
+		  Floats: 901.000000 0.100000
+		- type: 11, size: 8
+		  Floats: 900.000000 0.100000
+		- type: 12, size: 302
+		  Special bitmap
+
+Group 251:	num entries: 6, location: 0xA7AEE
+		- type: 0, value: 200
+		- type: 1, size: 146
+		  Bitmap, width: 12, height: 11
+		- type: 3, size: 8
+		  Group name: lite319
+		- type: 11, size: 8
+		  Floats: 901.000000 0.100000
+		- type: 11, size: 8
+		  Floats: 900.000000 0.100000
+		- type: 12, size: 278
+		  Special bitmap
+
+Group 252:	num entries: 6, location: 0xA7CCB
+		- type: 0, value: 200
+		- type: 1, size: 238
+		  Bitmap, width: 14, height: 14
+		- type: 3, size: 8
+		  Group name: lite320
+		- type: 11, size: 8
+		  Floats: 901.000000 0.100000
+		- type: 11, size: 8
+		  Floats: 900.000000 0.100000
+		- type: 12, size: 462
+		  Special bitmap
+
+Group 253:	num entries: 6, location: 0xA7FBC
+		- type: 0, value: 200
+		- type: 1, size: 170
+		  Bitmap, width: 12, height: 13
+		- type: 3, size: 8
+		  Group name: lite321
+		- type: 11, size: 8
+		  Floats: 901.000000 0.100000
+		- type: 11, size: 8
+		  Floats: 900.000000 0.100000
+		- type: 12, size: 326
+		  Special bitmap
+
+Group 254:	num entries: 6, location: 0xA81E1
+		- type: 0, value: 200
+		- type: 1, size: 222
+		  Bitmap, width: 15, height: 13
+		- type: 3, size: 8
+		  Group name: lite322
+		- type: 11, size: 8
+		  Floats: 901.000000 0.100000
+		- type: 11, size: 8
+		  Floats: 900.000000 0.100000
+		- type: 12, size: 430
+		  Special bitmap
+
+Group 255:	num entries: 6, location: 0xA84A2
+		- type: 0, value: 200
+		- type: 1, size: 490
+		  Bitmap, width: 27, height: 17
+		- type: 3, size: 12
+		  Group name: literoll179
+		- type: 11, size: 8
+		  Floats: 901.000000 0.100000
+		- type: 11, size: 8
+		  Floats: 900.000000 0.100000
+		- type: 12, size: 966
+		  Special bitmap
+
+Group 256:	num entries: 6, location: 0xA8A8B
+		- type: 0, value: 200
+		- type: 1, size: 398
+		  Bitmap, width: 24, height: 16
+		- type: 3, size: 12
+		  Group name: literoll180
+		- type: 11, size: 8
+		  Floats: 901.000000 0.100000
+		- type: 11, size: 8
+		  Floats: 900.000000 0.100000
+		- type: 12, size: 782
+		  Special bitmap
+
+Group 257:	num entries: 6, location: 0xA8F60
+		- type: 0, value: 200
+		- type: 1, size: 350
+		  Bitmap, width: 21, height: 14
+		- type: 3, size: 12
+		  Group name: literoll181
+		- type: 11, size: 8
+		  Floats: 901.000000 0.100000
+		- type: 11, size: 8
+		  Floats: 900.000000 0.100000
+		- type: 12, size: 686
+		  Special bitmap
+
+Group 258:	num entries: 6, location: 0xA93A5
+		- type: 0, value: 200
+		- type: 1, size: 274
+		  Bitmap, width: 18, height: 13
+		- type: 3, size: 12
+		  Group name: literoll182
+		- type: 11, size: 8
+		  Floats: 901.000000 0.100000
+		- type: 11, size: 8
+		  Floats: 900.000000 0.100000
+		- type: 12, size: 534
+		  Special bitmap
+
+Group 259:	num entries: 6, location: 0xA9706
+		- type: 0, value: 200
+		- type: 1, size: 174
+		  Bitmap, width: 15, height: 10
+		- type: 3, size: 12
+		  Group name: literoll183
+		- type: 11, size: 8
+		  Floats: 901.000000 0.100000
+		- type: 11, size: 8
+		  Floats: 900.000000 0.100000
+		- type: 12, size: 334
+		  Special bitmap
+
+Group 260:	num entries: 6, location: 0xA993B
+		- type: 0, value: 200
+		- type: 1, size: 158
+		  Bitmap, width: 15, height: 9
+		- type: 3, size: 12
+		  Group name: literoll184
+		- type: 11, size: 8
+		  Floats: 901.000000 0.100000
+		- type: 11, size: 8
+		  Floats: 900.000000 0.100000
+		- type: 12, size: 302
+		  Special bitmap
+
+Group 261:	num entries: 4, location: 0xA9B40
+		- type: 0, value: 200
+		- type: 3, size: 17
+		  Group name: worm_hole_lights
+		- type: 10, size: 8
+		  Shorts: 1027 125 126 127
+		- type: 11, size: 8
+		  Floats: 903.000000 0.200000
+
+Group 262:	num entries: 5, location: 0xA9B74
+		- type: 0, value: 200
+		- type: 3, size: 14
+		  Group name: fuel_bargraph
+		- type: 10, size: 14
+		  Shorts: 1027 255 256 257 258 259 260
+		- type: 11, size: 8
+		  Floats: 903.000000 0.200000
+		- type: 11, size: 52
+		  Floats: 904.000000 3.000000 14.000000 3.000000 12.000000 3.000000 10.000000 3.000000 8.000000 3.000000 6.000000 3.000000 4.000000
+
+Group 263:	num entries: 4, location: 0xA9BE4
+		- type: 0, value: 200
+		- type: 3, size: 14
+		  Group name: l_trek_lights
+		- type: 10, size: 12
+		  Shorts: 1027 222 223 224 225 226
+		- type: 11, size: 8
+		  Floats: 903.000000 0.200000
+
+Group 264:	num entries: 4, location: 0xA9C19
+		- type: 0, value: 200
+		- type: 3, size: 14
+		  Group name: r_trek_lights
+		- type: 10, size: 12
+		  Shorts: 1027 217 218 219 220 221
+		- type: 11, size: 8
+		  Floats: 903.000000 0.200000
+
+Group 265:	num entries: 4, location: 0xA9C4E
+		- type: 0, value: 200
+		- type: 3, size: 19
+		  Group name: bsink_arrow_lights
+		- type: 10, size: 8
+		  Shorts: 1027 116 119 122
+		- type: 11, size: 8
+		  Floats: 903.000000 0.080000
+
+Group 266:	num entries: 4, location: 0xA9C84
+		- type: 0, value: 200
+		- type: 3, size: 18
+		  Group name: hyperspace_lights
+		- type: 10, size: 10
+		  Shorts: 1027 139 140 141 142
+		- type: 11, size: 8
+		  Floats: 903.000000 0.080000
+
+Group 267:	num entries: 4, location: 0xA9CBB
+		- type: 0, value: 200
+		- type: 3, size: 16
+		  Group name: ramp_tgt_lights
+		- type: 10, size: 8
+		  Shorts: 1027 182 183 184
+		- type: 11, size: 8
+		  Floats: 903.000000 0.080000
+
+Group 268:	num entries: 4, location: 0xA9CEE
+		- type: 0, value: 200
+		- type: 3, size: 12
+		  Group name: goal_lights
+		- type: 10, size: 48
+		  Shorts: 1027 232 233 234 235 236 237 238 239 240 241 242 243 244 245 246 247 248 249 250 251 252 253 254
+		- type: 11, size: 8
+		  Floats: 903.000000 0.080000
+
+Group 269:	num entries: 4, location: 0xA9D45
+		- type: 0, value: 200
+		- type: 3, size: 19
+		  Group name: bpr_solotgt_lights
+		- type: 10, size: 8
+		  Shorts: 1027 188 189 190
+		- type: 11, size: 8
+		  Floats: 903.000000 0.080000
+
+Group 270:	num entries: 4, location: 0xA9D7B
+		- type: 0, value: 200
+		- type: 3, size: 22
+		  Group name: top_circle_tgt_lights
+		- type: 10, size: 8
+		  Shorts: 1027 176 177 178
+		- type: 11, size: 8
+		  Floats: 903.000000 0.080000
+
+Group 271:	num entries: 4, location: 0xA9DB4
+		- type: 0, value: 200
+		- type: 3, size: 18
+		  Group name: lchute_tgt_lights
+		- type: 10, size: 8
+		  Shorts: 1027 185 186 187
+		- type: 11, size: 8
+		  Floats: 903.000000 0.080000
+
+Group 272:	num entries: 4, location: 0xA9DE9
+		- type: 0, value: 200
+		- type: 3, size: 20
+		  Group name: right_target_lights
+		- type: 10, size: 10
+		  Shorts: 1027 167 166 165 164
+		- type: 11, size: 8
+		  Floats: 903.000000 0.080000
+
+Group 273:	num entries: 4, location: 0xA9E22
+		- type: 0, value: 200
+		- type: 3, size: 18
+		  Group name: skill_shot_lights
+		- type: 10, size: 14
+		  Shorts: 1027 173 174 175 193 194 195
+		- type: 11, size: 8
+		  Floats: 903.000000 0.080000
+
+Group 274:	num entries: 4, location: 0xA9E5D
+		- type: 0, value: 200
+		- type: 3, size: 18
+		  Group name: top_target_lights
+		- type: 10, size: 10
+		  Shorts: 1027 172 171 170 169
+		- type: 11, size: 8
+		  Floats: 903.000000 0.080000
+
+Group 275:	num entries: 4, location: 0xA9E94
+		- type: 0, value: 200
+		- type: 3, size: 21
+		  Group name: bumper_target_lights
+		- type: 10, size: 8
+		  Shorts: 1027 133 132 131
+		- type: 11, size: 8
+		  Floats: 903.000000 0.080000
+
+Group 276:	num entries: 4, location: 0xA9ECC
+		- type: 0, value: 200
+		- type: 3, size: 16
+		  Group name: bmpr_inc_lights
+		- type: 10, size: 8
+		  Shorts: 1027 128 129 130
+		- type: 11, size: 8
+		  Floats: 903.000000 0.080000
+
+Group 277:	num entries: 4, location: 0xA9EFF
+		- type: 0, value: 200
+		- type: 3, size: 21
+		  Group name: ramp_bmpr_inc_lights
+		- type: 10, size: 8
+		  Shorts: 1027 216 215 214
+		- type: 11, size: 8
+		  Floats: 903.000000 0.080000
+
+Group 278:	num entries: 4, location: 0xA9F37
+		- type: 0, value: 200
+		- type: 3, size: 14
+		  Group name: middle_circle
+		- type: 10, size: 20
+		  Shorts: 1027 205 206 207 208 209 210 211 212 213
+		- type: 11, size: 8
+		  Floats: 903.000000 0.080000
+
+Group 279:	num entries: 4, location: 0xA9F74
+		- type: 0, value: 200
+		- type: 3, size: 13
+		  Group name: outer_circle
+		- type: 10, size: 38
+		  Shorts: 1027 196 160 197 159 198 158 199 157 200 156 201 155 202 154 203 153 204 152
+		- type: 11, size: 8
+		  Floats: 903.000000 0.080000
+
+Group 280:	num entries: 3, location: 0xA9FC2
+		- type: 0, value: 200
+		- type: 10, size: 4
+		  Shorts: 300 95
+		- type: 11, size: 156
+		  Floats: 600.000000 18.000000 -7.985447 -4.977900 -8.002672 -13.986252 -1.405733 -12.367159 -2.180830 -12.160467 -2.938703 -11.884876 -3.627678 -11.557613 -4.299429 -11.144228 -4.902283 -10.661945 -5.487912 -10.093541 -5.970194 -9.559585 -6.435253 -8.870609 -6.779740 -8.181634 -7.072555 -7.458210 -7.296472 -6.631440 -7.434267 -5.890791 -7.485940 -5.115694 -7.485940 -5.012348 -7.985447 -4.977900 -1.000000
+
+Group 281:	num entries: 3, location: 0xAA070
+		- type: 0, value: 200
+		- type: 10, size: 4
+		  Shorts: 300 95
+		- type: 11, size: 108
+		  Floats: 600.000000 12.000000 3.832559 -13.445866 8.000318 -14.000000 7.500318 -11.000000 7.432169 -11.517638 7.232369 -12.000000 6.914531 -12.414213 6.500318 -12.732051 6.017956 -12.931851 5.500318 -13.000000 4.982680 -12.931851 4.386651 -12.749516 3.832559 -13.445866 -0.999995
+
+Group 282:	num entries: 3, location: 0xAA0EE
+		- type: 0, value: 200
+		- type: 10, size: 4
+		  Shorts: 300 95
+		- type: 11, size: 204
+		  Floats: 600.000000 24.000000 -2.957641 -10.769529 -2.597257 -10.611862 -2.349493 -10.251478 -2.799973 -9.733425 -3.070261 -9.958666 -3.453169 -9.936142 -3.633361 -9.800998 -4.286557 -9.260422 -4.939753 -8.427033 -5.457805 -7.548597 -5.795665 -6.580066 -5.975857 -5.543962 -5.953333 -4.462810 -5.795665 -3.449229 -5.705569 -3.156417 -5.863237 -3.111370 -6.111001 -4.372714 -6.313717 -5.318721 -6.313717 -6.422398 -5.998381 -7.503550 -5.412757 -8.562178 -4.782085 -9.418090 -3.926173 -10.183906 -2.957641 -10.769529 -1.000000
+
+Group 283:	num entries: 3, location: 0xAA1CC
+		- type: 0, value: 200
+		- type: 10, size: 4
+		  Shorts: 300 95
+		- type: 11, size: 124
+		  Floats: 600.000000 14.000000 -5.721730 -3.161263 -4.345913 0.341669 -4.371750 2.692755 -4.500930 2.796099 -4.578439 2.692755 -5.482702 3.416166 -5.482702 -0.820956 -5.611881 -2.024510 -5.804268 -2.952237 -6.127023 -4.218998 -6.372664 -5.329951 -6.309458 -5.342276 -5.792736 -3.197878 -5.721730 -3.161263 -1.000000
+
+Group 284:	num entries: 3, location: 0xAA25A
+		- type: 0, value: 200
+		- type: 10, size: 4
+		  Shorts: 300 95
+		- type: 11, size: 164
+		  Floats: 600.000000 19.000000 3.624142 -8.009265 3.515165 -8.006398 1.897320 -9.001415 1.765789 -9.096506 1.728371 -9.189885 1.714921 -9.984935 1.762458 -10.120569 2.713392 -10.806324 2.888232 -10.842160 3.057475 -10.725492 3.082916 -10.551508 2.470423 -9.708789 3.338840 -9.038891 3.626825 -9.387687 3.723743 -9.373764 3.769578 -9.233203 3.787505 -8.224281 3.729467 -8.074375 3.624142 -8.009265 -1.000000
+
+Group 285:	num entries: 3, location: 0xAA310
+		- type: 0, value: 200
+		- type: 10, size: 4
+		  Shorts: 300 95
+		- type: 11, size: 100
+		  Floats: 600.000000 11.000000 3.625515 12.546369 6.503173 10.493291 6.879388 12.139489 6.943272 12.386183 7.178965 12.392144 7.507631 10.537642 7.812214 10.527684 7.845399 13.855931 3.554396 13.854765 3.550802 12.675585 3.625515 12.546369 -1.000000
+
+Group 286:	num entries: 3, location: 0xAA386
+		- type: 0, value: 200
+		- type: 10, size: 4
+		  Shorts: 300 95
+		- type: 11, size: 52
+		  Floats: 600.000000 5.000000 7.760002 13.000000 7.510002 13.000000 7.510002 -7.000000 7.760002 -7.000000 7.760002 13.000000 -1.000000
+
+Group 287:	num entries: 3, location: 0xAA3CC
+		- type: 0, value: 200
+		- type: 10, size: 4
+		  Shorts: 300 95
+		- type: 11, size: 52
+		  Floats: 600.000000 5.000000 -7.509998 13.000000 -7.759998 13.000000 -7.759998 -7.000000 -7.509998 -7.000000 -7.509998 13.000000 -1.000000
+
+Group 288:	num entries: 3, location: 0xAA412
+		- type: 0, value: 200
+		- type: 10, size: 4
+		  Shorts: 300 95
+		- type: 11, size: 132
+		  Floats: 600.000000 15.000000 4.015258 7.433938 3.882518 7.160161 3.932295 6.994236 4.073331 6.936162 4.214368 6.961051 4.297330 7.077199 4.319489 9.333043 4.205216 9.522028 3.054301 10.305915 2.847753 10.346536 2.733455 10.246938 2.688259 10.063486 2.789665 9.943733 2.979482 9.952168 4.015258 7.433938 -1.000000
+
+Group 289:	num entries: 3, location: 0xAA4A8
+		- type: 0, value: 200
+		- type: 10, size: 4
+		  Shorts: 300 95
+		- type: 11, size: 52
+		  Floats: 600.000000 5.000000 5.475000 8.375000 5.225000 8.375000 5.225000 7.125000 5.475000 7.125000 5.475000 8.375000 -1.000000
+
+Group 290:	num entries: 3, location: 0xAA4EE
+		- type: 0, value: 200
+		- type: 10, size: 4
+		  Shorts: 300 95
+		- type: 11, size: 52
+		  Floats: 600.000000 5.000000 6.500002 8.875000 6.250002 8.875000 6.250002 7.125000 6.500002 7.125000 6.500002 8.875000 -1.000000
+
+Group 291:	num entries: 3, location: 0xAA534
+		- type: 0, value: 200
+		- type: 10, size: 4
+		  Shorts: 300 95
+		- type: 11, size: 100
+		  Floats: 600.000000 11.000000 -3.551100 12.695112 -3.554694 13.874292 -6.410654 13.875419 -6.408810 11.320856 -6.275108 10.879766 -6.247982 12.106388 -5.924728 11.823905 -5.502493 11.603157 -5.289030 11.264830 -3.625814 12.565896 -3.551100 12.695112 -1.000000
+
+Group 292:	num entries: 3, location: 0xAA5AA
+		- type: 0, value: 200
+		- type: 10, size: 4
+		  Shorts: 300 95
+		- type: 11, size: 52
+		  Floats: 600.000000 5.000000 -5.224412 9.713152 -5.475587 9.713152 -5.475587 7.119301 -5.224412 7.119301 -5.224412 9.713152 -1.000000
+
+Group 293:	num entries: 3, location: 0xAA5F0
+		- type: 0, value: 200
+		- type: 10, size: 4
+		  Shorts: 300 95
+		- type: 11, size: 52
+		  Floats: 600.000000 5.000000 -6.249998 12.850000 -6.499998 12.850000 -6.499998 4.850000 -6.249998 4.850000 -6.249998 12.850000 -1.000000
+
+Group 294:	num entries: 3, location: 0xAA636
+		- type: 0, value: 200
+		- type: 10, size: 4
+		  Shorts: 300 95
+		- type: 11, size: 52
+		  Floats: 600.000000 5.000000 -0.749998 -9.125000 -0.749998 -9.875000 -0.499998 -9.875000 -0.499998 -9.125000 -0.749998 -9.125000 -1.000000
+
+Group 295:	num entries: 3, location: 0xAA67C
+		- type: 0, value: 200
+		- type: 10, size: 4
+		  Shorts: 300 95
+		- type: 11, size: 52
+		  Floats: 600.000000 5.000000 0.500002 -9.125000 0.500002 -9.875000 0.750002 -9.875000 0.750002 -9.125000 0.500002 -9.125000 -1.000000
+
+Group 296:	num entries: 3, location: 0xAA6C2
+		- type: 0, value: 200
+		- type: 10, size: 4
+		  Shorts: 300 95
+		- type: 11, size: 236
+		  Floats: 600.000000 28.000000 -3.535655 -8.547752 -3.223854 -8.859552 -2.888069 -9.171353 -2.756153 -9.399208 -2.756153 -9.567101 -2.864084 -9.734993 -2.996000 -9.890894 -3.247839 -9.962848 -3.475693 -9.926870 -3.595616 -9.818939 -3.955387 -10.178710 -3.067954 -10.754342 -2.948030 -10.814303 -2.804122 -10.838288 -2.708184 -10.814303 -1.760789 -10.118748 -1.712820 -10.010817 -1.712820 -9.219323 -1.784774 -9.099400 -2.000636 -8.979476 -2.096575 -8.979476 -2.480329 -9.327253 -2.552283 -9.327253 -3.151900 -8.727637 -3.163892 -8.643691 -2.816114 -8.295913 -2.876076 -8.163998 -3.535655 -8.547752 -1.000000
+
+Group 297:	num entries: 3, location: 0xAA7C0
+		- type: 0, value: 200
+		- type: 10, size: 4
+		  Shorts: 300 95
+		- type: 11, size: 108
+		  Floats: 600.000000 12.000000 3.850037 -13.447005 2.885973 -12.858418 3.647076 -11.742134 3.586188 -11.610209 2.439459 -12.087168 1.688504 -12.320573 0.927401 -12.452497 0.176446 -12.503238 -0.564361 -12.493090 -1.447240 -12.361165 -1.457388 -12.361165 3.850037 -13.447005 -1.000000
+
+Group 298:	num entries: 3, location: 0xAA83E
+		- type: 0, value: 200
+		- type: 10, size: 4
+		  Shorts: 300 95
+		- type: 11, size: 92
+		  Floats: 600.000000 10.000000 1.298071 -3.018685 -0.629997 -2.347979 -0.798991 -2.419562 -0.919818 -2.569653 -0.653648 -3.193240 -0.025682 -3.873239 0.838146 -3.600158 1.419149 -3.321543 1.405050 -3.145099 1.298071 -3.018685 -1.000000
+
+Group 299:	num entries: 3, location: 0xAA8AC
+		- type: 0, value: 200
+		- type: 10, size: 4
+		  Shorts: 300 95
+		- type: 11, size: 52
+		  Floats: 600.000000 5.000000 -6.256757 3.807303 -6.510114 3.820215 -6.517799 -0.029785 -6.256757 -0.029785 -6.256757 3.807303 -1.000000
+
+Group 300:	num entries: 3, location: 0xAA8F2
+		- type: 0, value: 200
+		- type: 10, size: 4
+		  Shorts: 300 95
+		- type: 11, size: 92
+		  Floats: 600.000000 10.000000 2.665113 -13.649314 5.472268 -13.719997 5.472268 -13.013160 4.977482 -12.942476 4.462500 -12.710230 4.078788 -12.417397 3.775858 -12.003392 3.604198 -11.589387 2.362183 -12.175053 2.665113 -13.649314 -1.000000
+
+Group 301:	num entries: 3, location: 0xAA960
+		- type: 0, value: 200
+		- type: 10, size: 4
+		  Shorts: 300 95
+		- type: 11, size: 132
+		  Floats: 600.000000 15.000000 -2.979482 9.952168 -2.789665 9.943733 -2.688259 10.063486 -2.733455 10.246938 -2.847753 10.346536 -3.054301 10.305915 -4.205216 9.522028 -4.319489 9.333043 -4.297330 7.077199 -4.214368 6.961051 -4.073331 6.936162 -3.932295 6.994236 -3.882518 7.160161 -4.015258 7.433938 -2.979482 9.952168 -1.000000
+
+Group 302:	num entries: 3, location: 0xAA9F6
+		- type: 0, value: 200
+		- type: 10, size: 4
+		  Shorts: 300 95
+		- type: 11, size: 244
+		  Floats: 600.000000 29.000000 6.240436 -6.150629 6.449633 -6.036521 6.563740 -5.523039 6.563740 -4.572146 6.430614 -3.602236 6.126329 -2.594289 5.688918 -1.700450 5.118382 -0.901700 4.776061 -0.616432 4.566865 -0.597414 3.140525 -1.453218 3.026418 -1.605361 3.007400 -1.966700 3.064454 -2.042771 3.140525 -2.099825 3.273650 -2.004736 3.311686 -1.928664 5.384633 -3.050718 5.327579 -3.221879 5.365615 -3.297950 5.460704 -3.355004 5.669900 -3.545182 5.841061 -3.906521 5.993204 -4.343932 6.069275 -4.781343 6.069275 -5.275807 6.069275 -5.713218 6.088293 -6.017504 6.240436 -6.150629 -1.000000
+
+Group 303:	num entries: 3, location: 0xAAAFC
+		- type: 0, value: 200
+		- type: 10, size: 4
+		  Shorts: 300 95
+		- type: 11, size: 84
+		  Floats: 600.000000 9.000000 6.509674 5.618449 6.031924 5.379574 5.049883 5.193783 4.837550 5.087616 4.731383 4.822199 4.731383 2.433450 6.562757 -1.441633 6.589299 5.644991 6.509674 5.618449 -1.000000
+
+Group 304:	num entries: 3, location: 0xAAB62
+		- type: 0, value: 200
+		- type: 10, size: 4
+		  Shorts: 300 95
+		- type: 11, size: 260
+		  Floats: 600.000000 31.000000 -3.239097 -8.699113 -2.807544 -8.319346 -2.842068 -8.233036 -3.066476 -7.974104 -3.377194 -7.456240 -3.636126 -6.938376 -3.843271 -6.420513 -3.998630 -5.833601 -3.981368 -5.263951 -3.929582 -4.935971 -3.998630 -4.832398 -4.084940 -4.797873 -4.136727 -4.728825 -3.187310 -2.709157 -3.135524 -2.726419 -3.101000 -2.743681 -3.049213 -2.726419 -2.980165 -2.588322 -2.997427 -2.536536 -3.428980 -2.312129 -3.981368 -2.950827 -4.447445 -3.589525 -4.723639 -4.141913 -4.930784 -4.884184 -4.948047 -5.643718 -4.775425 -6.385989 -4.533756 -7.093736 -4.171251 -7.766958 -3.722436 -8.336608 -3.359931 -8.699113 -3.239097 -8.699113 -1.000000
+
+Group 305:	num entries: 3, location: 0xAAC78
+		- type: 0, value: 200
+		- type: 10, size: 4
+		  Shorts: 300 95
+		- type: 11, size: 180
+		  Floats: 600.000000 21.000000 7.518466 -5.779470 7.379364 -6.558444 7.156801 -7.393058 6.707278 -8.141342 6.249392 -8.693363 6.252265 -9.178985 6.934237 -9.590876 7.240262 -10.008183 7.435005 -10.453310 7.518466 -10.870617 7.435005 -11.593949 7.240262 -12.039077 6.934237 -12.456385 6.516930 -12.734589 6.071802 -12.957153 5.487572 -13.040614 5.404111 -13.930869 7.880133 -13.930869 7.880133 -4.722293 7.518466 -4.722293 7.518466 -5.779470 -1.000000
+
+Group 306:	num entries: 3, location: 0xAAD3E
+		- type: 0, value: 200
+		- type: 10, size: 8
+		  Shorts: 602 2 300 95
+		- type: 11, size: 52
+		  Floats: 600.000000 5.000000 5.765066 2.478031 5.765066 1.971462 5.958086 1.971462 5.958086 2.478031 5.765066 2.478031 0.371133
+
+Group 307:	num entries: 3, location: 0xAAD88
+		- type: 0, value: 200
+		- type: 10, size: 8
+		  Shorts: 602 2 300 95
+		- type: 11, size: 52
+		  Floats: 600.000000 5.000000 6.748575 2.210516 6.748575 1.703948 6.941596 1.703948 6.941596 2.210516 6.748575 2.210516 0.371133
+
+Group 308:	num entries: 3, location: 0xAADD2
+		- type: 0, value: 200
+		- type: 10, size: 8
+		  Shorts: 602 2 300 95
+		- type: 11, size: 68
+		  Floats: 600.000000 7.000000 7.695189 4.516206 7.306869 4.172029 7.211360 3.638700 7.215258 3.305206 7.289066 2.857917 7.691579 2.510644 7.695189 4.516206 -1.000000
+
+Group 309:	num entries: 3, location: 0xAAE2C
+		- type: 0, value: 200
+		- type: 10, size: 8
+		  Shorts: 602 2 300 95
+		- type: 11, size: 68
+		  Floats: 600.000000 7.000000 4.755264 3.020978 5.148166 3.361642 5.240738 3.782445 5.236848 4.288745 5.148302 4.664316 4.764395 4.953022 4.755264 3.020978 -1.000000
+
+Group 310:	num entries: 3, location: 0xAAE86
+		- type: 0, value: 200
+		- type: 10, size: 4
+		  Shorts: 300 96
+		- type: 11, size: 24
+		  Floats: 600.000000 1.000000 -3.425603 -2.477527 0.135950 -0.996501
+
+Group 311:	num entries: 3, location: 0xAAEB0
+		- type: 0, value: 200
+		- type: 10, size: 4
+		  Shorts: 300 96
+		- type: 11, size: 24
+		  Floats: 600.000000 1.000000 -5.325000 5.500000 0.214295 -0.996501
+
+Group 312:	num entries: 3, location: 0xAAEDA
+		- type: 0, value: 200
+		- type: 10, size: 4
+		  Shorts: 300 96
+		- type: 11, size: 24
+		  Floats: 600.000000 1.000000 -5.274940 5.497498 0.157577 -1.000000
+
+Group 313:	num entries: 3, location: 0xAAF04
+		- type: 0, value: 200
+		- type: 10, size: 4
+		  Shorts: 300 96
+		- type: 11, size: 24
+		  Floats: 600.000000 1.000000 -6.382228 0.068005 0.126056 0.003499
+
+Group 314:	num entries: 3, location: 0xAAF2E
+		- type: 0, value: 200
+		- type: 10, size: 4
+		  Shorts: 300 96
+		- type: 11, size: 24
+		  Floats: 600.000000 1.000000 -6.387124 5.024750 0.126056 0.003499
+
+Group 315:	num entries: 3, location: 0xAAF58
+		- type: 0, value: 200
+		- type: 10, size: 4
+		  Shorts: 300 96
+		- type: 11, size: 24
+		  Floats: 600.000000 1.000000 -5.350000 7.142174 0.126056 -1.000000
+
+Group 316:	num entries: 3, location: 0xAAF82
+		- type: 0, value: 200
+		- type: 10, size: 4
+		  Shorts: 300 96
+		- type: 11, size: 24
+		  Floats: 600.000000 1.000000 -5.345376 9.727089 0.146600 0.000000
+
+Group 317:	num entries: 3, location: 0xAAFAC
+		- type: 0, value: 200
+		- type: 10, size: 4
+		  Shorts: 300 96
+		- type: 11, size: 24
+		  Floats: 600.000000 1.000000 5.350000 7.135873 0.126056 -1.000000
+
+Group 318:	num entries: 3, location: 0xAAFD6
+		- type: 0, value: 200
+		- type: 10, size: 4
+		  Shorts: 300 96
+		- type: 11, size: 24
+		  Floats: 600.000000 1.000000 5.350000 8.351612 0.126056 -1.000000
+
+Group 319:	num entries: 3, location: 0xAB000
+		- type: 0, value: 200
+		- type: 10, size: 4
+		  Shorts: 300 96
+		- type: 11, size: 24
+		  Floats: 600.000000 1.000000 6.383597 7.142169 0.126056 -1.000000
+
+Group 320:	num entries: 3, location: 0xAB02A
+		- type: 0, value: 200
+		- type: 10, size: 4
+		  Shorts: 300 96
+		- type: 11, size: 24
+		  Floats: 600.000000 1.000000 6.383597 8.842945 0.126056 -1.000000
+
+Group 321:	num entries: 3, location: 0xAB054
+		- type: 0, value: 200
+		- type: 10, size: 4
+		  Shorts: 300 96
+		- type: 11, size: 24
+		  Floats: 600.000000 1.000000 -0.624317 -9.891279 0.126056 -1.000000
+
+Group 322:	num entries: 3, location: 0xAB07E
+		- type: 0, value: 200
+		- type: 10, size: 4
+		  Shorts: 300 96
+		- type: 11, size: 24
+		  Floats: 600.000000 1.000000 -0.624317 -9.133677 0.126056 -1.000000
+
+Group 323:	num entries: 3, location: 0xAB0A8
+		- type: 0, value: 200
+		- type: 10, size: 4
+		  Shorts: 300 96
+		- type: 11, size: 24
+		  Floats: 600.000000 1.000000 0.621015 -9.890179 0.126056 -1.000000
+
+Group 324:	num entries: 3, location: 0xAB0D2
+		- type: 0, value: 200
+		- type: 10, size: 4
+		  Shorts: 300 96
+		- type: 11, size: 24
+		  Floats: 600.000000 1.000000 0.621015 -9.130586 0.126056 -1.000000
+
+Group 325:	num entries: 3, location: 0xAB0FC
+		- type: 0, value: 200
+		- type: 10, size: 4
+		  Shorts: 300 96
+		- type: 11, size: 24
+		  Floats: 600.000000 1.000000 -5.296358 3.772348 0.137405 0.002724
+
+Group 326:	num entries: 3, location: 0xAB126
+		- type: 0, value: 200
+		- type: 10, size: 8
+		  Shorts: 602 2 300 96
+		- type: 11, size: 24
+		  Floats: 600.000000 1.000000 5.858500 1.952465 0.090671 0.371133
+
+Group 327:	num entries: 3, location: 0xAB154
+		- type: 0, value: 200
+		- type: 10, size: 8
+		  Shorts: 602 2 300 96
+		- type: 11, size: 24
+		  Floats: 600.000000 1.000000 5.858500 2.474259 0.090671 0.371133
+
+Group 328:	num entries: 3, location: 0xAB182
+		- type: 0, value: 200
+		- type: 10, size: 8
+		  Shorts: 602 2 300 96
+		- type: 11, size: 24
+		  Floats: 600.000000 1.000000 6.842008 1.684950 0.090671 0.371133
+
+Group 329:	num entries: 3, location: 0xAB1B0
+		- type: 0, value: 200
+		- type: 10, size: 4
+		  Shorts: 300 97
+		- type: 11, size: 52
+		  Floats: 600.000000 5.000000 2.568531 11.733438 2.438560 11.717877 6.301907 9.012223 6.368979 9.089901 2.568531 11.733438 -1.000000
+
+Group 330:	num entries: 3, location: 0xAB1F6
+		- type: 0, value: 200
+		- type: 10, size: 4
+		  Shorts: 300 97
+		- type: 11, size: 52
+		  Floats: 600.000000 5.000000 -5.350633 9.776042 -5.371781 9.673834 -2.439926 11.725134 -2.583881 11.733536 -5.350633 9.776042 -1.000000
+
+Group 331:	num entries: 3, location: 0xAB23C
+		- type: 0, value: 200
+		- type: 10, size: 4
+		  Shorts: 300 97
+		- type: 11, size: 52
+		  Floats: 600.000000 5.000000 -2.618995 -9.491181 -1.989731 -8.866691 -2.063305 -8.792579 -2.695997 -9.416740 -2.618995 -9.491181 -1.000000
+
+Group 332:	num entries: 3, location: 0xAB282
+		- type: 0, value: 200
+		- type: 10, size: 4
+		  Shorts: 300 97
+		- type: 11, size: 44
+		  Floats: 600.000000 4.000000 -2.620926 -8.222603 -2.714689 -8.117953 -3.174084 -8.760185 -2.620926 -8.222603 -1.000000
+
+Group 333:	num entries: 3, location: 0xAB2C0
+		- type: 0, value: 200
+		- type: 10, size: 4
+		  Shorts: 300 97
+		- type: 11, size: 52
+		  Floats: 600.000000 5.000000 3.824484 -9.759992 3.670121 -9.217381 3.192998 -9.100439 3.763674 -9.820802 3.824484 -9.759992 -1.000000
+
+Group 334:	num entries: 3, location: 0xAB306
+		- type: 0, value: 200
+		- type: 10, size: 4
+		  Shorts: 300 97
+		- type: 11, size: 44
+		  Floats: 600.000000 4.000000 2.945081 -10.438255 3.127510 -10.311958 2.533445 -9.544819 2.945081 -10.438255 -1.000000
+
+Group 335:	num entries: 3, location: 0xAB344
+		- type: 0, value: 200
+		- type: 10, size: 4
+		  Shorts: 300 97
+		- type: 11, size: 52
+		  Floats: 600.000000 5.000000 -4.620873 2.615427 -4.077929 3.341063 -4.161798 3.402187 -4.726794 2.692217 -4.620873 2.615427 -1.000000
+
+Group 336:	num entries: 3, location: 0xAB38A
+		- type: 0, value: 200
+		- type: 10, size: 4
+		  Shorts: 300 97
+		- type: 11, size: 52
+		  Floats: 600.000000 5.000000 -5.292873 3.242394 -4.789879 3.901876 -4.873712 3.957764 -5.264929 3.745389 -5.292873 3.242394 -1.000000
+
+Group 337:	num entries: 2, location: 0xAB3D0
+		- type: 0, value: 400
+		- type: 11, size: 40
+		  Floats: 402.000000 35.000000 403.000000 5.000000 404.000000 1.000000 1.000000 0.000000 405.000000 0.000000
+
+Group 338:	num entries: 6, location: 0xAB401
+		- type: 0, value: 200
+		- type: 3, size: 8
+		  Group name: v_sink1
+		- type: 10, size: 12
+		  Shorts: 400 337 1100 48 1101 48
+		- type: 11, size: 28
+		  Floats: 600.000000 2.000000 -2.484527 -9.321020 -3.155916 -8.618178 -1.000000
+		- type: 11, size: 20
+		  Floats: 601.000000 -2.618267 -8.828711 0.143836 -1.000000
+		- type: 11, size: 8
+		  Floats: 407.000000 2.000000
+
+Group 339:	num entries: 2, location: 0xAB46A
+		- type: 0, value: 400
+		- type: 11, size: 40
+		  Floats: 402.000000 35.000000 403.000000 5.000000 404.000000 1.000000 -1.000000 0.000000 405.000000 0.000000
+
+Group 340:	num entries: 6, location: 0xAB49B
+		- type: 0, value: 200
+		- type: 3, size: 8
+		  Group name: v_sink2
+		- type: 10, size: 12
+		  Shorts: 400 339 1100 48 1101 48
+		- type: 11, size: 28
+		  Floats: 600.000000 2.000000 2.612966 -9.774025 3.398816 -9.147216 -1.000000
+		- type: 11, size: 20
+		  Floats: 601.000000 3.171890 -9.757203 0.127171 -1.000000
+		- type: 11, size: 8
+		  Floats: 407.000000 2.000000
+
+Group 341:	num entries: 2, location: 0xAB504
+		- type: 0, value: 400
+		- type: 11, size: 40
+		  Floats: 402.000000 35.000000 403.000000 5.000000 404.000000 1.000000 1.000000 0.000000 405.000000 0.000000
+
+Group 342:	num entries: 6, location: 0xAB535
+		- type: 0, value: 200
+		- type: 3, size: 8
+		  Group name: v_sink3
+		- type: 10, size: 12
+		  Shorts: 400 341 1100 48 1101 48
+		- type: 11, size: 28
+		  Floats: 600.000000 2.000000 -4.568443 2.732776 -5.305239 3.366717 -1.000000
+		- type: 11, size: 20
+		  Floats: 601.000000 -4.714430 3.329021 0.143837 -1.000000
+		- type: 11, size: 8
+		  Floats: 407.000000 2.000000
+
+Group 343:	num entries: 2, location: 0xAB59E
+		- type: 0, value: 400
+		- type: 11, size: 40
+		  Floats: 402.000000 35.000000 403.000000 5.000000 404.000000 0.000000 -1.000000 0.000000 405.000000 0.000000
+
+Group 344:	num entries: 6, location: 0xAB5CF
+		- type: 0, value: 200
+		- type: 3, size: 8
+		  Group name: v_sink7
+		- type: 10, size: 12
+		  Shorts: 400 343 1100 48 1101 48
+		- type: 11, size: 28
+		  Floats: 600.000000 2.000000 -5.372761 3.098372 -6.344738 3.100774 -0.999999
+		- type: 11, size: 20
+		  Floats: 601.000000 -7.061603 -1.569092 0.143837 -1.000000
+		- type: 11, size: 8
+		  Floats: 407.000000 2.000000
+
+Group 345:	num entries: 4, location: 0xAB638
+		- type: 0, value: 200
+		- type: 3, size: 9
+		  Group name: s_onewy1
+		- type: 10, size: 4
+		  Shorts: 300 98
+		- type: 11, size: 28
+		  Floats: 600.000000 2.000000 -7.536032 4.232287 -6.368508 4.830731 -1.000000
+
+Group 346:	num entries: 4, location: 0xAB674
+		- type: 0, value: 200
+		- type: 3, size: 9
+		  Group name: s_onewy4
+		- type: 10, size: 4
+		  Shorts: 300 98
+		- type: 11, size: 28
+		  Floats: 600.000000 2.000000 -6.263090 3.554958 -6.263090 5.064444 -1.000000
+
+Group 347:	num entries: 4, location: 0xAB6B0
+		- type: 0, value: 200
+		- type: 3, size: 9
+		  Group name: s_onewy7
+		- type: 10, size: 4
+		  Shorts: 300 98
+		- type: 11, size: 28
+		  Floats: 600.000000 2.000000 -5.229421 3.916008 -5.235100 5.364433 -1.000000
+
+Group 348:	num entries: 4, location: 0xAB6EC
+		- type: 0, value: 200
+		- type: 3, size: 9
+		  Group name: s_onewy8
+		- type: 10, size: 4
+		  Shorts: 300 98
+		- type: 11, size: 28
+		  Floats: 600.000000 2.000000 -6.336556 4.848448 -5.275284 5.319603 -1.000000
+
+Group 349:	num entries: 4, location: 0xAB728
+		- type: 0, value: 200
+		- type: 3, size: 9
+		  Group name: s_onewy9
+		- type: 10, size: 8
+		  Shorts: 300 98 304 63
+		- type: 11, size: 28
+		  Floats: 600.000000 2.000000 2.625341 -10.714686 3.324727 -11.956454 -1.000000
+
+Group 350:	num entries: 4, location: 0xAB768
+		- type: 0, value: 200
+		- type: 3, size: 10
+		  Group name: s_onewy10
+		- type: 10, size: 8
+		  Shorts: 300 98 304 63
+		- type: 11, size: 28
+		  Floats: 600.000000 2.000000 -3.324988 -11.956454 -2.625601 -10.714686 -1.000000
+
+Group 351:	num entries: 4, location: 0xAB7A9
+		- type: 0, value: 200
+		- type: 3, size: 10
+		  Group name: s_onewy11
+		- type: 10, size: 4
+		  Shorts: 300 98
+		- type: 11, size: 28
+		  Floats: 600.000000 2.000000 -6.492623 -0.072489 -6.492159 -5.604876 -1.000000
+
+Group 352:	num entries: 4, location: 0xAB7E6
+		- type: 0, value: 200
+		- type: 3, size: 10
+		  Group name: s_onewy12
+		- type: 10, size: 8
+		  Shorts: 602 2 300 98
+		- type: 11, size: 28
+		  Floats: 600.000000 2.000000 6.684728 -1.751842 6.117420 -0.918833 -1.000000
+
+Group 353:	num entries: 4, location: 0xAB827
+		- type: 0, value: 200
+		- type: 3, size: 10
+		  Group name: s_onewy13
+		- type: 10, size: 4
+		  Shorts: 300 98
+		- type: 11, size: 28
+		  Floats: 600.000000 2.000000 6.408451 -0.973824 7.663972 -4.499189 0.000000
+
+Group 354:	num entries: 2, location: 0xAB864
+		- type: 0, value: 300
+		- type: 11, size: 16
+		  Floats: 301.000000 0.500000 302.000000 0.750000
+
+Group 355:	num entries: 11, location: 0xAB87D
+		- type: 0, value: 200
+		- type: 1, size: 1598
+		  Bitmap, width: 43, height: 36
+		- type: 3, size: 8
+		  Group name: a_flip1
+		- type: 10, size: 16
+		  Shorts: 100 8 300 354 1100 60 1101 61
+		- type: 11, size: 20
+		  Floats: 800.000000 2.488815 12.063060 0.310981 -1.000000
+		- type: 11, size: 20
+		  Floats: 801.000000 0.961315 13.130959 0.193308 -1.000000
+		- type: 11, size: 20
+		  Floats: 802.000000 0.961315 11.006570 0.193308 -1.000000
+		- type: 11, size: 8
+		  Floats: 804.000000 0.040000
+		- type: 11, size: 8
+		  Floats: 805.000000 0.080000
+		- type: 11, size: 8
+		  Floats: 803.000000 0.900000
+		- type: 12, size: 3182
+		  Special bitmap
+
+Group 356:	num entries: 3, location: 0xACBCB
+		- type: 0, value: 201
+		- type: 1, size: 1454
+		  Bitmap, width: 46, height: 30
+		- type: 12, size: 2894
+		  Special bitmap
+
+Group 357:	num entries: 3, location: 0xADCD5
+		- type: 0, value: 201
+		- type: 1, size: 1210
+		  Bitmap, width: 49, height: 23
+		- type: 12, size: 2406
+		  Special bitmap
+
+Group 358:	num entries: 3, location: 0xAEB03
+		- type: 0, value: 201
+		- type: 1, size: 846
+		  Bitmap, width: 50, height: 16
+		- type: 12, size: 1678
+		  Special bitmap
+
+Group 359:	num entries: 3, location: 0xAF4ED
+		- type: 0, value: 201
+		- type: 1, size: 846
+		  Bitmap, width: 50, height: 16
+		- type: 12, size: 1678
+		  Special bitmap
+
+Group 360:	num entries: 3, location: 0xAFED7
+		- type: 0, value: 201
+		- type: 1, size: 1210
+		  Bitmap, width: 49, height: 23
+		- type: 12, size: 2406
+		  Special bitmap
+
+Group 361:	num entries: 3, location: 0xB0D05
+		- type: 0, value: 201
+		- type: 1, size: 1406
+		  Bitmap, width: 47, height: 29
+		- type: 12, size: 2798
+		  Special bitmap
+
+Group 362:	num entries: 3, location: 0xB1D7F
+		- type: 0, value: 201
+		- type: 1, size: 1554
+		  Bitmap, width: 43, height: 35
+		- type: 12, size: 3094
+		  Special bitmap
+
+Group 363:	num entries: 11, location: 0xB2FB5
+		- type: 0, value: 200
+		- type: 1, size: 1598
+		  Bitmap, width: 43, height: 36
+		- type: 3, size: 8
+		  Group name: a_flip2
+		- type: 10, size: 16
+		  Shorts: 100 8 300 354 1100 60 1101 61
+		- type: 11, size: 20
+		  Floats: 800.000000 -2.489000 12.063060 0.310981 -1.000000
+		- type: 11, size: 20
+		  Floats: 801.000000 -0.961000 13.130959 0.193308 -1.000000
+		- type: 11, size: 20
+		  Floats: 802.000000 -0.961000 11.006570 0.193308 -1.000000
+		- type: 11, size: 8
+		  Floats: 804.000000 0.040000
+		- type: 11, size: 8
+		  Floats: 805.000000 0.080000
+		- type: 11, size: 8
+		  Floats: 803.000000 0.900000
+		- type: 12, size: 3182
+		  Special bitmap
+
+Group 364:	num entries: 3, location: 0xB4303
+		- type: 0, value: 201
+		- type: 1, size: 1454
+		  Bitmap, width: 46, height: 30
+		- type: 12, size: 2894
+		  Special bitmap
+
+Group 365:	num entries: 3, location: 0xB540D
+		- type: 0, value: 201
+		- type: 1, size: 1210
+		  Bitmap, width: 49, height: 23
+		- type: 12, size: 2406
+		  Special bitmap
+
+Group 366:	num entries: 3, location: 0xB623B
+		- type: 0, value: 201
+		- type: 1, size: 846
+		  Bitmap, width: 50, height: 16
+		- type: 12, size: 1678
+		  Special bitmap
+
+Group 367:	num entries: 3, location: 0xB6C25
+		- type: 0, value: 201
+		- type: 1, size: 846
+		  Bitmap, width: 50, height: 16
+		- type: 12, size: 1678
+		  Special bitmap
+
+Group 368:	num entries: 3, location: 0xB760F
+		- type: 0, value: 201
+		- type: 1, size: 1210
+		  Bitmap, width: 49, height: 23
+		- type: 12, size: 2406
+		  Special bitmap
+
+Group 369:	num entries: 3, location: 0xB843D
+		- type: 0, value: 201
+		- type: 1, size: 1406
+		  Bitmap, width: 47, height: 29
+		- type: 12, size: 2798
+		  Special bitmap
+
+Group 370:	num entries: 3, location: 0xB94B7
+		- type: 0, value: 201
+		- type: 1, size: 1554
+		  Bitmap, width: 43, height: 35
+		- type: 12, size: 3094
+		  Special bitmap
+
+Group 371:	num entries: 2, location: 0xBA6ED
+		- type: 0, value: 400
+		- type: 11, size: 24
+		  Floats: 401.000000 2.500000 402.000000 17.000000 406.000000 26.000000
+
+Group 372:	num entries: 7, location: 0xBA70E
+		- type: 0, value: 200
+		- type: 1, size: 742
+		  Bitmap, width: 25, height: 26
+		- type: 3, size: 8
+		  Group name: a_bump1
+		- type: 10, size: 16
+		  Shorts: 100 8 400 371 1100 26 1101 26
+		- type: 11, size: 24
+		  Floats: 600.000000 1.000000 0.008000 -3.720000 0.350001 -1.000002
+		- type: 11, size: 8
+		  Floats: 407.000000 0.100000
+		- type: 12, size: 1470
+		  Special bitmap
+
+Group 373:	num entries: 3, location: 0xBB00C
+		- type: 0, value: 201
+		- type: 1, size: 686
+		  Bitmap, width: 25, height: 24
+		- type: 12, size: 1358
+		  Special bitmap
+
+Group 374:	num entries: 3, location: 0xBB816
+		- type: 0, value: 201
+		- type: 1, size: 742
+		  Bitmap, width: 25, height: 26
+		- type: 12, size: 1470
+		  Special bitmap
+
+Group 375:	num entries: 3, location: 0xBC0C8
+		- type: 0, value: 201
+		- type: 1, size: 686
+		  Bitmap, width: 25, height: 24
+		- type: 12, size: 1358
+		  Special bitmap
+
+Group 376:	num entries: 3, location: 0xBC8D2
+		- type: 0, value: 201
+		- type: 1, size: 742
+		  Bitmap, width: 25, height: 26
+		- type: 12, size: 1470
+		  Special bitmap
+
+Group 377:	num entries: 3, location: 0xBD184
+		- type: 0, value: 201
+		- type: 1, size: 686
+		  Bitmap, width: 25, height: 24
+		- type: 12, size: 1358
+		  Special bitmap
+
+Group 378:	num entries: 3, location: 0xBD98E
+		- type: 0, value: 201
+		- type: 1, size: 742
+		  Bitmap, width: 25, height: 26
+		- type: 12, size: 1470
+		  Special bitmap
+
+Group 379:	num entries: 3, location: 0xBE240
+		- type: 0, value: 201
+		- type: 1, size: 686
+		  Bitmap, width: 25, height: 24
+		- type: 12, size: 1358
+		  Special bitmap
+
+Group 380:	num entries: 7, location: 0xBEA4A
+		- type: 0, value: 200
+		- type: 1, size: 590
+		  Bitmap, width: 24, height: 24
+		- type: 3, size: 8
+		  Group name: a_bump2
+		- type: 10, size: 8
+		  Shorts: 100 8 400 371
+		- type: 11, size: 24
+		  Floats: 600.000000 1.000000 -1.377520 -6.618031 0.350001 -1.000002
+		- type: 11, size: 8
+		  Floats: 407.000000 0.100000
+		- type: 12, size: 1166
+		  Special bitmap
+
+Group 381:	num entries: 3, location: 0xBF178
+		- type: 0, value: 201
+		- type: 1, size: 542
+		  Bitmap, width: 24, height: 22
+		- type: 12, size: 1070
+		  Special bitmap
+
+Group 382:	num entries: 3, location: 0xBF7D2
+		- type: 0, value: 201
+		- type: 1, size: 590
+		  Bitmap, width: 24, height: 24
+		- type: 12, size: 1166
+		  Special bitmap
+
+Group 383:	num entries: 3, location: 0xBFEBC
+		- type: 0, value: 201
+		- type: 1, size: 542
+		  Bitmap, width: 24, height: 22
+		- type: 12, size: 1070
+		  Special bitmap
+
+Group 384:	num entries: 3, location: 0xC0516
+		- type: 0, value: 201
+		- type: 1, size: 590
+		  Bitmap, width: 24, height: 24
+		- type: 12, size: 1166
+		  Special bitmap
+
+Group 385:	num entries: 3, location: 0xC0C00
+		- type: 0, value: 201
+		- type: 1, size: 542
+		  Bitmap, width: 24, height: 22
+		- type: 12, size: 1070
+		  Special bitmap
+
+Group 386:	num entries: 3, location: 0xC125A
+		- type: 0, value: 201
+		- type: 1, size: 590
+		  Bitmap, width: 24, height: 24
+		- type: 12, size: 1166
+		  Special bitmap
+
+Group 387:	num entries: 3, location: 0xC1944
+		- type: 0, value: 201
+		- type: 1, size: 542
+		  Bitmap, width: 24, height: 22
+		- type: 12, size: 1070
+		  Special bitmap
+
+Group 388:	num entries: 7, location: 0xC1F9E
+		- type: 0, value: 200
+		- type: 1, size: 614
+		  Bitmap, width: 24, height: 25
+		- type: 3, size: 8
+		  Group name: a_bump3
+		- type: 10, size: 8
+		  Shorts: 100 8 400 371
+		- type: 11, size: 24
+		  Floats: 600.000000 1.000000 1.251057 -5.960478 0.350001 -1.000002
+		- type: 11, size: 8
+		  Floats: 407.000000 0.100000
+		- type: 12, size: 1214
+		  Special bitmap
+
+Group 389:	num entries: 3, location: 0xC2714
+		- type: 0, value: 201
+		- type: 1, size: 566
+		  Bitmap, width: 24, height: 23
+		- type: 12, size: 1118
+		  Special bitmap
+
+Group 390:	num entries: 3, location: 0xC2DB6
+		- type: 0, value: 201
+		- type: 1, size: 614
+		  Bitmap, width: 24, height: 25
+		- type: 12, size: 1214
+		  Special bitmap
+
+Group 391:	num entries: 3, location: 0xC34E8
+		- type: 0, value: 201
+		- type: 1, size: 566
+		  Bitmap, width: 24, height: 23
+		- type: 12, size: 1118
+		  Special bitmap
+
+Group 392:	num entries: 3, location: 0xC3B8A
+		- type: 0, value: 201
+		- type: 1, size: 614
+		  Bitmap, width: 24, height: 25
+		- type: 12, size: 1214
+		  Special bitmap
+
+Group 393:	num entries: 3, location: 0xC42BC
+		- type: 0, value: 201
+		- type: 1, size: 566
+		  Bitmap, width: 24, height: 23
+		- type: 12, size: 1118
+		  Special bitmap
+
+Group 394:	num entries: 3, location: 0xC495E
+		- type: 0, value: 201
+		- type: 1, size: 614
+		  Bitmap, width: 24, height: 25
+		- type: 12, size: 1214
+		  Special bitmap
+
+Group 395:	num entries: 3, location: 0xC5090
+		- type: 0, value: 201
+		- type: 1, size: 566
+		  Bitmap, width: 24, height: 23
+		- type: 12, size: 1118
+		  Special bitmap
+
+Group 396:	num entries: 7, location: 0xC5732
+		- type: 0, value: 200
+		- type: 1, size: 590
+		  Bitmap, width: 23, height: 24
+		- type: 3, size: 8
+		  Group name: a_bump4
+		- type: 10, size: 8
+		  Shorts: 100 8 400 371
+		- type: 11, size: 24
+		  Floats: 600.000000 1.000000 5.769451 -10.955119 0.350002 -1.000002
+		- type: 11, size: 8
+		  Floats: 407.000000 0.100000
+		- type: 12, size: 1166
+		  Special bitmap
+
+Group 397:	num entries: 3, location: 0xC5E60
+		- type: 0, value: 201
+		- type: 1, size: 518
+		  Bitmap, width: 22, height: 21
+		- type: 12, size: 1022
+		  Special bitmap
+
+Group 398:	num entries: 3, location: 0xC6472
+		- type: 0, value: 201
+		- type: 1, size: 590
+		  Bitmap, width: 23, height: 24
+		- type: 12, size: 1166
+		  Special bitmap
+
+Group 399:	num entries: 3, location: 0xC6B5C
+		- type: 0, value: 201
+		- type: 1, size: 518
+		  Bitmap, width: 22, height: 21
+		- type: 12, size: 1022
+		  Special bitmap
+
+Group 400:	num entries: 3, location: 0xC716E
+		- type: 0, value: 201
+		- type: 1, size: 590
+		  Bitmap, width: 23, height: 24
+		- type: 12, size: 1166
+		  Special bitmap
+
+Group 401:	num entries: 3, location: 0xC7858
+		- type: 0, value: 201
+		- type: 1, size: 518
+		  Bitmap, width: 22, height: 21
+		- type: 12, size: 1022
+		  Special bitmap
+
+Group 402:	num entries: 3, location: 0xC7E6A
+		- type: 0, value: 201
+		- type: 1, size: 590
+		  Bitmap, width: 23, height: 24
+		- type: 12, size: 1166
+		  Special bitmap
+
+Group 403:	num entries: 3, location: 0xC8554
+		- type: 0, value: 201
+		- type: 1, size: 518
+		  Bitmap, width: 22, height: 21
+		- type: 12, size: 1022
+		  Special bitmap
+
+Group 404:	num entries: 2, location: 0xC8B66
+		- type: 0, value: 400
+		- type: 11, size: 24
+		  Floats: 401.000000 2.500000 402.000000 12.000000 406.000000 26.000000
+
+Group 405:	num entries: 7, location: 0xC8B87
+		- type: 0, value: 200
+		- type: 1, size: 414
+		  Bitmap, width: 20, height: 20
+		- type: 3, size: 8
+		  Group name: a_bump5
+		- type: 10, size: 20
+		  Shorts: 100 8 602 2 400 404 1100 26 1101 26
+		- type: 11, size: 24
+		  Floats: 600.000000 1.000000 5.280001 4.000000 0.250001 -0.815002
+		- type: 11, size: 8
+		  Floats: 407.000000 0.100000
+		- type: 12, size: 814
+		  Special bitmap
+
+Group 406:	num entries: 3, location: 0xC90B1
+		- type: 0, value: 201
+		- type: 1, size: 394
+		  Bitmap, width: 20, height: 19
+		- type: 12, size: 774
+		  Special bitmap
+
+Group 407:	num entries: 3, location: 0xC954F
+		- type: 0, value: 201
+		- type: 1, size: 414
+		  Bitmap, width: 20, height: 20
+		- type: 12, size: 814
+		  Special bitmap
+
+Group 408:	num entries: 3, location: 0xC9A29
+		- type: 0, value: 201
+		- type: 1, size: 394
+		  Bitmap, width: 20, height: 19
+		- type: 12, size: 774
+		  Special bitmap
+
+Group 409:	num entries: 3, location: 0xC9EC7
+		- type: 0, value: 201
+		- type: 1, size: 414
+		  Bitmap, width: 20, height: 20
+		- type: 12, size: 814
+		  Special bitmap
+
+Group 410:	num entries: 3, location: 0xCA3A1
+		- type: 0, value: 201
+		- type: 1, size: 394
+		  Bitmap, width: 20, height: 19
+		- type: 12, size: 774
+		  Special bitmap
+
+Group 411:	num entries: 3, location: 0xCA83F
+		- type: 0, value: 201
+		- type: 1, size: 414
+		  Bitmap, width: 20, height: 20
+		- type: 12, size: 814
+		  Special bitmap
+
+Group 412:	num entries: 3, location: 0xCAD19
+		- type: 0, value: 201
+		- type: 1, size: 394
+		  Bitmap, width: 20, height: 19
+		- type: 12, size: 774
+		  Special bitmap
+
+Group 413:	num entries: 7, location: 0xCB1B7
+		- type: 0, value: 200
+		- type: 1, size: 494
+		  Bitmap, width: 21, height: 20
+		- type: 3, size: 8
+		  Group name: a_bump6
+		- type: 10, size: 12
+		  Shorts: 100 8 602 2 400 404
+		- type: 11, size: 24
+		  Floats: 600.000000 1.000000 7.140000 3.500000 0.250001 -0.815002
+		- type: 11, size: 8
+		  Floats: 407.000000 0.100000
+		- type: 12, size: 974
+		  Special bitmap
+
+Group 414:	num entries: 3, location: 0xCB7C9
+		- type: 0, value: 201
+		- type: 1, size: 374
+		  Bitmap, width: 20, height: 18
+		- type: 12, size: 734
+		  Special bitmap
+
+Group 415:	num entries: 3, location: 0xCBC2B
+		- type: 0, value: 201
+		- type: 1, size: 494
+		  Bitmap, width: 21, height: 20
+		- type: 12, size: 974
+		  Special bitmap
+
+Group 416:	num entries: 3, location: 0xCC1F5
+		- type: 0, value: 201
+		- type: 1, size: 374
+		  Bitmap, width: 20, height: 18
+		- type: 12, size: 734
+		  Special bitmap
+
+Group 417:	num entries: 3, location: 0xCC657
+		- type: 0, value: 201
+		- type: 1, size: 494
+		  Bitmap, width: 21, height: 20
+		- type: 12, size: 974
+		  Special bitmap
+
+Group 418:	num entries: 3, location: 0xCCC21
+		- type: 0, value: 201
+		- type: 1, size: 374
+		  Bitmap, width: 20, height: 18
+		- type: 12, size: 734
+		  Special bitmap
+
+Group 419:	num entries: 3, location: 0xCD083
+		- type: 0, value: 201
+		- type: 1, size: 494
+		  Bitmap, width: 21, height: 20
+		- type: 12, size: 974
+		  Special bitmap
+
+Group 420:	num entries: 3, location: 0xCD64D
+		- type: 0, value: 201
+		- type: 1, size: 374
+		  Bitmap, width: 20, height: 18
+		- type: 12, size: 734
+		  Special bitmap
+
+Group 421:	num entries: 7, location: 0xCDAAF
+		- type: 0, value: 200
+		- type: 1, size: 518
+		  Bitmap, width: 21, height: 21
+		- type: 3, size: 8
+		  Group name: a_bump7
+		- type: 10, size: 12
+		  Shorts: 100 8 602 2 400 404
+		- type: 11, size: 24
+		  Floats: 600.000000 1.000000 6.451294 4.907899 0.250001 -0.815001
+		- type: 11, size: 8
+		  Floats: 407.000000 0.100000
+		- type: 12, size: 1022
+		  Special bitmap
+
+Group 422:	num entries: 3, location: 0xCE109
+		- type: 0, value: 201
+		- type: 1, size: 394
+		  Bitmap, width: 20, height: 19
+		- type: 12, size: 774
+		  Special bitmap
+
+Group 423:	num entries: 3, location: 0xCE5A7
+		- type: 0, value: 201
+		- type: 1, size: 518
+		  Bitmap, width: 21, height: 21
+		- type: 12, size: 1022
+		  Special bitmap
+
+Group 424:	num entries: 3, location: 0xCEBB9
+		- type: 0, value: 201
+		- type: 1, size: 394
+		  Bitmap, width: 20, height: 19
+		- type: 12, size: 774
+		  Special bitmap
+
+Group 425:	num entries: 3, location: 0xCF057
+		- type: 0, value: 201
+		- type: 1, size: 518
+		  Bitmap, width: 21, height: 21
+		- type: 12, size: 1022
+		  Special bitmap
+
+Group 426:	num entries: 3, location: 0xCF669
+		- type: 0, value: 201
+		- type: 1, size: 394
+		  Bitmap, width: 20, height: 19
+		- type: 12, size: 774
+		  Special bitmap
+
+Group 427:	num entries: 3, location: 0xCFB07
+		- type: 0, value: 201
+		- type: 1, size: 518
+		  Bitmap, width: 21, height: 21
+		- type: 12, size: 1022
+		  Special bitmap
+
+Group 428:	num entries: 3, location: 0xD0119
+		- type: 0, value: 201
+		- type: 1, size: 394
+		  Bitmap, width: 20, height: 19
+		- type: 12, size: 774
+		  Special bitmap
+
+Group 429:	num entries: 3, location: 0xD05B7
+		- type: 0, value: 200
+		- type: 3, size: 15
+		  Group name: attack_bumpers
+		- type: 10, size: 10
+		  Shorts: 1027 372 380 388 396
+
+Group 430:	num entries: 3, location: 0xD05DE
+		- type: 0, value: 200
+		- type: 3, size: 15
+		  Group name: launch_bumpers
+		- type: 10, size: 8
+		  Shorts: 1027 405 413 421
+
+Group 431:	num entries: 2, location: 0xD0603
+		- type: 0, value: 400
+		- type: 11, size: 24
+		  Floats: 401.000000 3.000000 402.000000 5.000000 406.000000 51.000000
+
+Group 432:	num entries: 7, location: 0xD0624
+		- type: 0, value: 200
+		- type: 1, size: 134
+		  Bitmap, width: 7, height: 15
+		- type: 3, size: 8
+		  Group name: a_targ1
+		- type: 10, size: 8
+		  Shorts: 100 1 400 431
+		- type: 11, size: 52
+		  Floats: 600.000000 5.000000 -4.242040 0.706733 -4.157959 0.706708 -4.157959 1.222863 -4.242040 1.222888 -4.242040 0.706733 -0.999996
+		- type: 11, size: 8
+		  Floats: 407.000000 0.250000
+		- type: 12, size: 254
+		  Special bitmap
+
+Group 433:	num entries: 7, location: 0xD0816
+		- type: 0, value: 200
+		- type: 1, size: 126
+		  Bitmap, width: 7, height: 14
+		- type: 3, size: 8
+		  Group name: a_targ2
+		- type: 10, size: 8
+		  Shorts: 100 1 400 431
+		- type: 11, size: 52
+		  Floats: 600.000000 5.000000 -4.242040 1.408076 -4.157959 1.408051 -4.157959 1.924205 -4.242040 1.924231 -4.242040 1.408076 -0.999996
+		- type: 11, size: 8
+		  Floats: 407.000000 0.250000
+		- type: 12, size: 238
+		  Special bitmap
+
+Group 434:	num entries: 7, location: 0xD09F0
+		- type: 0, value: 200
+		- type: 1, size: 134
+		  Bitmap, width: 7, height: 15
+		- type: 3, size: 8
+		  Group name: a_targ3
+		- type: 10, size: 8
+		  Shorts: 100 1 400 431
+		- type: 11, size: 52
+		  Floats: 600.000000 5.000000 -4.242040 2.106732 -4.157959 2.106707 -4.157959 2.622862 -4.242040 2.622887 -4.242040 2.106732 -0.999996
+		- type: 11, size: 8
+		  Floats: 407.000000 0.250000
+		- type: 12, size: 254
+		  Special bitmap
+
+Group 435:	num entries: 7, location: 0xD0BE2
+		- type: 0, value: 200
+		- type: 1, size: 190
+		  Bitmap, width: 13, height: 11
+		- type: 3, size: 8
+		  Group name: a_targ4
+		- type: 10, size: 12
+		  Shorts: 100 1 400 431 304 53
+		- type: 11, size: 52
+		  Floats: 600.000000 5.000000 1.284484 -2.878328 1.312133 -2.798923 0.824632 -2.629339 0.796983 -2.708743 1.284484 -2.878328 -0.999996
+		- type: 11, size: 8
+		  Floats: 407.000000 0.250000
+		- type: 12, size: 366
+		  Special bitmap
+
+Group 436:	num entries: 7, location: 0xD0E80
+		- type: 0, value: 200
+		- type: 1, size: 190
+		  Bitmap, width: 13, height: 11
+		- type: 3, size: 8
+		  Group name: a_targ5
+		- type: 10, size: 8
+		  Shorts: 100 1 400 431
+		- type: 11, size: 52
+		  Floats: 600.000000 5.000000 0.622076 -2.647900 0.649725 -2.568495 0.162224 -2.398911 0.134575 -2.478315 0.622076 -2.647900 -0.999996
+		- type: 11, size: 8
+		  Floats: 407.000000 0.250000
+		- type: 12, size: 366
+		  Special bitmap
+
+Group 437:	num entries: 7, location: 0xD111A
+		- type: 0, value: 200
+		- type: 1, size: 190
+		  Bitmap, width: 13, height: 11
+		- type: 3, size: 8
+		  Group name: a_targ6
+		- type: 10, size: 8
+		  Shorts: 100 1 400 431
+		- type: 11, size: 52
+		  Floats: 600.000000 5.000000 -0.037796 -2.418355 -0.010147 -2.338950 -0.497648 -2.169365 -0.525297 -2.248770 -0.037796 -2.418355 -0.999996
+		- type: 11, size: 8
+		  Floats: 407.000000 0.250000
+		- type: 12, size: 366
+		  Special bitmap
+
+Group 438:	num entries: 7, location: 0xD13B4
+		- type: 0, value: 200
+		- type: 1, size: 170
+		  Bitmap, width: 12, height: 13
+		- type: 3, size: 8
+		  Group name: a_targ7
+		- type: 10, size: 12
+		  Shorts: 100 1 400 431 304 30
+		- type: 11, size: 52
+		  Floats: 600.000000 5.000000 3.369175 -7.924452 3.324641 -7.853134 2.886917 -8.126654 2.931451 -8.197972 3.369175 -7.924452 -0.999996
+		- type: 11, size: 8
+		  Floats: 407.000000 0.250000
+		- type: 12, size: 326
+		  Special bitmap
+
+Group 439:	num entries: 7, location: 0xD1616
+		- type: 0, value: 200
+		- type: 1, size: 170
+		  Bitmap, width: 12, height: 13
+		- type: 3, size: 8
+		  Group name: a_targ8
+		- type: 10, size: 8
+		  Shorts: 100 1 400 431
+		- type: 11, size: 52
+		  Floats: 600.000000 5.000000 2.774403 -8.296104 2.729868 -8.224786 2.292144 -8.498306 2.336679 -8.569625 2.774403 -8.296104 -0.999996
+		- type: 11, size: 8
+		  Floats: 407.000000 0.250000
+		- type: 12, size: 326
+		  Special bitmap
+
+Group 440:	num entries: 7, location: 0xD1874
+		- type: 0, value: 200
+		- type: 1, size: 170
+		  Bitmap, width: 12, height: 13
+		- type: 3, size: 8
+		  Group name: a_targ9
+		- type: 10, size: 8
+		  Shorts: 100 1 400 431
+		- type: 11, size: 52
+		  Floats: 600.000000 5.000000 2.181909 -8.666334 2.137374 -8.595016 1.699650 -8.868536 1.744185 -8.939855 2.181909 -8.666334 -0.999996
+		- type: 11, size: 8
+		  Floats: 407.000000 0.250000
+		- type: 12, size: 326
+		  Special bitmap
+
+Group 441:	num entries: 2, location: 0xD1AD2
+		- type: 0, value: 400
+		- type: 11, size: 16
+		  Floats: 401.000000 3.000000 402.000000 5.000000
+
+Group 442:	num entries: 6, location: 0xD1AEB
+		- type: 0, value: 200
+		- type: 1, size: 58
+		  Bitmap, width: 4, height: 11
+		- type: 3, size: 9
+		  Group name: a_targ10
+		- type: 10, size: 8
+		  Shorts: 100 2 400 441
+		- type: 11, size: 52
+		  Floats: 600.000000 5.000000 7.421899 -10.735580 7.349141 -10.740417 7.349141 -11.283693 7.426752 -11.283693 7.421899 -10.735580 -1.000000
+		- type: 12, size: 102
+		  Special bitmap
+
+Group 443:	num entries: 3, location: 0xD1BED
+		- type: 0, value: 201
+		- type: 1, size: 102
+		  Bitmap, width: 5, height: 11
+		- type: 12, size: 190
+		  Special bitmap
+
+Group 444:	num entries: 6, location: 0xD1D1F
+		- type: 0, value: 200
+		- type: 1, size: 134
+		  Bitmap, width: 9, height: 10
+		- type: 3, size: 9
+		  Group name: a_targ11
+		- type: 10, size: 8
+		  Shorts: 100 2 400 441
+		- type: 11, size: 52
+		  Floats: 600.000000 5.000000 5.797551 -12.932883 5.792857 -12.860115 5.249582 -12.859049 5.249429 -12.936660 5.797551 -12.932883 -1.000000
+		- type: 12, size: 254
+		  Special bitmap
+
+Group 445:	num entries: 3, location: 0xD1F05
+		- type: 0, value: 201
+		- type: 1, size: 146
+		  Bitmap, width: 9, height: 11
+		- type: 12, size: 278
+		  Special bitmap
+
+Group 446:	num entries: 6, location: 0xD20BB
+		- type: 0, value: 200
+		- type: 1, size: 102
+		  Bitmap, width: 6, height: 11
+		- type: 3, size: 9
+		  Group name: a_targ12
+		- type: 10, size: 8
+		  Shorts: 100 2 400 441
+		- type: 11, size: 52
+		  Floats: 600.000000 5.000000 4.207457 -12.452173 4.258523 -12.400120 3.896799 -11.994775 3.838892 -12.046450 4.207457 -12.452173 -1.000000
+		- type: 12, size: 190
+		  Special bitmap
+
+Group 447:	num entries: 3, location: 0xD2241
+		- type: 0, value: 201
+		- type: 1, size: 102
+		  Bitmap, width: 6, height: 11
+		- type: 12, size: 190
+		  Special bitmap
+
+Group 448:	num entries: 6, location: 0xD2373
+		- type: 0, value: 200
+		- type: 1, size: 58
+		  Bitmap, width: 4, height: 11
+		- type: 3, size: 9
+		  Group name: a_targ13
+		- type: 10, size: 8
+		  Shorts: 100 2 400 441
+		- type: 11, size: 52
+		  Floats: 600.000000 5.000000 4.553364 2.980716 4.626232 2.983456 4.641869 3.526507 4.564290 3.528741 4.553364 2.980716 -1.000000
+		- type: 12, size: 102
+		  Special bitmap
+
+Group 449:	num entries: 3, location: 0xD2475
+		- type: 0, value: 201
+		- type: 1, size: 102
+		  Bitmap, width: 5, height: 11
+		- type: 12, size: 190
+		  Special bitmap
+
+Group 450:	num entries: 6, location: 0xD25A7
+		- type: 0, value: 200
+		- type: 1, size: 58
+		  Bitmap, width: 4, height: 11
+		- type: 3, size: 9
+		  Group name: a_targ14
+		- type: 10, size: 8
+		  Shorts: 100 2 400 441
+		- type: 11, size: 52
+		  Floats: 600.000000 5.000000 4.553364 3.634841 4.626232 3.637582 4.641869 4.180633 4.564290 4.182867 4.553364 3.634841 -1.000000
+		- type: 12, size: 102
+		  Special bitmap
+
+Group 451:	num entries: 3, location: 0xD26A9
+		- type: 0, value: 201
+		- type: 1, size: 102
+		  Bitmap, width: 5, height: 11
+		- type: 12, size: 190
+		  Special bitmap
+
+Group 452:	num entries: 6, location: 0xD27DB
+		- type: 0, value: 200
+		- type: 1, size: 58
+		  Bitmap, width: 4, height: 11
+		- type: 3, size: 9
+		  Group name: a_targ15
+		- type: 10, size: 8
+		  Shorts: 100 2 400 441
+		- type: 11, size: 52
+		  Floats: 600.000000 5.000000 4.553364 4.275885 4.626232 4.278625 4.641869 4.821676 4.564290 4.823910 4.553364 4.275885 -1.000000
+		- type: 12, size: 102
+		  Special bitmap
+
+Group 453:	num entries: 3, location: 0xD28DD
+		- type: 0, value: 201
+		- type: 1, size: 94
+		  Bitmap, width: 5, height: 10
+		- type: 12, size: 174
+		  Special bitmap
+
+Group 454:	num entries: 6, location: 0xD29F7
+		- type: 0, value: 200
+		- type: 1, size: 58
+		  Bitmap, width: 4, height: 11
+		- type: 3, size: 9
+		  Group name: a_targ16
+		- type: 10, size: 8
+		  Shorts: 100 2 400 441
+		- type: 11, size: 52
+		  Floats: 600.000000 5.000000 5.861614 -5.692998 5.934482 -5.690258 5.950119 -5.147207 5.872540 -5.144973 5.861614 -5.692998 -1.000000
+		- type: 12, size: 102
+		  Special bitmap
+
+Group 455:	num entries: 3, location: 0xD2AF9
+		- type: 0, value: 201
+		- type: 1, size: 102
+		  Bitmap, width: 5, height: 11
+		- type: 12, size: 190
+		  Special bitmap
+
+Group 456:	num entries: 6, location: 0xD2C2B
+		- type: 0, value: 200
+		- type: 1, size: 58
+		  Bitmap, width: 3, height: 11
+		- type: 3, size: 9
+		  Group name: a_targ17
+		- type: 10, size: 8
+		  Shorts: 100 2 400 441
+		- type: 11, size: 52
+		  Floats: 600.000000 5.000000 5.856654 -4.898884 5.928021 -4.883924 5.852073 -4.345982 5.775224 -4.356832 5.856654 -4.898884 -1.000000
+		- type: 12, size: 102
+		  Special bitmap
+
+Group 457:	num entries: 3, location: 0xD2D2D
+		- type: 0, value: 201
+		- type: 1, size: 58
+		  Bitmap, width: 4, height: 11
+		- type: 12, size: 102
+		  Special bitmap
+
+Group 458:	num entries: 6, location: 0xD2DDB
+		- type: 0, value: 200
+		- type: 1, size: 102
+		  Bitmap, width: 5, height: 11
+		- type: 3, size: 9
+		  Group name: a_targ18
+		- type: 10, size: 8
+		  Shorts: 100 2 400 441
+		- type: 11, size: 52
+		  Floats: 600.000000 5.000000 5.754221 -4.123814 5.816525 -4.085926 5.565651 -3.604042 5.496811 -3.639881 5.754221 -4.123814 -1.000000
+		- type: 12, size: 190
+		  Special bitmap
+
+Group 459:	num entries: 3, location: 0xD2F61
+		- type: 0, value: 201
+		- type: 1, size: 102
+		  Bitmap, width: 5, height: 11
+		- type: 12, size: 190
+		  Special bitmap
+
+Group 460:	num entries: 6, location: 0xD3093
+		- type: 0, value: 200
+		- type: 1, size: 94
+		  Bitmap, width: 6, height: 10
+		- type: 3, size: 9
+		  Group name: a_targ19
+		- type: 10, size: 8
+		  Shorts: 100 2 400 441
+		- type: 11, size: 52
+		  Floats: 600.000000 5.000000 -3.285803 -7.472939 -3.223500 -7.435050 -3.474373 -6.953167 -3.543214 -6.989006 -3.285803 -7.472939 -1.000000
+		- type: 12, size: 174
+		  Special bitmap
+
+Group 461:	num entries: 3, location: 0xD3201
+		- type: 0, value: 201
+		- type: 1, size: 102
+		  Bitmap, width: 6, height: 11
+		- type: 12, size: 190
+		  Special bitmap
+
+Group 462:	num entries: 6, location: 0xD3333
+		- type: 0, value: 200
+		- type: 1, size: 102
+		  Bitmap, width: 5, height: 11
+		- type: 3, size: 9
+		  Group name: a_targ20
+		- type: 10, size: 8
+		  Shorts: 100 2 400 441
+		- type: 11, size: 52
+		  Floats: 600.000000 5.000000 -3.652299 -6.800594 -3.586594 -6.768969 -3.789226 -6.264896 -3.861236 -6.293843 -3.652299 -6.800594 -1.000000
+		- type: 12, size: 190
+		  Special bitmap
+
+Group 463:	num entries: 3, location: 0xD34B9
+		- type: 0, value: 201
+		- type: 1, size: 102
+		  Bitmap, width: 5, height: 11
+		- type: 12, size: 190
+		  Special bitmap
+
+Group 464:	num entries: 6, location: 0xD35EB
+		- type: 0, value: 200
+		- type: 1, size: 58
+		  Bitmap, width: 4, height: 11
+		- type: 3, size: 9
+		  Group name: a_targ21
+		- type: 10, size: 8
+		  Shorts: 100 2 400 441
+		- type: 11, size: 52
+		  Floats: 600.000000 5.000000 -3.902839 -5.970493 -3.830392 -5.962211 -3.856160 -5.419546 -3.933683 -5.423227 -3.902839 -5.970493 -1.000000
+		- type: 12, size: 102
+		  Special bitmap
+
+Group 465:	num entries: 3, location: 0xD36ED
+		- type: 0, value: 201
+		- type: 1, size: 58
+		  Bitmap, width: 4, height: 11
+		- type: 12, size: 102
+		  Special bitmap
+
+Group 466:	num entries: 6, location: 0xD379B
+		- type: 0, value: 200
+		- type: 1, size: 122
+		  Bitmap, width: 9, height: 9
+		- type: 3, size: 9
+		  Group name: a_targ22
+		- type: 10, size: 12
+		  Shorts: 100 2 400 441 406 56
+		- type: 11, size: 52
+		  Floats: 600.000000 5.000000 -2.953458 -2.506831 -2.919518 -2.442292 -3.382525 -2.158086 -3.423126 -2.224230 -2.953458 -2.506831 -1.000000
+		- type: 12, size: 230
+		  Special bitmap
+
+Group 467:	num entries: 3, location: 0xD3961
+		- type: 0, value: 201
+		- type: 1, size: 134
+		  Bitmap, width: 10, height: 10
+		- type: 12, size: 254
+		  Special bitmap
+
+Group 468:	num entries: 2, location: 0xD3AF3
+		- type: 0, value: 400
+		- type: 11, size: 24
+		  Floats: 401.000000 1.000000 402.000000 18.000000 406.000000 22.000000
+
+Group 469:	num entries: 6, location: 0xD3B14
+		- type: 0, value: 200
+		- type: 1, size: 914
+		  Bitmap, width: 19, height: 45
+		- type: 3, size: 8
+		  Group name: v_rebo1
+		- type: 10, size: 8
+		  Shorts: 100 1 400 468
+		- type: 11, size: 52
+		  Floats: 600.000000 5.000000 3.873776 7.187479 4.189623 7.136119 2.909709 10.178502 2.747055 9.964186 3.873776 7.187479 -1.000000
+		- type: 12, size: 1814
+		  Special bitmap
+
+Group 470:	num entries: 6, location: 0xD461D
+		- type: 0, value: 200
+		- type: 1, size: 914
+		  Bitmap, width: 19, height: 45
+		- type: 3, size: 8
+		  Group name: v_rebo2
+		- type: 10, size: 8
+		  Shorts: 100 1 400 468
+		- type: 11, size: 52
+		  Floats: 600.000000 5.000000 -2.747055 9.964186 -2.909709 10.178502 -4.189623 7.136119 -3.873776 7.187479 -2.747055 9.964186 -1.000000
+		- type: 12, size: 1814
+		  Special bitmap
+
+Group 471:	num entries: 6, location: 0xD5126
+		- type: 0, value: 200
+		- type: 1, size: 510
+		  Bitmap, width: 16, height: 31
+		- type: 3, size: 8
+		  Group name: v_rebo3
+		- type: 10, size: 8
+		  Shorts: 100 1 400 468
+		- type: 11, size: 68
+		  Floats: 600.000000 7.000000 -3.163370 -2.563581 -4.266747 -4.866281 -3.990888 -4.922234 -3.787018 -4.202655 -3.435216 -3.459075 -3.043438 -2.683513 -3.163370 -2.563581 -1.000000
+		- type: 12, size: 1006
+		  Special bitmap
+
+Group 472:	num entries: 6, location: 0xD5783
+		- type: 0, value: 200
+		- type: 1, size: 698
+		  Bitmap, width: 36, height: 19
+		- type: 3, size: 8
+		  Group name: v_rebo4
+		- type: 10, size: 8
+		  Shorts: 100 1 400 468
+		- type: 11, size: 60
+		  Floats: 600.000000 6.000000 5.521265 -3.056219 3.232882 -1.748468 3.141225 -2.051152 4.927436 -3.001218 5.383517 -3.246887 5.521265 -3.056219 0.000000
+		- type: 12, size: 1382
+		  Special bitmap
+
+Group 473:	num entries: 7, location: 0xD600C
+		- type: 0, value: 200
+		- type: 1, size: 518
+		  Bitmap, width: 11, height: 42
+		- type: 3, size: 8
+		  Group name: plunger
+		- type: 10, size: 16
+		  Shorts: 100 8 406 59 1100 21 1101 34
+		- type: 11, size: 28
+		  Floats: 600.000000 2.000000 -8.002954 11.974978 -6.384019 11.974978 -1.000000
+		- type: 11, size: 20
+		  Floats: 601.000000 -7.020939 10.084854 0.130416 -1.000000
+		- type: 12, size: 1022
+		  Special bitmap
+
+Group 474:	num entries: 3, location: 0xD667A
+		- type: 0, value: 201
+		- type: 1, size: 518
+		  Bitmap, width: 10, height: 42
+		- type: 12, size: 1022
+		  Special bitmap
+
+Group 475:	num entries: 3, location: 0xD6C8C
+		- type: 0, value: 201
+		- type: 1, size: 518
+		  Bitmap, width: 11, height: 42
+		- type: 12, size: 1022
+		  Special bitmap
+
+Group 476:	num entries: 3, location: 0xD729E
+		- type: 0, value: 201
+		- type: 1, size: 518
+		  Bitmap, width: 11, height: 42
+		- type: 12, size: 1022
+		  Special bitmap
+
+Group 477:	num entries: 3, location: 0xD78B0
+		- type: 0, value: 201
+		- type: 1, size: 530
+		  Bitmap, width: 11, height: 43
+		- type: 12, size: 1046
+		  Special bitmap
+
+Group 478:	num entries: 3, location: 0xD7EE6
+		- type: 0, value: 201
+		- type: 1, size: 530
+		  Bitmap, width: 11, height: 43
+		- type: 12, size: 1046
+		  Special bitmap
+
+Group 479:	num entries: 3, location: 0xD851C
+		- type: 0, value: 201
+		- type: 1, size: 542
+		  Bitmap, width: 11, height: 44
+		- type: 12, size: 1070
+		  Special bitmap
+
+Group 480:	num entries: 3, location: 0xD8B76
+		- type: 0, value: 201
+		- type: 1, size: 542
+		  Bitmap, width: 11, height: 44
+		- type: 12, size: 1070
+		  Special bitmap
+
+Group 481:	num entries: 9, location: 0xD91D0
+		- type: 0, value: 200
+		- type: 1, size: 350
+		  Bitmap, width: 21, height: 14
+		- type: 3, size: 8
+		  Group name: a_flag1
+		- type: 10, size: 8
+		  Shorts: 100 8 304 64
+		- type: 11, size: 28
+		  Floats: 600.000000 2.000000 6.506390 -4.739264 7.507949 -4.739264 -1.000000
+		- type: 11, size: 8
+		  Floats: 1202.000000 0.650000
+		- type: 11, size: 8
+		  Floats: 1200.000000 50000.000000
+		- type: 11, size: 8
+		  Floats: 1201.000000 5.000000
+		- type: 12, size: 686
+		  Special bitmap
+
+Group 482:	num entries: 3, location: 0xD964C
+		- type: 0, value: 201
+		- type: 1, size: 254
+		  Bitmap, width: 21, height: 10
+		- type: 12, size: 494
+		  Special bitmap
+
+Group 483:	num entries: 3, location: 0xD9946
+		- type: 0, value: 201
+		- type: 1, size: 350
+		  Bitmap, width: 21, height: 14
+		- type: 12, size: 686
+		  Special bitmap
+
+Group 484:	num entries: 3, location: 0xD9D60
+		- type: 0, value: 201
+		- type: 1, size: 374
+		  Bitmap, width: 21, height: 15
+		- type: 12, size: 734
+		  Special bitmap
+
+Group 485:	num entries: 3, location: 0xDA1C2
+		- type: 0, value: 201
+		- type: 1, size: 350
+		  Bitmap, width: 21, height: 14
+		- type: 12, size: 686
+		  Special bitmap
+
+Group 486:	num entries: 3, location: 0xDA5DC
+		- type: 0, value: 201
+		- type: 1, size: 254
+		  Bitmap, width: 21, height: 10
+		- type: 12, size: 494
+		  Special bitmap
+
+Group 487:	num entries: 3, location: 0xDA8D6
+		- type: 0, value: 201
+		- type: 1, size: 350
+		  Bitmap, width: 21, height: 14
+		- type: 12, size: 686
+		  Special bitmap
+
+Group 488:	num entries: 3, location: 0xDACF0
+		- type: 0, value: 201
+		- type: 1, size: 374
+		  Bitmap, width: 21, height: 15
+		- type: 12, size: 734
+		  Special bitmap
+
+Group 489:	num entries: 9, location: 0xDB152
+		- type: 0, value: 200
+		- type: 1, size: 574
+		  Bitmap, width: 25, height: 20
+		- type: 3, size: 8
+		  Group name: a_flag2
+		- type: 10, size: 8
+		  Shorts: 100 8 304 64
+		- type: 11, size: 28
+		  Floats: 600.000000 2.000000 -5.342317 -2.076517 -3.954057 -2.892716 -1.000000
+		- type: 11, size: 8
+		  Floats: 1202.000000 0.650000
+		- type: 11, size: 8
+		  Floats: 1200.000000 50000.000000
+		- type: 11, size: 8
+		  Floats: 1201.000000 5.000000
+		- type: 12, size: 1134
+		  Special bitmap
+
+Group 490:	num entries: 3, location: 0xDB86E
+		- type: 0, value: 201
+		- type: 1, size: 518
+		  Bitmap, width: 25, height: 18
+		- type: 12, size: 1022
+		  Special bitmap
+
+Group 491:	num entries: 3, location: 0xDBE80
+		- type: 0, value: 201
+		- type: 1, size: 574
+		  Bitmap, width: 25, height: 20
+		- type: 12, size: 1134
+		  Special bitmap
+
+Group 492:	num entries: 3, location: 0xDC53A
+		- type: 0, value: 201
+		- type: 1, size: 602
+		  Bitmap, width: 25, height: 21
+		- type: 12, size: 1190
+		  Special bitmap
+
+Group 493:	num entries: 3, location: 0xDCC48
+		- type: 0, value: 201
+		- type: 1, size: 574
+		  Bitmap, width: 25, height: 20
+		- type: 12, size: 1134
+		  Special bitmap
+
+Group 494:	num entries: 3, location: 0xDD302
+		- type: 0, value: 201
+		- type: 1, size: 518
+		  Bitmap, width: 25, height: 18
+		- type: 12, size: 1022
+		  Special bitmap
+
+Group 495:	num entries: 3, location: 0xDD914
+		- type: 0, value: 201
+		- type: 1, size: 574
+		  Bitmap, width: 25, height: 20
+		- type: 12, size: 1134
+		  Special bitmap
+
+Group 496:	num entries: 3, location: 0xDDFCE
+		- type: 0, value: 201
+		- type: 1, size: 602
+		  Bitmap, width: 25, height: 21
+		- type: 12, size: 1190
+		  Special bitmap
+
+Group 497:	num entries: 3, location: 0xDE6DC
+		- type: 0, value: 200
+		- type: 3, size: 13
+		  Group name: drain_kicker
+		- type: 12, size: 346
+		  Special bitmap
+
+Group 498:	num entries: 2, location: 0xDE851
+		- type: 0, value: 200
+		- type: 12, size: 261
+		  Special bitmap
+
+Group 499:	num entries: 4, location: 0xDE95F
+		- type: 0, value: 200
+		- type: 3, size: 6
+		  Group name: drain
+		- type: 11, size: 28
+		  Floats: 600.000000 2.000000 -10.391989 14.437246 10.321410 14.437246 0.000000
+		- type: 11, size: 8
+		  Floats: 407.000000 1.820000
+
+Group 500:	num entries: 6, location: 0xDE99C
+		- type: 0, value: 200
+		- type: 1, size: 122
+		  Bitmap, width: 9, height: 9
+		- type: 3, size: 8
+		  Group name: v_bloc1
+		- type: 10, size: 16
+		  Shorts: 300 95 304 42 1100 28 1101 28
+		- type: 11, size: 24
+		  Floats: 600.000000 1.000000 0.000002 13.250000 0.175000 -1.000000
+		- type: 12, size: 230
+		  Special bitmap
+
+Group 501:	num entries: 6, location: 0xDEB49
+		- type: 0, value: 200
+		- type: 1, size: 470
+		  Bitmap, width: 22, height: 19
+		- type: 3, size: 8
+		  Group name: v_gate1
+		- type: 10, size: 4
+		  Shorts: 300 95
+		- type: 11, size: 28
+		  Floats: 600.000000 2.000000 6.433412 10.528717 7.605177 9.725221 -1.000000
+		- type: 12, size: 926
+		  Special bitmap
+
+Group 502:	num entries: 6, location: 0xDF102
+		- type: 0, value: 200
+		- type: 1, size: 470
+		  Bitmap, width: 23, height: 19
+		- type: 3, size: 8
+		  Group name: v_gate2
+		- type: 10, size: 4
+		  Shorts: 300 95
+		- type: 11, size: 28
+		  Floats: 600.000000 2.000000 -6.298658 10.672674 -5.213938 11.435996 -1.000000
+		- type: 12, size: 926
+		  Special bitmap
+
+Group 503:	num entries: 2, location: 0xDF6BB
+		- type: 0, value: 300
+		- type: 11, size: 16
+		  Floats: 301.000000 0.700000 302.000000 0.200000
+
+Group 504:	num entries: 2, location: 0xDF6D4
+		- type: 0, value: 400
+		- type: 11, size: 16
+		  Floats: 402.000000 55.000000 406.000000 29.000000
+
+Group 505:	num entries: 6, location: 0xDF6ED
+		- type: 0, value: 200
+		- type: 1, size: 422
+		  Bitmap, width: 10, height: 34
+		- type: 3, size: 8
+		  Group name: a_kick1
+		- type: 10, size: 12
+		  Shorts: 100 2 300 503 400 504
+		- type: 11, size: 28
+		  Floats: 600.000000 2.000000 6.356410 11.760745 7.655396 11.760745 -1.000000
+		- type: 12, size: 830
+		  Special bitmap
+
+Group 506:	num entries: 3, location: 0xDFC1E
+		- type: 0, value: 201
+		- type: 1, size: 422
+		  Bitmap, width: 9, height: 34
+		- type: 12, size: 830
+		  Special bitmap
+
+Group 507:	num entries: 6, location: 0xE0110
+		- type: 0, value: 200
+		- type: 1, size: 286
+		  Bitmap, width: 8, height: 34
+		- type: 3, size: 8
+		  Group name: a_kick2
+		- type: 10, size: 12
+		  Shorts: 100 2 300 503 400 504
+		- type: 11, size: 28
+		  Floats: 600.000000 2.000000 -6.366686 11.769259 -5.167749 11.769259 -1.000000
+		- type: 12, size: 558
+		  Special bitmap
+
+Group 508:	num entries: 3, location: 0xE04A9
+		- type: 0, value: 201
+		- type: 1, size: 286
+		  Bitmap, width: 8, height: 34
+		- type: 12, size: 558
+		  Special bitmap
+
+Group 509:	num entries: 2, location: 0xE0803
+		- type: 0, value: 400
+		- type: 11, size: 48
+		  Floats: 402.000000 45.000000 403.000000 5.000000 406.000000 57.000000 404.000000 0.000000 -1.000000 0.000000 405.000000 1.256637
+
+Group 510:	num entries: 7, location: 0xE083C
+		- type: 0, value: 200
+		- type: 3, size: 8
+		  Group name: a_kout1
+		- type: 10, size: 4
+		  Shorts: 400 509
+		- type: 11, size: 20
+		  Floats: 600.000000 1.000000 0.000000 6.000000 3.200000
+		- type: 11, size: 8
+		  Floats: 306.000000 0.050000
+		- type: 11, size: 8
+		  Floats: 305.000000 30.000000
+		- type: 11, size: 16
+		  Floats: 408.000000 0.000000 0.000000 0.300000
+
+Group 511:	num entries: 2, location: 0xE089E
+		- type: 0, value: 400
+		- type: 11, size: 48
+		  Floats: 402.000000 35.000000 403.000000 5.000000 406.000000 57.000000 404.000000 -1.000000 1.000000 0.000000 405.000000 0.000000
+
+Group 512:	num entries: 7, location: 0xE08D7
+		- type: 0, value: 200
+		- type: 3, size: 8
+		  Group name: a_kout2
+		- type: 10, size: 4
+		  Shorts: 400 511
+		- type: 11, size: 24
+		  Floats: 600.000000 1.000000 -3.269448 -9.493082 0.412526 -1.000000
+		- type: 11, size: 8
+		  Floats: 306.000000 0.900000
+		- type: 11, size: 8
+		  Floats: 305.000000 32.000000
+		- type: 11, size: 16
+		  Floats: 408.000000 0.000000 0.000000 0.000000
+
+Group 513:	num entries: 2, location: 0xE093D
+		- type: 0, value: 400
+		- type: 11, size: 40
+		  Floats: 402.000000 35.000000 403.000000 5.000000 404.000000 -1.000000 -1.000000 0.000000 405.000000 0.000000
+
+Group 514:	num entries: 7, location: 0xE096E
+		- type: 0, value: 200
+		- type: 3, size: 8
+		  Group name: a_kout3
+		- type: 10, size: 8
+		  Shorts: 400 513 304 57
+		- type: 11, size: 24
+		  Floats: 600.000000 1.000000 3.932241 -0.270534 0.412526 -1.000000
+		- type: 11, size: 8
+		  Floats: 306.000000 0.200000
+		- type: 11, size: 8
+		  Floats: 305.000000 32.000000
+		- type: 11, size: 16
+		  Floats: 408.000000 0.000000 0.000000 0.000000
+
+Group 515:	num entries: 3, location: 0xE09D8
+		- type: 0, value: 200
+		- type: 3, size: 8
+		  Group name: s_trip1
+		- type: 11, size: 28
+		  Floats: 600.000000 2.000000 -6.473066 1.831138 -7.557642 1.215645 -1.000000
+
+Group 516:	num entries: 3, location: 0xE0A0A
+		- type: 0, value: 200
+		- type: 3, size: 8
+		  Group name: s_trip2
+		- type: 11, size: 28
+		  Floats: 600.000000 2.000000 -6.467413 -1.474718 -7.560054 -2.075779 -1.000000
+
+Group 517:	num entries: 3, location: 0xE0A3C
+		- type: 0, value: 200
+		- type: 3, size: 8
+		  Group name: s_trip3
+		- type: 11, size: 28
+		  Floats: 600.000000 2.000000 -6.475211 -4.779966 -7.556713 -5.400844 -1.000000
+
+Group 518:	num entries: 3, location: 0xE0A6E
+		- type: 0, value: 200
+		- type: 3, size: 8
+		  Group name: s_trip4
+		- type: 11, size: 28
+		  Floats: 600.000000 2.000000 -5.952257 -7.304808 -6.794410 -8.224545 -1.000000
+
+Group 519:	num entries: 3, location: 0xE0AA0
+		- type: 0, value: 200
+		- type: 3, size: 8
+		  Group name: s_trip5
+		- type: 11, size: 28
+		  Floats: 600.000000 2.000000 -4.515531 -9.477907 -5.159377 -10.545896 -1.000000
+
+Group 520:	num entries: 7, location: 0xE0AD2
+		- type: 0, value: 200
+		- type: 1, size: 86
+		  Bitmap, width: 6, height: 9
+		- type: 3, size: 8
+		  Group name: a_roll1
+		- type: 10, size: 4
+		  Shorts: 304 37
+		- type: 11, size: 52
+		  Floats: 600.000000 5.000000 1.705349 -9.160521 0.794653 -9.160521 0.794654 -9.839479 1.705351 -9.839479 1.705349 -9.160521 -1.000000
+		- type: 11, size: 52
+		  Floats: 603.000000 5.000000 1.705349 -9.160521 1.705351 -9.839479 0.794654 -9.839479 0.794653 -9.160521 1.705349 -9.160521 -1.000000
+		- type: 12, size: 158
+		  Special bitmap
+
+Group 521:	num entries: 7, location: 0xE0C5C
+		- type: 0, value: 200
+		- type: 1, size: 86
+		  Bitmap, width: 5, height: 9
+		- type: 3, size: 8
+		  Group name: a_roll2
+		- type: 10, size: 4
+		  Shorts: 304 37
+		- type: 11, size: 52
+		  Floats: 600.000000 5.000000 0.460991 -9.169652 -0.460989 -9.169653 -0.460987 -9.830348 0.460993 -9.830347 0.460991 -9.169652 -1.000000
+		- type: 11, size: 52
+		  Floats: 603.000000 5.000000 0.460991 -9.169652 0.460993 -9.830347 -0.460987 -9.830348 -0.460989 -9.169653 0.460991 -9.169652 -1.000000
+		- type: 12, size: 158
+		  Special bitmap
+
+Group 522:	num entries: 7, location: 0xE0DE6
+		- type: 0, value: 200
+		- type: 1, size: 86
+		  Bitmap, width: 6, height: 9
+		- type: 3, size: 8
+		  Group name: a_roll3
+		- type: 10, size: 4
+		  Shorts: 304 37
+		- type: 11, size: 52
+		  Floats: 600.000000 5.000000 -0.829607 -9.151939 -1.670391 -9.151939 -1.670390 -9.848061 -0.829605 -9.848061 -0.829607 -9.151939 -1.000000
+		- type: 11, size: 52
+		  Floats: 603.000000 5.000000 -0.829607 -9.151939 -0.829605 -9.848061 -1.670390 -9.848061 -1.670391 -9.151939 -0.829607 -9.151939 -1.000000
+		- type: 12, size: 158
+		  Special bitmap
+
+Group 523:	num entries: 6, location: 0xE0F70
+		- type: 0, value: 200
+		- type: 1, size: 206
+		  Bitmap, width: 9, height: 16
+		- type: 3, size: 8
+		  Group name: a_roll4
+		- type: 11, size: 52
+		  Floats: 600.000000 5.000000 7.437622 8.339301 6.562380 8.339301 6.562382 7.660699 7.437624 7.660699 7.437622 8.339301 -1.000000
+		- type: 11, size: 52
+		  Floats: 603.000000 5.000000 7.437622 8.339301 7.437624 7.660699 6.562382 7.660699 6.562380 8.339301 7.437622 8.339301 -1.000000
+		- type: 12, size: 398
+		  Special bitmap
+
+Group 524:	num entries: 6, location: 0xE1259
+		- type: 0, value: 200
+		- type: 1, size: 142
+		  Bitmap, width: 8, height: 16
+		- type: 3, size: 8
+		  Group name: a_roll5
+		- type: 11, size: 52
+		  Floats: 600.000000 5.000000 6.203682 8.304670 5.496316 8.304670 5.496318 7.695330 6.203683 7.695330 6.203682 8.304670 -1.000000
+		- type: 11, size: 52
+		  Floats: 603.000000 5.000000 6.203682 8.304670 6.203683 7.695330 5.496318 7.695330 5.496316 8.304670 6.203682 8.304670 -1.000000
+		- type: 12, size: 270
+		  Special bitmap
+
+Group 525:	num entries: 7, location: 0xE1482
+		- type: 0, value: 200
+		- type: 1, size: 142
+		  Bitmap, width: 8, height: 16
+		- type: 3, size: 8
+		  Group name: a_roll6
+		- type: 10, size: 4
+		  Shorts: 304 37
+		- type: 11, size: 52
+		  Floats: 600.000000 5.000000 5.173436 8.351664 4.326563 8.351664 4.326564 7.648336 5.173437 7.648336 5.173436 8.351664 -1.000000
+		- type: 11, size: 52
+		  Floats: 603.000000 5.000000 5.173436 8.351664 5.173437 7.648336 4.326564 7.648336 4.326563 8.351664 5.173436 8.351664 -1.000000
+		- type: 12, size: 270
+		  Special bitmap
+
+Group 526:	num entries: 7, location: 0xE16B4
+		- type: 0, value: 200
+		- type: 1, size: 142
+		  Bitmap, width: 8, height: 16
+		- type: 3, size: 8
+		  Group name: a_roll7
+		- type: 10, size: 4
+		  Shorts: 304 37
+		- type: 11, size: 52
+		  Floats: 600.000000 5.000000 -4.344684 8.354757 -5.155318 8.354757 -5.155316 7.645243 -4.344682 7.645243 -4.344684 8.354757 -1.000000
+		- type: 11, size: 52
+		  Floats: 603.000000 5.000000 -4.344684 8.354757 -4.344682 7.645243 -5.155316 7.645243 -5.155318 8.354757 -4.344684 8.354757 -1.000000
+		- type: 12, size: 270
+		  Special bitmap
+
+Group 527:	num entries: 6, location: 0xE18E6
+		- type: 0, value: 200
+		- type: 1, size: 142
+		  Bitmap, width: 8, height: 16
+		- type: 3, size: 8
+		  Group name: a_roll8
+		- type: 11, size: 52
+		  Floats: 600.000000 5.000000 -5.492493 8.346823 -6.207508 8.346823 -6.207507 7.653177 -5.492492 7.653177 -5.492493 8.346823 -1.000000
+		- type: 11, size: 52
+		  Floats: 603.000000 5.000000 -5.492493 8.346823 -5.492492 7.653177 -6.207507 7.653177 -6.207508 8.346823 -5.492493 8.346823 -1.000000
+		- type: 12, size: 270
+		  Special bitmap
+
+Group 528:	num entries: 7, location: 0xE1B0F
+		- type: 0, value: 200
+		- type: 1, size: 94
+		  Bitmap, width: 6, height: 10
+		- type: 3, size: 10
+		  Group name: a_roll110
+		- type: 10, size: 8
+		  Shorts: 602 2 304 37
+		- type: 11, size: 52
+		  Floats: 600.000000 5.000000 7.527238 2.091553 7.007792 2.091553 7.007792 1.603878 7.527239 1.603878 7.527238 2.091553 0.359631
+		- type: 11, size: 52
+		  Floats: 603.000000 5.000000 7.527238 2.091553 7.527239 1.603878 7.007792 1.603878 7.007792 2.091553 7.527238 2.091553 0.359631
+		- type: 12, size: 174
+		  Special bitmap
+
+Group 529:	num entries: 7, location: 0xE1CB7
+		- type: 0, value: 200
+		- type: 1, size: 94
+		  Bitmap, width: 6, height: 10
+		- type: 3, size: 10
+		  Group name: a_roll111
+		- type: 10, size: 8
+		  Shorts: 602 2 304 37
+		- type: 11, size: 52
+		  Floats: 600.000000 5.000000 6.664452 2.334453 5.974231 2.334452 5.974232 1.856272 6.664454 1.856272 6.664452 2.334453 0.360000
+		- type: 11, size: 52
+		  Floats: 603.000000 5.000000 6.664452 2.334453 6.664454 1.856272 5.974232 1.856272 5.974231 2.334452 6.664452 2.334453 0.360000
+		- type: 12, size: 174
+		  Special bitmap
+
+Group 530:	num entries: 7, location: 0xE1E5F
+		- type: 0, value: 200
+		- type: 1, size: 86
+		  Bitmap, width: 6, height: 9
+		- type: 3, size: 10
+		  Group name: a_roll112
+		- type: 10, size: 8
+		  Shorts: 602 2 304 37
+		- type: 11, size: 52
+		  Floats: 600.000000 5.000000 5.694303 2.632396 5.016828 2.632396 5.016829 2.148826 5.694304 2.148827 5.694303 2.632396 0.360000
+		- type: 11, size: 52
+		  Floats: 603.000000 5.000000 5.694303 2.632396 5.694304 2.148827 5.016829 2.148826 5.016828 2.632396 5.694303 2.632396 0.360000
+		- type: 12, size: 158
+		  Special bitmap
+
+Group 531:	num entries: 5, location: 0xE1FEF
+		- type: 0, value: 200
+		- type: 3, size: 10
+		  Group name: a_roll179
+		- type: 10, size: 4
+		  Shorts: 304 24
+		- type: 11, size: 52
+		  Floats: 600.000000 5.000000 5.298720 1.609502 4.946744 2.060959 3.244249 1.285616 3.571364 0.848427 5.298720 1.609502 -0.994000
+		- type: 11, size: 52
+		  Floats: 603.000000 5.000000 5.298720 1.609502 3.571364 0.848427 3.244249 1.285616 4.946744 2.060959 5.298720 1.609502 -0.994000
+
+Group 532:	num entries: 5, location: 0xE207D
+		- type: 0, value: 200
+		- type: 3, size: 10
+		  Group name: a_roll180
+		- type: 10, size: 4
+		  Shorts: 304 24
+		- type: 11, size: 52
+		  Floats: 600.000000 5.000000 5.716518 0.642137 5.410181 1.162493 4.114841 0.340192 4.400651 -0.163294 5.716518 0.642137 -0.994000
+		- type: 11, size: 52
+		  Floats: 603.000000 5.000000 5.716518 0.642137 4.400651 -0.163294 4.114841 0.340192 5.410181 1.162493 5.716518 0.642137 -0.994000
+
+Group 533:	num entries: 5, location: 0xE210B
+		- type: 0, value: 200
+		- type: 3, size: 10
+		  Group name: a_roll181
+		- type: 10, size: 4
+		  Shorts: 304 24
+		- type: 11, size: 52
+		  Floats: 600.000000 5.000000 6.293731 -0.359319 5.975935 0.242826 4.787576 -0.530924 5.085002 -1.112488 6.293731 -0.359319 -0.994000
+		- type: 11, size: 52
+		  Floats: 603.000000 5.000000 6.293731 -0.359319 5.085002 -1.112488 4.787576 -0.530924 5.975935 0.242826 6.293731 -0.359319 -0.994000
+
+Group 534:	num entries: 5, location: 0xE2199
+		- type: 0, value: 200
+		- type: 3, size: 10
+		  Group name: a_roll182
+		- type: 10, size: 4
+		  Shorts: 304 24
+		- type: 11, size: 52
+		  Floats: 600.000000 5.000000 6.728972 -1.373545 6.446019 -0.904035 5.432468 -1.422942 5.697550 -1.875902 6.728972 -1.373545 -0.994000
+		- type: 11, size: 52
+		  Floats: 603.000000 5.000000 6.728972 -1.373545 5.697550 -1.875902 5.432468 -1.422942 6.446019 -0.904035 6.728972 -1.373545 -0.994000
+
+Group 535:	num entries: 5, location: 0xE2227
+		- type: 0, value: 200
+		- type: 3, size: 10
+		  Group name: a_roll183
+		- type: 10, size: 4
+		  Shorts: 304 24
+		- type: 11, size: 52
+		  Floats: 600.000000 5.000000 7.227558 -2.512395 6.949279 -2.049177 5.832143 -2.345689 6.092129 -2.791297 7.227558 -2.512395 -0.994000
+		- type: 11, size: 52
+		  Floats: 603.000000 5.000000 7.227558 -2.512395 6.092129 -2.791297 5.832143 -2.345689 6.949279 -2.049177 7.227558 -2.512395 -0.994000
+
+Group 536:	num entries: 5, location: 0xE22B5
+		- type: 0, value: 200
+		- type: 3, size: 10
+		  Group name: a_roll184
+		- type: 10, size: 4
+		  Shorts: 304 36
+		- type: 11, size: 52
+		  Floats: 600.000000 5.000000 7.416503 -3.528887 7.225690 -3.042141 6.263735 -3.291593 6.440838 -3.759464 7.416503 -3.528887 -0.994000
+		- type: 11, size: 52
+		  Floats: 603.000000 5.000000 7.416503 -3.528887 6.440838 -3.759464 6.263735 -3.291593 7.225690 -3.042141 7.416503 -3.528887 -0.994000
+
+Group 537:	num entries: 8, location: 0xE2343
+		- type: 0, value: 200
+		- type: 1, size: 174
+		  Bitmap, width: 13, height: 10
+		- type: 3, size: 8
+		  Group name: a_roll9
+		- type: 10, size: 4
+		  Shorts: 304 56
+		- type: 11, size: 68
+		  Floats: 600.000000 7.000000 4.698180 -7.002740 4.709074 -7.405536 5.063625 -7.597506 5.407281 -7.386681 5.396387 -6.983885 5.041836 -6.791915 4.698180 -7.002740 -1.000000
+		- type: 11, size: 68
+		  Floats: 603.000000 7.000000 4.698180 -7.002740 5.041836 -6.791915 5.396387 -6.983885 5.407281 -7.386681 5.063625 -7.597506 4.709074 -7.405536 4.698180 -7.002740 -1.000000
+		- type: 11, size: 8
+		  Floats: 407.000000 0.150000
+		- type: 12, size: 334
+		  Special bitmap
+
+Group 538:	num entries: 3, location: 0xE2602
+		- type: 0, value: 200
+		- type: 3, size: 14
+		  Group name: info_text_box
+		- type: 10, size: 10
+		  Shorts: 1500 405 239 165 44
+
+Group 539:	num entries: 3, location: 0xE2628
+		- type: 0, value: 200
+		- type: 3, size: 17
+		  Group name: mission_text_box
+		- type: 10, size: 10
+		  Shorts: 1500 405 303 165 88
+
+Group 540:	num entries: 2, location: 0xE2651
+		- type: 3, size: 14
+		  Group name: table_objects
+		- type: 10, size: 1362
+		  Shorts: 1025 1000 280 1000 281 1000 282 1000 283 1000 284 1000 285 1000 286 1000 287 1000 288 1000 289 1000 290 1000 291 1000 292 1000 293 1000 294 1000 295 1000 296 1000 297 1000 298 1000 299 1000 300 1000 301 1000 302 1000 303 1000 304 1000 305 1000 306 1000 307 1000 308 1000 309 1010 310 1010 311 1010 312 1010 313 1010 314 1010 315 1010 316 1010 317 1010 318 1010 319 1010 320 1010 321 1010 322 1010 323 1010 324 1010 325 1010 326 1010 327 1010 328 1000 329 1000 330 1000 102 1000 103 1000 106 1000 331 1000 332 1000 333 1000 334 1000 335 1000 336 1000 469 1000 470 1000 471 1000 472 1016 345 1016 346 1016 347 1016 348 1016 349 1016 350 1016 351 1016 352 1016 353 1002 115 1002 116 1002 119 1002 122 1002 125 1002 126 1002 127 1002 128 1002 129 1002 130 1002 131 1002 132 1002 133 1002 134 1002 135 1002 136 1002 137 1002 138 1002 139 1002 140 1002 141 1002 142 1002 143 1002 144 1002 145 1002 146 1002 147 1002 148 1002 149 1002 150 1002 151 1002 152 1002 153 1002 154 1002 155 1002 156 1002 157 1002 158 1002 159 1002 160 1002 161 1002 162 1002 163 1002 164 1002 165 1002 166 1002 167 1002 168 1002 169 1002 170 1002 171 1002 172 1002 173 1002 174 1002 175 1002 176 1002 177 1002 178 1002 179 1002 180 1002 181 1002 182 1002 183 1002 184 1002 185 1002 186 1002 187 1002 188 1002 189 1002 190 1002 191 1002 192 1002 193 1002 194 1002 195 1002 196 1002 197 1002 198 1002 199 1002 200 1002 201 1002 202 1002 203 1002 204 1002 205 1002 206 1002 207 1002 208 1002 209 1002 210 1002 211 1002 212 1002 213 1002 214 1002 215 1002 216 1002 217 1002 218 1002 219 1002 220 1002 221 1002 222 1002 223 1002 224 1002 225 1002 226 1002 227 1002 228 1002 229 1002 230 1002 231 1002 255 1002 256 1002 257 1002 258 1002 259 1002 260 1002 232 1002 233 1002 234 1002 235 1002 236 1002 237 1002 238 1002 239 1002 240 1002 241 1002 242 1002 243 1002 244 1002 245 1002 246 1002 247 1002 248 1002 249 1002 250 1002 251 1002 252 1002 253 1002 254 1001 473 1007 499 1003 355 1004 363 1006 432 1006 433 1006 434 1006 435 1006 436 1006 437 1006 438 1006 439 1006 440 1005 372 1005 380 1005 388 1005 396 1005 405 1005 413 1005 421 1011 500 1014 505 1014 507 1015 520 1015 521 1015 522 1015 523 1015 524 1015 525 1015 526 1015 527 1015 528 1015 529 1015 530 1024 515 1024 516 1024 517 1024 518 1024 519 1020 537 1015 531 1015 532 1015 533 1015 534 1015 535 1015 536 1029 510 1012 512 1012 514 1017 338 1017 340 1017 342 1017 344 1013 501 1013 502 1018 481 1018 489 1019 442 1019 444 1019 446 1019 448 1019 450 1019 452 1019 454 1019 456 1019 458 1019 460 1019 462 1019 464 1019 466 1021 101 1021 105 1022 104 1023 100 1026 268 1026 278 1026 279 1026 276 1026 277 1026 272 1026 274 1026 275 1026 273 1026 266 1026 269 1026 271 1026 270 1026 267 1026 265 1026 263 1026 264 1026 261 1028 429 1028 430 1030 262 1031 67 1031 68 1031 69 1031 71 1031 72 1031 73 1031 78 1031 77 1031 74 1031 79 1031 80 1031 81 1031 82 1031 83 1031 84 1031 85 1031 86 1031 87 1031 88 1031 89 1031 90 1031 91 1031 93 1031 94 1031 76 1031 70 1031 65 1031 75 1031 92 1031 66 1033 538 1033 539

@@ -1,11 +1,38 @@
 #pragma once
 #include "TPinballComponent.h"
-class TLightGroup :
-    public TPinballComponent
+class objlist_class;
+
+struct TLightGroup_player_backup
 {
-public:
-	TLightGroup(TPinballTable* table,int ind) : TPinballComponent(table, -1, false)
-	{
-	}
+	int MessageField;
+	int MessageField2;
+	float Timer1Time;
+	int Unknown3;
 };
 
+
+class TLightGroup :
+	public TPinballComponent
+{
+public:
+	TLightGroup(TPinballTable* table, int groupIndex);
+	~TLightGroup() override;
+	int Message(int code, float value) override;
+	void Reset();
+	void reschedule_animation(float time);
+	void start_animation();
+	int next_light_up();
+	int next_light_down();
+
+	static void TimerExpired(int timerId, void* caller);
+	static void NotifyTimerExpired(int timerId, void* caller);
+
+	objlist_class* List;
+	float Timer1Time;
+	float Timer1TimeDefault;
+	int MessageField2;
+	int AnimationFlag;
+	int NotifyTimer;
+	int Timer;
+	TLightGroup_player_backup PlayerData[4];
+};

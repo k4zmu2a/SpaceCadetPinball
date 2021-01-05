@@ -27,218 +27,213 @@ TLight::TLight(TPinballTable* table, int groupIndex) : TPinballComponent(table, 
 int TLight::Message(int code, float value)
 {
 	int bmpIndex;
-	auto this2 = this;
-	if (code > 1020)
-	{
-		if (code == 1024)
-		{
-			Reset();
-			for (auto index = 0; index < this2->PinballTable->PlayerCount; ++index)
-			{
-				auto playerPtr = &this2->PlayerData[index];
-				playerPtr->FlasherActive = this2->FlasherActive;
-				playerPtr->BmpIndex2 = this2->BmpIndex2;
-				playerPtr->BmpIndex1 = this2->BmpIndex1;
-				playerPtr->MessageField = this2->MessageField;
-			}
-		}
-		return 0;
-	}
-	if (code == 1020)
-	{
-		auto playerPtr = &this2->PlayerData[PinballTable->CurrentPlayer];
-		playerPtr->FlasherActive = this2->FlasherActive;
-		playerPtr->BmpIndex2 = this2->BmpIndex2;
-		playerPtr->BmpIndex1 = this2->BmpIndex1;
-		playerPtr->MessageField = this2->MessageField;
 
-		Reset();
-
-		playerPtr = &this2->PlayerData[static_cast<int>(floor(value))];
-		this2->FlasherActive = playerPtr->FlasherActive;
-		this2->BmpIndex2 = playerPtr->BmpIndex2;
-		this2->BmpIndex1 = playerPtr->BmpIndex1;
-		this2->MessageField = playerPtr->MessageField;
-		if (this2->BmpIndex2)
-		{
-			this2->Message(11, static_cast<float>(this2->BmpIndex2));
-		}
-		if (this2->BmpIndex1)
-			this2->Message(1, 0.0);
-		if (this2->FlasherActive)
-			this2->Message(4, 0.0);
-		return 0;
-	}
 	switch (code)
 	{
-	case 0:
-		this->BmpIndex1 = 0;
-		if (this->FlasherActive == 0 && !this->FlasherFlag1 && !this->FlasherFlag2)
-			render::sprite_set_bitmap(this->RenderSprite, this->Flasher.BmpArr[0]);
-		return 0;
-	case 1:
-		this->BmpIndex1 = 1;
-		if (this->FlasherActive == 0 && !this->FlasherFlag1 && !this->FlasherFlag2)
-			render::sprite_set_bitmap(this->RenderSprite, this->Flasher.BmpArr[1]);
-		return 0;
-	case 2:
+	case 1024:
+		Reset();
+		for (auto index = 0; index < PinballTable->PlayerCount; ++index)
+		{
+			auto playerPtr = &PlayerData[index];
+			playerPtr->FlasherActive = FlasherActive;
+			playerPtr->BmpIndex2 = BmpIndex2;
+			playerPtr->BmpIndex1 = BmpIndex1;
+			playerPtr->MessageField = MessageField;
+		}
 		break;
+	case 1020:
+		{
+			auto playerPtr = &PlayerData[PinballTable->CurrentPlayer];
+			playerPtr->FlasherActive = FlasherActive;
+			playerPtr->BmpIndex2 = BmpIndex2;
+			playerPtr->BmpIndex1 = BmpIndex1;
+			playerPtr->MessageField = MessageField;
+
+			Reset();
+
+			playerPtr = &PlayerData[static_cast<int>(floor(value))];
+			FlasherActive = playerPtr->FlasherActive;
+			BmpIndex2 = playerPtr->BmpIndex2;
+			BmpIndex1 = playerPtr->BmpIndex1;
+			MessageField = playerPtr->MessageField;
+			if (BmpIndex2)
+			{
+				Message(11, static_cast<float>(BmpIndex2));
+			}
+			if (BmpIndex1)
+				Message(1, 0.0);
+			if (FlasherActive)
+				Message(4, 0.0);
+			break;
+		}
+	case 0:
+		BmpIndex1 = 0;
+		if (FlasherActive == 0 && !FlasherFlag1 && !FlasherFlag2)
+			render::sprite_set_bitmap(RenderSprite, Flasher.BmpArr[0]);
+		break;
+	case 1:
+		BmpIndex1 = 1;
+		if (FlasherActive == 0 && !FlasherFlag1 && !FlasherFlag2)
+			render::sprite_set_bitmap(RenderSprite, Flasher.BmpArr[1]);
+		break;
+	case 2:
+		return BmpIndex1;
 	case 3:
-		return this->FlasherActive;
+		return FlasherActive;
 	case 4:
 		schedule_timeout(0.0);
-		if (!this2->FlasherActive || !this2->Flasher.Timer)
+		if (!FlasherActive || !Flasher.Timer)
 		{
-			this2->FlasherActive = 1;
-			this2->FlasherFlag2 = 0;
-			this2->FlasherFlag1 = 0;
-			this2->Unknown13 = 0;
-			flasher_start(&this2->Flasher, this2->BmpIndex1);
+			FlasherActive = 1;
+			FlasherFlag2 = 0;
+			FlasherFlag1 = 0;
+			Unknown13 = 0;
+			flasher_start(&Flasher, BmpIndex1);
 		}
-		return 0;
+		break;
 	case 5:
-		this->Flasher.TimerDelay[0] = value * this->FlasherDelay[0];
-		this->Flasher.TimerDelay[1] = value * this->FlasherDelay[1];
-		return 0;
+		Flasher.TimerDelay[0] = value * FlasherDelay[0];
+		Flasher.TimerDelay[1] = value * FlasherDelay[1];
+		break;
 	case 6:
-		this->Flasher.TimerDelay[0] = this->FlasherDelay[0];
-		this->Flasher.TimerDelay[1] = this->FlasherDelay[1];
-		return 0;
+		Flasher.TimerDelay[0] = FlasherDelay[0];
+		Flasher.TimerDelay[1] = FlasherDelay[1];
+		break;
 	case 7:
-		if (!this->FlasherActive)
-			flasher_start(&this->Flasher, this->BmpIndex1);
-		this2->FlasherActive = 1;
-		this2->FlasherFlag2 = 0;
-		this2->Unknown13 = 0;
-		this2->FlasherFlag1 = 0;
+		if (!FlasherActive)
+			flasher_start(&Flasher, BmpIndex1);
+		FlasherActive = 1;
+		FlasherFlag2 = 0;
+		Unknown13 = 0;
+		FlasherFlag1 = 0;
 		schedule_timeout(value);
-		return 0;
+		break;
 	case 8:
-		if (!this->FlasherFlag1)
+		if (!FlasherFlag1)
 		{
-			if (this->FlasherActive)
+			if (FlasherActive)
 			{
-				flasher_stop(&this->Flasher, 0);
-				this2->FlasherActive = 0;
+				flasher_stop(&Flasher, 0);
+				FlasherActive = 0;
 			}
 			else
 			{
-				render::sprite_set_bitmap(this->RenderSprite, this->Flasher.BmpArr[0]);
+				render::sprite_set_bitmap(RenderSprite, Flasher.BmpArr[0]);
 			}
-			this2->FlasherFlag1 = 1;
-			this2->FlasherFlag2 = 0;
+			FlasherFlag1 = 1;
+			FlasherFlag2 = 0;
 		}
 		schedule_timeout(value);
-		return 0;
+		break;
 	case 9:
-		if (!this->FlasherFlag2)
+		if (!FlasherFlag2)
 		{
-			if (this->FlasherActive)
+			if (FlasherActive)
 			{
-				flasher_stop(&this->Flasher, 1);
-				this2->FlasherActive = 0;
+				flasher_stop(&Flasher, 1);
+				FlasherActive = 0;
 			}
 			else
 			{
-				render::sprite_set_bitmap(this->RenderSprite, this->Flasher.BmpArr[1]);
+				render::sprite_set_bitmap(RenderSprite, Flasher.BmpArr[1]);
 			}
-			this2->FlasherFlag2 = 1;
-			this2->FlasherFlag1 = 0;
+			FlasherFlag2 = 1;
+			FlasherFlag1 = 0;
 		}
 		schedule_timeout(value);
-		return 0;
+		break;
 	case 11:
-		this2->BmpIndex2 = static_cast<int>(floor(value));
-		if (this2->BmpIndex2 > this2->ListBitmap->Count())
-			this2->BmpIndex2 = this2->ListBitmap->Count();
+		BmpIndex2 = static_cast<int>(floor(value));
+		if (BmpIndex2 > ListBitmap->Count())
+			BmpIndex2 = ListBitmap->Count();
 		bmpIndex = 0;
-		if (this2->BmpIndex2 < 0)
-			this2->BmpIndex2 = 0;
-		this2->Flasher.BmpArr[0] = nullptr;
-		this2->Flasher.BmpArr[1] = static_cast<gdrv_bitmap8*>(this2->ListBitmap->Get(this2->BmpIndex2));
-		if (this2->FlasherActive == 0)
+		if (BmpIndex2 < 0)
+			BmpIndex2 = 0;
+		Flasher.BmpArr[0] = nullptr;
+		Flasher.BmpArr[1] = static_cast<gdrv_bitmap8*>(ListBitmap->Get(BmpIndex2));
+		if (FlasherActive == 0)
 		{
-			if (!this2->FlasherFlag1)
+			if (!FlasherFlag1)
 			{
-				if (this2->FlasherFlag2)
+				if (FlasherFlag2)
 					bmpIndex = 1;
 				else
-					bmpIndex = this2->BmpIndex1;
+					bmpIndex = BmpIndex1;
 			}
 		}
 		else
 		{
-			bmpIndex = this2->Flasher.BmpIndex;
+			bmpIndex = Flasher.BmpIndex;
 		}
-		render::sprite_set_bitmap(this2->RenderSprite, this2->Flasher.BmpArr[bmpIndex]);
-		return 0;
+		render::sprite_set_bitmap(RenderSprite, Flasher.BmpArr[bmpIndex]);
+		break;
 	case 12:
-		bmpIndex = this->BmpIndex2 + 1;
-		if (bmpIndex > this->ListBitmap->Count())
-			bmpIndex = this->ListBitmap->Count();
+		bmpIndex = BmpIndex2 + 1;
+		if (bmpIndex > ListBitmap->Count())
+			bmpIndex = ListBitmap->Count();
 		Message(11, static_cast<float>(bmpIndex));
-		return 0;
+		break;
 	case 13:
-		bmpIndex = this->BmpIndex2 - 1;
+		bmpIndex = BmpIndex2 - 1;
 		if (bmpIndex < 0)
 			bmpIndex = 0;
 		Message(11, static_cast<float>(bmpIndex));
-		return 0;
+		break;
 	case 14:
-		if (this->Timer1)
-			timer::kill(this->Timer1);
-		this2->Timer1 = 0;
-		if (this2->FlasherActive != 0)
-			flasher_stop(&this2->Flasher, -1);
-		this2->FlasherActive = 0;
-		this2->FlasherFlag1 = 0;
-		this2->FlasherFlag2 = 0;
-		render::sprite_set_bitmap(this2->RenderSprite, this2->Flasher.BmpArr[this2->BmpIndex1]);
-		return 0;
+		if (Timer1)
+			timer::kill(Timer1);
+		Timer1 = 0;
+		if (FlasherActive != 0)
+			flasher_stop(&Flasher, -1);
+		FlasherActive = 0;
+		FlasherFlag1 = 0;
+		FlasherFlag2 = 0;
+		render::sprite_set_bitmap(RenderSprite, Flasher.BmpArr[BmpIndex1]);
+		break;
 	case 15:
-		this->Unknown13 = 0;
-		if (this->Timer2)
-			timer::kill(this->Timer2);
-		this2->Timer2 = 0;
+		Unknown13 = 0;
+		if (Timer2)
+			timer::kill(Timer2);
+		Timer2 = 0;
 		Message(1, 0.0);
 		Message(7, value);
-		return 0;
+		break;
 	case 16:
-		if (this->Timer2)
-			timer::kill(this->Timer2);
-		this2->Timer2 = 0;
+		if (Timer2)
+			timer::kill(Timer2);
+		Timer2 = 0;
 		Message(7, value);
-		this2->Unknown13 = 1;
-		return 0;
+		Unknown13 = 1;
+		break;
 	case 17:
 		Message(static_cast<int>(floor(value)) != 0, 0.0);
-		break;
+		return BmpIndex1;
 	case 18:
 		Message(17, value);
 		Message(14, 0.0);
-		break;
+		return BmpIndex1;
 	case 19:
 		Message(1, 0.0);
 		Message(14, 0.0);
-		return 0;
+		break;
 	case 20:
 		Message(0, 0.0);
 		Message(14, 0.0);
-		return 0;
+		break;
 	case 21:
-		Message(17, static_cast<float>(this->BmpIndex1 == 0));
-		break;
+		Message(17, static_cast<float>(BmpIndex1 == 0));
+		return BmpIndex1;
 	case 22:
-		Message(18, static_cast<float>(this->BmpIndex1 == 0));
-		break;
+		Message(18, static_cast<float>(BmpIndex1 == 0));
+		return BmpIndex1;
 	case 23:
-		this->MessageField = static_cast<int>(floor(value));
-		return 0;
+		MessageField = static_cast<int>(floor(value));
+		break;
 	default:
-		return 0;
+		break;
 	}
 
-	return this2->BmpIndex1;
+	return 0;
 }
 
 void TLight::Reset()

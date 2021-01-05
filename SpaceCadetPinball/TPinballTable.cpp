@@ -101,8 +101,7 @@ TPinballTable::TPinballTable(): TPinballComponent(nullptr, -1, false)
 				Plunger = new TPlunger(this, groupIndex);
 				break;
 			case 1002:
-				new TLight(this, groupIndex);
-				//((objlist_class*)(LightGroup + 42))->Add(light);
+				LightGroup->List->Add(new TLight(this, groupIndex));
 				break;
 			case 1003:
 				FlipperL = new TFlipper(this, groupIndex);
@@ -259,26 +258,26 @@ TPinballComponent* TPinballTable::find_component(int groupIndex)
 
 int TPinballTable::AddScore(int score)
 {
-	if (this->ScoreSpecial3Flag)
+	if (ScoreSpecial3Flag)
 	{
-		this->ScoreSpecial3 += score;
-		if (this->ScoreSpecial3 > 5000000)
-			this->ScoreSpecial3 = 5000000;
+		ScoreSpecial3 += score;
+		if (ScoreSpecial3 > 5000000)
+			ScoreSpecial3 = 5000000;
 	}
-	if (this->ScoreSpecial2Flag)
+	if (ScoreSpecial2Flag)
 	{
-		this->ScoreSpecial2 += score;
-		if (this->ScoreSpecial2 > 5000000)
-			this->ScoreSpecial2 = 5000000;
+		ScoreSpecial2 += score;
+		if (ScoreSpecial2 > 5000000)
+			ScoreSpecial2 = 5000000;
 	}
-	int addedScore = this->ScoreAdded + score * score_multipliers[this->ScoreMultiplier];
-	this->CurScore += addedScore;
-	if (this->CurScore > 1000000000)
+	int addedScore = ScoreAdded + score * score_multipliers[ScoreMultiplier];
+	CurScore += addedScore;
+	if (CurScore > 1000000000)
 	{
-		++this->CurScoreE9;
-		this->CurScore = this->CurScore - 1000000000;
+		++CurScoreE9;
+		CurScore = CurScore - 1000000000;
 	}
-	score::set(this->CurScoreStruct, this->CurScore);
+	score::set(CurScoreStruct, CurScore);
 	return addedScore;
 }
 
@@ -298,21 +297,20 @@ void TPinballTable::ChangeBallCount(int count)
 
 void TPinballTable::tilt(float time)
 {
-	TPinballTable* this2 = this;
-	if (!this->TiltLockFlag && !this->UnknownP10)
+	if (!TiltLockFlag && !UnknownP10)
 	{
 		pinball::InfoTextBox->Clear();
 		pinball::MissTextBox->Clear();
 		pinball::InfoTextBox->Display(pinball::get_rc_string(35, 0), -1.0);
-		loader::play_sound(this2->SoundIndex3);
-		this2->TiltTimeoutTimer = timer::set(30.0, this2, tilt_timeout);
+		loader::play_sound(SoundIndex3);
+		TiltTimeoutTimer = timer::set(30.0, this, tilt_timeout);
 
 		for (int i = 0; i < ComponentList->Count(); i++)
 		{
 			static_cast<TPinballComponent*>(ComponentList->Get(i))->Message(1011, time);
 		}
-		this2->LightGroup->Message(8, 0);
-		this2->TiltLockFlag = 1;
+		LightGroup->Message(8, 0);
+		TiltLockFlag = 1;
 		control::table_control_handler(1011);
 	}
 }

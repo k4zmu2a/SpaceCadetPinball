@@ -153,7 +153,6 @@ void TTextBox::Display(char* text, float time)
 void TTextBox::Draw()
 {
 	TTextBoxMessage* nextMessage = nullptr;
-	auto this2 = this;
 
 	auto bmp = BgBmp;
 	if (bmp)
@@ -169,41 +168,41 @@ void TTextBox::Draw()
 	else
 		gdrv::fill_bitmap(&render::vscreen, Width, Height, OffsetX, OffsetY, 0);
 
-	while (this2->Message1)
+	while (Message1)
 	{
-		auto message = this2->Message1;
+		auto message = Message1;
 		if (message->Time == -1.0)
 		{
 			nextMessage = message->NextMessage;
 			if (!message->NextMessage)
 			{
-				this2->Timer = -1;
+				Timer = -1;
 			LABEL_18:
-				auto font = this2->Font;
+				auto font = Font;
 				if (!font)
 				{
 					gdrv::blit(
 						&render::vscreen,
-						this2->OffsetX,
-						this2->OffsetY,
-						this2->OffsetX + render::vscreen.XPosition,
-						this2->OffsetY + render::vscreen.YPosition,
-						this2->Width,
-						this2->Height);
+						OffsetX,
+						OffsetY,
+						OffsetX + render::vscreen.XPosition,
+						OffsetY + render::vscreen.YPosition,
+						Width,
+						Height);
 					gdrv::grtext_draw_ttext_in_box(
-						this2->Message1->Text,
-						render::vscreen.XPosition + this2->OffsetX,
-						render::vscreen.YPosition + this2->OffsetY,
-						this2->Width,
-						this2->Height,
+						Message1->Text,
+						render::vscreen.XPosition + OffsetX,
+						render::vscreen.YPosition + OffsetY,
+						Width,
+						Height,
 						255);
 					return;
 				}
-				auto text = this2->Message1->Text;
-				for (auto y = this2->OffsetY; ; y += font->Height)
+				auto text = Message1->Text;
+				for (auto y = OffsetY; ; y += font->Height)
 				{
 					auto curChar = *text;
-					if (!curChar || y + font->Height > this2->OffsetY + this2->Height)
+					if (!curChar || y + font->Height > OffsetY + Height)
 						break;
 
 					auto totalWidth = 0;
@@ -218,7 +217,7 @@ void TTextBox::Draw()
 						if (charBmp)
 						{
 							auto width = charBmp->Width + font->GapWidth + totalWidth;
-							if (width > this2->Width)
+							if (width > Width)
 							{
 								if (textEndSpace)
 									textEnd = textEndSpace;
@@ -236,7 +235,7 @@ void TTextBox::Draw()
 						}
 					}
 
-					auto offX = this2->OffsetX;
+					auto offX = OffsetX;
 					while (text < textEnd)
 					{
 						auto charBmp = font->Chars[*text++ & 0x7F];
@@ -245,10 +244,11 @@ void TTextBox::Draw()
 							auto height = charBmp->Height;
 							auto width = charBmp->Width;
 							if (render::background_bitmap)
-								gdrv::copy_bitmap_w_transparency(&render::vscreen, width, height, offX, y, charBmp, 0, 0);
+								gdrv::copy_bitmap_w_transparency(&render::vscreen, width, height, offX, y, charBmp, 0,
+								                                 0);
 							else
 								gdrv::copy_bitmap(&render::vscreen, width, height, offX, y, charBmp, 0, 0);
-							font = this2->Font;
+							font = Font;
 							offX += charBmp->Width + font->GapWidth;
 						}
 					}
@@ -262,33 +262,33 @@ void TTextBox::Draw()
 		}
 		else
 		{
-			auto timeLeft = (this2->Message1->TimeLeft());
+			auto timeLeft = (Message1->TimeLeft());
 			if (timeLeft >= -2.0f)
 			{
 				int timer;
 				if (timeLeft >= 0.25f)
 				{
-					timer = timer::set(timeLeft, this2, TimerExpired);
+					timer = timer::set(timeLeft, this, TimerExpired);
 				}
 				else
 				{
-					timer = timer::set(0.25, this2, TimerExpired);
+					timer = timer::set(0.25, this, TimerExpired);
 				}
-				this2->Timer = timer;
+				Timer = timer;
 				goto LABEL_18;
 			}
 			nextMessage = message->NextMessage;
 		}
 		delete message;
-		this2->Message1 = nextMessage;
+		Message1 = nextMessage;
 	}
 
 	gdrv::blit(
 		&render::vscreen,
-		this2->OffsetX,
-		this2->OffsetY,
-		this2->OffsetX + render::vscreen.XPosition,
-		this2->OffsetY + render::vscreen.YPosition,
-		this2->Width,
-		this2->Height);
+		OffsetX,
+		OffsetY,
+		OffsetX + render::vscreen.XPosition,
+		OffsetY + render::vscreen.YPosition,
+		Width,
+		Height);
 }
