@@ -231,6 +231,7 @@ render_sprite_type_struct* render::create_sprite(VisualType visualType, gdrv_bit
 	sprite->UnknownFlag = 0;
 	sprite->SpriteArray = nullptr;
 	sprite->SpriteCount = 0;
+	sprite->DirtyRect = rectangle_type{};
 	if (rect)
 	{
 		sprite->BoundingRect = *rect;

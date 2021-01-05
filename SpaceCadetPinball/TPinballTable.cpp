@@ -60,6 +60,7 @@ TPinballTable::TPinballTable(): TPinballComponent(nullptr, -1, false)
 	ReplayTimer = 0;
 	TiltTimeoutTimer = 0;
 	MultiballFlag = 0;
+	PlayerCount = 0;
 
 	auto ballObj = new TBall(this);
 	BallList->Add(ballObj);

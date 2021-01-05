@@ -17,6 +17,8 @@ TPinballComponent::TPinballComponent(TPinballTable* table, int groupIndex, bool 
 	RenderSprite = nullptr;
 	ListBitmap = nullptr;
 	ListZMap = nullptr;
+	GroupName = nullptr;
+	Control = nullptr;
 	if (table)
 		table->ComponentList->Add(this);
 	if (groupIndex >= 0)
@@ -64,7 +66,7 @@ TPinballComponent::TPinballComponent(TPinballTable* table, int groupIndex, bool 
 			}
 
 			RenderSprite = render::create_sprite(
-				visualCount > 0 ? VisualType::Sprite :VisualType::None,
+				visualCount > 0 ? VisualType::Sprite : VisualType::None,
 				rootBmp,
 				zMap,
 				rootBmp->XPosition - table->XOffset,
