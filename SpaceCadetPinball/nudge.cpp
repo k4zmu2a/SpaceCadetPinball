@@ -74,7 +74,7 @@ void nudge::_nudge(float xDiff, float yDiff)
 	for (auto index = 0; index < ballList->Count(); index++)
 	{
 		auto ball = static_cast<TBall*>(ballList->Get(index));
-		if (ball->UnknownBaseFlag2 && !ball->Unknown16)
+		if (ball->UnknownBaseFlag2 && !ball->CollisionComp)
 		{
 			ball->Acceleration.X = ball->Acceleration.X * ball->Speed;
 			ball->Acceleration.Y = ball->Acceleration.Y * ball->Speed;

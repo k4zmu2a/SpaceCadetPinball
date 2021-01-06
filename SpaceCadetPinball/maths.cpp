@@ -1,6 +1,8 @@
 #include "pch.h"
 #include "maths.h"
 
+#include "TBall.h"
+
 
 void maths::enclosing_box(rectangle_type* rect1, rectangle_type* rect2, rectangle_type* dstRect)
 {
@@ -203,23 +205,19 @@ void maths::line_init(line_type* line, float x0, float y0, float x1, float y1)
 
 float maths::ray_intersect_line(ray_type* ray, line_type* line)
 {
-	// Similar to https://rootllama.wordpress.com/2014/06/20/ray-line-segment-intersection-test-in-2d/
-	float perpDot;
-	float result;
-	float v4;
 	bool v5;
 	bool v6;
-	float v7;
 
-	perpDot = line->PerpendicularL.Y * ray->Direction.Y + ray->Direction.X * line->PerpendicularL.X;
+	float perpDot = line->PerpendicularL.Y * ray->Direction.Y + ray->Direction.X * line->PerpendicularL.X;
 	if (perpDot < 0.0)
 	{
-		result = -((ray->Origin.X * line->PerpendicularL.X + ray->Origin.Y * line->PerpendicularL.Y + line->PreComp1)
+		float result = -((ray->Origin.X * line->PerpendicularL.X + ray->Origin.Y * line->PerpendicularL.Y + line->
+				PreComp1)
 			/ perpDot);
 		if (result >= -ray->MinDistance && result <= ray->MaxDistance)
 		{
 			line->CompTmp1 = result * ray->Direction.X + ray->Origin.X;
-			v4 = result * ray->Direction.Y + ray->Origin.Y;
+			float v4 = result * ray->Direction.Y + ray->Origin.Y;
 			line->Unknown10 = v4;
 			if (0.0 == line->Direction.X)
 			{
@@ -234,7 +232,7 @@ float maths::ray_intersect_line(ray_type* ray, line_type* line)
 			}
 			else if (line->OriginX <= line->CompTmp1)
 			{
-				v7 = line->CompTmp1;
+				float v7 = line->CompTmp1;
 				v5 = v7 < line->OriginY;
 				v6 = v7 == line->OriginY;
 				if (v5 || v6)
@@ -268,4 +266,36 @@ void maths::vector_add(vector_type* vec1Dst, vector_type* vec2)
 {
 	vec1Dst->X += vec2->X;
 	vec1Dst->Y += vec2->Y;
+}
+
+float maths::basic_collision(TBall* ball, vector_type* ballPosition, vector_type* vec2, float a4, float a5, float a6,
+                             float a7)
+{
+	ball->Position.X = ballPosition->X;
+	ball->Position.Y = ballPosition->Y;
+	float proj = -(vec2->Y * ball->Acceleration.Y + vec2->X * ball->Acceleration.X);
+	if (proj < 0)
+	{
+		proj = -proj;
+	}
+	else
+	{
+		float dx1 = proj * vec2->X;
+		float dy1 = proj * vec2->Y;
+		float v17 = dx1 + ball->Acceleration.X;
+		float v18 = dy1 + ball->Acceleration.Y;
+		ball->Acceleration.X = v17 * a5 + dx1 * a4;
+		ball->Acceleration.Y = v18 * a5 + dy1 * a4;
+		normalize_2d(&ball->Acceleration);
+	}
+	float projSpeed = proj * ball->Speed;
+	float newSpeed = ball->Speed - (1.0f - a4) * projSpeed;
+	ball->Speed = newSpeed;
+	if (projSpeed >= a6)
+	{
+		ball->Acceleration.X = newSpeed * ball->Acceleration.X + vec2->X * a7;
+		ball->Acceleration.Y = newSpeed * ball->Acceleration.Y + vec2->Y * a7;
+		ball->Speed = normalize_2d(&ball->Acceleration);
+	}
+	return projSpeed;
 }

@@ -320,7 +320,7 @@ void fullscrn::fillRect(int right, int bottom)
 	}
 }
 
-int fullscrn::convert_mouse_pos(unsigned int mouseXY)
+unsigned fullscrn::convert_mouse_pos(unsigned int mouseXY)
 {
 	unsigned __int16 x = mouseXY & 0xffFF - render::vscreen.XPosition;
 	unsigned __int16 y = (mouseXY >> 16) - render::vscreen.YPosition;

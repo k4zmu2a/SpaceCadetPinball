@@ -312,7 +312,7 @@ LRESULT CALLBACK winmain::message_handler(HWND hWnd, UINT Msg, WPARAM wParam, LP
 		SetForegroundWindow(hWnd);
 		return 0;
 	}
-
+	
 	if (Msg <= WM_ACTIVATEAPP)
 	{
 		switch (Msg)
@@ -410,250 +410,247 @@ LRESULT CALLBACK winmain::message_handler(HWND hWnd, UINT Msg, WPARAM wParam, LP
 		return 0;
 	}
 
-	if (Msg <= WM_MENUSELECT)
+	switch (Msg)
 	{
-		switch (Msg)
+	case WM_MENUSELECT:
+		if (lParam)
+			return DefWindowProcA(hWnd, Msg, wParam, lParam);
+		if (fullscrn::screen_mode)
+			fullscrn::set_menu_mode(0);
+		return 0;
+	case WM_SYSKEYDOWN:
+		no_time_loss = 1;
+		if (fullscrn::screen_mode)
+			fullscrn::set_menu_mode(1);
+		return DefWindowProcA(hWnd, Msg, wParam, lParam);
+	case WM_GETMINMAXINFO:
+		fullscrn::getminmaxinfo((MINMAXINFO*)lParam);
+		return DefWindowProcA(hWnd, Msg, wParam, lParam);
+	case WM_DISPLAYCHANGE:
+		if (fullscrn::displaychange())
 		{
-		case WM_MENUSELECT:
-			if (lParam)
-				return DefWindowProcA(hWnd, Msg, wParam, lParam);
-			if (fullscrn::screen_mode)
-				fullscrn::set_menu_mode(0);
-			return 0;
-		case WM_SYSKEYDOWN:
-			no_time_loss = 1;
-			if (fullscrn::screen_mode)
-				fullscrn::set_menu_mode(1);
-			return DefWindowProcA(hWnd, Msg, wParam, lParam);
-		case WM_GETMINMAXINFO:
-			fullscrn::getminmaxinfo((MINMAXINFO*)lParam);
-			return DefWindowProcA(hWnd, Msg, wParam, lParam);
-		case WM_DISPLAYCHANGE:
-			if (fullscrn::displaychange())
-			{
-				options::Options.FullScreen = 0;
-				options::menu_check(Menu1_Full_Screen, 0);
-			}
-			return DefWindowProcA(hWnd, Msg, wParam, lParam);
-		case WM_KEYUP:
-			pb::keyup(wParam);
-			return DefWindowProcA(hWnd, Msg, wParam, lParam);
-		case WM_KEYDOWN:
-			if (!(lParam & 0x40000000))
-				pb::keydown(wParam);
-			switch (wParam)
-			{
-			case VK_ESCAPE:
-				if (options::Options.FullScreen)
-					options::toggle(0x193u);
-				SendMessageA(hwnd_frame, 0x112u, 0xF020u, 0);
-				break;
-			case VK_F1:
-				help_introduction(hinst, hWnd);
-				break;
-			case VK_F2:
-				new_game();
-				break;
-			case VK_F3:
-				pause();
-				break;
-			case VK_F4:
+			options::Options.FullScreen = 0;
+			options::menu_check(Menu1_Full_Screen, 0);
+		}
+		return DefWindowProcA(hWnd, Msg, wParam, lParam);
+	case WM_KEYUP:
+		pb::keyup(wParam);
+		return DefWindowProcA(hWnd, Msg, wParam, lParam);
+	case WM_KEYDOWN:
+		if (!(lParam & 0x40000000))
+			pb::keydown(wParam);
+		switch (wParam)
+		{
+		case VK_ESCAPE:
+			if (options::Options.FullScreen)
 				options::toggle(0x193u);
-				break;
-			case VK_F8:
-				if (!single_step)
-					pause();
-				options::keyboard();
-				break;
-			}
-			if (!pb::cheat_mode)
-				return DefWindowProcA(hWnd, Msg, wParam, lParam);
-			switch (wParam)
-			{
-			case 'H':
-				DispGRhistory = 1;
-				return DefWindowProcA(hWnd, Msg, wParam, lParam);
-			case 'Y':
-				SetWindowTextA(hWnd, "Pinball");
-				DispFrameRate = DispFrameRate == 0;
-				return DefWindowProcA(hWnd, Msg, wParam, lParam);
-			case VK_F1:
-				pb::frame(10);
-				return DefWindowProcA(hWnd, Msg, wParam, lParam);
-			case VK_F15:
-				single_step = single_step == 0;
-				if (single_step == 0)
-					no_time_loss = 1;
-				return DefWindowProcA(hWnd, Msg, wParam, lParam);
-			default:
-				return DefWindowProcA(hWnd, Msg, wParam, lParam);
-			}
-		case WM_SYSCOMMAND:
-			switch (wParam & 0xFFF0)
-			{
-			case SC_MOVE:
-				if (fullscrn::screen_mode)
-					return 0;
-				break;
-			case SC_MINIMIZE:
-				if (!single_step)
-					pause();
-				return DefWindowProcA(hWnd, Msg, wParam, lParam);
-			case SC_SCREENSAVE:
-				fullscrn::activate(0);
-				return DefWindowProcA(hWnd, Msg, wParam, lParam);
-			default: break;
-			}
-			end_pause();
-			return DefWindowProcA(hWnd, Msg, wParam, lParam);
-		case WM_INITMENU:
-			no_time_loss = 1;
-			return DefWindowProcA(hWnd, Msg, wParam, lParam);
-		case WM_COMMAND:
-			no_time_loss = 1;
-			switch (wParam)
-			{
-			case Menu1_Launch_Ball:
-				end_pause();
-				pb::launch_ball();
-				break;
-			case Menu1_Pause_Resume_Game:
+			SendMessageA(hwnd_frame, 0x112u, 0xF020u, 0);
+			break;
+		case VK_F1:
+			help_introduction(hinst, hWnd);
+			break;
+		case VK_F2:
+			new_game();
+			break;
+		case VK_F3:
+			pause();
+			break;
+		case VK_F4:
+			options::toggle(0x193u);
+			break;
+		case VK_F8:
+			if (!single_step)
 				pause();
-				break;
-			case Menu1_Demo:
-				end_pause();
-				pb::toggle_demo();
-				break;
-			case Menu1_Select_Table:
-				{
-					if (!single_step)
-						pause();
-					auto tmpBuf = memory::allocate(0x1F4u);
-					if (tmpBuf)
-					{
-						char cmdLine[0x1F4u];
-						options::get_string(nullptr, "Shell Exe", tmpBuf, pinball::WindowName, 500);
-						sprintf_s(
-							cmdLine,
-							"%s %s%lX  %s%lX",
-							tmpBuf,
-							"select=",
-							(int)hwnd_frame,
-							"confirm=",
-							(int)hwnd_frame
-							* (int)hwnd_frame
-							* (int)hwnd_frame
-							* (int)hwnd_frame
-							* (int)hwnd_frame
-							* (int)hwnd_frame
-							* (int)hwnd_frame);
-						if (static_cast<int>(WinExec(cmdLine, 5u)) < 32)
-						{
-							auto caption = pinball::get_rc_string(170, 0);
-							auto text = pinball::get_rc_string(171, 0);
-							MessageBoxA(hwnd_frame, text, caption, 0x2010u);
-						}
-						memory::free(tmpBuf);
-					}
-					break;
-				}
-			case Menu1_1Player:
-			case Menu1_2Players:
-			case Menu1_3Players:
-			case Menu1_4Players:
-				options::toggle(wParam);
-				new_game();
-				break;
-			case Menu1_Help_Topics:
-				if (!single_step)
-					pause();
-				help_introduction(hinst, hWnd);
-				break;
-			case 106: // End game button?
-				pb::end_game();
-				break;
-			case Menu1_Full_Screen:
-			case Menu1_Sounds:
-			case Menu1_Music:
-				if (!single_step)
-					pause();
-				options::toggle(wParam);
-				break;
-			case Menu1_Player_Controls:
-			case 204: // Second controls button?
-				if (!single_step)
-					pause();
-				options::keyboard();
-				break;
-			case Menu1_Exit:
-				PostMessageA(hWnd, WM_QUIT, 0, 0);
-				break;
-			case Menu1_New_Game:
-				new_game();
-				break;
-			case Menu1_About_Pinball:
-				if (!single_step)
-					pause();
-				a_dialog(hinst, hWnd);
-				break;
-			case Menu1_High_Scores:
-				if (!single_step)
-					pause();
-				pb::high_scores();
-				break;
-			case 1: // Unknown button
-				midi::restart_midi_seq(lParam);
-				break;
-			default:
-				break;
-			}
-			return DefWindowProcA(hWnd, Msg, wParam, lParam);
-		case WM_LBUTTONDOWN:
-			if (pb::game_mode)
-			{
-				if (pb::cheat_mode)
-				{
-					mouse_down = 1;
-					mouse_hsave = SetCursor(nullptr);
-					auto lParam2 = fullscrn::convert_mouse_pos(lParam);
-					last_mouse_x = static_cast<unsigned __int16>(lParam2);
-					last_mouse_y = static_cast<unsigned int>(lParam2) >> 16;
-					SetCapture(hWnd);
-				}
-				return DefWindowProcA(hWnd, Msg, wParam, lParam);
-			}
+			options::keyboard();
 			break;
-		case WM_LBUTTONUP:
-			if (mouse_down)
-			{
-				mouse_down = 0;
-				SetCursor(mouse_hsave);
-				ReleaseCapture();
-			}
+		}
+		if (!pb::cheat_mode)
 			return DefWindowProcA(hWnd, Msg, wParam, lParam);
-		case WM_RBUTTONDOWN:
-		case WM_MBUTTONDOWN:
-			if (pb::game_mode)
-				return DefWindowProcA(hWnd, Msg, wParam, lParam);
-			break;
-		case WM_POWERBROADCAST:
-			if (wParam == 4 && options::Options.FullScreen)
-			{
-				options::Options.FullScreen = 0;
-				options::menu_check(Menu1_Full_Screen, 0);
-				fullscrn::set_screen_mode(options::Options.FullScreen);
-			}
+		switch (wParam)
+		{
+		case 'H':
+			DispGRhistory = 1;
 			return DefWindowProcA(hWnd, Msg, wParam, lParam);
-		case WM_PALETTECHANGED:
-			InvalidateRect(hWnd, nullptr, 0);
+		case 'Y':
+			SetWindowTextA(hWnd, "Pinball");
+			DispFrameRate = DispFrameRate == 0;
 			return DefWindowProcA(hWnd, Msg, wParam, lParam);
-		case WM_POINTERDEVICEINRANGE | LB_ADDSTRING:
-			if (wParam == 1)
-				midi::restart_midi_seq(lParam);
+		case VK_F1:
+			pb::frame(10);
+			return DefWindowProcA(hWnd, Msg, wParam, lParam);
+		case VK_F15:
+			single_step = single_step == 0;
+			if (single_step == 0)
+				no_time_loss = 1;
 			return DefWindowProcA(hWnd, Msg, wParam, lParam);
 		default:
 			return DefWindowProcA(hWnd, Msg, wParam, lParam);
 		}
+	case WM_SYSCOMMAND:
+		switch (wParam & 0xFFF0)
+		{
+		case SC_MOVE:
+			if (fullscrn::screen_mode)
+				return 0;
+			break;
+		case SC_MINIMIZE:
+			if (!single_step)
+				pause();
+			return DefWindowProcA(hWnd, Msg, wParam, lParam);
+		case SC_SCREENSAVE:
+			fullscrn::activate(0);
+			return DefWindowProcA(hWnd, Msg, wParam, lParam);
+		default: break;
+		}
+		end_pause();
+		return DefWindowProcA(hWnd, Msg, wParam, lParam);
+	case WM_INITMENU:
+		no_time_loss = 1;
+		return DefWindowProcA(hWnd, Msg, wParam, lParam);
+	case WM_COMMAND:
+		no_time_loss = 1;
+		switch (wParam)
+		{
+		case Menu1_Launch_Ball:
+			end_pause();
+			pb::launch_ball();
+			break;
+		case Menu1_Pause_Resume_Game:
+			pause();
+			break;
+		case Menu1_Demo:
+			end_pause();
+			pb::toggle_demo();
+			break;
+		case Menu1_Select_Table:
+			{
+				if (!single_step)
+					pause();
+				auto tmpBuf = memory::allocate(0x1F4u);
+				if (tmpBuf)
+				{
+					char cmdLine[0x1F4u];
+					options::get_string(nullptr, "Shell Exe", tmpBuf, pinball::WindowName, 500);
+					sprintf_s(
+						cmdLine,
+						"%s %s%lX  %s%lX",
+						tmpBuf,
+						"select=",
+						(int)hwnd_frame,
+						"confirm=",
+						(int)hwnd_frame
+						* (int)hwnd_frame
+						* (int)hwnd_frame
+						* (int)hwnd_frame
+						* (int)hwnd_frame
+						* (int)hwnd_frame
+						* (int)hwnd_frame);
+					if (static_cast<int>(WinExec(cmdLine, 5u)) < 32)
+					{
+						auto caption = pinball::get_rc_string(170, 0);
+						auto text = pinball::get_rc_string(171, 0);
+						MessageBoxA(hwnd_frame, text, caption, 0x2010u);
+					}
+					memory::free(tmpBuf);
+				}
+				break;
+			}
+		case Menu1_1Player:
+		case Menu1_2Players:
+		case Menu1_3Players:
+		case Menu1_4Players:
+			options::toggle(wParam);
+			new_game();
+			break;
+		case Menu1_Help_Topics:
+			if (!single_step)
+				pause();
+			help_introduction(hinst, hWnd);
+			break;
+		case 106: // End game button?
+			pb::end_game();
+			break;
+		case Menu1_Full_Screen:
+		case Menu1_Sounds:
+		case Menu1_Music:
+			if (!single_step)
+				pause();
+			options::toggle(wParam);
+			break;
+		case Menu1_Player_Controls:
+		case 204: // Second controls button?
+			if (!single_step)
+				pause();
+			options::keyboard();
+			break;
+		case Menu1_Exit:
+			PostMessageA(hWnd, WM_QUIT, 0, 0);
+			break;
+		case Menu1_New_Game:
+			new_game();
+			break;
+		case Menu1_About_Pinball:
+			if (!single_step)
+				pause();
+			a_dialog(hinst, hWnd);
+			break;
+		case Menu1_High_Scores:
+			if (!single_step)
+				pause();
+			pb::high_scores();
+			break;
+		case 1: // Unknown button
+			midi::restart_midi_seq(lParam);
+			break;
+		default:
+			break;
+		}
+		return DefWindowProcA(hWnd, Msg, wParam, lParam);
+	case WM_LBUTTONDOWN:
+		if (pb::game_mode)
+		{
+			if (pb::cheat_mode)
+			{
+				mouse_down = 1;
+				mouse_hsave = SetCursor(nullptr);
+				auto mouseXY = fullscrn::convert_mouse_pos(lParam);
+				last_mouse_x = mouseXY & 0xffFFu;
+				last_mouse_y = mouseXY >> 16;
+				SetCapture(hWnd);
+			}
+			return DefWindowProcA(hWnd, Msg, wParam, lParam);
+		}
+		break;
+	case WM_LBUTTONUP:
+		if (mouse_down)
+		{
+			mouse_down = 0;
+			SetCursor(mouse_hsave);
+			ReleaseCapture();
+		}
+		return DefWindowProcA(hWnd, Msg, wParam, lParam);
+	case WM_RBUTTONDOWN:
+	case WM_MBUTTONDOWN:
+		if (pb::game_mode)
+			return DefWindowProcA(hWnd, Msg, wParam, lParam);
+		break;
+	case WM_POWERBROADCAST:
+		if (wParam == 4 && options::Options.FullScreen)
+		{
+			options::Options.FullScreen = 0;
+			options::menu_check(Menu1_Full_Screen, 0);
+			fullscrn::set_screen_mode(options::Options.FullScreen);
+		}
+		return DefWindowProcA(hWnd, Msg, wParam, lParam);
+	case WM_PALETTECHANGED:
+		InvalidateRect(hWnd, nullptr, 0);
+		return DefWindowProcA(hWnd, Msg, wParam, lParam);
+	case WM_POINTERDEVICEINRANGE | LB_ADDSTRING:
+		if (wParam == 1)
+			midi::restart_midi_seq(lParam);
+		return DefWindowProcA(hWnd, Msg, wParam, lParam);
+	default:
+		return DefWindowProcA(hWnd, Msg, wParam, lParam);
 	}
 
 	pb::mode_countdown(-1);

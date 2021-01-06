@@ -1,5 +1,7 @@
 #pragma once
 
+class TBall;
+
 struct vector_type
 {
 	float X;
@@ -28,6 +30,9 @@ struct __declspec(align(4)) ray_type
 	vector_type Direction;
 	float MaxDistance;
 	float MinDistance;
+	float TimeNow;
+	float TimeDelta;
+	float Unknown2;
 };
 
 struct __declspec(align(4)) line_type
@@ -56,4 +61,5 @@ public:
 	static void cross(vector_type* vec1, vector_type* vec2, vector_type* dstVec);
 	static float magnitude(vector_type* vec);
 	static void vector_add(vector_type* vec1Dst, vector_type* vec2);
+	static float basic_collision(TBall* ball, struct vector_type* ballPosition, struct vector_type* vec2, float a4, float a5, float a6, float a7);
 };

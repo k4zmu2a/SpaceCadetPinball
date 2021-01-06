@@ -30,11 +30,14 @@ public:
 	static TPinballTable* TableG;
 	static component_info score_components[88];
 	static component_tag* simple_components[142];
-	static int table_control_flag;
+	static int table_unlimited_balls;
 
 	static void make_links(TPinballTable* table);
 	static TPinballComponent* make_component_link(component_tag* tag);
 	static void handler(int code, TPinballComponent* cmp);
+	static void pbctrl_bdoor_controller(int key);
+	static void table_add_extra_ball(float count);
+	static int cheat_bump_rank();
 
 	static void FlipperRebounderControl1(int code, TPinballComponent* caller);
 	static void FlipperRebounderControl2(int code, TPinballComponent* caller);
@@ -95,5 +98,8 @@ public:
 	static void MultiplierTargetControl(int code, TPinballComponent* caller);
 	static void BallDrainControl(int code, TPinballComponent* caller);
 
-	static void table_control_handler(int code);	
+	static void table_control_handler(int code);
+
+private:
+	static int pbctrl_state;
 };

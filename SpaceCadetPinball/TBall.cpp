@@ -14,13 +14,13 @@ TBall::TBall(TPinballTable* table) : TPinballComponent(table, -1, false)
 {
 	visualStruct visual{};
 
-	Unknown9F = 0.0;
-	Unknown7F = 0.0;
+	TimeNow = 0.0;
+	RayMaxDistance = 0.0;
 	UnknownBaseFlag2 = 1;
-	Unknown16 = 0;
+	CollisionComp = nullptr;
 	EdgeCollisionCount = 0;
-	Unknown8F = 0.0;
-	Unknown17 = 1;
+	TimeDelta = 0.0;
+	Unknown17F = 1;
 	CollisionFlag = 0;
 	Speed = 0.0;
 	Acceleration.Y = 0.0;
@@ -113,16 +113,16 @@ int TBall::Message(int code, float value)
 	{
 		render::ball_set(RenderSprite, nullptr, 0.0, 0, 0);
 		Position.X = 0.0;
-		Unknown16 = 0;
+		CollisionComp = nullptr;
 		Position.Y = 0.0;
 		UnknownBaseFlag2 = 0;
 		CollisionFlag = 0;
-		Unknown17 = 1;
+		Unknown17F = 1;
 		Acceleration.Y = 0.0;
 		Position.Z = Offset;
 		Acceleration.X = 0.0;
 		Speed = 0.0;
-		Unknown7F = 0.0;
+		RayMaxDistance = 0.0;
 	}
 	return 0;
 }

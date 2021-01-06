@@ -45,7 +45,7 @@ public:
 	scoreStruct* CurScoreStruct;
 	scoreStruct* ScoreBallcount;
 	scoreStruct* ScorePlayerNumber1;
-	int UnknownP6;
+	int CheatsUsed;
 	int SoundIndex1;
 	int SoundIndex2;
 	int SoundIndex3;

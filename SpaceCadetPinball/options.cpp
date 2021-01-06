@@ -37,9 +37,9 @@ winhelp_entry options::keymap_help[18]
 
 short options::vk_list[28]
 {
-	0x8041,
+	-32703,
 	0x5A,
-	0x8030,
+	-32720,
 	0x39,
 	0x402E,
 	0x402F,

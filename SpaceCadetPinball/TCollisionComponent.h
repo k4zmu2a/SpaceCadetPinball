@@ -2,6 +2,9 @@
 #include "objlist_class.h"
 #include "TPinballComponent.h"
 
+class TEdgeSegment;
+class TBall;
+
 class TCollisionComponent : public TPinballComponent
 {
 public:
@@ -18,4 +21,8 @@ public:
 	TCollisionComponent(TPinballTable* table, int groupIndex, bool createWall);
 	~TCollisionComponent();
 	void port_draw() override;
+	virtual void Collision(TBall* ball, struct vector_type* ballPosition, struct vector_type* vec2, float someVal,
+	                       TEdgeSegment* edge);
+	virtual int FieldEffect(TBall* ball, struct vector_type* vecDst);
+	int DefaultCollision(TBall* ball, struct vector_type* ballPosition, struct vector_type* vec2);
 };

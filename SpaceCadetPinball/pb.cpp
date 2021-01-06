@@ -1,6 +1,8 @@
 #include "pch.h"
 #include "pb.h"
 
+
+#include "control.h"
 #include "high_score.h"
 #include "memory.h"
 #include "pinball.h"
@@ -17,6 +19,7 @@
 #include "TDemo.h"
 #include "TLightGroup.h"
 #include "TPlunger.h"
+#include "TTableLayer.h"
 
 TPinballTable* pb::MainTable = nullptr;
 datFileStruct* pb::record_table = nullptr;
@@ -218,7 +221,7 @@ int pb::frame(int time)
 	if (!mode_countdown(time))
 	{
 		time_next = time_now + timeMul;
-		//pb::timed_frame(time_now, timeMul, 1);
+		timed_frame(time_now, timeMul, true);
 		time_now = time_next;
 		time_ticks += time;
 		if (nudge::nudged_left || nudge::nudged_right || nudge::nudged_up)
@@ -246,6 +249,62 @@ int pb::frame(int time)
 		}
 	}
 	return 1;
+}
+
+void pb::timed_frame(float timeNow, float timeDelta, bool drawBalls)
+{
+	vector_type vec1{}, vec2{};
+
+	for (int i = 0; i < MainTable->BallList->Count(); i++)
+	{
+		auto ball = static_cast<TBall*>(MainTable->BallList->Get(i));
+		if (ball->UnknownBaseFlag2 != 0)
+		{
+			auto collComp = ball->CollisionComp;
+			if (collComp)
+			{
+				ball->TimeDelta = timeDelta;
+				collComp->FieldEffect(ball, &vec1);
+			}
+			else
+			{
+				if (MainTable->UnknownBaseFlag2)
+				{
+					vec2.X = 0.0;
+					vec2.Y = 0.0;
+					vec2.Z = 0.0;
+					TTableLayer::edge_manager->FieldEffects(ball, &vec2);
+					vec2.X = vec2.X * timeDelta;
+					vec2.Y = vec2.Y * timeDelta;
+					ball->Acceleration.X = ball->Speed * ball->Acceleration.X;
+					ball->Acceleration.Y = ball->Speed * ball->Acceleration.Y;
+					maths::vector_add(&ball->Acceleration, &vec2);
+					ball->Speed = maths::normalize_2d(&ball->Acceleration);
+					ball->InvAcceleration.X = ball->Acceleration.X == 0.0 ? 1000000000.0f : 1.0f / ball->Acceleration.X;
+					ball->InvAcceleration.Y = ball->Acceleration.Y == 0.0 ? 1000000000.0f : 1.0f / ball->Acceleration.Y;
+				}
+
+				auto timeDelta2 = timeDelta;
+				auto timeNow2 = timeNow;
+				for (auto index = 10; timeDelta2 > 0.000001 && index; --index)
+				{
+					auto time = collide(timeNow2, timeDelta2, ball);
+					timeDelta2 -= time;
+					timeNow2 += time;
+				}
+			}
+		}
+	}
+
+	if (drawBalls)
+	{
+		for (int i = 0; i < MainTable->BallList->Count(); i++)
+		{
+			auto ball = static_cast<TBall*>(MainTable->BallList->Get(i));
+			if (ball->UnknownBaseFlag2)
+				ball->Repaint();
+		}
+	}
 }
 
 void pb::window_size(int* width, int* height)
@@ -337,7 +396,7 @@ void pb::keydown(int key)
 		mode_countdown(-1);
 		return;
 	}
-	ctrl_bdoor_controller(key);
+	control::pbctrl_bdoor_controller(key);
 	if (key == options::Options.LeftFlipperKey)
 	{
 		MainTable->Message(1000, time_now);
@@ -417,7 +476,7 @@ void pb::keydown(int key)
 			MessageBoxA(winmain::hwnd_frame, buffer, "Mem:", 0x2000u);
 			break;
 		case 'R':
-			cheat_bump_rank();
+			control::cheat_bump_rank();
 			break;
 		case VK_F11:
 			gdrv::get_focus();
@@ -427,10 +486,6 @@ void pb::keydown(int key)
 			break;
 		}
 	}
-}
-
-void pb::ctrl_bdoor_controller(int key)
-{
 }
 
 int pb::mode_countdown(int time)
@@ -456,19 +511,57 @@ int pb::mode_countdown(int time)
 	return 0;
 }
 
-int pb::cheat_bump_rank()
-{
-	return 0;
-}
-
 void pb::launch_ball()
 {
 	MainTable->Plunger->Message(1017, 0.0f);
 }
 
-int pb::end_game()
+void pb::end_game()
 {
-	return 0;
+	int scores[4];
+	int scoreIndex[4];
+	char String1[200];
+
+	mode_change(2);
+	int playerCount = MainTable->PlayerCount;
+
+	score_struct_super* scorePtr = MainTable->PlayerScores;
+	for (auto index = 0; index < playerCount; ++index)
+	{
+		scores[index] = scorePtr->ScoreStruct->Score;
+		scoreIndex[index] = index;
+		++scorePtr;
+	}
+
+	for (auto i = 0; i < playerCount; ++i)
+	{
+		for (auto j = i; j < playerCount; ++j)
+		{
+			if (scores[j] > scores[i])
+			{
+				int score = scores[j];
+				scores[j] = scores[i];
+				scores[i] = score;
+
+				int index = scoreIndex[j];				
+				scoreIndex[j] = scoreIndex[i];
+				scoreIndex[i] = index;
+			}
+		}
+	}
+
+	if (!demo_mode && !MainTable->CheatsUsed)
+	{
+		for (auto i = 0; i < playerCount; ++i)
+		{
+			int position = high_score::get_score_position(highscore_table, scores[i]);
+			if (position >= 0)
+			{
+				lstrcpyA(String1, pinball::get_rc_string(scoreIndex[i] + 26, 0));
+				high_score::show_and_set_high_score_dialog(highscore_table, scores[i], position, String1);
+			}
+		}
+	}
 }
 
 void pb::high_scores()
@@ -499,4 +592,52 @@ bool pb::chk_highscore()
 			return false;
 	}
 	return true;
+}
+
+float pb::collide(float timeNow, float timeDelta, TBall* ball)
+{
+	ray_type ray{};
+	vector_type positionMod{};
+
+	if (ball->UnknownBaseFlag2 && !ball->CollisionComp)
+	{
+		if (ball_speed_limit < ball->Speed)
+			ball->Speed = ball_speed_limit;
+
+		auto maxDistance = timeDelta * ball->Speed;
+		ball->TimeDelta = timeDelta;
+		ball->RayMaxDistance = maxDistance;
+		ball->TimeNow = timeNow;
+
+		ray.Origin.X = ball->Position.X;
+		ray.Origin.Y = ball->Position.Y;
+		ray.Origin.Z = ball->Position.Z;
+		ray.Direction.X = ball->Acceleration.X;
+		ray.Direction.Y = ball->Acceleration.Y;
+		ray.Direction.Z = ball->Acceleration.Z;
+		ray.MaxDistance = maxDistance;
+		ray.Unknown2 = ball->Unknown17F;
+		ray.TimeNow = timeNow;
+		ray.TimeDelta = timeDelta;
+		ray.MinDistance = 0.0020000001f;
+
+		TEdgeSegment* edge = nullptr;
+		auto distance = TTableLayer::edge_manager->FindCollisionDistance(&ray, ball, &edge);
+		if (distance >= 1000000000.0)
+		{
+			maxDistance = timeDelta * ball->Speed;
+			ball->RayMaxDistance = maxDistance;
+			positionMod.X = maxDistance * ball->Acceleration.X;
+			positionMod.Y = maxDistance * ball->Acceleration.Y;
+			positionMod.Z = 0.0;
+			maths::vector_add(&ball->Position, &positionMod);
+		}
+		else
+		{
+			edge->EdgeCollision(ball, distance);
+			if (ball->Speed > 0.000000001)
+				return fabs(distance / ball->Speed);
+		}
+	}
+	return timeDelta;
 }

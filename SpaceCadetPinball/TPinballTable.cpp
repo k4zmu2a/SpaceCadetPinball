@@ -403,7 +403,7 @@ int TPinballTable::Message(int code, float value)
 		}
 		else
 		{
-			UnknownP6 = 0;
+			CheatsUsed = 0;
 			Message(1024, 0.0);
 			auto ball = static_cast<TBall*>(BallList->Get(0));
 			ball->Position.Y = 0.0;

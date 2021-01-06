@@ -2,6 +2,7 @@
 #include "maths.h"
 #include "TPinballComponent.h"
 
+class TCollisionComponent;
 class TEdgeSegment;
 
 class TBall : public TPinballComponent
@@ -16,15 +17,15 @@ public :
 	vector_type Position;
 	vector_type Acceleration;
 	float Speed;
-	float Unknown7F;
-	float Unknown8F;
-	float Unknown9F;
+	float RayMaxDistance;
+	float TimeDelta;
+	float TimeNow;
 	vector_type InvAcceleration;	
 	int Unknown13;
 	int Unknown14;
 	int Unknown15;
-	int Unknown16;
-	int Unknown17;
+	TCollisionComponent* CollisionComp;
+	float Unknown17F;
 	TEdgeSegment* Collisions[5];
 	int EdgeCollisionCount;
 	vector_type CollisionOffset;

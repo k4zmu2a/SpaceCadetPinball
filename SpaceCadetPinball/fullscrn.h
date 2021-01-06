@@ -25,7 +25,7 @@ public:
 	static void center_in(HWND parent, HWND child);
 	static int displaychange();
 	static void activate(int flag);
-	static int convert_mouse_pos(unsigned int mouseXY);
+	static unsigned convert_mouse_pos(unsigned int mouseXY);
 	static void getminmaxinfo(MINMAXINFO* maxMin);
 	static void paint();
 	static bool set_menu_mode(int menuEnabled);
