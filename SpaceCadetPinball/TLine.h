@@ -12,13 +12,7 @@ public:
 	TLine(TCollisionComponent* collCmp, char* flagPtr, unsigned int visualFlag, struct vector_type* start,
 	      struct vector_type* end);
 	void Offset(float offset);
-	double FindCollisionDistance(ray_type* ray) override;
-
-	void EdgeCollision(TBall* ball, float coef) override
-	{
-	}
-
-	void place_in_grid() override
-	{
-	}
+	float FindCollisionDistance(ray_type* ray) override;
+	void EdgeCollision(TBall* ball, float coef) override;
+	void place_in_grid() override;
 };

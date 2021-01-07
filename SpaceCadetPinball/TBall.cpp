@@ -20,7 +20,7 @@ TBall::TBall(TPinballTable* table) : TPinballComponent(table, -1, false)
 	CollisionComp = nullptr;
 	EdgeCollisionCount = 0;
 	TimeDelta = 0.0;
-	Unknown17F = 1;
+	FieldFlag = 1;
 	CollisionFlag = 0;
 	Speed = 0.0;
 	Acceleration.Y = 0.0;
@@ -83,8 +83,8 @@ void TBall::Repaint()
 		RenderSprite,
 		bmp,
 		zDepth,
-		bmp->Width / 2 - pos2D[0],
-		bmp->Height / 2 - pos2D[1]);
+		pos2D[0] - bmp->Width / 2,
+		pos2D[1] - bmp->Height / 2);
 }
 
 void TBall::not_again(TEdgeSegment* edge)
@@ -117,7 +117,7 @@ int TBall::Message(int code, float value)
 		Position.Y = 0.0;
 		UnknownBaseFlag2 = 0;
 		CollisionFlag = 0;
-		Unknown17F = 1;
+		FieldFlag = 1;
 		Acceleration.Y = 0.0;
 		Position.Z = Offset;
 		Acceleration.X = 0.0;

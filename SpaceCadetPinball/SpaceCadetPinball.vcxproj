@@ -184,6 +184,7 @@
     <ClInclude Include="TComponentGroup.h" />
     <ClInclude Include="TDemo.h" />
     <ClInclude Include="TDrain.h" />
+    <ClInclude Include="TEdgeBox.h" />
     <ClInclude Include="TEdgeManager.h" />
     <ClInclude Include="TEdgeSegment.h" />
     <ClInclude Include="TFlagSpinner.h" />
@@ -252,6 +253,7 @@
     <ClCompile Include="TComponentGroup.cpp" />
     <ClCompile Include="TDemo.cpp" />
     <ClCompile Include="TDrain.cpp" />
+    <ClCompile Include="TEdgeBox.cpp" />
     <ClCompile Include="TEdgeManager.cpp" />
     <ClCompile Include="TEdgeSegment.cpp" />
     <ClCompile Include="TFlagSpinner.cpp" />

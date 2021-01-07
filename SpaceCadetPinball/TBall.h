@@ -25,7 +25,7 @@ public :
 	int Unknown14;
 	int Unknown15;
 	TCollisionComponent* CollisionComp;
-	float Unknown17F;
+	int FieldFlag;
 	TEdgeSegment* Collisions[5];
 	int EdgeCollisionCount;
 	vector_type CollisionOffset;

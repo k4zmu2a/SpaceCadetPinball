@@ -68,12 +68,12 @@ public:
 	objlist_class* ComponentList;
 	objlist_class* BallList;
 	TLightGroup* LightGroup;
-	float TableAngleMult;
-	float TableAngle1;
-	float TableAngle2;
+	float GravityDirVectMult;
+	float GravityAngleX;
+	float GravityAnglY;
 	float CollisionCompOffset;
-	int UnknownP62;
-	int UnknownP63;
+	float PlungerPositionX;
+	float PlungerPositionY;
 	int ScoreMultiplier;
 	int ScoreAdded;
 	int ScoreSpecial1;

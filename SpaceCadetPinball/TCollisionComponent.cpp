@@ -29,10 +29,10 @@ TCollisionComponent::TCollisionComponent(TPinballTable* table, int groupIndex, b
 		}
 	}
 
-	UnknownC7F = visual.Kicker.Unknown1F;
+	MaxCollisionSpeed = visual.Kicker.Unknown1F;
 	UnknownC4F = visual.Unknown2F;
 	UnknownC5F = visual.Unknown1F;
-	UnknownC6F = visual.Kicker.Unknown2F;
+	CollisionMultiplier = visual.Kicker.Unknown2F;
 	SoundIndex1 = visual.Kicker.SoundIndex;
 	SoundIndex2 = visual.SoundIndex2;
 	GroupIndex = groupIndex;
@@ -58,17 +58,17 @@ void TCollisionComponent::port_draw()
 	}
 }
 
-int TCollisionComponent::DefaultCollision(TBall* ball, vector_type* ballPosition, vector_type* vec2)
+int TCollisionComponent::DefaultCollision(TBall* ball, vector_type* nextPosition, vector_type* direction)
 {
 	if (PinballTable->TiltLockFlag)
 	{
-		maths::basic_collision(ball, ballPosition, vec2, UnknownC4F, UnknownC5F, 1000000000.0, 0.0);
+		maths::basic_collision(ball, nextPosition, direction, UnknownC4F, UnknownC5F, 1000000000.0, 0.0);
 		return 0;
 	}
-	auto projSpeed = maths::basic_collision(ball, ballPosition, vec2, UnknownC4F, UnknownC5F,
-	                                        UnknownC7F,
-	                                        UnknownC6F);
-	if (projSpeed <= UnknownC7F)
+	auto projSpeed = maths::basic_collision(ball, nextPosition, direction, UnknownC4F, UnknownC5F,
+	                                        MaxCollisionSpeed,
+	                                        CollisionMultiplier);
+	if (projSpeed <= MaxCollisionSpeed)
 	{
 		if (projSpeed > 0.2)
 		{
@@ -82,25 +82,25 @@ int TCollisionComponent::DefaultCollision(TBall* ball, vector_type* ballPosition
 	return 1;
 }
 
-void TCollisionComponent::Collision(TBall* ball, struct vector_type* ballPosition, struct vector_type* vec2,
-                                    float someVal, TEdgeSegment* edge)
+void TCollisionComponent::Collision(TBall* ball, vector_type* nextPosition, vector_type* direction,
+                                    float coef, TEdgeSegment* edge)
 {
 	int soundIndex;
 
 	if (PinballTable->TiltLockFlag)
 	{
-		maths::basic_collision(ball, ballPosition, vec2, UnknownC4F, UnknownC5F, 1000000000.0, 0.0);
+		maths::basic_collision(ball, nextPosition, direction, UnknownC4F, UnknownC5F, 1000000000.0, 0.0);
 		return;
 	}
 	double projSpeed = maths::basic_collision(
 		ball,
-		ballPosition,
-		vec2,
+		nextPosition,
+		direction,
 		UnknownC4F,
 		UnknownC5F,
-		UnknownC7F,
-		UnknownC6F);
-	if (projSpeed <= UnknownC7F)
+		MaxCollisionSpeed,
+		CollisionMultiplier);
+	if (projSpeed <= MaxCollisionSpeed)
 	{
 		if (projSpeed <= 0.2)
 			return;

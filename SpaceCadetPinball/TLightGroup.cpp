@@ -9,7 +9,7 @@
 #include "TLight.h"
 #include "TPinballTable.h"
 
-TLightGroup::TLightGroup(TPinballTable* table, int groupIndex) : TPinballComponent(table, -1, false)
+TLightGroup::TLightGroup(TPinballTable* table, int groupIndex) : TPinballComponent(table, groupIndex, false)
 {
 	List = new objlist_class(4, 4);
 	Timer = 0;

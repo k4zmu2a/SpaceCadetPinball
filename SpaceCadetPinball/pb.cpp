@@ -518,8 +518,8 @@ void pb::launch_ball()
 
 void pb::end_game()
 {
-	int scores[4];
-	int scoreIndex[4];
+	int scores[4]{};
+	int scoreIndex[4]{};
 	char String1[200];
 
 	mode_change(2);
@@ -616,7 +616,7 @@ float pb::collide(float timeNow, float timeDelta, TBall* ball)
 		ray.Direction.Y = ball->Acceleration.Y;
 		ray.Direction.Z = ball->Acceleration.Z;
 		ray.MaxDistance = maxDistance;
-		ray.Unknown2 = ball->Unknown17F;
+		ray.FieldFlag = ball->FieldFlag;
 		ray.TimeNow = timeNow;
 		ray.TimeDelta = timeDelta;
 		ray.MinDistance = 0.0020000001f;

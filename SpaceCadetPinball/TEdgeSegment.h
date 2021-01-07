@@ -14,7 +14,7 @@ class TEdgeSegment
 public:
 	TCollisionComponent* CollisionComponent;
 	char* PinbCompFlag2Ptr;
-	char Unknown3_0;
+	char ProcessedFlag;
 	int WallValue;
 	int VisualFlag;
 
@@ -24,7 +24,7 @@ public:
 	virtual void EdgeCollision(TBall* ball, float coef) = 0;
 	virtual void port_draw();
 	virtual void place_in_grid() = 0;
-	virtual double FindCollisionDistance(ray_type* ray) = 0;
+	virtual float FindCollisionDistance(ray_type* ray) = 0;
 
 	static TEdgeSegment* install_wall(float* floatArr, TCollisionComponent* collComp, char* flagPtr,
 	                                  unsigned int visual_flag, float offset, int someValue);

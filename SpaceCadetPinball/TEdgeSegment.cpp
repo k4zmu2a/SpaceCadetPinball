@@ -8,7 +8,7 @@ TEdgeSegment::TEdgeSegment(TCollisionComponent* collComp, char* someFlag, unsign
 	this->CollisionComponent = collComp;
 	this->PinbCompFlag2Ptr = someFlag;
 	this->VisualFlag = visualFlag;
-	this->Unknown3_0 = 0;
+	this->ProcessedFlag = 0;
 }
 
 void TEdgeSegment::port_draw()

@@ -3,6 +3,7 @@
 
 #include "objlist_class.h"
 #include "pb.h"
+#include "TLight.h"
 #include "TPinballTable.h"
 #include "TSound.h"
 
@@ -795,6 +796,12 @@ int control::cheat_bump_rank()
 	return 0;
 }
 
+BOOL control::light_on(component_tag* tag)
+{
+	auto light = static_cast<TLight*>(tag->Component);
+	return light->BmpIndex1 || light->FlasherFlag2 || light->FlasherActive;
+}
+
 void control::FlipperRebounderControl1(int code, TPinballComponent* caller)
 {
 }
@@ -1013,6 +1020,35 @@ void control::HyperspaceKickOutControl(int code, TPinballComponent* caller)
 
 void control::PlungerControl(int code, TPinballComponent* caller)
 {
+	if (code == 1015)
+	{
+		MissionControl(67, nullptr);
+	}
+	else if (code == 1016)
+	{
+		table_unlimited_balls = 0;
+		if (!control_middle_circle_tag.Component->Message(37, 0.0))
+			control_middle_circle_tag.Component->Message(32, 0.0);
+		if (!light_on(&control_lite200_tag))
+		{
+			control_skill_shot_lights_tag.Component->Message(20, 0.0);
+			control_lite67_tag.Component->Message(19, 0.0);
+			control_skill_shot_lights_tag.Component->Message(26, 0.25f);
+			control_l_trek_lights_tag.Component->Message(20, 0.0);
+			control_l_trek_lights_tag.Component->Message(32, 0.2f);
+			control_l_trek_lights_tag.Component->Message(26, 0.2f);
+			control_r_trek_lights_tag.Component->Message(20, 0.0);
+			control_r_trek_lights_tag.Component->Message(32, 0.2f);
+			control_r_trek_lights_tag.Component->Message(26, 0.2f);
+			TableG->ScoreSpecial1 = 25000;
+			MultiplierLightGroupControl(65, control_top_target_lights_tag.Component);
+			control_fuel_bargraph_tag.Component->Message(19, 0.0);
+			control_lite200_tag.Component->Message(19, 0.0);
+			control_gate1_tag.Component->Message(53, 0.0);
+			control_gate2_tag.Component->Message(53, 0.0);
+		}
+		control_lite200_tag.Component->MessageField = 0;
+	}
 }
 
 void control::MedalTargetControl(int code, TPinballComponent* caller)
