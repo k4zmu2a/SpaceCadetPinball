@@ -836,10 +836,32 @@ void control::RightKickerGateControl(int code, TPinballComponent* caller)
 
 void control::DeploymentChuteToEscapeChuteOneWayControl(int code, TPinballComponent* caller)
 {
+	char Buffer[64];
+	if (code == 63)
+	{
+		int count = control_skill_shot_lights_tag.Component->Message(37, 0.0);
+		if (count)
+		{
+			static_cast<TSound*>(control_soundwave3_tag.Component)->Play();
+			int score = TableG->AddScore(caller->get_scoring(count - 1));
+			sprintf_s(Buffer, pinball::get_rc_string(21, 0), score);
+			static_cast<TTextBox*>(control_info_text_box_tag.Component)->Display(Buffer, 2.0);
+			if (!light_on(&control_lite56_tag))
+			{
+				control_l_trek_lights_tag.Component->Message(34, 0.0);
+				control_l_trek_lights_tag.Component->Message(20, 0.0);
+				control_r_trek_lights_tag.Component->Message(34, 0.0);
+				control_r_trek_lights_tag.Component->Message(20, 0.0);
+			}
+			control_skill_shot_lights_tag.Component->Message(44, 1.0);
+		}
+	}
 }
 
 void control::DeploymentChuteToTableOneWayControl(int code, TPinballComponent* caller)
 {
+	if (code == 63)
+		control_skill_shot_lights_tag.Component->Message(20, 0.0);
 }
 
 void control::DrainBallBlockerControl(int code, TPinballComponent* caller)

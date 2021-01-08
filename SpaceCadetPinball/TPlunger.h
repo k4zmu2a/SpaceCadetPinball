@@ -6,6 +6,7 @@ class TPlunger :
 {
 public:
 	TPlunger(TPinballTable* table, int groupIndex);
+	~TPlunger() override = default;
 	void Collision(TBall* ball, vector_type* nextPosition, vector_type* direction, float coef,
 	               TEdgeSegment* edge) override;
 	int Message(int code, float value) override;

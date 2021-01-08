@@ -1,7 +1,7 @@
 #pragma once
 #include "TCollisionComponent.h"
-#include "TEdgeSegment.h"
 
+struct ray_type;
 class TEdgeBox;
 
 struct field_effect_type

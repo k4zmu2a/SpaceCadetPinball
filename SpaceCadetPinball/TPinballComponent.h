@@ -17,8 +17,8 @@ public:
 	virtual ~TPinballComponent();
 	virtual int Message(int code, float value);
 	virtual void port_draw();
-	virtual void put_scoring(int scoreId, int value);
-	virtual int get_scoring(int score1);
+	virtual void put_scoring(int index, int score);
+	virtual int get_scoring(int index);
 
 	__int8 UnknownBaseFlag1;
 	__int8 UnknownBaseFlag2;

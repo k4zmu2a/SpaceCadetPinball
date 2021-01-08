@@ -2,8 +2,10 @@
 #include "TTableLayer.h"
 
 #include "loader.h"
+#include "objlist_class.h"
 #include "proj.h"
 #include "render.h"
+#include "TBall.h"
 #include "TLine.h"
 #include "TPinballTable.h"
 
@@ -114,8 +116,8 @@ int TTableLayer::FieldEffect(TBall* ball, vector_type* vecDst)
 void TTableLayer::edges_insert_square(float y0, float x0, float y1, float x1, TEdgeSegment* edge,
                                       field_effect_type* field)
 {
-	float widthM = edge_manager->AdvanceX * 0.001f;
-	float heightM = edge_manager->AdvanceY * 0.001f;
+	float widthM = static_cast<float>(static_cast<int>(edge_manager->AdvanceX * 0.001f)); // Sic
+	float heightM = static_cast<float>(static_cast<int>(edge_manager->AdvanceY * 0.001f));
 	float xMin = x0 - widthM;
 	float xMax = x1 + widthM;
 	float yMin = y0 - heightM;
@@ -127,10 +129,9 @@ void TTableLayer::edges_insert_square(float y0, float x0, float y1, float x1, TE
 	int yMaxBox = edge_manager->box_y(yMax);
 
 	float boxX = static_cast<float>(xMinBox) * edge_manager->AdvanceX + edge_manager->X;
-	float boxY = static_cast<float>(yMinBox) * edge_manager->AdvanceY + edge_manager->Y;
-
 	for (int indexX = xMinBox; indexX <= xMaxBox; ++indexX)
 	{
+		float boxY = static_cast<float>(yMinBox) * edge_manager->AdvanceY + edge_manager->Y;
 		for (int indexY = yMinBox; indexY <= yMaxBox; ++indexY)
 		{
 			if (xMax >= boxX && xMin <= boxX + edge_manager->AdvanceX &&
@@ -148,5 +149,129 @@ void TTableLayer::edges_insert_square(float y0, float x0, float y1, float x1, TE
 			boxY += edge_manager->AdvanceY;
 		}
 		boxX += edge_manager->AdvanceX;
+	}
+}
+
+void TTableLayer::edges_insert_circle(circle_type* circle, TEdgeSegment* edge, field_effect_type* field)
+{
+	ray_type ray{};
+	vector_type vec1{};
+
+	auto radiusM = sqrt(circle->RadiusSq) + edge_manager->AdvanceX * 0.001f;
+	auto radiusMSq = radiusM * radiusM;
+
+	auto xMin = circle->Center.X - radiusM;
+	auto yMin = circle->Center.Y - radiusM;
+	auto xMax = radiusM + circle->Center.X;
+	auto yMax = radiusM + circle->Center.Y;
+
+	auto xMinBox = edge_manager->box_x(xMin);
+	auto yMinBox = edge_manager->box_y(yMin);
+	auto xMaxBox = edge_manager->box_x(xMax);
+	auto yMaxBox = edge_manager->box_y(yMax);
+
+	auto dirX = xMinBox - 1 <= 0 ? 0 : xMinBox - 1;
+	auto dirY = yMinBox - 1 <= 0 ? 0 : yMinBox - 1;
+
+	xMaxBox = edge_manager->increment_box_x(xMaxBox);
+	yMaxBox = edge_manager->increment_box_y(yMaxBox);
+
+	vec1.X = static_cast<float>(dirX) * edge_manager->AdvanceX + edge_manager->X;
+	for (auto indexX = dirX; indexX <= xMaxBox; ++indexX)
+	{
+		vec1.Y = static_cast<float>(dirY) * edge_manager->AdvanceY + edge_manager->Y;
+		for (int indexY = dirY; indexY <= yMaxBox; ++indexY)
+		{
+			auto vec1XAdv = vec1.X + edge_manager->AdvanceX;
+			auto vec1YAdv = vec1.Y + edge_manager->AdvanceY;
+			if (xMax >= vec1.X && xMin <= vec1XAdv &&
+				yMax >= vec1.Y && yMin <= vec1YAdv)
+			{
+				bool collision = true;
+				do
+				{
+					if (circle->Center.X <= vec1XAdv && circle->Center.X >= vec1.X &&
+						circle->Center.Y <= vec1YAdv && circle->Center.Y >= vec1.Y)
+						break;
+
+					auto vec2 = vec1;
+					if (maths::Distance_Squared(vec1, circle->Center) <= radiusMSq)
+						break;
+
+					vec2.X = vec2.X + edge_manager->AdvanceX;
+					if (maths::Distance_Squared(vec2, circle->Center) <= radiusMSq)
+						break;
+
+					vec2.Y = vec2.Y + edge_manager->AdvanceY;
+					if (maths::Distance_Squared(vec2, circle->Center) <= radiusMSq)
+						break;
+
+					vec2.X = vec2.X - edge_manager->AdvanceX;
+					if (maths::Distance_Squared(vec2, circle->Center) <= radiusMSq)
+						break;
+
+					ray.Origin = vec1;
+					ray.Direction.X = 1.0;
+					ray.Direction.Y = 0.0;
+					ray.MaxDistance = edge_manager->AdvanceX;
+					if (maths::ray_intersect_circle(&ray, circle) < 1000000000.0)
+						break;
+
+					ray.Direction.X = -1.0;
+					ray.Origin.X = ray.Origin.X + edge_manager->AdvanceX;
+					if (maths::ray_intersect_circle(&ray, circle) < 1000000000.0)
+						break;
+
+					ray.Direction.X = 0.0;
+					ray.Direction.Y = 1.0;
+					ray.MaxDistance = edge_manager->AdvanceY;
+					if (maths::ray_intersect_circle(&ray, circle) < 1000000000.0)
+						break;
+
+					ray.Direction.Y = -1.0;
+					ray.Origin.Y = ray.Origin.Y + edge_manager->AdvanceY;
+					if (maths::ray_intersect_circle(&ray, circle) < 1000000000.0)
+						break;
+
+					ray.Direction.Y = 0.0;
+					ray.Direction.X = -1.0;
+					ray.MaxDistance = edge_manager->AdvanceX;
+					if (maths::ray_intersect_circle(&ray, circle) < 1000000000.0)
+						break;
+
+					ray.Direction.X = 1.0;
+					ray.Origin.X = ray.Origin.X - edge_manager->AdvanceX;
+					if (maths::ray_intersect_circle(&ray, circle) < 1000000000.0)
+						break;
+
+					ray.Direction.X = 0.0;
+					ray.Direction.Y = -1.0;
+					ray.MaxDistance = edge_manager->AdvanceY;
+					if (maths::ray_intersect_circle(&ray, circle) < 1000000000.0)
+						break;
+
+					ray.Direction.Y = 1.0;
+					ray.Origin.Y = ray.Origin.Y - edge_manager->AdvanceY;
+					if (maths::ray_intersect_circle(&ray, circle) < 1000000000.0)
+						break;
+					
+					collision = false;
+				}
+				while (false);
+				if (collision)
+				{
+					if (edge)
+					{
+						edge_manager->add_edge_to_box(indexX, indexY, edge);
+					}
+					if (field)
+					{
+						edge_manager->add_field_to_box(indexX, indexY, field);
+					}
+				}
+			}
+			vec1.Y += edge_manager->AdvanceY;
+		}
+		vec1.X += edge_manager->AdvanceX;
 	}
 }

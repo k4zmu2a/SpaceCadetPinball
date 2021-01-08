@@ -1,7 +1,8 @@
 #pragma once
-#include "TCollisionComponent.h"
-#include "maths.h"
-#include "TBall.h"
+
+class TBall;
+class TCollisionComponent;
+struct ray_type;
 
 enum class wall_type : int
 {

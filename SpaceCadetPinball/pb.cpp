@@ -11,12 +11,14 @@
 #include "loader.h"
 #include "midi.h"
 #include "nudge.h"
+#include "objlist_class.h"
 #include "options.h"
 #include "timer.h"
 #include "winmain.h"
 #include "resource.h"
 #include "TBall.h"
 #include "TDemo.h"
+#include "TEdgeSegment.h"
 #include "TLightGroup.h"
 #include "TPlunger.h"
 #include "TTableLayer.h"
@@ -623,6 +625,7 @@ float pb::collide(float timeNow, float timeDelta, TBall* ball)
 
 		TEdgeSegment* edge = nullptr;
 		auto distance = TTableLayer::edge_manager->FindCollisionDistance(&ray, ball, &edge);
+		ball->EdgeCollisionCount = 0;
 		if (distance >= 1000000000.0)
 		{
 			maxDistance = timeDelta * ball->Speed;

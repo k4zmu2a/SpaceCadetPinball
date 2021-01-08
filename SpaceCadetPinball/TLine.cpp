@@ -53,10 +53,11 @@ void TLine::EdgeCollision(TBall* ball, float coef)
 
 void TLine::place_in_grid()
 {
-	auto xBox0 = TTableLayer::edge_manager->box_x(X0);
-	auto yBox0 = TTableLayer::edge_manager->box_y(Y0);
-	auto xBox1 = TTableLayer::edge_manager->box_x(X1);
-	auto yBox1 = TTableLayer::edge_manager->box_y(Y1);
+	auto edgeMan = TTableLayer::edge_manager;
+	auto xBox0 = edgeMan->box_x(X0);
+	auto yBox0 = edgeMan->box_y(Y0);
+	auto xBox1 = edgeMan->box_x(X1);
+	auto yBox1 = edgeMan->box_y(Y1);
 
 	int dirX = X0 >= X1 ? -1 : 1;
 	int dirY = Y0 >= Y1 ? -1 : 1;
@@ -66,12 +67,12 @@ void TLine::place_in_grid()
 		if (dirX == 1)
 		{
 			while (xBox0 <= xBox1)
-				TTableLayer::edge_manager->add_edge_to_box(xBox0++, yBox0, this);
+				edgeMan->add_edge_to_box(xBox0++, yBox0, this);
 		}
 		else
 		{
 			while (xBox0 >= xBox1)
-				TTableLayer::edge_manager->add_edge_to_box(xBox0--, yBox0, this);
+				edgeMan->add_edge_to_box(xBox0--, yBox0, this);
 		}
 	}
 	else if (xBox0 == xBox1)
@@ -81,14 +82,14 @@ void TLine::place_in_grid()
 			if (yBox0 <= yBox1)
 			{
 				do
-					TTableLayer::edge_manager->add_edge_to_box(xBox0, yBox0++, this);
+					edgeMan->add_edge_to_box(xBox0, yBox0++, this);
 				while (yBox0 <= yBox1);
 			}
 		}
 		else if (yBox0 >= yBox1)
 		{
 			do
-				TTableLayer::edge_manager->add_edge_to_box(xBox0, yBox0--, this);
+				edgeMan->add_edge_to_box(xBox0, yBox0--, this);
 			while (yBox0 >= yBox1);
 		}
 	}
@@ -99,16 +100,15 @@ void TLine::place_in_grid()
 		int bresIndexX = xBox0 + 1, bresIndexY = yBox0 + 1;
 		auto bresDyDx = (Y0 - Y1) / (X0 - X1);
 		auto bresXAdd = Y0 - bresDyDx * X0;
-		TTableLayer::edge_manager->add_edge_to_box(xBox0, yBox0, this);
+		edgeMan->add_edge_to_box(xBox0, yBox0, this);
 		if (dirX == 1)
 		{
 			if (dirY == 1)
 			{
 				do
 				{
-					yCoord = bresIndexY * TTableLayer::edge_manager->AdvanceY + TTableLayer::edge_manager->Y;
-					xCoord = (bresIndexX * TTableLayer::edge_manager->AdvanceX + TTableLayer::edge_manager->X) *
-						bresDyDx + bresXAdd;
+					yCoord = bresIndexY * edgeMan->AdvanceY + edgeMan->Y;
+					xCoord = (bresIndexX * edgeMan->AdvanceX + edgeMan->X) * bresDyDx + bresXAdd;
 					if (xCoord >= yCoord)
 					{
 						if (xCoord == yCoord)
@@ -124,7 +124,7 @@ void TLine::place_in_grid()
 						++indexX1;
 						++bresIndexX;
 					}
-					TTableLayer::edge_manager->add_edge_to_box(indexX1, indexY1, this);
+					edgeMan->add_edge_to_box(indexX1, indexY1, this);
 				}
 				while (indexX1 != xBox1 || indexY1 != yBox1);
 			}
@@ -132,9 +132,8 @@ void TLine::place_in_grid()
 			{
 				do
 				{
-					yCoord = indexY1 * TTableLayer::edge_manager->AdvanceY + TTableLayer::edge_manager->Y;
-					xCoord = (bresIndexX * TTableLayer::edge_manager->AdvanceX + TTableLayer::edge_manager->X) *
-						bresDyDx + bresXAdd;
+					yCoord = indexY1 * edgeMan->AdvanceY + edgeMan->Y;
+					xCoord = (bresIndexX * edgeMan->AdvanceX + edgeMan->X) * bresDyDx + bresXAdd;
 					if (xCoord <= yCoord)
 					{
 						if (xCoord == yCoord)
@@ -149,7 +148,7 @@ void TLine::place_in_grid()
 						++indexX1;
 						++bresIndexX;
 					}
-					TTableLayer::edge_manager->add_edge_to_box(indexX1, indexY1, this);
+					edgeMan->add_edge_to_box(indexX1, indexY1, this);
 				}
 				while (indexX1 != xBox1 || indexY1 != yBox1);
 			}
@@ -160,9 +159,8 @@ void TLine::place_in_grid()
 			{
 				do
 				{
-					xCoord = bresIndexY * TTableLayer::edge_manager->AdvanceY + TTableLayer::edge_manager->Y;
-					yCoord = (indexX1 * TTableLayer::edge_manager->AdvanceX + TTableLayer::edge_manager->X) *
-						bresDyDx + bresXAdd;
+					xCoord = bresIndexY * edgeMan->AdvanceY + edgeMan->Y;
+					yCoord = (indexX1 * edgeMan->AdvanceX + edgeMan->X) * bresDyDx + bresXAdd;
 					if (yCoord >= xCoord)
 					{
 						if (yCoord == xCoord)
@@ -174,7 +172,7 @@ void TLine::place_in_grid()
 					{
 						--indexX1;
 					}
-					TTableLayer::edge_manager->add_edge_to_box(indexX1, indexY1, this);
+					edgeMan->add_edge_to_box(indexX1, indexY1, this);
 				}
 				while (indexX1 != xBox1 || indexY1 != yBox1);
 			}
@@ -182,9 +180,8 @@ void TLine::place_in_grid()
 			{
 				do
 				{
-					yCoord = indexY1 * TTableLayer::edge_manager->AdvanceY + TTableLayer::edge_manager->Y;
-					xCoord = (indexX1 * TTableLayer::edge_manager->AdvanceX + TTableLayer::edge_manager->X) *
-						bresDyDx + bresXAdd;
+					yCoord = indexY1 * edgeMan->AdvanceY + edgeMan->Y;
+					xCoord = (indexX1 * edgeMan->AdvanceX + edgeMan->X) * bresDyDx + bresXAdd;
 					if (xCoord <= yCoord)
 					{
 						if (xCoord == yCoord)
@@ -195,7 +192,7 @@ void TLine::place_in_grid()
 					{
 						--indexX1;
 					}
-					TTableLayer::edge_manager->add_edge_to_box(indexX1, indexY1, this);
+					edgeMan->add_edge_to_box(indexX1, indexY1, this);
 				}
 				while (indexX1 != xBox1 || indexY1 != yBox1);
 			}

@@ -1,14 +1,17 @@
 #include "pch.h"
 #include "TEdgeSegment.h"
+
+#include "objlist_class.h"
 #include "TCircle.h"
+#include "TCollisionComponent.h"
 #include "TLine.h"
 
 TEdgeSegment::TEdgeSegment(TCollisionComponent* collComp, char* someFlag, unsigned visualFlag)
 {
-	this->CollisionComponent = collComp;
-	this->PinbCompFlag2Ptr = someFlag;
-	this->VisualFlag = visualFlag;
-	this->ProcessedFlag = 0;
+	CollisionComponent = collComp;
+	PinbCompFlag2Ptr = someFlag;
+	VisualFlag = visualFlag;
+	ProcessedFlag = 0;
 }
 
 void TEdgeSegment::port_draw()

@@ -1,7 +1,12 @@
 #include "pch.h"
 #include "TEdgeManager.h"
 
+
+#include "maths.h"
+#include "objlist_class.h"
+#include "TBall.h"
 #include "TEdgeBox.h"
+#include "TEdgeSegment.h"
 #include "TTableLayer.h"
 
 TEdgeManager::TEdgeManager(float posX, float posY, float width, float height)
@@ -137,129 +142,126 @@ float TEdgeManager::FindCollisionDistance(ray_type* ray, TBall* ball, TEdgeSegme
 			}
 		}
 	}
-	else
+	else if (rayBoxX == rayEndBoxX)
 	{
-		if (rayBoxX == rayEndBoxX)
+		if (rayDirY == 1)
 		{
-			if (rayDirY == 1)
+			for (auto indexY = rayBoxY; indexY <= rayEndBoxY; indexY++)
 			{
-				for (auto indexY = rayBoxY; indexY <= rayEndBoxY; indexY++)
-				{
-					edgeIndex = TestGridBox(rayBoxX, indexY, &distance, edge, ray, ball, edgeIndex);
-				}
-			}
-			else
-			{
-				for (auto indexY = rayBoxY; indexY >= rayEndBoxY; indexY--)
-				{
-					edgeIndex = TestGridBox(rayBoxX, indexY, &distance, edge, ray, ball, edgeIndex);
-				}
+				edgeIndex = TestGridBox(rayBoxX, indexY, &distance, edge, ray, ball, edgeIndex);
 			}
 		}
 		else
 		{
-			auto rayDyDX = (rayY - rayEndY) / (rayX - rayEndX);
-			auto indexX = rayBoxX;
-			auto indexY = rayBoxY;
-			auto bresIndexX = rayBoxX + 1;
-			auto bresIndexY = rayBoxY + 1;
-			auto bresXAdd = rayY - rayDyDX * rayX;
-			edgeIndex = TestGridBox(rayBoxX, rayBoxY, &distance, edge, ray, ball, 0);
-			if (rayDirX == 1)
+			for (auto indexY = rayBoxY; indexY >= rayEndBoxY; indexY--)
 			{
-				if (rayDirY == 1)
-				{					
-					do
-					{
-						auto yCoord = bresIndexY * AdvanceY + Y;
-						auto xCoord = (bresIndexX * AdvanceX + X) * rayDyDX + bresXAdd;
-						if (xCoord >= yCoord)
-						{
-							if (xCoord == yCoord)
-							{
-								++indexX;
-								++bresIndexX;
-							}
-							++indexY;
-							++bresIndexY;
-						}
-						else
-						{
-							++indexX;
-							++bresIndexX;
-						}
-						edgeIndex = TestGridBox(indexX, indexY, &distance, edge, ray, ball, edgeIndex);
-					}
-					while (indexX < rayEndBoxX || indexY < rayEndBoxY);
-				}
-				else
+				edgeIndex = TestGridBox(rayBoxX, indexY, &distance, edge, ray, ball, edgeIndex);
+			}
+		}
+	}
+	else
+	{
+		auto rayDyDX = (rayY - rayEndY) / (rayX - rayEndX);
+		auto indexX = rayBoxX;
+		auto indexY = rayBoxY;
+		auto bresIndexX = rayBoxX + 1;
+		auto bresIndexY = rayBoxY + 1;
+		auto bresXAdd = rayY - rayDyDX * rayX;
+		edgeIndex = TestGridBox(rayBoxX, rayBoxY, &distance, edge, ray, ball, 0);
+		if (rayDirX == 1)
+		{
+			if (rayDirY == 1)
+			{
+				do
 				{
-					do
+					auto yCoord = bresIndexY * AdvanceY + Y;
+					auto xCoord = (bresIndexX * AdvanceX + X) * rayDyDX + bresXAdd;
+					if (xCoord >= yCoord)
 					{
-						auto yCoord = indexY * AdvanceY + Y;
-						auto xCoord = (bresIndexX * AdvanceX + X) * rayDyDX + bresXAdd;
-						if (xCoord <= yCoord)
-						{
-							if (xCoord == yCoord)
-							{
-								++indexX;
-								++bresIndexX;
-							}
-							--indexY;
-						}
-						else
+						if (xCoord == yCoord)
 						{
 							++indexX;
 							++bresIndexX;
 						}
-						edgeIndex = TestGridBox(indexX, indexY, &distance, edge, ray, ball, edgeIndex);
+						++indexY;
+						++bresIndexY;
 					}
-					while (indexX < rayEndBoxX || indexY > rayEndBoxY);
+					else
+					{
+						++indexX;
+						++bresIndexX;
+					}
+					edgeIndex = TestGridBox(indexX, indexY, &distance, edge, ray, ball, edgeIndex);
 				}
+				while (indexX < rayEndBoxX || indexY < rayEndBoxY);
 			}
 			else
 			{
-				if (rayDirY == 1)
+				do
 				{
-					do
+					auto yCoord = indexY * AdvanceY + Y;
+					auto xCoord = (bresIndexX * AdvanceX + X) * rayDyDX + bresXAdd;
+					if (xCoord <= yCoord)
 					{
-						auto yCoord = bresIndexY * AdvanceY + Y;
-						auto xCoord = (indexX * AdvanceX + X) * rayDyDX + bresXAdd;
-						if (xCoord >= yCoord)
+						if (xCoord == yCoord)
 						{
-							if (xCoord == yCoord)
-								--indexX;
-							++indexY;
-							++bresIndexY;
+							++indexX;
+							++bresIndexX;
 						}
-						else
-						{
-							--indexX;
-						}
-						edgeIndex = TestGridBox(indexX, indexY, &distance, edge, ray, ball, edgeIndex);
+						--indexY;
 					}
-					while (indexX > rayEndBoxX || indexY < rayEndBoxY);
+					else
+					{
+						++indexX;
+						++bresIndexX;
+					}
+					edgeIndex = TestGridBox(indexX, indexY, &distance, edge, ray, ball, edgeIndex);
 				}
-				else
+				while (indexX < rayEndBoxX || indexY > rayEndBoxY);
+			}
+		}
+		else
+		{
+			if (rayDirY == 1)
+			{
+				do
 				{
-					do
+					auto yCoord = bresIndexY * AdvanceY + Y;
+					auto xCoord = (indexX * AdvanceX + X) * rayDyDX + bresXAdd;
+					if (xCoord >= yCoord)
 					{
-						auto yCoord = indexY * AdvanceY + Y;
-						auto xCoord = (indexX * AdvanceX + X) * rayDyDX + bresXAdd;
-						if (xCoord <= yCoord)
-						{
-							if (xCoord == yCoord)
-								--indexX;
-							--indexY;
-						}
-						else
-						{
+						if (xCoord == yCoord)
 							--indexX;
-						}
-						edgeIndex = TestGridBox(indexX, indexY, &distance, edge, ray, ball, edgeIndex);
+						++indexY;
+						++bresIndexY;
 					}
-					while (indexX > rayEndBoxX || indexY > rayEndBoxY);
+					else
+					{
+						--indexX;
+					}
+					edgeIndex = TestGridBox(indexX, indexY, &distance, edge, ray, ball, edgeIndex);
 				}
+				while (indexX > rayEndBoxX || indexY < rayEndBoxY);
+			}
+			else
+			{
+				do
+				{
+					auto yCoord = indexY * AdvanceY + Y;
+					auto xCoord = (indexX * AdvanceX + X) * rayDyDX + bresXAdd;
+					if (xCoord <= yCoord)
+					{
+						if (xCoord == yCoord)
+							--indexX;
+						--indexY;
+					}
+					else
+					{
+						--indexX;
+					}
+					edgeIndex = TestGridBox(indexX, indexY, &distance, edge, ray, ball, edgeIndex);
+				}
+				while (indexX > rayEndBoxX || indexY > rayEndBoxY);
 			}
 		}
 	}

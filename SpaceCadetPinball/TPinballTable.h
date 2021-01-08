@@ -26,7 +26,7 @@ class TPinballTable : public TPinballComponent
 {
 public:
 	TPinballTable();
-	~TPinballTable();
+	~TPinballTable() override;
 	TPinballComponent* find_component(LPCSTR componentName);
 	TPinballComponent* find_component(int groupIndex);
 	int AddScore(int score);

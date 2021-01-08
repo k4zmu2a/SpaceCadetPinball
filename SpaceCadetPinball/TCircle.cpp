@@ -1,6 +1,10 @@
 #include "pch.h"
 #include "TCircle.h"
 
+#include "TBall.h"
+#include "TCollisionComponent.h"
+#include "TTableLayer.h"
+
 TCircle::TCircle(TCollisionComponent* collComp, char* someFlagPtr, unsigned visualFlag, vector_type* center,
                  float radius): TEdgeSegment(collComp, someFlagPtr, visualFlag)
 {
@@ -23,4 +27,9 @@ void TCircle::EdgeCollision(TBall* ball, float coef)
 	direction.Y = nextPosition.Y - Circle.Center.Y;
 	maths::normalize_2d(&direction);
 	CollisionComponent->Collision(ball, &nextPosition, &direction, coef, this);
+}
+
+void TCircle::place_in_grid()
+{
+	TTableLayer::edges_insert_circle(&Circle, this, nullptr);
 }

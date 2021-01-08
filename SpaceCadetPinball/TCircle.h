@@ -12,8 +12,5 @@ public:
 	        float radius);
 	float FindCollisionDistance(ray_type* ray) override;
 	void EdgeCollision(TBall* ball, float coef) override;
-
-	void place_in_grid() override
-	{
-	}
+	void place_in_grid() override;
 };

@@ -299,3 +299,8 @@ float maths::basic_collision(TBall* ball, vector_type* nextPosition, vector_type
 	}
 	return projSpeed;
 }
+
+float maths::Distance_Squared(vector_type vec1, vector_type vec2)
+{
+	return (vec1.Y - vec2.Y) * (vec1.Y - vec2.Y) + (vec1.X - vec2.X) * (vec1.X - vec2.X);
+}

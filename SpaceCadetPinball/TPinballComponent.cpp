@@ -101,11 +101,11 @@ void TPinballComponent::port_draw()
 {
 }
 
-void TPinballComponent::put_scoring(int scoreId, int value)
+void TPinballComponent::put_scoring(int index, int score)
 {
 }
 
-int TPinballComponent::get_scoring(int score1)
+int TPinballComponent::get_scoring(int index)
 {
 	return 0;
 }

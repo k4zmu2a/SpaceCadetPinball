@@ -5,6 +5,7 @@
 #include "control.h"
 #include "loader.h"
 #include "memory.h"
+#include "objlist_class.h"
 #include "pb.h"
 #include "pinball.h"
 #include "render.h"

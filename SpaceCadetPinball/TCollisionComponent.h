@@ -1,7 +1,7 @@
 #pragma once
-#include "objlist_class.h"
 #include "TPinballComponent.h"
 
+class objlist_class;
 struct vector_type;
 class TEdgeSegment;
 class TBall;
@@ -20,7 +20,7 @@ public:
 	int SoundIndex1;
 
 	TCollisionComponent(TPinballTable* table, int groupIndex, bool createWall);
-	~TCollisionComponent();
+	~TCollisionComponent() override;
 	void port_draw() override;
 	virtual void Collision(TBall* ball, vector_type* nextPosition, vector_type* direction, float coef,
 	                       TEdgeSegment* edge);
