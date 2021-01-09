@@ -62,4 +62,10 @@ public:
 	static float basic_collision(TBall* ball, vector_type* nextPosition, vector_type* direction, float a4, float a5,
 	                             float maxSpeed, float multiplier);
 	static float Distance_Squared(vector_type vec1, vector_type vec2);
+	static float DotProduct(vector_type* vec1, vector_type* vec2);
+	static void vswap(vector_type* vec1, vector_type* vec2);
+	static float Distance(vector_type* vec1, vector_type* vec2);
+	static void SinCos(float angle, float* sinOut, float* cosOut);
+	static void RotatePt(vector_type* point, float sin, float cos, vector_type* origin);
+	static float distance_to_flipper(ray_type* ray1, ray_type* ray2);
 };

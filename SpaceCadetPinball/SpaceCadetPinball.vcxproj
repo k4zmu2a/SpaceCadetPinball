@@ -189,6 +189,7 @@
     <ClInclude Include="TEdgeSegment.h" />
     <ClInclude Include="TFlagSpinner.h" />
     <ClInclude Include="TFlipper.h" />
+    <ClInclude Include="TFlipperEdge.h" />
     <ClInclude Include="TGate.h" />
     <ClInclude Include="THole.h" />
     <ClInclude Include="timer.h" />
@@ -258,6 +259,7 @@
     <ClCompile Include="TEdgeSegment.cpp" />
     <ClCompile Include="TFlagSpinner.cpp" />
     <ClCompile Include="TFlipper.cpp" />
+    <ClCompile Include="TFlipperEdge.cpp" />
     <ClCompile Include="TGate.cpp" />
     <ClCompile Include="THole.cpp" />
     <ClCompile Include="timer.cpp" />

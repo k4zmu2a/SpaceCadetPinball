@@ -268,7 +268,8 @@ void maths::vector_add(vector_type* vec1Dst, vector_type* vec2)
 	vec1Dst->Y += vec2->Y;
 }
 
-float maths::basic_collision(TBall* ball, vector_type* nextPosition, vector_type* direction, float a4, float a5, float maxSpeed,
+float maths::basic_collision(TBall* ball, vector_type* nextPosition, vector_type* direction, float a4, float a5,
+                             float maxSpeed,
                              float multiplier)
 {
 	ball->Position.X = nextPosition->X;
@@ -303,4 +304,42 @@ float maths::basic_collision(TBall* ball, vector_type* nextPosition, vector_type
 float maths::Distance_Squared(vector_type vec1, vector_type vec2)
 {
 	return (vec1.Y - vec2.Y) * (vec1.Y - vec2.Y) + (vec1.X - vec2.X) * (vec1.X - vec2.X);
+}
+
+float maths::DotProduct(vector_type* vec1, vector_type* vec2)
+{
+	return vec1->Y * vec2->Y + vec1->X * vec2->X;
+}
+
+void maths::vswap(vector_type* vec1, vector_type* vec2)
+{
+	vector_type tmp = *vec1;
+	*vec1 = *vec2;
+	*vec2 = tmp;
+}
+
+float maths::Distance(vector_type* vec1, vector_type* vec2)
+{
+	auto dx = vec1->X - vec2->X;
+	auto dy = vec1->Y - vec2->Y;
+	return sqrt(dy * dy + dx * dx);
+}
+
+void maths::SinCos(float angle, float* sinOut, float* cosOut)
+{
+	*sinOut = sin(angle);
+	*cosOut = cos(angle);
+}
+
+void maths::RotatePt(vector_type* point, float sin, float cos, vector_type* origin)
+{
+	auto dirX = point->X - origin->X;
+	auto dirY = point->Y - origin->Y;
+	point->X = dirX * cos - dirY * sin + origin->X;
+	point->Y = dirX * sin + dirY * cos + origin->Y;
+}
+
+float maths::distance_to_flipper(ray_type* ray1, ray_type* ray2)
+{
+	return 0;
 }
