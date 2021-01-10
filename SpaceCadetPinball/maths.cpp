@@ -2,6 +2,7 @@
 #include "maths.h"
 
 #include "TBall.h"
+#include "TFlipperEdge.h"
 
 
 void maths::enclosing_box(rectangle_type* rect1, rectangle_type* rect2, rectangle_type* dstRect)
@@ -341,5 +342,69 @@ void maths::RotatePt(vector_type* point, float sin, float cos, vector_type* orig
 
 float maths::distance_to_flipper(ray_type* ray1, ray_type* ray2)
 {
-	return 0;
+	auto distance = 1000000000.0f;
+	auto distanceType = -1;
+	auto newDistance = ray_intersect_line(ray1, &TFlipperEdge::lineA);
+	if (newDistance < 1000000000.0)
+	{
+		distance = newDistance;
+		distanceType = 0;
+	}
+	newDistance = ray_intersect_circle(ray1, &TFlipperEdge::circlebase);
+	if (newDistance < distance)
+	{
+		distance = newDistance;
+		distanceType = 2;
+	}
+	newDistance = ray_intersect_circle(ray1, &TFlipperEdge::circleT1);
+	if (newDistance < distance)
+	{
+		distance = newDistance;
+		distanceType = 3;
+	}
+	newDistance = ray_intersect_line(ray1, &TFlipperEdge::lineB);
+	if (newDistance < distance)
+	{
+		distance = newDistance;
+		distanceType = 1;
+	}
+	if (!ray2 || distance >= 1000000000.0)
+		return distance;
+
+	if (distanceType != -1)
+	{
+		vector_type* nextOrigin;
+		if (distanceType)
+		{
+			if (distanceType != 1)
+			{
+				float dirY;
+				ray2->Origin.X = distance * ray1->Direction.X + ray1->Origin.X;
+				ray2->Origin.Y = distance * ray1->Direction.Y + ray1->Origin.Y;
+				if (distanceType == 2)
+				{
+					ray2->Direction.X = ray2->Origin.X - TFlipperEdge::circlebase.Center.X;
+					dirY = ray2->Origin.Y - TFlipperEdge::circlebase.Center.Y;
+				}
+				else
+				{
+					ray2->Direction.X = ray2->Origin.X - TFlipperEdge::circleT1.Center.X;
+					dirY = ray2->Origin.Y - TFlipperEdge::circleT1.Center.Y;
+				}
+				ray2->Direction.Y = dirY;
+				normalize_2d(&ray2->Direction);
+				return distance;
+			}
+			ray2->Direction = TFlipperEdge::lineB.PerpendicularL;
+			nextOrigin = &TFlipperEdge::lineB.RayIntersect;
+		}
+		else
+		{
+			ray2->Direction = TFlipperEdge::lineA.PerpendicularL;
+			nextOrigin = &TFlipperEdge::lineA.RayIntersect;
+		}
+		ray2->Origin = *nextOrigin;
+		return distance;
+	}
+	return 1000000000.0;
 }

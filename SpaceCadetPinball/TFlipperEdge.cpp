@@ -12,8 +12,8 @@ line_type TFlipperEdge::lineA, TFlipperEdge::lineB;
 circle_type TFlipperEdge::circlebase, TFlipperEdge::circleT1;
 
 TFlipperEdge::TFlipperEdge(TCollisionComponent* collComp, char* someFlag, unsigned int visualFlag, TPinballTable* table,
-                           vector_type* origin, vector_type* vecT, vector_type* vec3, float bmpCoef1, float bmpCoef2,
-                           float a11, float c4F, float c5F): TEdgeSegment(collComp, someFlag, visualFlag)
+                           vector_type* origin, vector_type* vecT1, vector_type* vecT2, float bmpCoef1, float bmpCoef2,
+                           float collMult, float c4F, float c5F): TEdgeSegment(collComp, someFlag, visualFlag)
 {
 	vector_type crossProd{}, vecDir1{}, vecDir2{};
 
@@ -21,10 +21,10 @@ TFlipperEdge::TFlipperEdge(TCollisionComponent* collComp, char* someFlag, unsign
 	CollisionC5F = c5F;
 	BmpCoef1 = bmpCoef1;
 	BmpCoef2 = bmpCoef2;
-	Unknown32F = a11;
+	CollisionMult = collMult;
 
-	T1Src = *vecT;
-	Unknown36V = *vec3;
+	T1Src = *vecT1;
+	T2Src = *vecT2;
 	RotOrigin.X = origin->X;
 	RotOrigin.Y = origin->Y;
 
@@ -32,17 +32,17 @@ TFlipperEdge::TFlipperEdge(TCollisionComponent* collComp, char* someFlag, unsign
 	CirclebaseRadiusMSq = CirclebaseRadius * 1.01f * (CirclebaseRadius * 1.01f);
 	CirclebaseRadiusSq = CirclebaseRadius * CirclebaseRadius;
 
-	CircleT1Radius = vecT->Z + table->CollisionCompOffset;
+	CircleT1Radius = vecT1->Z + table->CollisionCompOffset;
 	CircleT1RadiusMSq = CircleT1Radius * 1.01f * (CircleT1Radius * 1.01f);
 	CircleT1RadiusSq = CircleT1Radius * CircleT1Radius;
 
-	vecDir1.X = vecT->X - origin->X;
-	vecDir1.Y = vecT->Y - origin->Y;
+	vecDir1.X = vecT1->X - origin->X;
+	vecDir1.Y = vecT1->Y - origin->Y;
 	vecDir1.Z = 0.0;
 	maths::normalize_2d(&vecDir1);
 
-	vecDir2.X = vec3->X - origin->X;
-	vecDir2.Y = vec3->Y - origin->Y;
+	vecDir2.X = vecT2->X - origin->X;
+	vecDir2.Y = vecT2->Y - origin->Y;
 	vecDir2.Z = 0.0;
 	maths::normalize_2d(&vecDir2);
 
@@ -57,15 +57,15 @@ TFlipperEdge::TFlipperEdge(TCollisionComponent* collComp, char* someFlag, unsign
 	auto dirY1 = -vecDir1.Y;
 	A2Src.X = dirY1 * CirclebaseRadius + origin->X;
 	A2Src.Y = dirX1 * CirclebaseRadius + origin->Y;
-	A1Src.X = dirY1 * CircleT1Radius + vecT->X;
-	A1Src.Y = dirX1 * CircleT1Radius + vecT->Y;
+	A1Src.X = dirY1 * CircleT1Radius + vecT1->X;
+	A1Src.Y = dirX1 * CircleT1Radius + vecT1->Y;
 
 	dirX1 = -dirX1;
 	dirY1 = -dirY1;
 	B1Src.X = dirY1 * CirclebaseRadius + origin->X;
 	B1Src.Y = dirX1 * CirclebaseRadius + origin->Y;
-	B2Src.X = dirY1 * CircleT1Radius + vecT->X;
-	B2Src.Y = dirX1 * CircleT1Radius + vecT->Y;
+	B2Src.X = dirY1 * CircleT1Radius + vecT1->X;
+	B2Src.Y = dirX1 * CircleT1Radius + vecT1->Y;
 
 	if (AngleMax < 0.0)
 	{
@@ -73,261 +73,239 @@ TFlipperEdge::TFlipperEdge(TCollisionComponent* collComp, char* someFlag, unsign
 		maths::vswap(&A2Src, &B2Src);
 	}
 
-	auto dx = vecT->X - RotOrigin.X;
-	auto dy = vecT->Y - RotOrigin.Y;
-	auto distance1 = sqrt(dy * dy + dx * dx) + table->CollisionCompOffset + vecT->Z;
+	auto dx = vecT1->X - RotOrigin.X;
+	auto dy = vecT1->Y - RotOrigin.Y;
+	auto distance1 = sqrt(dy * dy + dx * dx) + table->CollisionCompOffset + vecT1->Z;
 	DistanceDivSq = distance1 * distance1;
 
 	float bmpCoef = min(BmpCoef1, BmpCoef2);
-	auto distance = maths::Distance(vecT, vec3);
-	Unknown40F = bmpCoef / (distance / CircleT1Radius + distance / CircleT1Radius);
+	auto distance = maths::Distance(vecT1, vecT2);
+	CollisionTimeAdvance = bmpCoef / (distance / CircleT1Radius + distance / CircleT1Radius);
 
 	TFlipperEdge::place_in_grid();
-	Unknown44 = 0;
-	TimeAngle = 0.0;
-	Unknown15 = 0;
-	Unknown46F = 0.0;
+	EdgeCollisionFlag = 0;
+	InputTime = 0.0;
+	CollisionFlag1 = 0;
+	AngleStopTime = 0.0;
 	AngleMult = 0.0;
 }
 
 void TFlipperEdge::port_draw()
 {
-	set_control_points(TimeAngle);
+	set_control_points(InputTime);
 	build_edges_in_motion();
 }
 
 float TFlipperEdge::FindCollisionDistance(ray_type* ray)
 {
 	auto ogRay = ray;
+	ray_type dstRay{}, srcRay{};
 
-
-	float* pfVar2;
-	short uVar3;
-	int iVar4;
-	int uVar5;
-	vector_type* prVar6;
-	vector_type* plVar6;
-	vector_type* pvVar7;
-	float fVar8;
-	ray_type ray2;
-	ray_type ray1;
-	float local_1c;
-	float local_18;
-	float local_14;
-	float local_10;
-	float local_c;
-	float local_8;
-
-	if (ogRay->TimeNow > this->Unknown46F) {
-		this->FlipperFlag = 0;
+	if (ogRay->TimeNow > AngleStopTime)
+	{
+		FlipperFlag = 0;
 	}
-	if (this->Unknown44 == 0) {
-		if (this->FlipperFlag == 0) {
-			this->Unknown44 = 0;
-			this->Unknown15 = 0;
-			this->Unknown16 = 0;
-			set_control_points( ogRay->TimeNow);
+	if (EdgeCollisionFlag == 0)
+	{
+		if (FlipperFlag == 0)
+		{
+			EdgeCollisionFlag = 0;
+			CollisionFlag1 = 0;
+			CollisionFlag2 = 0;
+			set_control_points(ogRay->TimeNow);
 			build_edges_in_motion();
-			iVar4 = is_ball_inside( (ogRay->Origin).X, (ogRay->Origin).Y);
-			ray1.MinDistance = ogRay->MinDistance;
-			if (iVar4 == 0) {
-				ray1.Direction.X = (ogRay->Direction).X;
-				ray1.Direction.Y = (ogRay->Direction).Y;
-				ray1.Direction.Z = (ogRay->Direction).Z;
-				ray1.MaxDistance = ogRay->MaxDistance;
-				ray1.Origin.X = (ogRay->Origin).X;
-				ray1.Origin.Y = (ogRay->Origin).Y;
-				ray1.Origin.Z = (ogRay->Origin).Z;
-				fVar8 = maths::distance_to_flipper(&ray1, &ray2);
-				plVar6 = &ray2.Origin;
-				if (fVar8 == 0.0) {
-					pvVar7 = &this->NextBallPosition;
-					pvVar7->X = ray2.Origin.X;
-					(this->NextBallPosition).Y = ray2.Origin.Y;
-					(this->NextBallPosition).Z = ray2.Origin.Z;
-					pvVar7->X = pvVar7->X - ray1.Direction.X * 1e-05f;
-					pfVar2 = &(this->NextBallPosition).Y;
-					*pfVar2 = *pfVar2 - ray1.Direction.Y * 1e-05f;
+			auto ballInside = is_ball_inside(ogRay->Origin.X, ogRay->Origin.Y);
+			srcRay.MinDistance = ogRay->MinDistance;
+			if (ballInside == 0)
+			{
+				srcRay.Direction = ogRay->Direction;
+				srcRay.MaxDistance = ogRay->MaxDistance;
+				srcRay.Origin = ogRay->Origin;
+				auto distance = maths::distance_to_flipper(&srcRay, &dstRay);
+				if (distance == 0.0)
+				{
+					NextBallPosition = dstRay.Origin;
+					NextBallPosition.X -= srcRay.Direction.X * 1e-05f;
+					NextBallPosition.Y -= srcRay.Direction.Y * 1e-05f;
 				}
-				else {
-					pvVar7 = &this->NextBallPosition;
-				LAB_0101bab7:
-					pvVar7->X = (plVar6)->X;
-					pvVar7->Y = (plVar6)->Y;
-					pvVar7->Z = (plVar6)->Z;
+				else
+				{
+					NextBallPosition = dstRay.Origin;
 				}
-				(this->CollisionDirection).X = ray2.Direction.X;
-				(this->CollisionDirection).Y = ray2.Direction.Y;
-				(this->CollisionDirection).Z = ray2.Direction.Z;
-				return fVar8;
+				CollisionDirection = dstRay.Direction;
+				return distance;
 			}
-			fVar8 = maths::Distance_Squared(ogRay->Origin, this->RotOrigin);
-			if (this->CirclebaseRadiusMSq <= fVar8) {
-				fVar8 = maths::Distance_Squared(ogRay->Origin, T1);
-				if (this->CircleT1RadiusMSq <= fVar8) {
-					ray1.Direction.Y = lineB.PerpendicularL.Y;
-					ray1.Direction.X = lineB.PerpendicularL.X;
-					if (iVar4 == 4) {
-						ray1.Direction.Y = lineA.PerpendicularL.Y;
-						ray1.Direction.X = lineA.PerpendicularL.X;
+
+			if (maths::Distance_Squared(ogRay->Origin, RotOrigin) >= CirclebaseRadiusMSq)
+			{
+				if (maths::Distance_Squared(ogRay->Origin, T1) >= CircleT1RadiusMSq)
+				{
+					srcRay.Direction.Y = lineB.PerpendicularL.Y;
+					srcRay.Direction.X = lineB.PerpendicularL.X;
+					if (ballInside == 4)
+					{
+						srcRay.Direction.Y = lineA.PerpendicularL.Y;
+						srcRay.Direction.X = lineA.PerpendicularL.X;
 					}
-					ray1.Direction.X = -ray1.Direction.X;
-					ray1.Direction.Y = -ray1.Direction.Y;
+					srcRay.Direction.X = -srcRay.Direction.X;
+					srcRay.Direction.Y = -srcRay.Direction.Y;
 				}
-				else {
-					ray1.Direction.X = T1.X - (ogRay->Origin).X;
-					ray1.Direction.Y = T1.Y - (ogRay->Origin).Y;
-					maths::normalize_2d(&ray1.Direction);
+				else
+				{
+					srcRay.Direction.X = T1.X - ogRay->Origin.X;
+					srcRay.Direction.Y = T1.Y - ogRay->Origin.Y;
+					maths::normalize_2d(&srcRay.Direction);
 				}
 			}
-			else {
-				ray1.Direction.X = (this->RotOrigin).X - (ogRay->Origin).X;
-				ray1.Direction.Y = (this->RotOrigin).Y - (ogRay->Origin).Y;
-				maths::normalize_2d(&ray1.Direction);
+			else
+			{
+				srcRay.Direction.X = RotOrigin.X - ogRay->Origin.X;
+				srcRay.Direction.Y = RotOrigin.Y - ogRay->Origin.Y;
+				maths::normalize_2d(&srcRay.Direction);
 			}
-			ray1.Origin.X = (ogRay->Origin).X - ray1.Direction.X * 5.0f;
-			ray1.Origin.Y = (ogRay->Origin).Y - ray1.Direction.Y * 5.0f;
-			ray1.MaxDistance = ogRay->MaxDistance + 10.0f;
-			fVar8 = maths::distance_to_flipper(&ray1, &ray2);
-			if (1e+09 <= fVar8) {
-				ray1.Direction.X = (this->RotOrigin).X - (ogRay->Origin).X;
-				ray1.Direction.Y = (this->RotOrigin).Y - (ogRay->Origin).Y;
-				maths::normalize_2d(&ray1.Direction);
-				ray1.Origin.X = (ogRay->Origin).X - ray1.Direction.X * 5.0f;
-				ray1.Origin.Y = (ogRay->Origin).Y - ray1.Direction.Y * 5.0f;
-				fVar8 = maths::distance_to_flipper(&ray1, &ray2);
-				if (1e+09 <= fVar8) {
+
+			srcRay.Origin.X = ogRay->Origin.X - srcRay.Direction.X * 5.0f;
+			srcRay.Origin.Y = ogRay->Origin.Y - srcRay.Direction.Y * 5.0f;
+			srcRay.MaxDistance = ogRay->MaxDistance + 10.0f;
+			if (maths::distance_to_flipper(&srcRay, &dstRay) >= 1e+09)
+			{
+				srcRay.Direction.X = RotOrigin.X - ogRay->Origin.X;
+				srcRay.Direction.Y = RotOrigin.Y - ogRay->Origin.Y;
+				maths::normalize_2d(&srcRay.Direction);
+				srcRay.Origin.X = ogRay->Origin.X - srcRay.Direction.X * 5.0f;
+				srcRay.Origin.Y = ogRay->Origin.Y - srcRay.Direction.Y * 5.0f;
+				if (maths::distance_to_flipper(&srcRay, &dstRay) >= 1e+09)
+				{
 					return 1e+09;
 				}
 			}
-		LAB_0101ba1a:
-			(this->NextBallPosition).X = ray2.Origin.X;
-			(this->NextBallPosition).Y = ray2.Origin.Y;
-			(this->NextBallPosition).Z = ray2.Origin.Z;
-			pvVar7 = &this->CollisionDirection;
-			prVar6 = &ray2.Direction;
-		LAB_0101bc82:
-			pvVar7->X = prVar6->X;
-			pvVar7->Y = prVar6->Y;
-			pvVar7->Z = prVar6->Z;
-			(this->NextBallPosition).X = (this->NextBallPosition).X - ray1.Direction.X * 1e-05;
-			pfVar2 = &(this->NextBallPosition).Y;
-			*pfVar2 = *pfVar2 - ray1.Direction.Y * 1e-05;
+
+			NextBallPosition = dstRay.Origin;
+			CollisionDirection = dstRay.Direction;
+			NextBallPosition.X -= srcRay.Direction.X * 1e-05f;
+			NextBallPosition.Y -= srcRay.Direction.Y * 1e-05f;
 			return 0.0;
 		}
-		local_8 = (ogRay->Origin).X;
-		local_14 = this->Unknown40F * ogRay->MaxDistance;
-		local_c = (ogRay->Origin).Y;
-		local_10 = ogRay->TimeNow;
-		local_18 = this->Unknown40F * (ogRay->Direction).X;
-		local_1c = (ogRay->Direction).Y * this->Unknown40F;
-		fVar8 = ogRay->TimeDelta + ogRay->TimeNow;
-		uVar3 = fVar8 <= local_10;// fp flag shift
-		while (uVar3 == 0) {
-			set_control_points( local_10);
+
+		auto posX = ogRay->Origin.X;
+		auto posY = ogRay->Origin.Y;
+		auto posXAdvance = ogRay->Direction.X * CollisionTimeAdvance;
+		auto posYAdvance = ogRay->Direction.Y * CollisionTimeAdvance;
+		auto rayMaxDistance = ogRay->MaxDistance * CollisionTimeAdvance;
+		auto timeNow = ogRay->TimeNow;
+		auto stopTime = ogRay->TimeDelta + ogRay->TimeNow;
+		while (timeNow < stopTime)
+		{
+			set_control_points(timeNow);
 			build_edges_in_motion();
-			iVar4 = is_ball_inside( local_8, local_c);
-			if (iVar4 != 0) {
-				if ((this->FlipperFlag == 1) && (iVar4 != 5)) {
-					plVar6 = &lineA.PerpendicularL;
-					ray1.Direction.Y = lineA.PerpendicularL.Y;
-					ray1.Direction.X = lineA.PerpendicularL.X;
+			auto ballInside = is_ball_inside(posX, posY);
+			if (ballInside != 0)
+			{
+				vector_type* linePtr;
+				if (FlipperFlag == 1 && ballInside != 5)
+				{
+					linePtr = &lineA.PerpendicularL;
+					srcRay.Direction.Y = lineA.PerpendicularL.Y;
+					srcRay.Direction.X = lineA.PerpendicularL.X;
 				}
-				else {
-					if ((this->FlipperFlag != 2) || (iVar4 == 4)) {
-						ray1.Direction.X = (this->RotOrigin).X - local_8;
-						this->Unknown15 = 0;
-						this->Unknown16 = 1;
-						ray1.Direction.Y = (this->RotOrigin).Y - local_c;
-						maths::normalize_2d(&ray1.Direction);
-						ray1.Origin.X = local_8 - ray1.Direction.X * 5.0f;
-						ray1.Origin.Y = local_c - ray1.Direction.Y * 5.0f;
-						ray1.MaxDistance = ogRay->MaxDistance + 10.0f;
-						fVar8 = maths::distance_to_flipper(&ray1, &ray2);
-						if (1e+09 <= fVar8) {
-							(this->NextBallPosition).X = local_8;
-							(this->CollisionDirection).X = -ray1.Direction.X;
-							(this->NextBallPosition).Y = local_c;
-							(this->CollisionDirection).Y = -ray1.Direction.Y;
+				else
+				{
+					if (FlipperFlag != 2 || ballInside == 4)
+					{
+						CollisionFlag1 = 0;
+						CollisionFlag2 = 1;
+						srcRay.Direction.X = RotOrigin.X - posX;
+						srcRay.Direction.Y = RotOrigin.Y - posY;
+						maths::normalize_2d(&srcRay.Direction);
+
+						srcRay.Origin.X = posX - srcRay.Direction.X * 5.0f;
+						srcRay.Origin.Y = posY - srcRay.Direction.Y * 5.0f;
+						srcRay.MaxDistance = ogRay->MaxDistance + 10.0f;
+						if (maths::distance_to_flipper(&srcRay, &dstRay) >= 1e+09)
+						{
+							NextBallPosition.X = posX;
+							NextBallPosition.Y = posY;
+							CollisionDirection.X = -srcRay.Direction.X;
+							CollisionDirection.Y = -srcRay.Direction.Y;
 							return 0.0;
 						}
-						goto LAB_0101ba1a;
+
+						NextBallPosition = dstRay.Origin;
+						CollisionDirection = dstRay.Direction;
+						NextBallPosition.X -= srcRay.Direction.X * 1e-05f;
+						NextBallPosition.Y -= srcRay.Direction.Y * 1e-05f;
+						return 0.0;
 					}
-					plVar6 = &lineB.PerpendicularL;
-					ray1.Direction.Y = lineB.PerpendicularL.Y;
-					ray1.Direction.X = lineB.PerpendicularL.X;
+					linePtr = &lineB.PerpendicularL;
+					srcRay.Direction.Y = lineB.PerpendicularL.Y;
+					srcRay.Direction.X = lineB.PerpendicularL.X;
 				}
-				ray1.Direction.X = -ray1.Direction.X;
-				ray1.Direction.Y = -ray1.Direction.Y;
-				(this->Unknown17V).X = plVar6->X;
-				(this->Unknown17V).Y = plVar6->Y;
-				(this->Unknown17V).Z = plVar6->Z;
-				this->Unknown16 = 0;
-				this->Unknown15 = 1;
-				ray1.MinDistance = 0.002;
-				ray1.Origin.X = (ogRay->Origin).X - ray1.Direction.X * 5.0f;
-				ray1.Origin.Y = (ogRay->Origin).Y - ray1.Direction.Y * 5.0f;
-				ray1.MaxDistance = ogRay->MaxDistance + 10.0f;
-				fVar8 = maths::distance_to_flipper(&ray1, &ray2);
-				(this->CollisionDirection).X = ray2.Direction.X;
-				(this->CollisionDirection).Y = ray2.Direction.Y;
-				(this->CollisionDirection).Z = ray2.Direction.Z;
-				if (1e+09 <= fVar8) {
+
+				CollisionLinePerp = *linePtr;
+				CollisionFlag2 = 0;
+				CollisionFlag1 = 1;
+				srcRay.Direction.X = -srcRay.Direction.X;
+				srcRay.Direction.Y = -srcRay.Direction.Y;
+				srcRay.MinDistance = 0.002f;
+				srcRay.Origin.X = ogRay->Origin.X - srcRay.Direction.X * 5.0f;
+				srcRay.Origin.Y = ogRay->Origin.Y - srcRay.Direction.Y * 5.0f;
+				srcRay.MaxDistance = ogRay->MaxDistance + 10.0f;
+				auto distance = maths::distance_to_flipper(&srcRay, &dstRay);
+				CollisionDirection = dstRay.Direction;
+				if (distance >= 1e+09)
+				{
 					return 1e+09;
 				}
-				pvVar7 = &this->NextBallPosition;
-				prVar6 = &ray2.Origin;
-				goto LAB_0101bc82;
+				NextBallPosition = dstRay.Origin;
+				NextBallPosition.X -= srcRay.Direction.X * 1e-05f;
+				NextBallPosition.Y -= srcRay.Direction.Y * 1e-05f;
+				return 0.0;
 			}
-			ray1.Direction.X = (ogRay->Direction).X;
-			ray1.Direction.Y = (ogRay->Direction).Y;
-			ray1.Direction.Z = (ogRay->Direction).Z;
-			ray1.MinDistance = ogRay->MinDistance;
-			ray1.Origin.X = (ogRay->Origin).X;
-			ray1.Origin.Y = (ogRay->Origin).Y;
-			ray1.Origin.Z = (ogRay->Origin).Z;
-			ray1.MaxDistance = local_14;
-			fVar8 = maths::distance_to_flipper(&ray1, &ray2);
-			if (fVar8 < 1e+09) {
-				pvVar7 = &this->NextBallPosition;
-				pvVar7->X = ray2.Origin.X;
-				(this->NextBallPosition).Y = ray2.Origin.Y;
-				(this->NextBallPosition).Z = ray2.Origin.Z;
-				pvVar7->X = pvVar7->X - ray1.Direction.X * 1e-05f;
-				pfVar2 = &(this->NextBallPosition).Y;
-				*pfVar2 = *pfVar2 - ray1.Direction.Y * 1e-05f;
-				uVar5 = this->AngleMax > 0.0;
-				pvVar7 = &this->Unknown17V;
-				if (this->FlipperFlag == 2) {
-					plVar6 = &lineB.PerpendicularL;
-					this->Unknown15 = (uVar5 == 0);
+
+			srcRay.Direction = ogRay->Direction;
+			srcRay.MinDistance = ogRay->MinDistance;
+			srcRay.Origin = ogRay->Origin;
+			srcRay.MaxDistance = rayMaxDistance;
+			auto distance = maths::distance_to_flipper(&srcRay, &dstRay);
+			if (distance < 1e+09)
+			{
+				NextBallPosition = dstRay.Origin;
+				NextBallPosition.X -= srcRay.Direction.X * 1e-05f;
+				NextBallPosition.Y -= srcRay.Direction.Y * 1e-05f;
+				vector_type* linePtr;
+				if (FlipperFlag == 2)
+				{
+					linePtr = &lineB.PerpendicularL;
+					CollisionFlag1 = AngleMax <= 0.0;
 				}
-				else {
-					this->Unknown15 = uVar5;
-					plVar6 = &lineA.PerpendicularL;
+				else
+				{
+					CollisionFlag1 = AngleMax > 0.0;
+					linePtr = &lineA.PerpendicularL;
 				}
-				goto LAB_0101bab7;
+				CollisionLinePerp = *linePtr;
+				CollisionDirection = dstRay.Direction;
+				return distance;
 			}
-			local_10 = local_10 + this->Unknown40F;
-			local_8 = local_8 + local_18;
-			local_c = local_c + local_1c;
-			fVar8 = ogRay->TimeDelta + ogRay->TimeNow;
-			uVar3 = fVar8 <= local_10;
+			timeNow = timeNow + CollisionTimeAdvance;
+			posX = posX + posXAdvance;
+			posY = posY + posYAdvance;
 		}
 	}
-	else {
-		this->Unknown44 = 0;
+	else
+	{
+		EdgeCollisionFlag = 0;
 	}
 	return 1e+09;
 }
 
 void TFlipperEdge::EdgeCollision(TBall* ball, float coef)
 {
-	Unknown44 = 1;
-	if (!FlipperFlag || !Unknown16 || Unknown15)
+	EdgeCollisionFlag = 1;
+	if (!FlipperFlag || !CollisionFlag2 || CollisionFlag1)
 	{
 		float collMult = 0.0;
-		if (Unknown15)
+		if (CollisionFlag1)
 		{
 			float dx = NextBallPosition.X - RotOrigin.X;
 			float dy = NextBallPosition.Y - RotOrigin.Y;
@@ -336,12 +314,12 @@ void TFlipperEdge::EdgeCollision(TBall* ball, float coef)
 			{
 				float v11;
 				float v20 = sqrt(distance / DistanceDivSq) * (fabs(AngleMax) / AngleMult);
-				float dot1 = maths::DotProduct(&Unknown17V, &CollisionDirection);
+				float dot1 = maths::DotProduct(&CollisionLinePerp, &CollisionDirection);
 				if (dot1 >= 0.0)
 					v11 = dot1 * v20;
 				else
 					v11 = 0.0;
-				collMult = v11 * Unknown32F;
+				collMult = v11 * CollisionMult;
 			}
 		}
 
@@ -372,9 +350,9 @@ void TFlipperEdge::place_in_grid()
 {
 	float x0 = RotOrigin.X - CirclebaseRadius;
 	float y0 = RotOrigin.Y - CirclebaseRadius;
-	float x1 = CirclebaseRadius + RotOrigin.X;
+	float x1 = RotOrigin.X + CirclebaseRadius;
+	float y1 = RotOrigin.Y + CirclebaseRadius;
 
-	float v1 = RotOrigin.Y + CirclebaseRadius;
 	float v2 = T1Src.X - CircleT1Radius;
 	if (v2 < x0)
 		x0 = v2;
@@ -383,31 +361,30 @@ void TFlipperEdge::place_in_grid()
 	if (v3 < y0)
 		y0 = v3;
 
-	float v4 = CircleT1Radius + T1Src.X;
+	float v4 = T1Src.X + CircleT1Radius;
 	if (v4 > x1)
 		x1 = v4;
 
 	float v5 = T1Src.Y + CircleT1Radius;
-	if (v5 > v1)
-		v1 = v5;
+	if (v5 > y1)
+		y1 = v5;
 
-	float v6 = Unknown36V.X - CircleT1Radius;
+	float v6 = T2Src.X - CircleT1Radius;
 	if (v6 < x0)
 		x0 = v6;
 
-	float v7 = Unknown36V.Y - CircleT1Radius;
+	float v7 = T2Src.Y - CircleT1Radius;
 	if (v7 < y0)
 		y0 = v7;
 
-	float v8 = Unknown36V.X + CircleT1Radius;
+	float v8 = T2Src.X + CircleT1Radius;
 	if (v8 > x1)
 		x1 = v8;
 
-	float v9 = CircleT1Radius + Unknown36V.Y;
-	if (v9 > v1)
-		v1 = v9;
+	float v9 = T2Src.Y + CircleT1Radius;
+	if (v9 > y1)
+		y1 = v9;
 
-	float y1 = v1;
 	TTableLayer::edges_insert_square(y0, x0, y1, x1, this, nullptr);
 }
 
@@ -447,7 +424,7 @@ float TFlipperEdge::flipper_angle(float timeNow)
 		angle = -angle;
 
 	if (angle >= 0.0000001)
-		angle = (timeNow - TimeAngle) / angle;
+		angle = (timeNow - InputTime) / angle;
 	else
 		angle = 1.0;
 
@@ -459,7 +436,7 @@ float TFlipperEdge::flipper_angle(float timeNow)
 
 int TFlipperEdge::is_ball_inside(float x, float y)
 {
-	vector_type ptTest{};
+	vector_type testPoint{};
 	float dx = RotOrigin.X - x;
 	float dy = RotOrigin.Y - y;
 	if ((A2.X - A1.X) * (y - A1.Y) - (A2.Y - A1.Y) * (x - A1.X) >= 0.0 &&
@@ -469,15 +446,16 @@ int TFlipperEdge::is_ball_inside(float x, float y)
 		dy * dy + dx * dx <= CirclebaseRadiusSq ||
 		(T1.Y - y) * (T1.Y - y) + (T1.X - x) * (T1.X - x) < CircleT1RadiusSq)
 	{
+		float flipperLR = AngleMax < 0.0 ? -1 : 1;
 		if (FlipperFlag == 1)
-			ptTest = AngleMax < 0.0 ? B1 : B2;
+			testPoint = AngleMax < 0.0 ? B1 : B2;
 		else if (FlipperFlag == 2)
-			ptTest = AngleMax < 0.0 ? A2 : A1;
+			testPoint = AngleMax < 0.0 ? A2 : A1;
 		else
-			ptTest = T1;
+			testPoint = T1;
 
-		if ((y - ptTest.Y) * (RotOrigin.X - ptTest.X) -
-			(x - ptTest.X) * (RotOrigin.Y - ptTest.Y) >= 0.0f)
+		if (((y - testPoint.Y) * (RotOrigin.X - testPoint.X) -
+			(x - testPoint.X) * (RotOrigin.Y - testPoint.Y)) * flipperLR < 0.0)
 			return 4;
 		return 5;
 	}
@@ -489,24 +467,24 @@ void TFlipperEdge::SetMotion(int code, float value)
 	switch (code)
 	{
 	case 1:
-		this->Angle2 = flipper_angle(value);
-		this->Angle1 = this->AngleMax;
-		this->AngleMult = this->BmpCoef1;
+		Angle2 = flipper_angle(value);
+		Angle1 = AngleMax;
+		AngleMult = BmpCoef1;
 		break;
 	case 2:
-		this->Angle2 = flipper_angle(value);
-		this->Angle1 = 0.0;
-		this->AngleMult = this->BmpCoef2;
+		Angle2 = flipper_angle(value);
+		Angle1 = 0.0;
+		AngleMult = BmpCoef2;
 		break;
 	case 1024:
-		this->FlipperFlag = 0;
-		this->Angle1 = 0.0;
+		FlipperFlag = 0;
+		Angle1 = 0.0;
 		return;
 	default: break;
 	}
 
-	if (!this->FlipperFlag)
-		this->TimeAngle = value;
-	this->FlipperFlag = code;
-	this->Unknown46F = this->AngleMult + this->TimeAngle;
+	if (!FlipperFlag)
+		InputTime = value;
+	FlipperFlag = code;
+	AngleStopTime = AngleMult + InputTime;
 }

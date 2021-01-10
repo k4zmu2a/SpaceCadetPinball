@@ -220,7 +220,7 @@
       <Filter>Header Files\TPinballComponent</Filter>
     </ClInclude>
     <ClInclude Include="TFlipperEdge.h">
-      <Filter>Header Files</Filter>
+      <Filter>Header Files\TEdgeSegment</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -408,7 +408,7 @@
       <Filter>Source Files\TPinballComponent</Filter>
     </ClCompile>
     <ClCompile Include="TFlipperEdge.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\TEdgeSegment</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
