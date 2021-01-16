@@ -17,7 +17,7 @@ HCURSOR winmain::mouse_hsave;
 int winmain::return_value = 0;
 int winmain::bQuit = 0;
 int winmain::activated;
-int winmain::DispFrameRate = 1;
+int winmain::DispFrameRate = 0;
 int winmain::DispGRhistory = 0;
 int winmain::single_step = 0;
 int winmain::has_focus = 1;

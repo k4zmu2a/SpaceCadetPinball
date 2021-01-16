@@ -446,7 +446,7 @@ int TFlipperEdge::is_ball_inside(float x, float y)
 		dy * dy + dx * dx <= CirclebaseRadiusSq ||
 		(T1.Y - y) * (T1.Y - y) + (T1.X - x) * (T1.X - x) < CircleT1RadiusSq)
 	{
-		float flipperLR = AngleMax < 0.0 ? -1 : 1;
+		float flipperLR = AngleMax < 0.0 ? -1.0f : 1.0f;
 		if (FlipperFlag == 1)
 			testPoint = AngleMax < 0.0 ? B1 : B2;
 		else if (FlipperFlag == 2)
