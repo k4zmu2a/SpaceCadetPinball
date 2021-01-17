@@ -84,7 +84,7 @@ int TPlunger::Message(int code, float value)
 			ball->Position.X = PinballTable->PlungerPositionX;
 			ball->Position.Y = PinballTable->PlungerPositionY;
 			ball->UnknownBaseFlag2 = 1;
-			PinballTable->UnknownP10 = 0;
+			PinballTable->BallInSink = 0;
 			pb::tilt_no_more();
 			control::handler(code, this);
 			return 0;

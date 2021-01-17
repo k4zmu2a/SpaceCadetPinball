@@ -408,3 +408,15 @@ float maths::distance_to_flipper(ray_type* ray1, ray_type* ray2)
 	}
 	return 1000000000.0;
 }
+
+void maths::RotateVector(vector_type* vec, float angle)
+{
+	float s = sin(angle), c = cos(angle);
+	vec->X = c * vec->X - s * vec->Y;
+	vec->Y = s * vec->X + c * vec->Y;
+	/* Error in the original, should be:
+	 * tmp = c * vec->X - s * vec->Y;
+	 * vec->Y = s * vec->X + c * vec->Y;
+	 * vec->X = tmp
+	 */
+}

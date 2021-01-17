@@ -68,4 +68,5 @@ public:
 	static void SinCos(float angle, float* sinOut, float* cosOut);
 	static void RotatePt(vector_type* point, float sin, float cos, vector_type* origin);
 	static float distance_to_flipper(ray_type* ray1, ray_type* ray2);
+	static void RotateVector(vector_type* vec, float angle);
 };

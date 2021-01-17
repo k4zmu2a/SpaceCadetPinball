@@ -18,7 +18,7 @@ public:
 	TLightGroup(TPinballTable* table, int groupIndex);
 	~TLightGroup() override;
 	int Message(int code, float value) override;
-	void Reset();
+	virtual void Reset();
 	void reschedule_animation(float time);
 	void start_animation();
 	int next_light_up();

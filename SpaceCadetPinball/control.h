@@ -39,6 +39,7 @@ public:
 	static void table_add_extra_ball(float count);
 	static int cheat_bump_rank();
 	static BOOL light_on(struct component_tag* tag);
+	static int SpecialAddScore(int score);
 
 	static void FlipperRebounderControl1(int code, TPinballComponent* caller);
 	static void FlipperRebounderControl2(int code, TPinballComponent* caller);

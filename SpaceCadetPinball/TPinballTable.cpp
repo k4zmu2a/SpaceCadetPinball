@@ -53,7 +53,7 @@ TPinballTable::TPinballTable(): TPinballComponent(nullptr, -1, false)
 	CurScoreStruct = nullptr;
 	ScoreBallcount = nullptr;
 	ScorePlayerNumber1 = nullptr;
-	UnknownP10 = 0;
+	BallInSink = 0;
 	UnknownBaseFlag2 = 1;
 	TiltLockFlag = 0;
 	EndGameTimeoutTimer = 0;
@@ -124,7 +124,7 @@ TPinballTable::TPinballTable(): TPinballComponent(nullptr, -1, false)
 				new TBlocker(this, groupIndex);
 				break;
 			case 1012:
-				new TKickout(this, groupIndex, 1);
+				new TKickout(this, groupIndex, true);
 				break;
 			case 1013:
 				new TGate(this, groupIndex);
@@ -169,7 +169,7 @@ TPinballTable::TPinballTable(): TPinballComponent(nullptr, -1, false)
 				new TComponentGroup(this, groupIndex);
 				break;
 			case 1029:
-				new TKickout(this, groupIndex, 0);
+				new TKickout(this, groupIndex, false);
 				break;
 			case 1030:
 				new TLightBargraph(this, groupIndex);
@@ -299,7 +299,7 @@ void TPinballTable::ChangeBallCount(int count)
 
 void TPinballTable::tilt(float time)
 {
-	if (!TiltLockFlag && !UnknownP10)
+	if (!TiltLockFlag && !BallInSink)
 	{
 		pinball::InfoTextBox->Clear();
 		pinball::MissTextBox->Clear();

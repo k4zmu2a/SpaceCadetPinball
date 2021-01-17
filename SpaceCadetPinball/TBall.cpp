@@ -126,3 +126,15 @@ int TBall::Message(int code, float value)
 	}
 	return 0;
 }
+
+void TBall::throw_ball(TBall* ball, vector_type* acceleration, float angleMult, float speedMult1, float speedMult2)
+{
+	ball->CollisionComp = nullptr;
+	ball->Acceleration = *acceleration;
+	float rnd = static_cast<float>(rand());
+	float angle = (1.0f - (rnd * 0.00003051850947599719f + rnd * 0.00003051850947599719f)) * angleMult;
+	maths::RotateVector(&ball->Acceleration, angle);
+	rnd = static_cast<float>(rand());
+	ball->Speed = (1.0f - (rnd * 0.00003051850947599719f + rnd * 0.00003051850947599719f)) * (speedMult1 *
+		speedMult2) + speedMult1;
+}

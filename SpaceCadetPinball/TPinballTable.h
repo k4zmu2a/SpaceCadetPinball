@@ -49,7 +49,7 @@ public:
 	int SoundIndex1;
 	int SoundIndex2;
 	int SoundIndex3;
-	int UnknownP10;
+	int BallInSink;
 	int CurScore;
 	int CurScoreE9;
 	int LightShowTimer;
