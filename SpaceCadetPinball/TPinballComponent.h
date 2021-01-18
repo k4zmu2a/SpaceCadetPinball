@@ -20,6 +20,9 @@ public:
 	virtual void put_scoring(int index, int score);
 	virtual int get_scoring(int index);
 
+	void* operator new(size_t Size);
+	void operator delete(void* p);
+
 	__int8 UnknownBaseFlag1;
 	__int8 UnknownBaseFlag2;
 	int MessageField;

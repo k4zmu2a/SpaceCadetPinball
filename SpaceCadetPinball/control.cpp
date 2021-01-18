@@ -787,9 +787,9 @@ void control::pbctrl_bdoor_controller(int key)
 void control::table_add_extra_ball(float count)
 {
 	++TableG->ExtraBalls;
-	dynamic_cast<TSound*>(control_soundwave28_tag.Component)->Play();
+	static_cast<TSound*>(control_soundwave28_tag.Component)->Play();
 	auto msg = pinball::get_rc_string(9, 0);
-	dynamic_cast<TTextBox*>(control_info_text_box_tag.Component)->Display(msg, count);
+	static_cast<TTextBox*>(control_info_text_box_tag.Component)->Display(msg, count);
 }
 
 int control::cheat_bump_rank()
@@ -799,7 +799,7 @@ int control::cheat_bump_rank()
 
 BOOL control::light_on(component_tag* tag)
 {
-	auto light = dynamic_cast<TLight*>(tag->Component);
+	auto light = static_cast<TLight*>(tag->Component);
 	return light->BmpIndex1 || light->FlasherFlag2 || light->FlasherActive;
 }
 
@@ -859,10 +859,10 @@ void control::DeploymentChuteToEscapeChuteOneWayControl(int code, TPinballCompon
 		int count = control_skill_shot_lights_tag.Component->Message(37, 0.0);
 		if (count)
 		{
-			dynamic_cast<TSound*>(control_soundwave3_tag.Component)->Play();
+			static_cast<TSound*>(control_soundwave3_tag.Component)->Play();
 			int score = TableG->AddScore(caller->get_scoring(count - 1));
 			sprintf_s(Buffer, pinball::get_rc_string(21, 0), score);
-			dynamic_cast<TTextBox*>(control_info_text_box_tag.Component)->Display(Buffer, 2.0);
+			static_cast<TTextBox*>(control_info_text_box_tag.Component)->Display(Buffer, 2.0);
 			if (!light_on(&control_lite56_tag))
 			{
 				control_l_trek_lights_tag.Component->Message(34, 0.0);
@@ -1109,10 +1109,10 @@ void control::BallDrainControl(int code, TPinballComponent* caller)
 			TableG->Message(1022, 0.0);
 			if (pb::chk_highscore())
 			{
-				dynamic_cast<TSound*>(control_soundwave3_tag.Component)->Play();
+				static_cast<TSound*>(control_soundwave3_tag.Component)->Play();
 				TableG->LightGroup->Message(16, 3.0);
 				char* v11 = pinball::get_rc_string(177, 0);
-				dynamic_cast<TTextBox*>(control_mission_text_box_tag.Component)->Display(v11, -1.0);
+				static_cast<TTextBox*>(control_mission_text_box_tag.Component)->Display(v11, -1.0);
 			}
 		}
 		else
@@ -1136,25 +1136,25 @@ void control::BallDrainControl(int code, TPinballComponent* caller)
 			}
 			if (light_on(&control_lite200_tag))
 			{
-				dynamic_cast<TSound*>(control_soundwave27_tag.Component)->Play();
+				static_cast<TSound*>(control_soundwave27_tag.Component)->Play();
 				control_lite200_tag.Component->Message(19, 0.0);
-				dynamic_cast<TTextBox*>(control_info_text_box_tag.Component)->Display(
+				static_cast<TTextBox*>(control_info_text_box_tag.Component)->Display(
 					pinball::get_rc_string(96, 0), -1.0);
-				dynamic_cast<TSound*>(control_soundwave59_tag.Component)->Play();
+				static_cast<TSound*>(control_soundwave59_tag.Component)->Play();
 			}
 			else if (light_on(&control_lite199_tag))
 			{
-				dynamic_cast<TSound*>(control_soundwave27_tag.Component)->Play();
+				static_cast<TSound*>(control_soundwave27_tag.Component)->Play();
 				control_lite199_tag.Component->Message(20, 0.0);
 				control_lite200_tag.Component->Message(19, 0.0);
-				dynamic_cast<TTextBox*>(control_info_text_box_tag.Component)->
+				static_cast<TTextBox*>(control_info_text_box_tag.Component)->
 					Display(pinball::get_rc_string(95, 0), 2.0);
-				dynamic_cast<TSound*>(control_soundwave59_tag.Component)->Play();
+				static_cast<TSound*>(control_soundwave59_tag.Component)->Play();
 				--TableG->UnknownP78;
 			}
 			else if (TableG->UnknownP75)
 			{
-				dynamic_cast<TSound*>(control_soundwave27_tag.Component)->Play();
+				static_cast<TSound*>(control_soundwave27_tag.Component)->Play();
 				--TableG->UnknownP75;
 			}
 			else
@@ -1163,14 +1163,14 @@ void control::BallDrainControl(int code, TPinballComponent* caller)
 				{
 					int time = SpecialAddScore(TableG->ScoreSpecial2);
 					sprintf_s(Buffer, pinball::get_rc_string(94, 0), time);
-					dynamic_cast<TTextBox*>(control_info_text_box_tag.Component)->Display(Buffer, 2.0);
+					static_cast<TTextBox*>(control_info_text_box_tag.Component)->Display(Buffer, 2.0);
 				}
 				if (TableG->ExtraBalls)
 				{
 					TableG->ExtraBalls--;
 
 					char* shootAgainText;
-					dynamic_cast<TSound*>(control_soundwave59_tag.Component)->Play();
+					static_cast<TSound*>(control_soundwave59_tag.Component)->Play();
 					switch (TableG->CurrentPlayer)
 					{
 					case 0:
@@ -1187,7 +1187,7 @@ void control::BallDrainControl(int code, TPinballComponent* caller)
 						shootAgainText = pinball::get_rc_string(100, 0);
 						break;
 					}
-					dynamic_cast<TTextBox*>(control_info_text_box_tag.Component)->Display(shootAgainText, -1.0);
+					static_cast<TTextBox*>(control_info_text_box_tag.Component)->Display(shootAgainText, -1.0);
 				}
 				else
 				{
@@ -1201,7 +1201,7 @@ void control::BallDrainControl(int code, TPinballComponent* caller)
 					{
 						control_lite199_tag.Component->MessageField = 1;
 					}
-					dynamic_cast<TSound*>(control_soundwave27_tag.Component)->Play();
+					static_cast<TSound*>(control_soundwave27_tag.Component)->Play();
 				}
 				control_bmpr_inc_lights_tag.Component->Message(20, 0.0);
 				control_ramp_bmpr_inc_lights_tag.Component->Message(20, 0.0);

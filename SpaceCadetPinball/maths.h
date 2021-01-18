@@ -45,6 +45,32 @@ struct __declspec(align(4)) line_type
 	vector_type RayIntersect;
 };
 
+struct vector_type2
+{
+	int X;
+	int Y;
+};
+
+struct wall_point_type
+{
+	float X0;
+	float Y0;
+	float X1;
+	float Y1;
+};
+
+struct __declspec(align(4)) ramp_plane_type
+{
+	float Unknown12;
+	vector_type2 V0;
+	vector_type2 V1;
+	vector_type2 V2;
+	vector_type2 V3;
+	float GravityAngle1;
+	float GravityAngle2;
+	vector_type2 V5_Zero;
+};
+
 
 class maths
 {
@@ -69,4 +95,6 @@ public:
 	static void RotatePt(vector_type* point, float sin, float cos, vector_type* origin);
 	static float distance_to_flipper(ray_type* ray1, ray_type* ray2);
 	static void RotateVector(vector_type* vec, float angle);
+	static void find_closest_edge(ramp_plane_type* plane, int planeCount, wall_point_type* wall, vector_type** lineEnd,
+	                              vector_type** lineStart);
 };

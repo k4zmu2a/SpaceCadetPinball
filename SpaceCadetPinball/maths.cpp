@@ -178,7 +178,7 @@ void maths::line_init(line_type* line, float x0, float y0, float x1, float y1)
 	normalize_2d(&line->Direction);
 	line->PerpendicularL.X = line->Direction.Y;
 	line->PerpendicularL.Y = -line->Direction.X;
-	line->PreComp1 = -(line->Direction.Y * x0) + (line->Direction.X * y0);
+	line->PreComp1 = -(line->Direction.Y * x0) + line->Direction.X * y0;
 	if (line->Direction.X >= 0.000000001 || line->Direction.X <= -0.000000001)
 	{
 		v9 = x1;
@@ -419,4 +419,48 @@ void maths::RotateVector(vector_type* vec, float angle)
 	 * vec->Y = s * vec->X + c * vec->Y;
 	 * vec->X = tmp
 	 */
+}
+
+void maths::find_closest_edge(ramp_plane_type* plane, int planeCount, wall_point_type* wall, vector_type** lineEnd,
+                              vector_type** lineStart)
+{
+	vector_type wallEnd{}, wallStart{};
+
+	wallStart.X = wall->X0;
+	wallStart.Y = wall->Y0;
+	wallEnd.Y = wall->Y1;
+	wallEnd.X = wall->X1;
+
+	float maxDistance = 1000000000.0f;
+	ramp_plane_type* planePtr = plane;
+	for (auto index = 0; index < planeCount; index++)
+	{
+		auto vec1 = reinterpret_cast<vector_type*>(&planePtr->V1),
+		     vec2 = reinterpret_cast<vector_type*>(&planePtr->V2),
+		     vec3 = reinterpret_cast<vector_type*>(&planePtr->V3);
+		auto distance = Distance(&wallStart, vec1) + Distance(&wallEnd, vec2);
+		if (distance < maxDistance)
+		{
+			maxDistance = distance;
+			*lineEnd = vec1;
+			*lineStart = vec2;
+		}
+
+		distance = Distance(&wallStart, vec2) + Distance(&wallEnd, vec3);
+		if (distance < maxDistance)
+		{
+			maxDistance = distance;
+			*lineEnd = vec2;
+			*lineStart = vec3;
+		}
+
+		distance = Distance(&wallStart, vec3) + Distance(&wallEnd, vec1);
+		if (distance < maxDistance)
+		{
+			maxDistance = distance;
+			*lineEnd = vec3;
+			*lineStart = vec1;
+		}
+		++planePtr;
+	}
 }
