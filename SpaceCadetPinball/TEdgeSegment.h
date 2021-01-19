@@ -16,7 +16,7 @@ public:
 	TCollisionComponent* CollisionComponent;
 	char* PinbCompFlag2Ptr;
 	char ProcessedFlag;
-	int WallValue;
+	void* WallValue;
 	int VisualFlag;
 
 	TEdgeSegment(TCollisionComponent* collComp, char* someFlag, unsigned int visualFlag);
@@ -28,5 +28,5 @@ public:
 	virtual float FindCollisionDistance(ray_type* ray) = 0;
 
 	static TEdgeSegment* install_wall(float* floatArr, TCollisionComponent* collComp, char* flagPtr,
-	                                  unsigned int visual_flag, float offset, int someValue);
+	                                  unsigned int visual_flag, float offset, int wallValue);
 };

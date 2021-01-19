@@ -20,7 +20,7 @@ void TEdgeSegment::port_draw()
 
 TEdgeSegment* TEdgeSegment::install_wall(float* floatArr, TCollisionComponent* collComp, char* flagPtr,
                                          unsigned int visual_flag,
-                                         float offset, int someValue)
+                                         float offset, int wallValue)
 {
 	vector_type center{}, start{}, end{}, prevCenter{}, vec1{}, vec2{}, dstVec{};
 	TEdgeSegment* edge = nullptr;
@@ -38,7 +38,7 @@ TEdgeSegment* TEdgeSegment::install_wall(float* floatArr, TCollisionComponent* c
 
 			if (circle)
 			{
-				circle->WallValue = someValue;
+				circle->WallValue = reinterpret_cast<void*>(wallValue);
 				circle->place_in_grid();
 			}
 
@@ -56,7 +56,7 @@ TEdgeSegment* TEdgeSegment::install_wall(float* floatArr, TCollisionComponent* c
 
 			if (line)
 			{
-				line->WallValue = someValue;
+				line->WallValue = reinterpret_cast<void*>(wallValue);
 				line->Offset(offset);
 				line->place_in_grid();
 				collComp->EdgeList->Add(line);
@@ -103,7 +103,7 @@ TEdgeSegment* TEdgeSegment::install_wall(float* floatArr, TCollisionComponent* c
 
 						if (circle)
 						{
-							circle->WallValue = someValue;
+							circle->WallValue = reinterpret_cast<void*>(wallValue);
 							circle->place_in_grid();
 							collComp->EdgeList->Add(circle);
 						}
@@ -119,7 +119,7 @@ TEdgeSegment* TEdgeSegment::install_wall(float* floatArr, TCollisionComponent* c
 
 				if (line)
 				{
-					line->WallValue = someValue;
+					line->WallValue = reinterpret_cast<void*>(wallValue);
 					line->Offset(offset);
 					line->place_in_grid();
 					collComp->EdgeList->Add(line);

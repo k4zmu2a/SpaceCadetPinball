@@ -24,9 +24,7 @@ public :
 	float TimeDelta;
 	float TimeNow;
 	vector_type InvAcceleration;
-	int Unknown13;
-	int Unknown14;
-	int Unknown15;
+	vector_type RampFieldForce;	
 	TCollisionComponent* CollisionComp;
 	int FieldFlag;
 	TEdgeSegment* Collisions[5];

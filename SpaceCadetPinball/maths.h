@@ -47,8 +47,8 @@ struct __declspec(align(4)) line_type
 
 struct vector_type2
 {
-	int X;
-	int Y;
+	float X;
+	float Y;
 };
 
 struct wall_point_type
@@ -61,14 +61,13 @@ struct wall_point_type
 
 struct __declspec(align(4)) ramp_plane_type
 {
-	float Unknown12;
-	vector_type2 V0;
+	vector_type BallCollisionOffset;
 	vector_type2 V1;
 	vector_type2 V2;
 	vector_type2 V3;
 	float GravityAngle1;
 	float GravityAngle2;
-	vector_type2 V5_Zero;
+	vector_type2 FieldForce;
 };
 
 

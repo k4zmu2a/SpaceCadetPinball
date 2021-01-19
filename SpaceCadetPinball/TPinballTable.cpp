@@ -635,25 +635,14 @@ void TPinballTable::replay_timer_callback(int timerId, void* caller)
 void TPinballTable::tilt_timeout(int timerId, void* caller)
 {
 	auto table = static_cast<TPinballTable*>(caller);
+	vector_type vec{};
+
 	table->TiltTimeoutTimer = 0;
 	if (table->TiltLockFlag)
 	{
-		/*v2 = table->ListP2.ListPtr;
-		v3 = v2->Array;
-		if (v2->Count > 0)
+		for (int i = 0; i < table->BallList->Count(); i++)
 		{
-			v4 = v2->Count;
-			do
-			{
-				(*(void(__stdcall**)(void*, char*, char*, _DWORD, _DWORD))(*(_DWORD*)table->Drain + 20))(
-					*v3,
-					&v5,
-					&v5,
-					0.0,
-					0);
-				++v3;
-				--v4;
-			} while (v4);
-		}*/
+			table->Drain->Collision(static_cast<TBall*>(table->BallList->Get(i)), &vec, &vec, 0.0, nullptr);
+		}
 	}
 }
