@@ -31,15 +31,22 @@ public:
 	static component_info score_components[88];
 	static component_tag* simple_components[142];
 	static int table_unlimited_balls;
+	static int RankRcArray[9], MissionRcArray[17];
 
 	static void make_links(TPinballTable* table);
 	static TPinballComponent* make_component_link(component_tag* tag);
 	static void handler(int code, TPinballComponent* cmp);
 	static void pbctrl_bdoor_controller(int key);
 	static void table_add_extra_ball(float count);
+	static void table_set_bonus_hold();
+	static void table_set_bonus();
+	static void table_set_jackpot();
+	static void table_set_flag_lights();
 	static int cheat_bump_rank();
-	static BOOL light_on(struct component_tag* tag);
+	static bool light_on(struct component_tag* tag);
 	static int SpecialAddScore(int score);
+	static int AddRankProgress(int rank);
+	static void AdvanceWormHoleDestination(int flag);
 
 	static void FlipperRebounderControl1(int code, TPinballComponent* caller);
 	static void FlipperRebounderControl2(int code, TPinballComponent* caller);
@@ -102,6 +109,40 @@ public:
 
 	static void table_control_handler(int code);
 
+	static void AlienMenaceController(int code, TPinballComponent* caller);
+	static void AlienMenacePartTwoController(int code, TPinballComponent* caller);
+	static void BlackHoleThreatController(int code, TPinballComponent* caller);
+	static void BugHuntController(int code, TPinballComponent* caller);
+	static void CosmicPlagueController(int code, TPinballComponent* caller);
+	static void CosmicPlaguePartTwoController(int code, TPinballComponent* caller);
+	static void DoomsdayMachineController(int code, TPinballComponent* caller);
+	static void GameoverController(int code, TPinballComponent* caller);
+	static void LaunchTrainingController(int code, TPinballComponent* caller);
+	static void MaelstromController(int code, TPinballComponent* caller);
+	static void MaelstromPartEightController(int code, TPinballComponent* caller);
+	static void MaelstromPartFiveController(int code, TPinballComponent* caller);
+	static void MaelstromPartFourController(int code, TPinballComponent* caller);
+	static void MaelstromPartSevenController(int code, TPinballComponent* caller);
+	static void MaelstromPartSixController(int code, TPinballComponent* caller);
+	static void MaelstromPartThreeController(int code, TPinballComponent* caller);
+	static void MaelstromPartTwoController(int code, TPinballComponent* caller);
+	static void PracticeMissionController(int code, TPinballComponent* caller);
+	static void ReconnaissanceController(int code, TPinballComponent* caller);
+	static void ReentryTrainingController(int code, TPinballComponent* caller);
+	static void RescueMissionController(int code, TPinballComponent* caller);
+	static void SatelliteController(int code, TPinballComponent* caller);
+	static void ScienceMissionController(int code, TPinballComponent* caller);
+	static void SecretMissionGreenController(int code, TPinballComponent* caller);
+	static void SecretMissionRedController(int code, TPinballComponent* caller);
+	static void SecretMissionYellowController(int code, TPinballComponent* caller);
+	static void SelectMissionController(int code, TPinballComponent* caller);
+	static void SpaceRadiationController(int code, TPinballComponent* caller);
+	static void StrayCometController(int code, TPinballComponent* caller);
+	static void TimeWarpController(int code, TPinballComponent* caller);
+	static void TimeWarpPartTwoController(int code, TPinballComponent* caller);
+	static void UnselectMissionController(int code, TPinballComponent* caller);
+	static void WaitingDeploymentController(int code, TPinballComponent* caller);
 private:
 	static int pbctrl_state;
+	static int extraball_light_flag;
 };

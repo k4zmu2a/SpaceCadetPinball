@@ -13,6 +13,7 @@ public:
 	static int cheat_mode, game_mode;
 	static datFileStruct* record_table;
 	static TPinballTable* MainTable;
+	static high_score_struct highscore_table[5];
 
 	static int init();
 	static int uninit();
@@ -39,6 +40,5 @@ public:
 	static float collide(float timeNow, float timeDelta, TBall* ball);
 private :
 	static int demo_mode, mode_countdown_;
-	static high_score_struct highscore_table[5];
 	static int state;
 };

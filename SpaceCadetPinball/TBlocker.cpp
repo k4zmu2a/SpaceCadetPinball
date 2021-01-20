@@ -15,8 +15,8 @@ TBlocker::TBlocker(TPinballTable* table, int groupIndex) : TCollisionComponent(t
 	loader::query_visual(groupIndex, 0, &visual);
 	SoundIndex4 = visual.SoundIndex4;
 	SoundIndex3 = visual.SoundIndex3;
-	Unknown0 = 55;
-	Unknown1 = 5;
+	TurnOnMsgValue = 55;
+	TurnOffMsgValue = 5;
 	MaxCollisionSpeed = 1000000000.0f;
 	Timer = 0;
 	MessageField = 0;

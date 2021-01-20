@@ -8,6 +8,9 @@ class TZmapList;
 enum class message_code
 {
 	Reset = 1024,
+	LightActiveCount = 37,
+	LightTotalCount = 38,
+	LightSetMessageField = 23,
 };
 
 class TPinballComponent

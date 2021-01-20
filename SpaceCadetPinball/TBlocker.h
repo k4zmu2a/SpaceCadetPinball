@@ -10,8 +10,8 @@ public:
 
 	static void TimerExpired(int timerId, void* caller);
 
-	int Unknown0;
-	int Unknown1;
+	int TurnOnMsgValue;
+	int TurnOffMsgValue;
 	int Timer;
 	int SoundIndex4;
 	int SoundIndex3;
