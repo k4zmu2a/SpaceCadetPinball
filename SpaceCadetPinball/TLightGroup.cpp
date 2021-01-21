@@ -320,7 +320,7 @@ int TLightGroup::Message(int code, float value)
 			for (auto i = countSub1; i >= 0; i--)
 			{
 				if (static_cast<TLight*>(List->Get(i))->BmpIndex1)
-					++countSub1;
+					++bmp1Count;
 			}
 			return bmp1Count;
 		}

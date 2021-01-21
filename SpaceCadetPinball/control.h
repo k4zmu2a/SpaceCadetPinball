@@ -42,6 +42,7 @@ public:
 	static void table_set_bonus();
 	static void table_set_jackpot();
 	static void table_set_flag_lights();
+	static void table_set_multiball();
 	static int cheat_bump_rank();
 	static bool light_on(struct component_tag* tag);
 	static int SpecialAddScore(int score);
