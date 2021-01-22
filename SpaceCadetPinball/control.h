@@ -1,12 +1,47 @@
 #pragma once
 
+class TLight;
+class TSound;
 class TPinballTable;
 class TPinballComponent;
 
-struct component_tag
+struct component_tag_base
 {
 	LPCSTR Name;
-	TPinballComponent* Component;
+
+	component_tag_base(LPCSTR name)
+	{
+		Name = name;
+	}
+
+	virtual ~component_tag_base() = default;
+	virtual TPinballComponent* GetComponent() = 0;
+	virtual void SetComponent(TPinballComponent* comp) = 0;
+};
+
+/* Original did not have this template. It supposedly cast TSound and TTextBox from TPinballComponent in tags*/
+template <class T = TPinballComponent>
+struct component_tag : component_tag_base
+{
+	static_assert(std::is_base_of<TPinballComponent, T>::value, "T must inherit from TPinballComponent");
+	T* Component;
+
+	component_tag(LPCSTR name, TPinballComponent* component): component_tag_base(name)
+	{
+		component_tag::SetComponent(component);
+	}
+
+	TPinballComponent* GetComponent() override
+	{
+		return static_cast<TPinballComponent*>(Component);
+	}
+
+	void SetComponent(TPinballComponent* comp) override
+	{
+		Component = dynamic_cast<T*>(comp);
+		if (comp)
+			assertm(Component, "Wrong component type");
+	}
 };
 
 
@@ -19,7 +54,7 @@ struct component_control
 
 struct component_info
 {
-	component_tag* Tag;
+	component_tag_base* Tag;
 	component_control Control;
 };
 
@@ -29,12 +64,12 @@ class control
 public:
 	static TPinballTable* TableG;
 	static component_info score_components[88];
-	static component_tag* simple_components[142];
+	static component_tag_base* simple_components[142];
 	static int table_unlimited_balls;
 	static int RankRcArray[9], MissionRcArray[17];
 
 	static void make_links(TPinballTable* table);
-	static TPinballComponent* make_component_link(component_tag* tag);
+	static TPinballComponent* make_component_link(component_tag_base* tag);
 	static void handler(int code, TPinballComponent* cmp);
 	static void pbctrl_bdoor_controller(int key);
 	static void table_add_extra_ball(float count);
@@ -44,7 +79,7 @@ public:
 	static void table_set_flag_lights();
 	static void table_set_multiball();
 	static int cheat_bump_rank();
-	static bool light_on(struct component_tag* tag);
+	static bool light_on(component_tag<TLight>* tag);
 	static int SpecialAddScore(int score);
 	static int AddRankProgress(int rank);
 	static void AdvanceWormHoleDestination(int flag);
