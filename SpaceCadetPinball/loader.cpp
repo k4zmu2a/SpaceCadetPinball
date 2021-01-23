@@ -325,7 +325,7 @@ float loader::play_sound(int soundIndex)
 {
 	if (soundIndex <= 0)
 		return 0.0;
-	Sound::PlaySound((int)sound_list[soundIndex].WavePtr, 0, 7, 5, 0);
+	Sound::PlaySound(sound_list[soundIndex].WavePtr, 0, 7, WMIX_HIPRIORITY | WMIX_CLEARQUEUE, 0);
 	return sound_list[soundIndex].Duration;
 }
 

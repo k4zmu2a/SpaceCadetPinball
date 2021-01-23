@@ -1,17 +1,30 @@
 #pragma once
+#include "WaveMix.h"
+
 class Sound
 {
 public:
-	static int Init(HINSTANCE hInstance, int voices, void (__stdcall* someFuncPtr)(int, int, int));
-	static void Enable(int a1, int a2, int a3);
-	static void nullsub_1(int a1, int a2, int a3);
+	static int Init(HINSTANCE hInstance, int voices, void (* someFuncPtr)(int, MIXWAVE*, int));
+	static void Enable(int channelFrom, int channelTo, int enableFlag);
 	static void Idle();
 	static void Activate();
 	static void Deactivate();
 	static void Close();
 	static int SubFactor(int a1, int a2);
 	static int AddFactor(int a1, int a2);
-	static void PlaySound(int a1, int a2, int a3, unsigned __int16 a4, __int16 a5);
-	static CHAR* LoadWaveFile(LPCSTR lpName);
-	static LPCVOID FreeSound(LPCVOID pMem);
+	static void PlaySound(MIXWAVE* wavePtr, int minChannel, int maxChannel, unsigned int dwFlags, __int16 loops);
+	static MIXWAVE* LoadWaveFile(LPCSTR lpName);
+	static void FreeSound(MIXWAVE* wave);
+	static void Flush(int channelFrom, int channelTo);
+	static void NullCallback(int a1, MIXWAVE* a2, int a3);
+	static LRESULT __stdcall SoundCallBackWndProc(HWND hWnd, UINT Msg, WPARAM wParam, LPARAM lParam);
+private:
+	static int num_channels;
+	static HWND wavemix_window;
+	static HANDLE pMem;
+	static unsigned int enabled_flag;
+	static int channel_time[8];
+	static MIXWAVE* channel_wavePtr[8];
+	static void (* callback_ptr)(int, MIXWAVE*, int);
+	static HMODULE HInstance;
 };

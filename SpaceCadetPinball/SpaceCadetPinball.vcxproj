@@ -217,6 +217,7 @@
     <ClInclude Include="TTripwire.h" />
     <ClInclude Include="TWall.h" />
     <ClInclude Include="TZmapList.h" />
+    <ClInclude Include="WaveMix.h" />
     <ClInclude Include="winmain.h" />
     <ClInclude Include="zdrv.h" />
   </ItemGroup>
@@ -286,6 +287,7 @@
     <ClCompile Include="TTimer.cpp" />
     <ClCompile Include="TTripwire.cpp" />
     <ClCompile Include="TWall.cpp" />
+    <ClCompile Include="WaveMix.cpp" />
     <ClCompile Include="winmain.cpp" />
     <ClCompile Include="zdrv.cpp" />
   </ItemGroup>

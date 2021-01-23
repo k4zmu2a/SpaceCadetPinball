@@ -1,6 +1,7 @@
 #pragma once
 #include "gdrv.h"
 #include "maths.h"
+#include "WaveMix.h"
 #include "zdrv.h"
 
 
@@ -14,7 +15,7 @@ struct errorMsg
 
 struct soundListStruct
 {
-	char* WavePtr;
+	MIXWAVE* WavePtr;
 	int GroupIndex;
 	int Loaded;
 	float Duration;

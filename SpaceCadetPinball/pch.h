@@ -19,7 +19,10 @@
 #include <type_traits> /*For control template*/
 //#include <cstdlib>
 
-// Use (void) to silent unused warnings.
+/*Use (void) to silent unused warnings.*/
 #define assertm(exp, msg) assert(((void)msg, exp))
+
+/*Sound uses PlaySound*/
+#undef PlaySound
 
 #endif //PCH_H

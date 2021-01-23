@@ -222,6 +222,9 @@
     <ClInclude Include="TFlipperEdge.h">
       <Filter>Header Files\TEdgeSegment</Filter>
     </ClInclude>
+    <ClInclude Include="WaveMix.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="pch.cpp">
@@ -409,6 +412,9 @@
     </ClCompile>
     <ClCompile Include="TFlipperEdge.cpp">
       <Filter>Source Files\TEdgeSegment</Filter>
+    </ClCompile>
+    <ClCompile Include="WaveMix.cpp">
+      <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
