@@ -65,8 +65,9 @@ public:
 	static TPinballTable* TableG;
 	static component_info score_components[88];
 	static component_tag_base* simple_components[142];
-	static int table_unlimited_balls;
-	static int RankRcArray[9], MissionRcArray[17];
+	static int table_unlimited_balls, waiting_deployment_flag;
+	static int RankRcArray[9], MissionRcArray[17], mission_select_scores[17];
+	static component_tag_base *wormhole_tag_array1[3], *wormhole_tag_array2[3], *wormhole_tag_array3[3];
 
 	static void make_links(TPinballTable* table);
 	static TPinballComponent* make_component_link(component_tag_base* tag);
@@ -78,6 +79,8 @@ public:
 	static void table_set_jackpot();
 	static void table_set_flag_lights();
 	static void table_set_multiball();
+	static void table_bump_ball_sink_lock();
+	static void table_set_replay(float value);
 	static int cheat_bump_rank();
 	static bool light_on(component_tag<TLight>* tag);
 	static int SpecialAddScore(int score);
