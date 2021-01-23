@@ -19,7 +19,7 @@ TBumper::TBumper(TPinballTable* table, int groupIndex) : TCollisionComponent(tab
 	loader::query_visual(groupIndex, 0, &visual);
 	SoundIndex4 = visual.SoundIndex4;
 	SoundIndex3 = visual.SoundIndex3;
-	MaxCollisionSpeed2 = MaxCollisionSpeed;
+	OriginalThreshold = Threshold;
 }
 
 int TBumper::Message(int code, float value)
@@ -133,7 +133,7 @@ void TBumper::TimerExpired(int timerId, void* caller)
 		zMap,
 		bmp->XPosition - bump->PinballTable->XOffset,
 		bmp->YPosition - bump->PinballTable->YOffset);
-	bump->MaxCollisionSpeed = bump->MaxCollisionSpeed2;
+	bump->Threshold = bump->OriginalThreshold;
 }
 
 void TBumper::Fire()
@@ -148,5 +148,5 @@ void TBumper::Fire()
 		bmp->XPosition - PinballTable->XOffset,
 		bmp->YPosition - PinballTable->YOffset);
 	Timer = timer::set(TimerTime, this, TimerExpired);
-	MaxCollisionSpeed = 1000000000.0;
+	Threshold = 1000000000.0;
 }

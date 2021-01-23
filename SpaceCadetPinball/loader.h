@@ -1,5 +1,6 @@
 #pragma once
 #include "gdrv.h"
+#include "maths.h"
 #include "zdrv.h"
 
 
@@ -22,24 +23,22 @@ struct soundListStruct
 
 struct __declspec(align(4)) visualKickerStruct
 {
-	float Unknown1F;
-	float Unknown2F;
-	float Unknown3F;
-	float Unknown4F;
-	float Unknown5F;
-	float Unknown6F;
-	float Unknown7F;
-	int SoundIndex;
+	float Threshold;
+	float Boost;
+	float ThrowBallMult;
+	vector_type ThrowBallAcceleration;	
+	float ThrowBallAngleMult;
+	int HardHitSoundId;
 };
 
 
 struct __declspec(align(4)) visualStruct
 {
-	float Unknown1F;
-	float Unknown2F;
+	float Smoothness;
+	float Elasticity;
 	int FloatArrCount;
 	float* FloatArr;
-	int SoundIndex2;
+	int SoftHitSoundId;
 	visualKickerStruct Kicker;
 	int Flag;
 	int SoundIndex4;

@@ -189,7 +189,7 @@ void TRamp::Collision(TBall* ball, vector_type* nextPosition, vector_type* direc
 	{
 		if (!PinballTable->TiltLockFlag)
 		{
-			loader::play_sound(SoundIndex2);
+			loader::play_sound(SoftHitSoundId);
 			control::handler(63, this);
 		}
 	}

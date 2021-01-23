@@ -13,12 +13,12 @@ circle_type TFlipperEdge::circlebase, TFlipperEdge::circleT1;
 
 TFlipperEdge::TFlipperEdge(TCollisionComponent* collComp, char* someFlag, unsigned int visualFlag, TPinballTable* table,
                            vector_type* origin, vector_type* vecT1, vector_type* vecT2, float bmpCoef1, float bmpCoef2,
-                           float collMult, float c4F, float c5F): TEdgeSegment(collComp, someFlag, visualFlag)
+                           float collMult, float elasticity, float smoothness): TEdgeSegment(collComp, someFlag, visualFlag)
 {
 	vector_type crossProd{}, vecDir1{}, vecDir2{};
 
-	CollisionC4F = c4F;
-	CollisionC5F = c5F;
+	Elasticity = elasticity;
+	Smoothness = smoothness;
 	BmpCoef1 = bmpCoef1;
 	BmpCoef2 = bmpCoef2;
 	CollisionMult = collMult;
@@ -304,7 +304,7 @@ void TFlipperEdge::EdgeCollision(TBall* ball, float coef)
 	EdgeCollisionFlag = 1;
 	if (!FlipperFlag || !CollisionFlag2 || CollisionFlag1)
 	{
-		float collMult = 0.0;
+		float boost = 0.0;
 		if (CollisionFlag1)
 		{
 			float dx = NextBallPosition.X - RotOrigin.X;
@@ -319,31 +319,31 @@ void TFlipperEdge::EdgeCollision(TBall* ball, float coef)
 					v11 = dot1 * v20;
 				else
 					v11 = 0.0;
-				collMult = v11 * CollisionMult;
+				boost = v11 * CollisionMult;
 			}
 		}
 
-		float maxSpeed = collMult <= 0.0 ? 1000000000.0f : -1.0f;
+		float threshold = boost <= 0.0 ? 1000000000.0f : -1.0f;
 		maths::basic_collision(
 			ball,
 			&NextBallPosition,
 			&CollisionDirection,
-			CollisionC4F,
-			CollisionC5F,
-			maxSpeed,
-			collMult);
+			Elasticity,
+			Smoothness,
+			threshold,
+			boost);
 		return;
 	}
 
-	float c4F;
+	float elasticity;
 	float dx = NextBallPosition.X - RotOrigin.X;
 	float dy = NextBallPosition.Y - RotOrigin.Y;
 	float distance = dy * dy + dx * dx;
 	if (circlebase.RadiusSq * 1.01 < distance)
-		c4F = (1.0f - sqrt(distance / DistanceDivSq)) * CollisionC4F;
+		elasticity = (1.0f - sqrt(distance / DistanceDivSq)) * Elasticity;
 	else
-		c4F = CollisionC4F;
-	maths::basic_collision(ball, &NextBallPosition, &CollisionDirection, c4F, CollisionC5F, 1000000000.0, 0.0);
+		elasticity = Elasticity;
+	maths::basic_collision(ball, &NextBallPosition, &CollisionDirection, elasticity, Smoothness, 1000000000.0, 0.0);
 }
 
 void TFlipperEdge::place_in_grid()

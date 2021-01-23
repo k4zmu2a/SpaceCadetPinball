@@ -15,11 +15,11 @@ TFlipper::TFlipper(TPinballTable* table, int groupIndex) : TCollisionComponent(t
 	visualStruct visual{};
 
 	loader::query_visual(groupIndex, 0, &visual);
-	SoundIndex1 = visual.SoundIndex4;
-	SoundIndex2 = visual.SoundIndex3;
-	UnknownC4F = visual.Unknown2F;
+	HardHitSoundId = visual.SoundIndex4;
+	SoftHitSoundId = visual.SoundIndex3;
+	Elasticity = visual.Elasticity;
 	Timer = 0;
-	UnknownC5F = visual.Unknown1F;
+	Smoothness = visual.Smoothness;
 
 	auto floatArr = loader::query_float_attribute(groupIndex, 0, 803);
 	auto floatArr2 = loader::query_float_attribute(groupIndex, 0, 805);
@@ -41,8 +41,8 @@ TFlipper::TFlipper(TPinballTable* table, int groupIndex) : TCollisionComponent(t
 		bmpCoef1,
 		bmpCoef2,
 		collMult,
-		UnknownC4F,
-		UnknownC5F);
+		Elasticity,
+		Smoothness);
 
 	FlipperEdge = flipperEdge;
 	if (flipperEdge)
@@ -69,12 +69,12 @@ int TFlipper::Message(int code, float value)
 		{
 			control::handler(1, this);
 			TimerTime = BmpCoef1;
-			soundIndex = SoundIndex1;
+			soundIndex = HardHitSoundId;
 		}
 		else if (code == 2)
 		{
 			TimerTime = BmpCoef2;
-			soundIndex = SoundIndex2;
+			soundIndex = SoftHitSoundId;
 		}
 		else
 		{

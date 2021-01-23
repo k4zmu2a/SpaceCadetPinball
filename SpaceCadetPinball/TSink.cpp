@@ -17,12 +17,10 @@ TSink::TSink(TPinballTable* table, int groupIndex) : TCollisionComponent(table, 
 	MessageField = 0;
 	Timer = 0;
 	loader::query_visual(groupIndex, 0, &visual);	
-	BallAcceleration.X = visual.Kicker.Unknown4F;
-	BallAcceleration.Y = visual.Kicker.Unknown5F;
-	BallAcceleration.Z = visual.Kicker.Unknown6F;
-	ThrowAngleMult = visual.Kicker.Unknown7F;
-	ThrowSpeedMult1 = visual.Kicker.Unknown2F;
-	ThrowSpeedMult2 = visual.Kicker.Unknown3F * 0.01f;
+	BallAcceleration = visual.Kicker.ThrowBallAcceleration;
+	ThrowAngleMult = visual.Kicker.ThrowBallAngleMult;
+	ThrowSpeedMult1 = visual.Kicker.Boost;
+	ThrowSpeedMult2 = visual.Kicker.ThrowBallMult * 0.01f;
 	SoundIndex4 = visual.SoundIndex4;	
 	SoundIndex3 = visual.SoundIndex3;
 	auto floatArr = loader::query_float_attribute(groupIndex, 0, 601);
@@ -83,7 +81,7 @@ void TSink::Collision(TBall* ball, vector_type* nextPosition, vector_type* direc
 	Timer = 0;
 	if (PinballTable->TiltLockFlag)
 	{
-		maths::basic_collision(ball, nextPosition, direction, UnknownC4F, UnknownC5F, 1000000000.0, 0.0);
+		maths::basic_collision(ball, nextPosition, direction, Elasticity, Smoothness, 1000000000.0, 0.0);
 	}
 	else
 	{

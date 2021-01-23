@@ -269,9 +269,8 @@ void maths::vector_add(vector_type* vec1Dst, vector_type* vec2)
 	vec1Dst->Y += vec2->Y;
 }
 
-float maths::basic_collision(TBall* ball, vector_type* nextPosition, vector_type* direction, float a4, float a5,
-                             float maxSpeed,
-                             float multiplier)
+float maths::basic_collision(TBall* ball, vector_type* nextPosition, vector_type* direction, float elasticity, float smoothness,
+                             float threshold, float boost)
 {
 	ball->Position.X = nextPosition->X;
 	ball->Position.Y = nextPosition->Y;
@@ -284,19 +283,17 @@ float maths::basic_collision(TBall* ball, vector_type* nextPosition, vector_type
 	{
 		float dx1 = proj * direction->X;
 		float dy1 = proj * direction->Y;
-		float v17 = dx1 + ball->Acceleration.X;
-		float v18 = dy1 + ball->Acceleration.Y;
-		ball->Acceleration.X = v17 * a5 + dx1 * a4;
-		ball->Acceleration.Y = v18 * a5 + dy1 * a4;
+		ball->Acceleration.X = (dx1 + ball->Acceleration.X) * smoothness + dx1 * elasticity;
+		ball->Acceleration.Y = (dy1 + ball->Acceleration.Y) * smoothness + dy1 * elasticity;
 		normalize_2d(&ball->Acceleration);
 	}
 	float projSpeed = proj * ball->Speed;
-	float newSpeed = ball->Speed - (1.0f - a4) * projSpeed;
+	float newSpeed = ball->Speed - (1.0f - elasticity) * projSpeed;
 	ball->Speed = newSpeed;
-	if (projSpeed >= maxSpeed)
+	if (projSpeed >= threshold)
 	{
-		ball->Acceleration.X = newSpeed * ball->Acceleration.X + direction->X * multiplier;
-		ball->Acceleration.Y = newSpeed * ball->Acceleration.Y + direction->Y * multiplier;
+		ball->Acceleration.X = newSpeed * ball->Acceleration.X + direction->X * boost;
+		ball->Acceleration.Y = newSpeed * ball->Acceleration.Y + direction->Y * boost;
 		ball->Speed = normalize_2d(&ball->Acceleration);
 	}
 	return projSpeed;

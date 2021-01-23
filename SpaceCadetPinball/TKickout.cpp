@@ -27,8 +27,8 @@ TKickout::TKickout(TPinballTable* table, int groupIndex, bool someFlag): TCollis
 	KickFlag1 = 0;
 	FieldMult = *loader::query_float_attribute(groupIndex, 0, 305);
 	loader::query_visual(groupIndex, 0, &visual);
-	SoundIndex2 = visual.SoundIndex2;
-	SoundIndex1 = visual.Kicker.SoundIndex;
+	SoftHitSoundId = visual.SoftHitSoundId;
+	HardHitSoundId = visual.Kicker.HardHitSoundId;
 
 	Circle.Center.X = *visual.FloatArr;
 	Circle.Center.Y = visual.FloatArr[1];
@@ -45,12 +45,10 @@ TKickout::TKickout(TPinballTable* table, int groupIndex, bool someFlag): TCollis
 
 	Circle.RadiusSq = visual.FloatArr[2] * visual.FloatArr[2];
 	CollisionBallSetZ = loader::query_float_attribute(groupIndex, 0, 408)[2];
-	ThrowSpeedMult2 = visual.Kicker.Unknown3F * 0.01f;
-	BallAcceleration.X = visual.Kicker.Unknown4F;
-	BallAcceleration.Y = visual.Kicker.Unknown5F;
-	BallAcceleration.Z = visual.Kicker.Unknown6F;
-	ThrowAngleMult = visual.Kicker.Unknown7F;
-	ThrowSpeedMult1 = visual.Kicker.Unknown2F;
+	ThrowSpeedMult2 = visual.Kicker.ThrowBallMult * 0.01f;
+	BallAcceleration = visual.Kicker.ThrowBallAcceleration;
+	ThrowAngleMult = visual.Kicker.ThrowBallAngleMult;
+	ThrowSpeedMult1 = visual.Kicker.Boost;
 
 	circle.RadiusSq = Circle.RadiusSq;
 	circle.Center.X = Circle.Center.X;
@@ -111,7 +109,7 @@ void TKickout::Collision(TBall* ball, vector_type* nextPosition, vector_type* di
 	if (!KickFlag1)
 	{
 		Ball = ball;
-		MaxCollisionSpeed = 1000000000.0;
+		Threshold = 1000000000.0;
 		KickFlag1 = 1;
 		ball->CollisionComp = this;
 		ball->Position.X = Circle.Center.X;
@@ -124,7 +122,7 @@ void TKickout::Collision(TBall* ball, vector_type* nextPosition, vector_type* di
 		}
 		else
 		{
-			loader::play_sound(SoundIndex2);
+			loader::play_sound(SoftHitSoundId);
 			control::handler(63, this);
 		}
 	}
@@ -160,7 +158,7 @@ void TKickout::TimerExpired(int timerId, void* caller)
 			                  kick->ThrowSpeedMult2);
 			kick->UnknownBaseFlag2 = 0;
 			kick->Ball = nullptr;
-			loader::play_sound(kick->SoundIndex1);
+			loader::play_sound(kick->HardHitSoundId);
 		}
 	}
 }

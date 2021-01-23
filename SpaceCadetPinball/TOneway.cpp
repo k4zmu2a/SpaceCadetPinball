@@ -51,26 +51,26 @@ void TOneway::Collision(TBall* ball, vector_type* nextPosition, vector_type* dir
 		ball->RayMaxDistance -= coef;
 		if (!PinballTable->TiltLockFlag)
 		{
-			if (SoundIndex1)
-				loader::play_sound(SoundIndex1);
+			if (HardHitSoundId)
+				loader::play_sound(HardHitSoundId);
 			control::handler(63, this);
 		}
 	}
 	else if (PinballTable->TiltLockFlag)
 	{
-		maths::basic_collision(ball, nextPosition, direction, UnknownC4F, UnknownC5F, 1000000000.0, 0.0);
+		maths::basic_collision(ball, nextPosition, direction, Elasticity, Smoothness, 1000000000.0, 0.0);
 	}
 	else if (maths::basic_collision(
 		ball,
 		nextPosition,
 		direction,
-		UnknownC4F,
-		UnknownC5F,
-		MaxCollisionSpeed,
-		CollisionMultiplier) > 0.2)
+		Elasticity,
+		Smoothness,
+		Threshold,
+		Boost) > 0.2)
 	{
-		if (SoundIndex2)
-			loader::play_sound(SoundIndex2);
+		if (SoftHitSoundId)
+			loader::play_sound(SoftHitSoundId);
 	}
 }
 

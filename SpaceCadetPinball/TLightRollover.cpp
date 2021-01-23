@@ -54,7 +54,7 @@ void TLightRollover::Collision(TBall* ball, vector_type* nextPosition, vector_ty
 		}
 		else
 		{
-			loader::play_sound(SoundIndex2);
+			loader::play_sound(SoftHitSoundId);
 			control::handler(63, this);
 			RolloverFlag = RolloverFlag == 0;
 			if (ListBitmap)

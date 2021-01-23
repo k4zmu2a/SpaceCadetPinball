@@ -17,16 +17,16 @@ TPlunger::TPlunger(TPinballTable* table, int groupIndex) : TCollisionComponent(t
 	visualStruct visual{};
 
 	loader::query_visual(groupIndex, 0, &visual);
-	CollisionMultiplier = 0.0;
+	Boost = 0.0;
 	BallFeedTimer_ = 0;
 	PullbackTimer_ = 0;
 	SoundIndexP1 = visual.SoundIndex4;
 	SoundIndexP2 = visual.SoundIndex3;
-	SoundIndex1 = visual.Kicker.SoundIndex;
-	MaxCollisionSpeed = 1000000000.0;
+	HardHitSoundId = visual.Kicker.HardHitSoundId;
+	Threshold = 1000000000.0;
 	MaxPullback = 100;
-	UnknownC4F = 0.5f;
-	UnknownC5F = 0.5f;
+	Elasticity = 0.5f;
+	Smoothness = 0.5f;
 	PullbackIncrement = static_cast<int>(100.0 / (ListBitmap->Count() * 8.0));
 	Unknown4F = 0.025f;
 	float* floatArr = loader::query_float_attribute(groupIndex, 0, 601);
@@ -38,8 +38,8 @@ void TPlunger::Collision(TBall* ball, vector_type* nextPosition, vector_type* di
 {
 	if (PinballTable->TiltLockFlag)
 		Message(1017, 0.0);
-	coef = static_cast<float>(rand()) * 0.00003051850947599719f * CollisionMultiplier * 0.1f + CollisionMultiplier;
-	maths::basic_collision(ball, nextPosition, direction, UnknownC4F, UnknownC5F, MaxCollisionSpeed, coef);
+	coef = static_cast<float>(rand()) * 0.00003051850947599719f * Boost * 0.1f + Boost;
+	maths::basic_collision(ball, nextPosition, direction, Elasticity, Smoothness, Threshold, coef);
 }
 
 int TPlunger::Message(int code, float value)
@@ -49,9 +49,9 @@ int TPlunger::Message(int code, float value)
 	case 1004:
 		if (!PullbackTimer_)
 		{
-			CollisionMultiplier = 0.0;
-			MaxCollisionSpeed = 1000000000.0;
-			loader::play_sound(SoundIndex1);
+			Boost = 0.0;
+			Threshold = 1000000000.0;
+			loader::play_sound(HardHitSoundId);
 			PullbackTimer(0, this);
 		}
 		return 0;
@@ -59,7 +59,7 @@ int TPlunger::Message(int code, float value)
 	case 1009:
 	case 1010:
 		{
-			MaxCollisionSpeed = 0.0;
+			Threshold = 0.0;
 			if (PullbackTimer_)
 				timer::kill(PullbackTimer_);
 			PullbackTimer_ = 0;
@@ -97,8 +97,8 @@ int TPlunger::Message(int code, float value)
 		control::handler(code, this);
 		return 0;
 	case 1017:
-		MaxCollisionSpeed = 0.0;
-		CollisionMultiplier = static_cast<float>(MaxPullback);
+		Threshold = 0.0;
+		Boost = static_cast<float>(MaxPullback);
 		timer::set(0.2f, this, PlungerReleasedTimer);
 		break;
 	case 1024:
@@ -106,7 +106,7 @@ int TPlunger::Message(int code, float value)
 			if (BallFeedTimer_)
 				timer::kill(BallFeedTimer_);
 			BallFeedTimer_ = 0;
-			MaxCollisionSpeed = 0.0;
+			Threshold = 0.0;
 			if (PullbackTimer_)
 				timer::kill(PullbackTimer_);
 			PullbackTimer_ = 0;
@@ -140,19 +140,19 @@ void TPlunger::BallFeedTimer(int timerId, void* caller)
 void TPlunger::PullbackTimer(int timerId, void* caller)
 {
 	auto plunger = static_cast<TPlunger*>(caller);
-	plunger->CollisionMultiplier += static_cast<float>(plunger->PullbackIncrement);
-	if (plunger->CollisionMultiplier <= static_cast<float>(plunger->MaxPullback))
+	plunger->Boost += static_cast<float>(plunger->PullbackIncrement);
+	if (plunger->Boost <= static_cast<float>(plunger->MaxPullback))
 	{
 		plunger->PullbackTimer_ = timer::set(plunger->Unknown4F, plunger, PullbackTimer);
 	}
 	else
 	{
 		plunger->PullbackTimer_ = 0;
-		plunger->CollisionMultiplier = static_cast<float>(plunger->MaxPullback);
+		plunger->Boost = static_cast<float>(plunger->MaxPullback);
 	}
 	int index = static_cast<int>(floor(
 		static_cast<float>(plunger->ListBitmap->Count() - 1) *
-		(plunger->CollisionMultiplier / static_cast<float>(plunger->MaxPullback))));
+		(plunger->Boost / static_cast<float>(plunger->MaxPullback))));
 	auto bmp = static_cast<gdrv_bitmap8*>(plunger->ListBitmap->Get(index));
 	auto zMap = static_cast<zmap_header_type*>(plunger->ListZMap->Get(index));
 	render::sprite_set(
@@ -166,6 +166,6 @@ void TPlunger::PullbackTimer(int timerId, void* caller)
 void TPlunger::PlungerReleasedTimer(int timerId, void* caller)
 {
 	auto plunger = static_cast<TPlunger*>(caller);
-	plunger->MaxCollisionSpeed = 1000000000.0;
-	plunger->CollisionMultiplier = 0.0;
+	plunger->Threshold = 1000000000.0;
+	plunger->Boost = 0.0;
 }

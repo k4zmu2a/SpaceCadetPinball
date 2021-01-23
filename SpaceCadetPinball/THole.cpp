@@ -78,7 +78,7 @@ void THole::Collision(TBall* ball, vector_type* nextPosition, vector_type* direc
 	if (!BallCapturedFlag)
 	{
 		BallCapturedSecondStage = 0;
-		MaxCollisionSpeed = 1000000000.0;
+		Threshold = 1000000000.0;
 		BallCapturedFlag = 1;
 		ball->CollisionComp = this;
 		ball->Position.X = Circle.Center.X;
@@ -87,7 +87,7 @@ void THole::Collision(TBall* ball, vector_type* nextPosition, vector_type* direc
 		Timer = timer::set(0.5f, this, TimerExpired);
 		if (!PinballTable->TiltLockFlag)
 		{
-			loader::play_sound(SoundIndex1);
+			loader::play_sound(HardHitSoundId);
 			control::handler(57, this);
 		}
 	}
@@ -115,7 +115,7 @@ int THole::FieldEffect(TBall* ball, vector_type* vecDst)
 				ball->CollisionComp = nullptr;
 				ball->Acceleration.X = 0.0;
 				ball->Speed = 0.0;
-				loader::play_sound(SoundIndex2);
+				loader::play_sound(SoftHitSoundId);
 				control::handler(58, this);
 			}
 		}

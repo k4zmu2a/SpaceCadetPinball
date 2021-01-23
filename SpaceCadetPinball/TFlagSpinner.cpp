@@ -118,8 +118,8 @@ void TFlagSpinner::NextFrame()
 	if (!PinballTable->TiltLockFlag)
 	{
 		control::handler(63, this);
-		if (SoundIndex2)
-			loader::play_sound(SoundIndex2);
+		if (SoftHitSoundId)
+			loader::play_sound(SoftHitSoundId);
 		if (!BmpIndex)
 			control::handler(62, this);
 	}

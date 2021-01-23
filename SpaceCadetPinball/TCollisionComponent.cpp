@@ -31,12 +31,12 @@ TCollisionComponent::TCollisionComponent(TPinballTable* table, int groupIndex, b
 		}
 	}
 
-	MaxCollisionSpeed = visual.Kicker.Unknown1F;
-	UnknownC4F = visual.Unknown2F;
-	UnknownC5F = visual.Unknown1F;
-	CollisionMultiplier = visual.Kicker.Unknown2F;
-	SoundIndex1 = visual.Kicker.SoundIndex;
-	SoundIndex2 = visual.SoundIndex2;
+	Threshold = visual.Kicker.Threshold;
+	Elasticity = visual.Elasticity;
+	Smoothness = visual.Smoothness;
+	Boost = visual.Kicker.Boost;
+	HardHitSoundId = visual.Kicker.HardHitSoundId;
+	SoftHitSoundId = visual.SoftHitSoundId;
 	GroupIndex = groupIndex;
 }
 
@@ -64,23 +64,21 @@ int TCollisionComponent::DefaultCollision(TBall* ball, vector_type* nextPosition
 {
 	if (PinballTable->TiltLockFlag)
 	{
-		maths::basic_collision(ball, nextPosition, direction, UnknownC4F, UnknownC5F, 1000000000.0, 0.0);
+		maths::basic_collision(ball, nextPosition, direction, Elasticity, Smoothness, 1000000000.0, 0.0);
 		return 0;
 	}
-	auto projSpeed = maths::basic_collision(ball, nextPosition, direction, UnknownC4F, UnknownC5F,
-	                                        MaxCollisionSpeed,
-	                                        CollisionMultiplier);
-	if (projSpeed <= MaxCollisionSpeed)
+	auto projSpeed = maths::basic_collision(ball, nextPosition, direction, Elasticity, Smoothness, Threshold, Boost);
+	if (projSpeed <= Threshold)
 	{
 		if (projSpeed > 0.2)
 		{
-			if (SoundIndex2)
-				loader::play_sound(SoundIndex2);
+			if (SoftHitSoundId)
+				loader::play_sound(SoftHitSoundId);
 		}
 		return 0;
 	}
-	if (SoundIndex1)
-		loader::play_sound(SoundIndex1);
+	if (HardHitSoundId)
+		loader::play_sound(HardHitSoundId);
 	return 1;
 }
 
@@ -91,26 +89,26 @@ void TCollisionComponent::Collision(TBall* ball, vector_type* nextPosition, vect
 
 	if (PinballTable->TiltLockFlag)
 	{
-		maths::basic_collision(ball, nextPosition, direction, UnknownC4F, UnknownC5F, 1000000000.0, 0.0);
+		maths::basic_collision(ball, nextPosition, direction, Elasticity, Smoothness, 1000000000.0, 0.0);
 		return;
 	}
 	double projSpeed = maths::basic_collision(
 		ball,
 		nextPosition,
 		direction,
-		UnknownC4F,
-		UnknownC5F,
-		MaxCollisionSpeed,
-		CollisionMultiplier);
-	if (projSpeed <= MaxCollisionSpeed)
+		Elasticity,
+		Smoothness,
+		Threshold,
+		Boost);
+	if (projSpeed <= Threshold)
 	{
 		if (projSpeed <= 0.2)
 			return;
-		soundIndex = SoundIndex2;
+		soundIndex = SoftHitSoundId;
 	}
 	else
 	{
-		soundIndex = SoundIndex1;
+		soundIndex = HardHitSoundId;
 	}
 	if (soundIndex)
 		loader::play_sound(soundIndex);

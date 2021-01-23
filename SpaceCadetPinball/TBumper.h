@@ -25,7 +25,7 @@ public:
 	int BmpIndex;
 	int Timer;
 	float TimerTime;
-	float MaxCollisionSpeed2;
+	float OriginalThreshold;
 	int SoundIndex4;
 	int SoundIndex3;
 	int Scores[4];

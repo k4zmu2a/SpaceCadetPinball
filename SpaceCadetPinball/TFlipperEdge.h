@@ -9,7 +9,7 @@ class TFlipperEdge : public TEdgeSegment
 public:
 	TFlipperEdge(TCollisionComponent* collComp, char* someFlag, unsigned int visualFlag, TPinballTable* table,
 	             vector_type* origin, vector_type* vecT1, vector_type* vecT2, float bmpCoef1, float bmpCoef2, float collMult,
-	             float c4F, float c5F);
+	             float elasticity, float smoothness);
 	void port_draw() override;
 	float FindCollisionDistance(ray_type* ray) override;
 	void EdgeCollision(TBall* ball, float coef) override;
@@ -21,8 +21,8 @@ public:
 	void SetMotion(int code, float value);
 
 	int FlipperFlag;
-	float CollisionC4F;
-	float CollisionC5F;
+	float Elasticity;
+	float Smoothness;
 	vector_type RotOrigin;
 	float CirclebaseRadius;
 	float CircleT1Radius;

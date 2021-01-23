@@ -84,8 +84,8 @@ public:
 	static void cross(vector_type* vec1, vector_type* vec2, vector_type* dstVec);
 	static float magnitude(vector_type* vec);
 	static void vector_add(vector_type* vec1Dst, vector_type* vec2);
-	static float basic_collision(TBall* ball, vector_type* nextPosition, vector_type* direction, float a4, float a5,
-	                             float maxSpeed, float multiplier);
+	static float basic_collision(TBall* ball, vector_type* nextPosition, vector_type* direction, float elasticity, float smoothness,
+	                             float threshold, float boost);
 	static float Distance_Squared(vector_type vec1, vector_type vec2);
 	static float DotProduct(vector_type* vec1, vector_type* vec2);
 	static void vswap(vector_type* vec1, vector_type* vec2);

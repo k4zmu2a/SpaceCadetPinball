@@ -17,7 +17,7 @@ TBlocker::TBlocker(TPinballTable* table, int groupIndex) : TCollisionComponent(t
 	SoundIndex3 = visual.SoundIndex3;
 	TurnOnMsgValue = 55;
 	TurnOffMsgValue = 5;
-	MaxCollisionSpeed = 1000000000.0f;
+	Threshold = 1000000000.0f;
 	Timer = 0;
 	MessageField = 0;
 	UnknownBaseFlag2 = 0;

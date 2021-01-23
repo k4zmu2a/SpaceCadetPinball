@@ -10,14 +10,12 @@ class TCollisionComponent : public TPinballComponent
 {
 public:
 	objlist_class* EdgeList;
-	__int16 UnknownC2;
-	__int16 UnknownC3;
-	float UnknownC4F;
-	float UnknownC5F;
-	float CollisionMultiplier;
-	float MaxCollisionSpeed;
-	int SoundIndex2;
-	int SoundIndex1;
+	float Elasticity;
+	float Smoothness;
+	float Boost;
+	float Threshold;
+	int SoftHitSoundId;
+	int HardHitSoundId;
 
 	TCollisionComponent(TPinballTable* table, int groupIndex, bool createWall);
 	~TCollisionComponent() override;

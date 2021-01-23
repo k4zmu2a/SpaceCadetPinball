@@ -85,12 +85,12 @@ int loader::error(int errorCode, int captionCode)
 void  loader::default_vsi(visualStruct* visual)
 {
 	visual->Flag = 0;
-	visual->Kicker.Unknown1F = 8.9999999e10f;
-	visual->Kicker.SoundIndex = 0;
-	visual->Unknown1F = 0.94999999f;
-	visual->Unknown2F = 0.60000002f;
+	visual->Kicker.Threshold = 8.9999999e10f;
+	visual->Kicker.HardHitSoundId = 0;
+	visual->Smoothness = 0.94999999f;
+	visual->Elasticity = 0.60000002f;
 	visual->FloatArrCount = 0;
-	visual->SoundIndex2 = 0;
+	visual->SoftHitSoundId = 0;
 	visual->Bitmap = 0;
 	visual->ZMap = 0;
 	visual->SoundIndex3 = 0;
@@ -301,13 +301,13 @@ int loader::material(int groupIndex, visualStruct* visual)
 			switch (static_cast<int>(floor(*floatArr)))
 			{
 			case 301:
-				visual->Unknown1F = *nextFloatVal;
+				visual->Smoothness = *nextFloatVal;
 				break;
 			case 302:
-				visual->Unknown2F = *nextFloatVal;
+				visual->Elasticity = *nextFloatVal;
 				break;
 			case 304:
-				visual->SoundIndex2 = get_sound_id((int)floor(*nextFloatVal));
+				visual->SoftHitSoundId = get_sound_id((int)floor(*nextFloatVal));
 				break;
 			default:
 				return error(9, 21);
@@ -379,25 +379,24 @@ int loader::kicker(int groupIndex, visualKickerStruct* kicker)
 		switch (floorVal)
 		{
 		case 401:
-			kicker->Unknown1F = *floatArr;
+			kicker->Threshold = *floatArr;
 			break;
 		case 402:
-			kicker->Unknown2F = *floatArr;
+			kicker->Boost = *floatArr;
 			break;
 		case 403:
-			kicker->Unknown3F = *floatArr;
+			kicker->ThrowBallMult = *floatArr;
 			break;
 		case 404:
-			kicker->Unknown4F = *floatArr++;
-			kicker->Unknown5F = *floatArr++;
-			kicker->Unknown6F = *floatArr++;
+			kicker->ThrowBallAcceleration = *reinterpret_cast<vector_type*>(floatArr);
+			floatArr += 3;
 			index += 4;
 			break;
 		case 405:
-			kicker->Unknown7F = *floatArr;
+			kicker->ThrowBallAngleMult = *floatArr;
 			break;
 		case 406:
-			kicker->SoundIndex = get_sound_id(static_cast<int>(floor(*floatArr)));
+			kicker->HardHitSoundId = get_sound_id(static_cast<int>(floor(*floatArr)));
 			break;
 		default:
 			return error(10, 20);
@@ -472,7 +471,7 @@ int  loader::query_visual(int groupIndex, int groupIndexOffset, visualStruct* vi
 				{
 					if (shortVal == 406)
 					{
-						visual2->Kicker.SoundIndex = get_sound_id(*nextShortVal);
+						visual2->Kicker.HardHitSoundId = get_sound_id(*nextShortVal);
 					}
 					else
 					{
@@ -492,7 +491,7 @@ int  loader::query_visual(int groupIndex, int groupIndexOffset, visualStruct* vi
 								}
 								else
 								{
-									visual2->SoundIndex2 = get_sound_id(*nextShortVal);
+									visual2->SoftHitSoundId = get_sound_id(*nextShortVal);
 								}
 							}
 							else if (material(*nextShortVal, visual2))

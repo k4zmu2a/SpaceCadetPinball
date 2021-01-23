@@ -33,7 +33,7 @@ TTableLayer::TTableLayer(TPinballTable* table): TCollisionComponent(table, -1, f
 
 	PinballTable->SoundIndex1 = visual.SoundIndex4;
 	PinballTable->SoundIndex2 = visual.SoundIndex3;
-	PinballTable->SoundIndex3 = visual.Kicker.SoundIndex;
+	PinballTable->SoundIndex3 = visual.Kicker.HardHitSoundId;
 
 	auto tableAngleArr = loader::query_float_attribute(groupIndex, 0, 305);
 	if (tableAngleArr)
@@ -62,8 +62,8 @@ TTableLayer::TTableLayer(TPinballTable* table): TCollisionComponent(table, -1, f
 	table->YOffset = bmp->YPosition;
 	table->Width = bmp->Width;
 	table->Height = bmp->Height;
-	MaxCollisionSpeed = visual.Kicker.Unknown1F;
-	CollisionMultiplier = 15.0f;
+	Threshold = visual.Kicker.Threshold;
+	Boost = 15.0f;
 
 	auto visArrPtr = visual.FloatArr;
 	Unknown1F = min(visArrPtr[0], min(visArrPtr[2], visArrPtr[4]));

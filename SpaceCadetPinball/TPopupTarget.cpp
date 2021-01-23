@@ -68,19 +68,19 @@ void TPopupTarget::Collision(TBall* ball, vector_type* nextPosition, vector_type
 {
 	if (this->PinballTable->TiltLockFlag)
 	{
-		maths::basic_collision(ball, nextPosition, direction, this->UnknownC4F, this->UnknownC5F, 1000000000.0, 0.0);
+		maths::basic_collision(ball, nextPosition, direction, this->Elasticity, this->Smoothness, 1000000000.0, 0.0);
 	}
 	else if (maths::basic_collision(
 		ball,
 		nextPosition,
 		direction,
-		this->UnknownC4F,
-		this->UnknownC5F,
-		this->MaxCollisionSpeed,
-		this->CollisionMultiplier) > this->MaxCollisionSpeed)
+		this->Elasticity,
+		this->Smoothness,
+		this->Threshold,
+		this->Boost) > this->Threshold)
 	{
-		if (this->SoundIndex1)
-			loader::play_sound(this->SoundIndex1);
+		if (this->HardHitSoundId)
+			loader::play_sound(this->HardHitSoundId);
 		this->Message(49, 0.0);
 		control::handler(63, this);
 	}
@@ -94,7 +94,7 @@ void TPopupTarget::TimerExpired(int timerId, void* caller)
 	render::sprite_set_bitmap(target->RenderSprite, static_cast<gdrv_bitmap8*>(target->ListBitmap->Get(0)));
 	if (timerId)
 	{
-		if (target->SoundIndex2)
-			loader::play_sound(target->SoundIndex2);
+		if (target->SoftHitSoundId)
+			loader::play_sound(target->SoftHitSoundId);
 	}
 }
