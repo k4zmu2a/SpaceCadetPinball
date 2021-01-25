@@ -7,12 +7,19 @@ CHANNELNODE WaveMix::channel_nodes[MAXQUEUEDWAVES];
 CHANNELNODE* WaveMix::free_channel_nodes;
 char WaveMix::volume_table[256 * 11];
 int WaveMix::debug_flag;
-int WaveMix::cmixit_ptr;
+void (*WaveMix::cmixit_ptr)(unsigned __int8* lpDest, unsigned __int8** rgWaveSrc, volume_struct* volume, int iNumWaves,
+                            unsigned __int16 length);
 HMODULE WaveMix::HModule;
 PCMWAVEFORMAT WaveMix::gpFormat = {{1u, 1u, 11025u, 11025u, 1u}, 8u};
 char WaveMix::string_buffer[256] = "WaveMix V 2.3 by Angel M. Diaz, Jr. (c) Microsoft 1993-1995";
-GLOBALS* WaveMix::Globals;
+GLOBALS *WaveMix::Globals, *WaveMix::GlobalsActive;
 int WaveMix::ShowDebugDialogs;
+PLAYQUEUE WaveMix::play_queue;
+CHANNELNODE* WaveMix::play_channel_array[MAXCHANNELS];
+XWAVEHDR* WaveMix::block_array1[10];
+XWAVEHDR* WaveMix::block_array2[10];
+unsigned char* WaveMix::play_data[MAXCHANNELS];
+volume_struct WaveMix::play_volume[MAXCHANNELS];
 
 HANDLE WaveMix::Init()
 {
@@ -60,8 +67,8 @@ HANDLE WaveMix::ConfigureInit(MIXCONFIG* lpConfig)
 		globals->CmixPtr = cmixit_ptr;
 		globals->wMagic2 = 21554;
 		globals->wMagic1 = 21554;
-		globals->unknown102 = 0;
-		globals->unknown5 = 0;
+		globals->WaveBlockArray = nullptr;
+		globals->SettingsDialogActiveFlag = 0;
 		globals->unknown44 = 655370;
 		memset(globals->aChannel, 0xFFu, sizeof globals->aChannel);
 		memmove(&globals->PCM, &gpFormat, 0x10u);
@@ -189,7 +196,7 @@ int WaveMix::Startup(HMODULE hModule)
 		return 0;
 	InitVolumeTable();
 	debug_flag = GetPrivateProfileIntA("general", "debug", 0, FileName);
-	cmixit_ptr = (int)cmixit;
+	cmixit_ptr = cmixit;
 	HModule = hModule;
 
 	WndClass.hCursor = LoadCursorA(nullptr, IDC_ARROW);
@@ -344,7 +351,7 @@ int WaveMix::ReadRegistryForAppSpecificConfigs(MIXCONFIG* lpConfig)
 	if ((dwFlags & 2) == 0)
 		lpConfig->wSamplingRate = ReadRegistryInt(phkResult, "SamplesPerSec", 11);
 	if ((dwFlags & 4) == 0)
-		lpConfig->WaveBlocks = static_cast<short>(ReadRegistryInt(phkResult, "WaveBlocks", 3));
+		lpConfig->WaveBlockCount = static_cast<short>(ReadRegistryInt(phkResult, "WaveBlocks", 3));
 	if ((dwFlags & 8) == 0)
 		lpConfig->WaveBlockLen = static_cast<short>(ReadRegistryInt(phkResult, "WaveBlockLen", 0));
 	lpConfig->CmixPtrDefaultFlag = 1;
@@ -360,7 +367,7 @@ int WaveMix::ReadRegistryForAppSpecificConfigs(MIXCONFIG* lpConfig)
 		lpConfig->ShowDebugDialogs = static_cast<short>(ReadRegistryInt(phkResult, "ShowDebugDialogs", 0));
 	if ((dwFlags & 0x200) == 0)
 	{
-		int defaultPauseBlocks = DefaultPauseBlocks(static_cast<unsigned __int16>(lpConfig->WaveBlocks));
+		int defaultPauseBlocks = DefaultPauseBlocks(static_cast<unsigned __int16>(lpConfig->WaveBlockCount));
 		lpConfig->PauseBlocks = static_cast<short>(ReadRegistryInt(phkResult, "PauseBlocks", defaultPauseBlocks));
 	}
 	lpConfig->dwFlags = 1023;
@@ -395,7 +402,7 @@ int WaveMix::DefaultGoodWavePos(unsigned uDeviceID)
 	}
 	else
 	{
-		result = (LOBYTE(pwoc.dwSupport) >> 5) & 1;
+		result = LOBYTE(pwoc.dwSupport) >> 5 & 1;
 	}
 	return result;
 }
@@ -414,7 +421,64 @@ int WaveMix::DefaultPauseBlocks(int waveBlocks)
 
 int WaveMix::Configure(GLOBALS* hMixSession, HWND hWndParent, MIXCONFIG* lpConfig, int* flag1Ptr, int saveConfigFlag)
 {
+	MIXCONFIG mixConfigLocal;
+
+	auto hMixSession2 = hMixSession;
+	auto mixConfig = lpConfig;
+	auto hMixSession3 = hMixSession;
+	auto flag1Ptr_2 = flag1Ptr;
+	auto someFlag1 = 0;
+	auto globals1 = SessionToGlobalDataPtr(hMixSession);
+	Globals = globals1;
+	if (!globals1)
+		return 5;
+	if (globals1->fActive)
+		return 4;
+	if (globals1->SettingsDialogActiveFlag)
+		return 12;
+	FlushChannel(hMixSession, -1, 1u);
+
+	if (!mixConfig)
+	{
+		mixConfigLocal.wSize = 30;
+		mixConfigLocal.dwFlags = 1023;
+		GetConfig(static_cast<GLOBALS*>(hMixSession), &mixConfigLocal);
+	}
+
 	return 1;
+}
+
+int WaveMix::GetConfig(HANDLE hMixSession, MIXCONFIG* lpConfig)
+{
+	GLOBALS* globals = SessionToGlobalDataPtr(static_cast<GLOBALS*>(hMixSession));
+	Globals = globals;
+	if (!globals)
+		return 5;
+	if (!lpConfig)
+		return 11;
+
+	DWORD dwFlags = lpConfig->dwFlags;
+	if ((dwFlags & 1) != 0)
+		lpConfig->wChannels = globals->PCM.wf.nChannels;
+	if ((dwFlags & 2) != 0)
+		lpConfig->wSamplingRate = 11 * (globals->PCM.wf.nSamplesPerSec / 0x2B11);
+	if ((dwFlags & 4) != 0)
+		lpConfig->WaveBlockCount = globals->WaveBlockCount;
+	if ((dwFlags & 8) != 0)
+		lpConfig->WaveBlockLen = globals->WaveBlockLen;
+	if ((dwFlags & 0x10) != 0)
+		lpConfig->CmixPtrDefaultFlag = globals->CmixPtr == cmixit;
+	if ((dwFlags & 0x20) != 0)
+		lpConfig->ResetMixDefaultFlag = globals->pfnRemix == ResetRemix;
+	if ((dwFlags & 0x40) != 0)
+		lpConfig->GoodWavePos = globals->fGoodGetPos;
+	if ((dwFlags & 0x80u) != 0)
+		lpConfig->wDeviceID = globals->wDeviceID;
+	if ((dwFlags & 0x100) != 0)
+		lpConfig->ShowDebugDialogs = ShowDebugDialogs != 0;
+	if ((dwFlags & 0x200) != 0)
+		lpConfig->PauseBlocks = globals->PauseBlocks;
+	return 0;
 }
 
 unsigned WaveMix::MyWaveOutGetPosition(HWAVEOUT hwo, int fGoodGetPos)
@@ -422,7 +486,7 @@ unsigned WaveMix::MyWaveOutGetPosition(HWAVEOUT hwo, int fGoodGetPos)
 	mmtime_tag pmmt{};
 
 	if (!fGoodGetPos)
-		return ((timeGetTime() - Globals->dwBaseTime) * Globals->PCM.wf.nAvgBytesPerSec / 0x3E8) & 0xFFFFFFF8;
+		return (timeGetTime() - Globals->dwBaseTime) * Globals->PCM.wf.nAvgBytesPerSec / 0x3E8 & 0xFFFFFFF8;
 	pmmt.wType = 4;
 	waveOutGetPosition(hwo, &pmmt, 0xCu);
 	return Globals->pfnSampleAdjust(pmmt.u.ms, Globals->dwWaveOutPos);
@@ -437,9 +501,251 @@ void WaveMix::FreeChannelNode(CHANNELNODE* channel)
 	}
 }
 
-short WaveMix::cmixit(BYTE* a1, char* a2, char* a3, int a4, unsigned short a5)
+int WaveMix::ResetRemix(DWORD dwRemixSamplePos, CHANNELNODE* channel)
 {
-	return 0;
+	Globals->dwCurrentSample = dwRemixSamplePos;
+	DestroyPlayQueue();
+	SwapWaveBlocks();
+
+	while (true)
+	{
+		auto block = GetWaveBlock();
+		if (!block)
+			break;
+		if (!MixerPlay(block, 0))
+		{
+			block->fAvailable = 1;
+			break;
+		}
+		AddToPlayingQueue(block);
+	}
+
+	return 1;
+}
+
+XWAVEHDR* WaveMix::RemoveFromPlayingQueue(XWAVEHDR* lpXWH)
+{
+	if (!play_queue.first)
+		return nullptr;
+
+	if (lpXWH != play_queue.first)
+	{
+		XWAVEHDR* prev = play_queue.first;
+		XWAVEHDR* current = play_queue.first->QNext;
+		while (current)
+		{
+			if (current == lpXWH)
+				break;
+			prev = current;
+			current = current->QNext;
+		}
+		if (!current)
+			return nullptr;
+
+		prev->QNext = current->QNext;
+		if (current == play_queue.last)
+			play_queue.last = prev;
+	}
+	else
+	{
+		play_queue.first = lpXWH->QNext;
+		if (!play_queue.first)
+			play_queue.last = nullptr;
+	}
+
+	lpXWH->QNext = nullptr;
+	return lpXWH;
+}
+
+void WaveMix::DestroyPlayQueue()
+{
+	while (play_queue.first)
+	{
+		play_queue.first->fAvailable = 1;
+		RemoveFromPlayingQueue(play_queue.first);
+	}
+}
+
+void WaveMix::SwapWaveBlocks()
+{
+	if (Globals->WaveBlockArray == block_array1)
+		Globals->WaveBlockArray = block_array2;
+	else
+		Globals->WaveBlockArray = block_array1;
+}
+
+XWAVEHDR* WaveMix::GetWaveBlock()
+{
+	int index = 0;
+	for (; index < Globals->WaveBlockCount; index++)
+		if (Globals->WaveBlockArray[index]->fAvailable)
+			break;
+	if (index >= Globals->WaveBlockCount)
+		return nullptr;
+
+	XWAVEHDR* result = Globals->WaveBlockArray[index];
+	result->fAvailable = 0;
+	result->wh.dwBufferLength = Globals->WaveBlockLen;
+	result->wh.lpData = reinterpret_cast<LPSTR>(&result[1]);
+	result->g = GlobalsActive;
+	return result;
+}
+
+int WaveMix::MixerPlay(XWAVEHDR* lpXWH, int fWriteBlocks)
+{
+	if (!lpXWH)
+		return 0;
+
+	unsigned minStartPos = -1;
+	auto playChannelCount = 0;
+	auto channelPtr = Globals->aChannel;
+	for (auto channelIndex = 16; channelIndex; --channelIndex)
+	{
+		auto channel = *channelPtr;
+		if (channel != reinterpret_cast<CHANNELNODE*>(-1) && channel)
+		{
+			do
+			{
+				if (channel->dwEndPos > Globals->dwCurrentSample)
+					break;
+				channel = channel->next;
+			}
+			while (channel);
+			if (channel)
+			{
+				if (channel->dwStartPos < minStartPos)
+					minStartPos = channel->dwStartPos;
+				play_channel_array[playChannelCount++] = channel;
+			}
+		}
+		++channelPtr;
+	}
+	if (!playChannelCount)
+	{
+		if (fWriteBlocks)
+			lpXWH->fAvailable = 1;
+		return 0;
+	}
+
+	auto currentSample = Globals->dwCurrentSample;
+	auto dataPtr = reinterpret_cast<unsigned char*>(lpXWH->wh.lpData);
+	auto waveBlockLen = Globals->WaveBlockLen;
+	while (waveBlockLen)
+	{
+		if (currentSample >= minStartPos)
+		{
+			auto waveCount = 0;
+			auto endBlockPosition = currentSample + waveBlockLen;
+
+			for (auto channelIndex = 0; channelIndex < playChannelCount; ++channelIndex)
+			{
+				auto channel = play_channel_array[channelIndex];
+				if (channel->dwStartPos <= currentSample)
+				{
+					if (channel->dwEndPos < endBlockPosition)
+						endBlockPosition = channel->dwEndPos;
+					auto dataOffset = currentSample - channel->dwStartPos;
+					if (channel->PlayParams.wLoops)
+					{
+						dataOffset %= channel->dwNumSamples;
+						auto endBlockPosition2 = currentSample + (channel->dwNumSamples - dataOffset);
+						if (endBlockPosition2 < endBlockPosition)
+							endBlockPosition = endBlockPosition2;
+					}
+					play_data[waveCount] = &channel->lpPos[dataOffset];
+					play_volume[waveCount].L = channel->Volume.L;
+					play_volume[waveCount].R = channel->Volume.R;
+					waveCount++;
+				}
+				else if (channel->dwStartPos < endBlockPosition)
+				{
+					endBlockPosition = channel->dwStartPos;
+				}
+			}
+
+			if (waveCount)
+			{
+				auto dataLength = endBlockPosition - currentSample;
+				Globals->CmixPtr(dataPtr, play_data, play_volume, waveCount, dataLength);
+
+				dataPtr += dataLength;
+				waveBlockLen -= dataLength;
+				minStartPos = -1;
+				currentSample += dataLength;
+
+
+				auto playChPtr = play_channel_array;
+				for (auto channelIndex = 0; channelIndex < playChannelCount;)
+				{
+					while (*playChPtr)
+					{
+						if ((*playChPtr)->dwEndPos > currentSample)
+							break;
+						*playChPtr = (*playChPtr)->next;
+					}
+					if (*playChPtr)
+					{
+						if ((*playChPtr)->dwStartPos < minStartPos)
+							minStartPos = (*playChPtr)->dwStartPos;
+						++channelIndex;
+						++playChPtr;
+					}
+					else
+					{
+						playChannelCount--;
+						*playChPtr = play_channel_array[playChannelCount];
+						if (!playChannelCount)
+							break;
+					}
+				}
+			}
+		}
+		else
+		{
+			auto length = waveBlockLen;
+			if (waveBlockLen + currentSample >= minStartPos)
+				length = minStartPos - currentSample;
+			memset(dataPtr, 0x80u, length);
+			dataPtr += length;
+			currentSample += length;
+			waveBlockLen -= length;
+		}
+	}
+
+	lpXWH->dwWavePos = Globals->dwCurrentSample;
+	Globals->dwCurrentSample += Globals->WaveBlockLen;
+	if (fWriteBlocks)
+	{
+		AddToPlayingQueue(lpXWH);
+		if (waveOutWrite(Globals->hWaveOut, &lpXWH->wh, 0x20u))
+		{
+			if (ShowDebugDialogs)
+				MessageBoxA(nullptr, "Failed to write block to device", "WavMix32", 0x30u);
+			lpXWH->fAvailable = 1;
+			RemoveFromPlayingQueue(lpXWH);
+		}
+	}
+	return 1;
+}
+
+XWAVEHDR* WaveMix::AddToPlayingQueue(XWAVEHDR* lpXWH)
+{
+	lpXWH->QNext = nullptr;
+	if (play_queue.first)
+	{
+		play_queue.last->QNext = lpXWH;
+	}
+	else
+	{
+		play_queue.first = lpXWH;
+	}
+	play_queue.last = lpXWH;
+	return play_queue.first;
+}
+
+void WaveMix::cmixit(unsigned __int8* lpDest, unsigned __int8** rgWaveSrc, volume_struct* volume, int iNumWaves,
+                     unsigned __int16 length)
+{
 }
 
 LRESULT WaveMix::WndProc(HWND hWnd, UINT Msg, WPARAM wParam, LPARAM lParam)

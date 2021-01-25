@@ -10,6 +10,15 @@
 #define MAXCHANNELS 16
 #define MAXQUEUEDWAVES 100
 
+struct GLOBALS;
+
+struct volume_struct
+{
+	unsigned __int16 L;
+	unsigned __int16 R;
+};
+
+
 struct MIXWAVE
 {
 	PCMWAVEFORMAT pcm;
@@ -27,6 +36,7 @@ struct MIXPLAYPARAMS
 	HWND hWndNotify;
 	DWORD dwFlags;
 	WORD wLoops;
+	int Unknown0;
 };
 
 struct CHANNELNODE
@@ -37,10 +47,9 @@ struct CHANNELNODE
 	DWORD dwNumSamples;
 	DWORD dwStartPos;
 	DWORD dwEndPos;
-	char* lpPos;
-	char* lpEnd;
-	int Unknown0;
-	int Unknown1;
+	unsigned char* lpPos;
+	unsigned char* lpEnd;
+	volume_struct Volume;
 };
 
 struct MIXCONFIG
@@ -49,7 +58,7 @@ struct MIXCONFIG
 	DWORD dwFlags;
 	WORD wChannels;
 	WORD wSamplingRate;
-	__int16 WaveBlocks;
+	__int16 WaveBlockCount;
 	__int16 WaveBlockLen;
 	__int16 CmixPtrDefaultFlag;
 	unsigned __int16 ResetMixDefaultFlag;
@@ -60,6 +69,21 @@ struct MIXCONFIG
 	HKEY RegistryKey;
 };
 
+struct XWAVEHDR
+{
+	WAVEHDR wh;
+	BOOL fAvailable;
+	DWORD dwWavePos;
+	GLOBALS* g;
+	struct XWAVEHDR* QNext;
+};
+
+struct PLAYQUEUE
+{
+	XWAVEHDR* first;
+	XWAVEHDR* last;
+};
+
 struct GLOBALS
 {
 	WORD wMagic1;
@@ -68,7 +92,7 @@ struct GLOBALS
 	int unknown2;
 	HWAVEOUT hWaveOut;
 	int fActive;
-	int unknown5;
+	int SettingsDialogActiveFlag;
 	unsigned int wDeviceID;
 	int unknown7;
 	int unknown8;
@@ -112,7 +136,7 @@ struct GLOBALS
 	int unknown58;
 	int unknown59;
 	int unknown60;
-	CHANNELNODE* aChannel[16];
+	CHANNELNODE* aChannel[MAXCHANNELS];
 	int unknown77;
 	int unknown78;
 	int unknown79;
@@ -135,14 +159,15 @@ struct GLOBALS
 	int WaveBlockLen;
 	int WaveBlockCount;
 	int PauseBlocks;
-	int unknown102;
-	int unknown103;
+	XWAVEHDR** WaveBlockArray;
+	DWORD dwCurrentSample;
 	DWORD dwBaseTime;
 	int fGoodGetPos;
 	int dwWaveOutPos;
-	int CmixPtr;
-	void(__stdcall* pfnRemix)(DWORD, CHANNELNODE*);
-	int (__stdcall* pfnSampleAdjust)(int, int);
+	void (*CmixPtr)(unsigned __int8* lpDest, unsigned __int8** rgWaveSrc, volume_struct* volume, int iNumWaves,
+	                unsigned __int16 length);
+	int (* pfnRemix)(DWORD, CHANNELNODE*);
+	int (* pfnSampleAdjust)(int, int);
 	int unknown110;
 	__int16 wMagic2;
 	__int16 unknown112;
@@ -178,9 +203,18 @@ private:
 	static int DefaultGoodWavePos(unsigned int uDeviceID);
 	static int DefaultPauseBlocks(int waveBlocks);
 	static int Configure(GLOBALS* hMixSession, HWND hWndParent, MIXCONFIG* lpConfig, int* flag1Ptr, int saveConfigFlag);
+	static int GetConfig(HANDLE hMixSession, MIXCONFIG* lpConfig);
 	static unsigned MyWaveOutGetPosition(HWAVEOUT hwo, int fGoodGetPos);
 	static void FreeChannelNode(CHANNELNODE* channel);
-	static __int16 cmixit(BYTE* a1, char* a2, char* a3, int a4, unsigned __int16 a5);
+	static int ResetRemix(DWORD dwRemixSamplePos, CHANNELNODE* channel);
+	static XWAVEHDR* RemoveFromPlayingQueue(XWAVEHDR* lpXWH);
+	static void DestroyPlayQueue();
+	static void SwapWaveBlocks();
+	static XWAVEHDR* GetWaveBlock();
+	static int MixerPlay(XWAVEHDR* lpXWH, int fWriteBlocks);
+	static XWAVEHDR* AddToPlayingQueue(XWAVEHDR* lpXWH);
+	static void cmixit(unsigned __int8* lpDest, unsigned __int8** rgWaveSrc, volume_struct* volume, int iNumWaves,
+	                   unsigned __int16 length);
 	static LRESULT __stdcall WndProc(HWND hWnd, UINT Msg, WPARAM wParam, LPARAM lParam);
 
 	static int initialized_flag;
@@ -189,10 +223,17 @@ private:
 	static CHANNELNODE* free_channel_nodes;
 	static char volume_table[256 * 11];
 	static int debug_flag;
-	static int cmixit_ptr;
+	static void (*cmixit_ptr)(unsigned __int8* lpDest, unsigned __int8** rgWaveSrc, volume_struct* volume,
+	                          int iNumWaves, unsigned __int16 length);
 	static HMODULE HModule;
-	static GLOBALS* Globals;
+	static GLOBALS *Globals, *GlobalsActive;
 	static PCMWAVEFORMAT gpFormat;
 	static int ShowDebugDialogs;
 	static char string_buffer[256];
+	static PLAYQUEUE play_queue;
+	static CHANNELNODE* play_channel_array[MAXCHANNELS];
+	static XWAVEHDR* block_array1[10];
+	static XWAVEHDR* block_array2[10];
+	static unsigned char* play_data[MAXCHANNELS];
+	static volume_struct play_volume[MAXCHANNELS];
 };
