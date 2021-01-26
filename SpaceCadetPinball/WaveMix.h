@@ -58,13 +58,13 @@ struct MIXCONFIG
 	DWORD dwFlags;
 	WORD wChannels;
 	WORD wSamplingRate;
-	__int16 WaveBlockCount;
-	__int16 WaveBlockLen;
+	unsigned __int16 WaveBlockCount;
+	unsigned __int16 WaveBlockLen;
 	__int16 CmixPtrDefaultFlag;
 	unsigned __int16 ResetMixDefaultFlag;
 	unsigned __int16 GoodWavePos;
 	unsigned __int16 wDeviceID;
-	__int16 PauseBlocks;
+	unsigned __int16 PauseBlocks;
 	__int16 ShowDebugDialogs;
 	HKEY RegistryKey;
 };
@@ -88,20 +88,13 @@ struct GLOBALS
 {
 	WORD wMagic1;
 	__int16 unknown0;
-	int unknown1;
+	HWND hWndApp;
 	int unknown2;
 	HWAVEOUT hWaveOut;
 	int fActive;
 	int SettingsDialogActiveFlag;
 	unsigned int wDeviceID;
-	int unknown7;
-	int unknown8;
-	int unknown9;
-	int unknown10;
-	int unknown11;
-	int unknown12;
-	int unknown13;
-	int unknown14;
+	char szDevicePName[32];
 	int unknown15;
 	int unknown16;
 	int unknown17;
@@ -156,21 +149,37 @@ struct GLOBALS
 	int unknown93;
 	int unknown94;
 	PCMWAVEFORMAT PCM;
-	int WaveBlockLen;
+	DWORD dwWaveBlockLen;
 	int WaveBlockCount;
 	int PauseBlocks;
 	XWAVEHDR** WaveBlockArray;
 	DWORD dwCurrentSample;
 	DWORD dwBaseTime;
 	int fGoodGetPos;
-	int dwWaveOutPos;
+	DWORD dwWaveOutPos;
 	void (*CmixPtr)(unsigned __int8* lpDest, unsigned __int8** rgWaveSrc, volume_struct* volume, int iNumWaves,
 	                unsigned __int16 length);
 	int (* pfnRemix)(DWORD, CHANNELNODE*);
-	int (* pfnSampleAdjust)(int, int);
+	DWORD (* pfnSampleAdjust)(DWORD, DWORD);
 	int unknown110;
 	__int16 wMagic2;
 	__int16 unknown112;
+};
+
+struct dialog_template
+{
+	DLGTEMPLATE Dialog;
+	WORD menu;
+	WORD windowClass;
+	WCHAR Header[1];
+};
+
+struct dialog_item_template
+{
+	DLGITEMTEMPLATE Item;
+	WORD sysClass;
+	WORD idClass;
+	WCHAR Header[1];
 };
 
 
@@ -204,7 +213,7 @@ private:
 	static int DefaultPauseBlocks(int waveBlocks);
 	static int Configure(GLOBALS* hMixSession, HWND hWndParent, MIXCONFIG* lpConfig, int* flag1Ptr, int saveConfigFlag);
 	static int GetConfig(HANDLE hMixSession, MIXCONFIG* lpConfig);
-	static unsigned MyWaveOutGetPosition(HWAVEOUT hwo, int fGoodGetPos);
+	static unsigned MyWaveOutGetPosition(HWAVEOUT hWaveOut, int fGoodGetPos);
 	static void FreeChannelNode(CHANNELNODE* channel);
 	static int ResetRemix(DWORD dwRemixSamplePos, CHANNELNODE* channel);
 	static XWAVEHDR* RemoveFromPlayingQueue(XWAVEHDR* lpXWH);
@@ -213,9 +222,35 @@ private:
 	static XWAVEHDR* GetWaveBlock();
 	static int MixerPlay(XWAVEHDR* lpXWH, int fWriteBlocks);
 	static XWAVEHDR* AddToPlayingQueue(XWAVEHDR* lpXWH);
+	static void MyWaveOutReset(HWAVEOUT hWaveOut);
+	static void SetWaveOutPosition(unsigned int newPosition);
+	static DWORD SubFactor(DWORD a1, DWORD a2);
+	static DWORD AddFactor(DWORD a1, DWORD a2);
+	static dialog_template* MakeSettingsDlgTemplate();
+	static dialog_template* MakeDlgTemplate(unsigned* totalSize, unsigned style, __int16 x, __int16 y, __int16 cx,
+	                                        __int16 cy,
+	                                        const wchar_t* String);
+	static dialog_template* AddDlgControl(unsigned int* totalSize, dialog_template* dlgTemplate, __int16 idClass,
+	                                      unsigned style,
+	                                      WORD id, __int16 x, __int16 y, __int16 cx, __int16 cy,
+	                                      const wchar_t* String);
+	static void DestroySettingsDlgTemplate(LPCVOID pMem);
+	static int Settings_OnInitDialog(HWND hWnd, int wParam, MIXCONFIG* lpMixconfig);
+	static int Settings_OnCommand(HWND hWnd, int command, int lParam, int wParam);
+	static int ReadRegistryToGetMachineSpecificInfSection(unsigned wDeviceId, LPSTR lpString1, int maxLength);
+	static const char* GetOperatingSystemPrefix();
+	static unsigned int FigureOutDMABufferSize(unsigned int waveBlockLen, PCMWAVEFORMAT* pcm);
+	static int NoResetRemix(DWORD dwRemixSamplePos, CHANNELNODE* channel);
+	static void SaveConfigSettings(unsigned dwFlags);
+	static void ShowCurrentSettings();
+	static unsigned int GetWaveDevice();
+	static void FreeWaveBlocks(HWAVEOUT hwo, XWAVEHDR** waveBlocks);
+	static int AllocWaveBlocks(HWAVEOUT hwo, XWAVEHDR** waveBlocks);
+	static void ReleaseWaveDevice(GLOBALS* globals);
 	static void cmixit(unsigned __int8* lpDest, unsigned __int8** rgWaveSrc, volume_struct* volume, int iNumWaves,
 	                   unsigned __int16 length);
 	static LRESULT __stdcall WndProc(HWND hWnd, UINT Msg, WPARAM wParam, LPARAM lParam);
+	static INT_PTR __stdcall SettingsDlgProc(HWND hWnd, UINT Msg, WPARAM wParam, LPARAM lParam);
 
 	static int initialized_flag;
 	static char FileName[276];

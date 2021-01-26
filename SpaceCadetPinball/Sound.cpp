@@ -143,16 +143,6 @@ void Sound::Close()
 	}
 }
 
-int Sound::SubFactor(int a1, int a2)
-{
-	return a1 - a2;
-}
-
-int Sound::AddFactor(int a1, int a2)
-{
-	return a1 + a2;
-}
-
 void Sound::PlaySound(MIXWAVE* wavePtr, int minChannel, int maxChannel, unsigned int dwFlags, __int16 loops)
 {
 	MIXPLAYPARAMS mixParams{};

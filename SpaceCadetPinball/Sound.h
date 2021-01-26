@@ -10,8 +10,6 @@ public:
 	static void Activate();
 	static void Deactivate();
 	static void Close();
-	static int SubFactor(int a1, int a2);
-	static int AddFactor(int a1, int a2);
 	static void PlaySound(MIXWAVE* wavePtr, int minChannel, int maxChannel, unsigned int dwFlags, __int16 loops);
 	static MIXWAVE* LoadWaveFile(LPCSTR lpName);
 	static void FreeSound(MIXWAVE* wave);
