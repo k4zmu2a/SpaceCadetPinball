@@ -24,7 +24,7 @@ struct MIXWAVE
 	PCMWAVEFORMAT pcm;
 	WAVEHDR wh;
 	char szWaveFilename[16];
-	short Unknown0;
+	short wMagic;
 };
 
 struct MIXPLAYPARAMS
@@ -112,25 +112,10 @@ struct GLOBALS
 	int unknown29;
 	int unknown30;
 	WAVEOUTCAPSA WaveoutCaps;
-	int unknown44;
-	int unknown45;
-	int unknown46;
-	int unknown47;
-	int unknown48;
-	int unknown49;
-	int unknown50;
-	int unknown51;
-	int unknown52;
-	int unknown53;
-	int unknown54;
-	int unknown55;
-	int unknown56;
-	int unknown57;
-	int unknown58;
-	int unknown59;
-	int unknown60;
+	volume_struct DefaultVolume;
+	volume_struct ChannelVolume[MAXCHANNELS];
 	CHANNELNODE* aChannel[MAXCHANNELS];
-	int unknown77;
+	int iChannels;
 	int unknown78;
 	int unknown79;
 	int unknown80;
@@ -247,7 +232,17 @@ private:
 	static void FreeWaveBlocks(HWAVEOUT hwo, XWAVEHDR** waveBlocks);
 	static int AllocWaveBlocks(HWAVEOUT hwo, XWAVEHDR** waveBlocks);
 	static void ReleaseWaveDevice(GLOBALS* globals);
-	static void cmixit(unsigned __int8* lpDest, unsigned __int8** rgWaveSrc, volume_struct* volume, int iNumWaves,
+	static HPSTR WaveFormatConvert(PCMWAVEFORMAT* lpOutWF, PCMWAVEFORMAT* lpInWF, HPSTR lpInData, DWORD* dwDataSize);
+	static HPSTR BitsPerSampleAlign(HPSTR lpInData, WORD nInBPS, WORD nOutBPS, DWORD* dwDataSize);
+	static HPSTR ChannelAlign(HPSTR lpInData, WORD nInChannels, WORD nOutChannels, WORD nBytesPerSample,
+	                          DWORD* dwDataSize);
+	static HPSTR SamplesPerSecAlign(HPSTR lpInData, DWORD nInSamplesPerSec, DWORD nOutSamplesPerSec,
+	                                WORD nBytesPerSample, WORD nChannels, DWORD* dwDataSize);
+	static void AvgSample(HPSTR lpOutData, HPSTR lpInData, unsigned nSkip, int nBytesPerSample, int nChannels);
+	static void RepSample(HPSTR lpOutData, HPSTR lpInData, unsigned nRep, int nBytesPerSample, int nChannels);
+	static bool IsValidLPMIXWAVE(MIXWAVE* lpMixWave);
+	static void FreePlayedBlocks();
+	static void cmixit(unsigned __int8* lpDest, unsigned __int8** rgWaveSrc, volume_struct* volumeArr, int iNumWaves,
 	                   unsigned __int16 length);
 	static LRESULT __stdcall WndProc(HWND hWnd, UINT Msg, WPARAM wParam, LPARAM lParam);
 	static INT_PTR __stdcall SettingsDlgProc(HWND hWnd, UINT Msg, WPARAM wParam, LPARAM lParam);
@@ -256,7 +251,7 @@ private:
 	static char FileName[276];
 	static CHANNELNODE channel_nodes[MAXQUEUEDWAVES];
 	static CHANNELNODE* free_channel_nodes;
-	static char volume_table[256 * 11];
+	static unsigned char volume_table[11][256];
 	static int debug_flag;
 	static void (*cmixit_ptr)(unsigned __int8* lpDest, unsigned __int8** rgWaveSrc, volume_struct* volume,
 	                          int iNumWaves, unsigned __int16 length);

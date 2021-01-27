@@ -7,7 +7,7 @@ int WaveMix::initialized_flag;
 char WaveMix::FileName[276];
 CHANNELNODE WaveMix::channel_nodes[MAXQUEUEDWAVES];
 CHANNELNODE* WaveMix::free_channel_nodes;
-char WaveMix::volume_table[256 * 11];
+unsigned char WaveMix::volume_table[11][256];
 int WaveMix::debug_flag;
 void (*WaveMix::cmixit_ptr)(unsigned __int8* lpDest, unsigned __int8** rgWaveSrc, volume_struct* volume, int iNumWaves,
                             unsigned __int16 length);
@@ -71,7 +71,8 @@ HANDLE WaveMix::ConfigureInit(MIXCONFIG* lpConfig)
 		globals->wMagic1 = 21554;
 		globals->WaveBlockArray = nullptr;
 		globals->SettingsDialogActiveFlag = 0;
-		globals->unknown44 = 655370;
+		globals->DefaultVolume.L = 10;
+		globals->DefaultVolume.R = 10;
 		memset(globals->aChannel, 0xFFu, sizeof globals->aChannel);
 		memmove(&globals->PCM, &gpFormat, 0x10u);
 		if (!ReadConfigSettings(&mixConfig))
@@ -89,17 +90,99 @@ HANDLE WaveMix::ConfigureInit(MIXCONFIG* lpConfig)
 
 int WaveMix::CloseSession(HANDLE hMixSession)
 {
+	Globals = SessionToGlobalDataPtr(hMixSession);
+	if (!Globals)
+		return 5;
+
+	Activate(hMixSession, false);
+	CloseChannel(hMixSession, 0, 1);
+	memset(Globals, 0, sizeof(GLOBALS));
+	Globals = nullptr;
+	if (!hMixSession || !LocalFree(hMixSession))
+		return 5;
+
 	return 0;
 }
 
 int WaveMix::OpenChannel(HANDLE hMixSession, int iChannel, unsigned dwFlags)
 {
+	GLOBALS* globals = SessionToGlobalDataPtr(hMixSession);
+	Globals = globals;
+	if (!globals)
+		return 5;
+	if (dwFlags > 2)
+		return 10;
+	if (dwFlags == 2 && (iChannel > 16 || iChannel < 1))
+		return 11;
+	if (dwFlags == 0 && iChannel >= 16)
+		return 11;
+
+	if (dwFlags)
+	{
+		if (dwFlags == 1)
+			iChannel = 16;
+
+		for (auto index = iChannel - 1; index >= 0; --index)
+		{
+			if (globals->aChannel[index] == reinterpret_cast<CHANNELNODE*>(-1))
+			{
+				globals->aChannel[index] = nullptr;
+				globals->ChannelVolume[index].L = globals->DefaultVolume.L;
+				globals->ChannelVolume[index].R = globals->DefaultVolume.R;
+				++globals->iChannels;
+			}
+		}
+	}
+	else
+	{
+		if (globals->aChannel[iChannel] != reinterpret_cast<CHANNELNODE*>(-1))
+			return 4;
+		globals->aChannel[iChannel] = nullptr;
+		globals->ChannelVolume[iChannel].L = globals->DefaultVolume.L;
+		globals->ChannelVolume[iChannel].R = globals->DefaultVolume.R;
+		++globals->iChannels;
+	}
 	return 0;
 }
 
 int WaveMix::CloseChannel(HANDLE hMixSession, int iChannel, unsigned dwFlags)
 {
-	return 0;
+	Globals = SessionToGlobalDataPtr(hMixSession);
+	if (!Globals)
+		return 5;
+
+	int minChannel = iChannel, maxChannel;
+	int result = FlushChannel(hMixSession, iChannel, dwFlags | 2);
+	if (!result)
+	{
+		if ((dwFlags & 1) != 0)
+		{
+			minChannel = 0;
+			maxChannel = 16;
+		}
+		else
+		{
+			maxChannel = iChannel + 1;
+			if (iChannel >= maxChannel)
+				return 0;
+		}
+
+		CHANNELNODE** channelPtr = &Globals->aChannel[minChannel];
+		int index = maxChannel - minChannel;
+		do
+		{
+			if (*channelPtr != reinterpret_cast<CHANNELNODE*>(-1))
+			{
+				*channelPtr = reinterpret_cast<CHANNELNODE*>(-1);
+				--Globals->iChannels;
+			}
+			++channelPtr;
+			--index;
+		}
+		while (index);
+		return 0;
+	}
+	return result;
 }
 
 int WaveMix::FlushChannel(HANDLE hMixSession, int iChannel, unsigned dwFlags)
@@ -155,11 +238,273 @@ int WaveMix::FlushChannel(HANDLE hMixSession, int iChannel, unsigned dwFlags)
 
 MIXWAVE* WaveMix::OpenWave(HANDLE hMixSession, LPCSTR szWaveFilename, HINSTANCE hInst, unsigned dwFlags)
 {
-	return new MIXWAVE{};
+	_MMIOINFO pmmioinfo;
+	_MMCKINFO pmmcki, pmmFmt;
+	HWAVEOUT phwo;
+	WAVEFORMATEX pwfx;
+	HMMIO hMmio = nullptr;
+	HGLOBAL hResData = nullptr;
+	HPSTR wavBuffer3 = nullptr;
+	auto globals = SessionToGlobalDataPtr(hMixSession);
+	pwfx.wFormatTag = globals->PCM.wf.wFormatTag;
+	pwfx.nChannels = globals->PCM.wf.nChannels;
+	pwfx.nSamplesPerSec = globals->PCM.wf.nSamplesPerSec;
+	pwfx.nAvgBytesPerSec = globals->PCM.wf.nAvgBytesPerSec;
+	Globals = globals;
+	pwfx.nBlockAlign = globals->PCM.wf.nBlockAlign;
+	pwfx.wBitsPerSample = globals->PCM.wBitsPerSample;
+	pwfx.cbSize = 0;
+	if (waveOutOpen(&phwo, 0xFFFFFFFF, &pwfx, 0, 0, 1u))
+	{
+		if (ShowDebugDialogs)
+			MessageBoxA(nullptr, "The waveform device can't play this format.", "WavMix32", 0x30u);
+		return nullptr;
+	}
+
+	auto mixWave = static_cast<MIXWAVE*>(GlobalLock(GlobalAlloc(0x2040u, 0x42u)));
+	if (!mixWave)
+	{
+		if (ShowDebugDialogs)
+			MessageBoxA(
+				nullptr,
+				"Unable to allocate memory for waveform data.  Try making more memory available by closing other applications.",
+				"WavMix32",
+				0x40u);
+		return nullptr;
+	}
+
+	do
+	{
+		if ((dwFlags & 2) != 0)
+		{
+			HRSRC hrsc = FindResourceA(hInst, szWaveFilename, "WAVE");
+			if (!hrsc || (hResData = LoadResource(hInst, hrsc)) == nullptr)
+			{
+				if (HIWORD(szWaveFilename))
+					wsprintfA(string_buffer, "Failed to open 'WAVE' resource '%s'.", szWaveFilename);
+				else
+					wsprintfA(string_buffer, "Failed to open 'WAVE' resource %u.", LOWORD(szWaveFilename));
+				if (ShowDebugDialogs)
+					MessageBoxA(nullptr, string_buffer, "WavMix32", 0x30u);
+				break;
+			}
+
+			memset(&pmmioinfo, 0, sizeof(pmmioinfo));
+			pmmioinfo.pchBuffer = static_cast<HPSTR>(LockResource(hResData));
+			if (!pmmioinfo.pchBuffer)
+			{
+				if (ShowDebugDialogs)
+					MessageBoxA(nullptr, "Failed to lock 'WAVE' resource", "WavMix32", 0x30u);
+				FreeResource(hResData);
+				hResData = nullptr;
+				break;
+			}
+
+			pmmioinfo.cchBuffer = SizeofResource(hInst, hrsc);
+			pmmioinfo.fccIOProc = FOURCC_MEM;
+			pmmioinfo.adwInfo[0] = 0;
+			hMmio = mmioOpenA(nullptr, &pmmioinfo, 0);
+			if (!hMmio)
+			{
+				if (ShowDebugDialogs)
+				{
+					wsprintfA(string_buffer,
+					          "Failed to open resource, mmioOpen error=%u.\nMay need to make sure resource is marked read-write",
+					          pmmioinfo.wErrorRet);
+					MessageBoxA(nullptr, string_buffer, "WavMix32", 0x30u);
+				}
+				break;
+			}
+		}
+		else if ((dwFlags & 4) != 0)
+		{
+			memcpy(&pmmioinfo, szWaveFilename, sizeof(pmmioinfo));
+			hMmio = mmioOpenA(nullptr, &pmmioinfo, 0);
+			if (!hMmio)
+			{
+				if (ShowDebugDialogs)
+				{
+					wsprintfA(string_buffer,
+					          "Failed to open memory file, mmioOpen error=%u.\nMay need to make sure memory is read-write",
+					          pmmioinfo.wErrorRet);
+					MessageBoxA(nullptr, string_buffer, "WavMix32", 0x30u);
+				}
+				break;
+			}
+		}
+		else
+		{
+			hMmio = mmioOpenA(const_cast<LPSTR>(szWaveFilename), nullptr, 0x10000u);
+			if (!hMmio)
+			{
+				if (ShowDebugDialogs)
+				{
+					wsprintfA(string_buffer, "Failed to open wave file %s.", szWaveFilename);
+					MessageBoxA(nullptr, string_buffer, "WavMix32", 0x30u);
+				}
+				break;
+			}
+		}
+
+		pmmcki.fccType = mmioFOURCC('W', 'A', 'V', 'E');
+		if (mmioDescend(hMmio, &pmmcki, nullptr, 0x20u))
+		{
+			if (ShowDebugDialogs)
+				MessageBoxA(nullptr, "This is not a WAVE file.", "WavMix32", 0x30u);
+			break;
+		}
+
+		pmmFmt.ckid = mmioFOURCC('f', 'm', 't', ' ');
+		if (mmioDescend(hMmio, &pmmFmt, &pmmcki, 0x10u))
+		{
+			if (ShowDebugDialogs)
+				MessageBoxA(nullptr, "WAVE file is corrupted.", "WavMix32", 0x30u);
+			break;
+		}
+		if (mmioRead(hMmio, (HPSTR)mixWave, 16) != 16)
+		{
+			if (ShowDebugDialogs)
+				MessageBoxA(nullptr, "Failed to read format chunk.", "WavMix32", 0x30u);
+			break;
+		}
+		if (mixWave->pcm.wf.wFormatTag != 1)
+		{
+			if (ShowDebugDialogs)
+				MessageBoxA(nullptr, "The file is not a PCM file.", "WavMix32", 0x30u);
+			break;
+		}
+
+		mmioAscend(hMmio, &pmmFmt, 0);
+		pmmFmt.ckid = mmioFOURCC('d', 'a', 't', 'a');
+		if (mmioDescend(hMmio, &pmmFmt, &pmmcki, 0x10u))
+		{
+			if (ShowDebugDialogs)
+				MessageBoxA(nullptr, "WAVE file has no data chunk.", "WavMix32", 0x30u);
+			break;
+		}
+		auto dataSize = pmmFmt.cksize;
+		if (!pmmFmt.cksize)
+		{
+			if (ShowDebugDialogs)
+				MessageBoxA(nullptr, "The data chunk has no data.", "WavMix32", 0x30u);
+			break;
+		}
+
+		auto lpData = static_cast<HPSTR>(GlobalLock(GlobalAlloc(0x2002u, pmmFmt.cksize)));
+		if (!lpData)
+		{
+			if (ShowDebugDialogs)
+				MessageBoxA(
+					nullptr,
+					"Unable to allocate memory for waveform data.  Try making more memory available by closing other applications.",
+					"WavMix32",
+					0x40u);
+			break;
+		}
+
+		auto readCount = mmioRead(hMmio, lpData, dataSize);
+		if (readCount != static_cast<LONG>(dataSize))
+		{
+			if (ShowDebugDialogs)
+				MessageBoxA(nullptr, "Failed to read data chunk.", "WavMix32", 0x30u);
+			break;
+		}
+		lpData = WaveFormatConvert(&Globals->PCM, &mixWave->pcm, lpData, &dataSize);
+		if (!lpData)
+		{
+			if (ShowDebugDialogs)
+				MessageBoxA(nullptr, "Failed to convert wave format.", "WavMix32", 0x30u);
+			break;
+		}
+		mmioClose(hMmio, 0);
+		if (hResData)
+			FreeResource(hResData);
+		mixWave->wh.dwBufferLength = dataSize;
+		mixWave->wh.lpData = lpData;
+		mixWave->wh.dwFlags = 0;
+		mixWave->wh.dwLoops = 0;
+		mixWave->wh.dwUser = 0;
+		mixWave->wMagic = 21554;
+		memmove(mixWave, &Globals->PCM, 0x10u);
+
+		if (HIWORD(szWaveFilename))
+		{
+			auto fileNameLength = lstrlenA(szWaveFilename);
+			int copyOffset = fileNameLength > 15 ? fileNameLength - 15 : 0;
+			lstrcpyA(mixWave->szWaveFilename, &szWaveFilename[copyOffset]);
+		}
+		else
+		{
+			wsprintfA(mixWave->szWaveFilename, "res#%u", LOWORD(szWaveFilename));
+		}
+		return mixWave;
+	}
+	while (false);
+
+	if (hMmio)
+		mmioClose(hMmio, 0);
+	GlobalUnlock(GlobalHandle(mixWave));
+	GlobalFree(GlobalHandle(mixWave));
+	if (wavBuffer3)
+	{
+		GlobalUnlock(GlobalHandle(wavBuffer3));
+		GlobalFree(GlobalHandle(wavBuffer3));
+	}
+	if (hResData)
+		FreeResource(hResData);
+	return nullptr;
 }
 
 int WaveMix::FreeWave(HANDLE hMixSession, MIXWAVE* lpMixWave)
 {
+	GLOBALS* globals = SessionToGlobalDataPtr(hMixSession);
+	if (!globals)
+		return 5;
+	if (!IsValidLPMIXWAVE(lpMixWave))
+		return 5;
+
+	CHANNELNODE** channelPtr = globals->aChannel;
+	for (auto index = 16; index; --index)
+	{
+		CHANNELNODE* channel = *channelPtr;
+		if (channel != reinterpret_cast<CHANNELNODE*>(-1))
+		{
+			CHANNELNODE* prevChannel = nullptr;
+			while (channel)
+			{
+				if (channel->lpMixWave == lpMixWave)
+				{
+					if (prevChannel)
+					{
+						prevChannel->next = channel->next;
+						FreeChannelNode(channel);
+						channel = prevChannel->next;
+					}
+					else
+					{
+						channel = channel->next;
+						FreeChannelNode(channel);
+						*channelPtr = channel;
+					}
+				}
+				else
+				{
+					prevChannel = channel;
+					channel = channel->next;
+				}
+			}
+		}
+		++channelPtr;
+	}
+
+	if (lpMixWave->wh.lpData)
+	{
+		GlobalUnlock(GlobalHandle(lpMixWave->wh.lpData));
+		GlobalFree(GlobalHandle(lpMixWave->wh.lpData));
+	}
+	lpMixWave->wMagic = 0;
+	GlobalUnlock(GlobalHandle(lpMixWave));
+	GlobalFree(GlobalHandle(lpMixWave));
 	return 0;
 }
 
@@ -206,6 +551,24 @@ int WaveMix::Activate(HANDLE hMixSession, bool fActivate)
 
 void WaveMix::Pump()
 {
+	Globals = GlobalsActive;
+	if (GlobalsActive)
+	{
+		auto xHDR = play_queue.first;
+		while (xHDR)
+		{
+			if ((xHDR->wh.dwFlags & 1) != 0)
+			{
+				RemoveFromPlayingQueue(xHDR);
+				xHDR->fAvailable = 1;
+				xHDR = play_queue.first;
+			}
+			else
+				xHDR = xHDR->QNext;
+		}
+		FreePlayedBlocks();
+		while (MixerPlay(GetWaveBlock(), 1));
+	}
 }
 
 int WaveMix::Play(MIXPLAYPARAMS* lpMixPlayParams)
@@ -285,25 +648,17 @@ void WaveMix::InitChannelNodes()
 
 void WaveMix::InitVolumeTable()
 {
-	int index2 = 0;
 	int index3Sub = 0;
-	char* tablePtr = &volume_table[128];
-	do
+	for (auto volume = 0; volume < 11; volume++)
 	{
-		int index1 = -128;
-		int divSmth = index3Sub;
-		do
+		auto tablePtr = &volume_table[volume][0];
+		for (auto divSmth = index3Sub, sample = 0; sample < 256; ++sample)
 		{
-			tablePtr[index1] = static_cast<char>(divSmth / 10 + 128);
-			divSmth += index2;
-			++index1;
+			tablePtr[sample] = static_cast<unsigned char>(divSmth / 10 + 128);
+			divSmth += volume;
 		}
-		while (index1 < 128);
-		++index2;
 		index3Sub -= 128;
-		tablePtr += 256;
 	}
-	while (tablePtr <= &volume_table[2688]);
 }
 
 void WaveMix::ShowWaveOutDevices()
@@ -1574,9 +1929,399 @@ void WaveMix::ReleaseWaveDevice(GLOBALS* globals)
 	}
 }
 
-void WaveMix::cmixit(unsigned __int8* lpDest, unsigned __int8** rgWaveSrc, volume_struct* volume, int iNumWaves,
+HPSTR WaveMix::WaveFormatConvert(PCMWAVEFORMAT* lpOutWF, PCMWAVEFORMAT* lpInWF, HPSTR lpInData, DWORD* dwDataSize)
+{
+	if (lpInWF->wf.nChannels == lpOutWF->wf.nChannels &&
+		lpInWF->wf.nSamplesPerSec == lpOutWF->wf.nSamplesPerSec &&
+		lpInWF->wBitsPerSample == lpOutWF->wBitsPerSample)
+	{
+		return lpInData;
+	}
+	HPSTR dataBuf = BitsPerSampleAlign(lpInData, lpInWF->wBitsPerSample, lpOutWF->wBitsPerSample, dwDataSize);
+	if (!dataBuf)
+		return nullptr;
+	dataBuf = ChannelAlign(dataBuf, lpInWF->wf.nChannels, lpOutWF->wf.nChannels, lpOutWF->wBitsPerSample / 8,
+	                       dwDataSize);
+	if (!dataBuf)
+		return nullptr;
+	dataBuf = SamplesPerSecAlign(dataBuf, lpInWF->wf.nSamplesPerSec, lpOutWF->wf.nSamplesPerSec,
+	                             lpOutWF->wBitsPerSample / 8, lpOutWF->wf.nChannels, dwDataSize);
+	return dataBuf;
+}
+
+HPSTR WaveMix::BitsPerSampleAlign(HPSTR lpInData, WORD nInBPS, WORD nOutBPS, DWORD* dwDataSize)
+{
+	LPVOID dataBuf = nullptr;
+
+	if (nInBPS == nOutBPS)
+		return lpInData;
+
+	if ((nInBPS == 8 || nInBPS == 16) && (nOutBPS == 8 || nOutBPS == 16))
+	{
+		DWORD dwNumSamples = *dwDataSize / (nInBPS / 8u);
+		*dwDataSize = dwNumSamples * (nOutBPS / 8u);
+
+		dataBuf = GlobalLock(GlobalAlloc(0x2002u, *dwDataSize));
+		if (dataBuf)
+		{
+			if (nInBPS / 8u <= nOutBPS / 8u)
+			{
+				auto dst = static_cast<__int16*>(dataBuf);
+				for (auto src = lpInData; dwNumSamples; --dwNumSamples)
+					*dst++ = static_cast<short>((*src++ - 128) * 256);
+			}
+			else
+			{
+				auto dst = static_cast<char*>(dataBuf);
+				for (auto src = reinterpret_cast<__int16*>(lpInData); dwNumSamples; --dwNumSamples)
+				{
+					*dst++ = static_cast<char>(*src++ / 256 + 128);
+				}
+			}
+		}
+		else
+		{
+			if (ShowDebugDialogs)
+				MessageBoxA(
+					nullptr,
+					"Unable to allocate memory for waveform data.  Try making more memory available by closing other applications.",
+					"WavMix32",
+					0x40u);
+		}
+	}
+
+	GlobalUnlock(GlobalHandle(lpInData));
+	GlobalFree(GlobalHandle(lpInData));
+	return static_cast<HPSTR>(dataBuf);
+}
+
+HPSTR WaveMix::ChannelAlign(HPSTR lpInData, WORD nInChannels, WORD nOutChannels, WORD nBytesPerSample,
+                            DWORD* dwDataSize)
+{
+	if (nInChannels == nOutChannels)
+		return lpInData;
+	DWORD dwNumSamples = *dwDataSize / nBytesPerSample / nInChannels;
+	*dwDataSize = dwNumSamples * nBytesPerSample * nOutChannels;
+	char* dataBuf = static_cast<char*>(GlobalLock(GlobalAlloc(0x2002u, *dwDataSize)));
+	if (dataBuf)
+	{
+		if (nInChannels < nOutChannels)
+		{
+			if (nBytesPerSample == 1)
+			{
+				auto src = lpInData;
+				auto dst = dataBuf;
+				for (; dwNumSamples; --dwNumSamples)
+				{
+					*dst++ = *src;
+					*dst++ = *src++;
+				}
+			}
+			else
+			{
+				auto src = reinterpret_cast<short*>(lpInData);
+				auto dst = reinterpret_cast<short*>(dataBuf);
+				for (; dwNumSamples; --dwNumSamples)
+				{
+					*dst++ = *src;
+					*dst++ = *src++;
+				}
+			}
+		}
+		else
+		{
+			if (nBytesPerSample == 1)
+			{
+				auto src = reinterpret_cast<unsigned char*>(lpInData);
+				auto dst = reinterpret_cast<unsigned char*>(dataBuf);
+				for (; dwNumSamples; --dwNumSamples, src += 2)
+				{
+					*dst++ = static_cast<unsigned char>((src[0] + src[1]) / 2);
+				}
+			}
+			else
+			{
+				auto src = reinterpret_cast<__int16*>(lpInData);
+				auto dst = reinterpret_cast<__int16*>(dataBuf);
+				for (; dwNumSamples; --dwNumSamples, src += 2)
+				{
+					*dst++ = static_cast<short>((src[0] + src[1]) / 2);
+				}
+			}
+		}
+	}
+	else
+	{
+		if (ShowDebugDialogs)
+			MessageBoxA(
+				nullptr,
+				"Unable to allocate memory for waveform data.  Try making more memory available by closing other applications.",
+				"WavMix32",
+				0x40u);
+		dataBuf = nullptr;
+	}
+
+	GlobalUnlock(GlobalHandle(lpInData));
+	GlobalFree(GlobalHandle(lpInData));
+	return dataBuf;
+}
+
+HPSTR WaveMix::SamplesPerSecAlign(HPSTR lpInData, DWORD nInSamplesPerSec, DWORD nOutSamplesPerSec, WORD nBytesPerSample,
+                                  WORD nChannels, DWORD* dwDataSize)
+{
+	if (nInSamplesPerSec == nOutSamplesPerSec)
+		return lpInData;
+	auto sampleSize = nBytesPerSample * nChannels;
+	auto dwNumSamples = *dwDataSize / sampleSize;
+	unsigned int nRep, nSkip, dwNumSamples2;
+	if (nOutSamplesPerSec <= nInSamplesPerSec)
+	{
+		nRep = 0;
+		nSkip = nInSamplesPerSec / nOutSamplesPerSec;
+		dwNumSamples2 = dwNumSamples / nSkip;
+	}
+	else
+	{
+		nSkip = 0;
+		nRep = nOutSamplesPerSec / nInSamplesPerSec;
+		dwNumSamples2 = dwNumSamples * nRep;
+	}
+	*dwDataSize = sampleSize * dwNumSamples2;
+
+	auto dataBuf = static_cast<char*>(GlobalLock(GlobalAlloc(0x2002u, sampleSize * dwNumSamples2)));
+	if (!dataBuf)
+	{
+		if (ShowDebugDialogs)
+			MessageBoxA(
+				nullptr,
+				"Unable to allocate memory for waveform data.  Try making more memory available by closing other applications.",
+				"WavMix32",
+				0x40u);
+		GlobalUnlock(GlobalHandle(lpInData));
+		GlobalFree(GlobalHandle(lpInData));
+		return nullptr;
+	}
+
+	auto lpInDataBup = lpInData;
+	auto dataBufBup = dataBuf;
+	if (nRep <= 0)
+	{
+		for (auto index = dwNumSamples2 - 1; index; --index)
+		{
+			AvgSample(dataBuf, lpInData, nSkip, nBytesPerSample, nChannels);
+			lpInData += sampleSize * nSkip;
+			dataBuf += sampleSize;
+		}
+		for (; sampleSize; --sampleSize)
+			*dataBuf++ = *lpInData++;
+	}
+	else
+	{
+		for (auto index = dwNumSamples - 1; index; --index)
+		{
+			RepSample(dataBuf, lpInData, nRep, nBytesPerSample, nChannels);
+			lpInData += sampleSize;
+			dataBuf += sampleSize * nRep;
+		}
+		for (auto index1 = nRep; index1; --index1)
+		{
+			auto src = lpInData;
+			for (auto index2 = sampleSize; index2; --index2)
+				*dataBuf++ = *src++;
+		}
+	}
+
+	GlobalUnlock(GlobalHandle(lpInDataBup));
+	GlobalFree(GlobalHandle(lpInDataBup));
+	return dataBufBup;
+}
+
+void WaveMix::AvgSample(HPSTR lpOutData, HPSTR lpInData, unsigned nSkip, int nBytesPerSample, int nChannels)
+{
+	if (nBytesPerSample == 1)
+	{
+		auto dst = lpOutData;
+		for (auto channelIndex = nChannels; channelIndex; --channelIndex)
+		{
+			auto src = lpInData++;
+			auto average = 0;
+			for (auto avgIndex = nSkip; avgIndex; --avgIndex)
+			{
+				average += static_cast<unsigned __int8>(*src) - 128;
+				src += nChannels;
+			}
+			*dst++ = static_cast<char>(average / nSkip + 128);
+		}
+	}
+	else
+	{
+		auto src = reinterpret_cast<__int16*>(lpInData);
+		auto dst = reinterpret_cast<__int16*>(lpOutData);
+		for (auto channelIndex = nChannels; channelIndex; --channelIndex)
+		{
+			auto curSrc = src++;
+			auto average2 = 0;
+			for (auto avgIndex = nSkip; avgIndex; --avgIndex)
+			{
+				average2 += *curSrc;
+				curSrc += nChannels;
+			}
+			*dst++ = static_cast<short>(average2 / nSkip); /*Was *dst = */
+		}
+	}
+}
+
+void WaveMix::RepSample(HPSTR lpOutData, HPSTR lpInData, unsigned nRep, int nBytesPerSample, int nChannels)
+{
+	if (nBytesPerSample == 1)
+	{
+		auto src = reinterpret_cast<unsigned __int8*>(lpInData);
+		auto dst = reinterpret_cast<unsigned __int8*>(lpOutData);
+		for (auto channelIndex = nChannels; channelIndex; --channelIndex)
+		{
+			auto sample = *src;
+			auto dst2 = &dst[nChannels];
+			auto delta = (src[nChannels] - src[0]) / nRep;
+			*dst = *src;
+			dst++;
+			for (auto repeatIndex = nRep - 1; repeatIndex; repeatIndex--)
+			{
+				sample += delta;
+				*dst2 = sample;
+				dst2 += nChannels;
+			}
+			++src;
+		}
+	}
+	else
+	{
+		auto src = reinterpret_cast<__int16*>(lpInData);
+		auto dst = reinterpret_cast<__int16*>(lpOutData);
+		for (auto channelIndex2 = nChannels; channelIndex2; channelIndex2--)
+		{
+			auto sample = *src;
+			auto dst2 = &dst[nChannels];
+			auto delta = (src[nChannels] - src[0]) / nRep; /*Was dst[nChannels] - */
+			*dst = *src;
+			++dst;
+			for (auto repeatIndex2 = nRep - 1; repeatIndex2; --repeatIndex2)
+			{
+				sample += delta;
+				*dst2 = sample;
+				dst2 += nChannels;
+			}
+			++src;
+		}
+	}
+}
+
+bool WaveMix::IsValidLPMIXWAVE(MIXWAVE* lpMixWave)
+{
+	return lpMixWave && lpMixWave->wMagic == 21554;
+}
+
+void WaveMix::FreePlayedBlocks()
+{
+	auto position = MyWaveOutGetPosition(Globals->hWaveOut, Globals->fGoodGetPos);
+	for (int i = 0; i < MAXCHANNELS; i ++)
+	{
+		CHANNELNODE* channel = Globals->aChannel[i];
+		if (channel && channel != reinterpret_cast<CHANNELNODE*>(-1))
+		{
+			while (channel && position >= channel->dwEndPos)
+			{
+				Globals->aChannel[i] = channel->next;
+				if (channel->PlayParams.hWndNotify)
+					PostMessageA(channel->PlayParams.hWndNotify, MM_WOM_DONE, i,
+					             reinterpret_cast<LPARAM>(channel->lpMixWave));
+				FreeChannelNode(channel);
+				channel = Globals->aChannel[i];
+			}
+		}
+	}
+	if (!Globals->fGoodGetPos && !play_queue.first)
+	{
+		for (int i = 0; i < MAXCHANNELS; i++)
+		{
+			auto channel = Globals->aChannel[i];
+			if (channel)
+			{
+				if (channel != reinterpret_cast<CHANNELNODE*>(-1))
+				{
+					PostMessageA(Globals->hWndApp, 0x400u, 0, reinterpret_cast<LPARAM>(Globals));
+				}
+			}
+		}
+	}
+}
+
+void WaveMix::cmixit(unsigned __int8* lpDest, unsigned __int8** rgWaveSrc, volume_struct* volumeArr, int iNumWaves,
                      unsigned __int16 length)
 {
+	if (!length)
+		return;
+
+	if (Globals->PCM.wf.nChannels == 2)
+	{
+		if (iNumWaves == 1)
+		{
+			auto src = rgWaveSrc[0];
+			for (auto index = (length - 1u) / 2u + 1u; index; --index)
+			{
+				*lpDest++ = volume_table[volumeArr->L][*src++];
+				*lpDest++ = volume_table[volumeArr->R][*src++];
+			}
+		}
+		else
+		{
+			for (auto srcOffset = 0u, index = (length - 1u) / 2u + 1u; index; index--)
+			{
+				auto sampleR = 128;
+				auto sampleL = 128;
+				auto volumePtr = volumeArr;
+				for (auto channelIndex = 0; channelIndex < iNumWaves; channelIndex++)
+				{
+					auto src = rgWaveSrc[channelIndex] + srcOffset;
+					sampleL += volume_table[volumePtr->L][src[0]] - 128;
+					sampleR += volume_table[volumePtr->R][src[1]] - 128;
+					++volumePtr;
+				}
+
+				srcOffset += 2;
+				lpDest[0] = min(max(sampleL, 0), 255);
+				lpDest[1] = min(max(sampleR, 0), 255);
+				lpDest += 2;
+			}
+		}
+	}
+	else
+	{
+		if (iNumWaves == 1)
+		{
+			auto src = rgWaveSrc[0];
+			auto avgVolume = (volumeArr->L + volumeArr->R) / 2;
+			for (auto index = length; index; --index)
+				*lpDest++ = volume_table[avgVolume][*src++];
+		}
+		else
+		{
+			for (unsigned srcOffset = 0u, index = length; index; index--)
+			{
+				auto sample = 128;
+				auto volumePtr = volumeArr;
+				for (auto channelIndex = 0; channelIndex < iNumWaves; channelIndex++)
+				{
+					auto src = rgWaveSrc[channelIndex] + srcOffset;
+					auto curSample = volume_table[(volumePtr->L + volumePtr->R) / 2][src[0]];
+					sample += curSample - 128;
+					++volumePtr;
+				}
+
+				++srcOffset;
+				*lpDest++ = min(max(sample, 0), 255);
+			}
+		}
+	}
 }
 
 LRESULT WaveMix::WndProc(HWND hWnd, UINT Msg, WPARAM wParam, LPARAM lParam)
