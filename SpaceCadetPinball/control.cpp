@@ -1917,7 +1917,7 @@ void control::GravityWellKickoutControl(int code, TPinballComponent* caller)
 			sprintf_s(Buffer, pinball::get_rc_string(81, 0), addedScore);
 			control_info_text_box_tag.Component->Display(Buffer, 2.0);
 			control_lite62_tag.Component->Message(20, 0.0);
-			caller->UnknownBaseFlag2 = 0;
+			caller->ActiveFlag = 0;
 			auto duration = control_soundwave7_tag.Component->Play();
 			caller->Message(55, duration);
 			break;
@@ -1935,11 +1935,11 @@ void control::GravityWellKickoutControl(int code, TPinballComponent* caller)
 			}
 			control_info_text_box_tag.Component->Display(Buffer, 2.0);
 			control_lite62_tag.Component->Message(4, 0.0);
-			control_kickout1_tag.Component->UnknownBaseFlag2 = 1;
+			control_kickout1_tag.Component->ActiveFlag = 1;
 			break;
 		}
 	case 1024:
-		control_kickout1_tag.Component->UnknownBaseFlag2 = 0;
+		control_kickout1_tag.Component->ActiveFlag = 0;
 		break;
 	}
 }

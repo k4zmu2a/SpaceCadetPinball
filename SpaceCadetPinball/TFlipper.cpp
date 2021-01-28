@@ -32,8 +32,8 @@ TFlipper::TFlipper(TPinballTable* table, int groupIndex) : TCollisionComponent(t
 	auto origin = reinterpret_cast<vector_type*>(loader::query_float_attribute(groupIndex, 0, 800));
 	auto flipperEdge = new TFlipperEdge(
 		this,
-		&UnknownBaseFlag2,
-		visual.Flag,
+		&ActiveFlag,
+		visual.CollisionGroup,
 		table,
 		origin,
 		vecT1,

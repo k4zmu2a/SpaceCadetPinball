@@ -7,23 +7,8 @@
 #include "zdrv.h"
 
 
-/*_loader_errors  dd 0, offset aBadHandle, 1, offset aNoTypeField, 2, offset aNoAttributesFi
-
-			 dd 0Bh, offset aNoFloatAttribu, 3, offset aWrongTypeMater; "Unknown" ...
-			 dd 4, offset aWrongTypeKicke, 5, offset aWrongTypeAnObj, 6
-			   dd offset aWrongTypeAStat, 7, offset aStatesReDefine, 9, offset aUnrecognizedAt
-			   dd 0Ah, offset aUnrecognizedFl, 0Dh, offset aFloatAttribute
-			   dd 0Ch, offset aStateIndexOutO, 0Fh, offset aLoaderMaterial_0
-			   dd 0Eh, offset aLoaderKickerRe, 10h, offset aLoaderStateIdR
-			   dd 8, offset aWallsDoesnTMat, 11h, offset aLoaderQueryVis_0
-			   dd 12h, offset aLoaderQueryVis, 15h, offset aLoaderMaterial
-			   dd 14h, offset aLoaderKicker, 16h, offset aLoaderQueryAtt
-			   dd 17h, offset aLoaderQueryIat, 13h, offset aLoaderQueryNam
-			   dd 18h, offset aLoaderStateId, 19h, offset aLoaderGetSound
-			   dd 1Ah, offset aSoundReference, 0FFFFFFFFh, offset aUnknown*/
-
-
-errorMsg loader::loader_errors[] = {
+errorMsg loader::loader_errors[] = 
+{
 	errorMsg{0, "Bad Handle"},
 	errorMsg{1, "No Type Field"},
 	errorMsg{2, "No Attributes Field"},
@@ -82,63 +67,48 @@ int loader::error(int errorCode, int captionCode)
 	return -1;
 }
 
-void  loader::default_vsi(visualStruct* visual)
+void loader::default_vsi(visualStruct* visual)
 {
-	visual->Flag = 0;
+	visual->CollisionGroup = 0;
 	visual->Kicker.Threshold = 8.9999999e10f;
 	visual->Kicker.HardHitSoundId = 0;
 	visual->Smoothness = 0.94999999f;
 	visual->Elasticity = 0.60000002f;
 	visual->FloatArrCount = 0;
 	visual->SoftHitSoundId = 0;
-	visual->Bitmap = 0;
-	visual->ZMap = 0;
+	visual->Bitmap = nullptr;
+	visual->ZMap = nullptr;
 	visual->SoundIndex3 = 0;
 	visual->SoundIndex4 = 0;
 }
 
 void loader::loadfrom(datFileStruct* datFile)
 {
-	int groupIndex = 0;
 	loader_table = datFile;
 	sound_record_table = loader_table;
-	int soundIndex = sound_count;
-	if (datFile->NumberOfGroups > 0)
+
+	for (auto groupIndex = 0; groupIndex < datFile->NumberOfGroups; ++groupIndex)
 	{
-		do
+		auto value = reinterpret_cast<__int16*>(partman::field(datFile, groupIndex, datFieldTypes::ShortValue));
+		if (value && *value == 202)
 		{
-			__int16* value = (__int16*)partman::field(datFile, groupIndex, datFieldTypes::ShortValue);
-			if (value && *value == 202)
+			if (sound_count < 65)
 			{
-				soundIndex = sound_count;
-				if (sound_count < 65)
-				{
-					sound_list[soundIndex].WavePtr = nullptr;
-					sound_list[soundIndex].GroupIndex = groupIndex;
-					sound_count = ++soundIndex;
-				}
+				sound_list[sound_count].WavePtr = nullptr;
+				sound_list[sound_count].GroupIndex = groupIndex;
+				sound_count++;
 			}
-			++groupIndex;
 		}
-		while (groupIndex < datFile->NumberOfGroups);
 	}
-	loader_sound_count = soundIndex;
+	loader_sound_count = sound_count;
 }
 
 void loader::unload()
 {
-	int index = 1;
-	if (sound_count > 1)
-	{
-		soundListStruct* soundListPtr = &sound_list[1];
-		do
-		{
-			Sound::FreeSound(soundListPtr->WavePtr);
-			++index;
-			++soundListPtr;
-		}
-		while (index < sound_count);
-	}
+	int index;
+	for (index = 1; index < sound_count; ++index)
+		Sound::FreeSound(sound_list[index].WavePtr);
+
 	if (sound_list[index].PtrToSmth)
 		memory::free(sound_list[index].PtrToSmth);
 	sound_count = 1;
@@ -146,45 +116,45 @@ void loader::unload()
 
 int loader::get_sound_id(int groupIndex)
 {
-	int result;
 	__int16 soundIndex = 1;
 	if (sound_count <= 1)
 	{
 		error(25, 26);
-		result = -1;
+		return -1;
 	}
-	else
+
+	while (sound_list[soundIndex].GroupIndex != groupIndex)
 	{
-		while (sound_list[soundIndex].GroupIndex != groupIndex)
+		++soundIndex;
+		if (soundIndex >= sound_count)
 		{
-			++soundIndex;
-			if (soundIndex >= sound_count)
-			{
-				error(25, 26);
-				return -1;
-			}
+			error(25, 26);
+			return -1;
 		}
-		if (!sound_list[soundIndex].Loaded && !sound_list[soundIndex].WavePtr)
-		{
-			int soundGroupId = sound_list[soundIndex].GroupIndex;
-			sound_list[soundIndex].Duration = 0.0;
-			if (soundGroupId > 0 && !pinball::quickFlag)
-			{
-				__int16* value = (__int16*)partman::field(loader_table, soundGroupId, datFieldTypes::ShortValue);
-				if (value && *value == 202)
-				{
-					const CHAR* fileName = partman::field(loader_table, soundGroupId, datFieldTypes::String);
-					HFILE hFile = _lopen(fileName, 0);
-					sound_list[soundIndex].Duration = (float)((double)_llseek(hFile, 0, 2) * 0.0000909090909090909);
-					_lclose(hFile);
-					sound_list[soundIndex].WavePtr = Sound::LoadWaveFile(fileName);
-				}
-			}
-		}
-		++sound_list[soundIndex].Loaded;
-		result = soundIndex;
 	}
-	return result;
+
+	if (!sound_list[soundIndex].Loaded && !sound_list[soundIndex].WavePtr)
+	{
+		int soundGroupId = sound_list[soundIndex].GroupIndex;
+		sound_list[soundIndex].Duration = 0.0;
+		if (soundGroupId > 0 && !pinball::quickFlag)
+		{
+			auto value = reinterpret_cast<__int16*>(partman::field(loader_table, soundGroupId,
+			                                                       datFieldTypes::ShortValue));
+			if (value && *value == 202)
+			{
+				auto fileName = partman::field(loader_table, soundGroupId, datFieldTypes::String);
+				HFILE hFile = _lopen(fileName, 0);
+				sound_list[soundIndex].Duration = static_cast<float>(static_cast<double>(_llseek(hFile, 0, SEEK_END)) *
+					0.0000909090909090909);
+				_lclose(hFile);
+				sound_list[soundIndex].WavePtr = Sound::LoadWaveFile(fileName);
+			}
+		}
+	}
+
+	++sound_list[soundIndex].Loaded;
+	return soundIndex;
 }
 
 
@@ -198,7 +168,7 @@ short loader::query_visual_states(int groupIndex)
 	short result;
 	if (groupIndex < 0)
 		return error(0, 17);
-	__int16* shortArr = (__int16*)partman::field(loader_table, groupIndex, datFieldTypes::ShortArray);
+	auto shortArr = reinterpret_cast<__int16*>(partman::field(loader_table, groupIndex, datFieldTypes::ShortArray));
 	if (shortArr && *shortArr == 100)
 		result = shortArr[1];
 	else
@@ -208,114 +178,100 @@ short loader::query_visual_states(int groupIndex)
 
 char* loader::query_name(int groupIndex)
 {
-	if (groupIndex >= 0)
-		return partman::field(loader_table, groupIndex, datFieldTypes::GroupName);
-	error(0, 19);
-	return nullptr;
+	if (groupIndex < 0)
+	{
+		error(0, 19);
+		return nullptr;
+	}
+
+	return partman::field(loader_table, groupIndex, datFieldTypes::GroupName);
 }
 
 __int16* loader::query_iattribute(int groupIndex, int firstValue, int* arraySize)
 {
-	__int16* result;
-	__int16 skipIndex = 0;
-	if (groupIndex >= 0)
-	{
-		while (true)
-		{
-			__int16* shortArr = (__int16*)partman::field_nth(loader_table, groupIndex, datFieldTypes::ShortArray, skipIndex);
-			if (!shortArr)
-				break;
-			if (*shortArr == firstValue)
-			{
-				*arraySize = partman::field_size(loader_table, groupIndex, datFieldTypes::ShortArray) / 2 - 1;
-				return shortArr + 1;
-			}
-			++skipIndex;
-		}
-		error(2, 23);
-		*arraySize = 0;
-		result = nullptr;
-	}
-	else
+	if (groupIndex < 0)
 	{
 		error(0, 22);
-		result = nullptr;
+		return nullptr;
 	}
-	return result;
+
+	for (auto skipIndex = 0;; ++skipIndex)
+	{
+		auto shortArr = reinterpret_cast<__int16*>(partman::field_nth(loader_table, groupIndex,
+		                                                              datFieldTypes::ShortArray, skipIndex));
+		if (!shortArr)
+			break;
+		if (*shortArr == firstValue)
+		{
+			*arraySize = partman::field_size(loader_table, groupIndex, datFieldTypes::ShortArray) / 2 - 1;
+			return shortArr + 1;
+		}
+	}
+
+	error(2, 23);
+	*arraySize = 0;
+	return nullptr;
 }
 
 float* loader::query_float_attribute(int groupIndex, int groupIndexOffset, int firstValue)
 {
-	float* result;
-	__int16 skipIndex = 0;
-	if (groupIndex >= 0)
-	{
-		int groupIndexSum = state_id(groupIndex, groupIndexOffset);
-		if (groupIndexSum >= 0)
-		{
-			while (true)
-			{
-				float* floatArr = (float*)partman::field_nth(loader_table, groupIndexSum, datFieldTypes::FloatArray, skipIndex);
-				if (!floatArr)
-					break;
-				if (static_cast<__int16>(static_cast<__int64>(floor(*floatArr))) == firstValue)
-					return floatArr + 1;
-				++skipIndex;
-			}
-			error(13, 22);
-			result = nullptr;
-		}
-		else
-		{
-			error(16, 22);
-			result = nullptr;
-		}
-	}
-	else
+	if (groupIndex < 0)
 	{
 		error(0, 22);
-		result = nullptr;
+		return nullptr;
 	}
-	return result;
+
+	int stateId = state_id(groupIndex, groupIndexOffset);
+	if (stateId < 0)
+	{
+		error(16, 22);
+		return nullptr;
+	}
+
+	for (auto skipIndex = 0;; ++skipIndex)
+	{
+		auto floatArr = reinterpret_cast<float*>(partman::field_nth(loader_table, stateId, datFieldTypes::FloatArray,
+		                                                            skipIndex));
+		if (!floatArr)
+			break;
+		if (static_cast<__int16>(floor(*floatArr)) == firstValue)
+			return floatArr + 1;
+	}
+
+	error(13, 22);
+	return nullptr;
 }
 
 int loader::material(int groupIndex, visualStruct* visual)
 {
 	if (groupIndex < 0)
 		return error(0, 21);
-	__int16* shortArr = (__int16*)partman::field(loader_table, groupIndex, datFieldTypes::ShortValue);
+	auto shortArr = reinterpret_cast<__int16*>(partman::field(loader_table, groupIndex, datFieldTypes::ShortValue));
 	if (!shortArr)
 		return error(1, 21);
 	if (*shortArr != 300)
 		return error(3, 21);
-	float* floatArr = (float*)partman::field(loader_table, groupIndex, datFieldTypes::FloatArray);
+	auto floatArr = reinterpret_cast<float*>(partman::field(loader_table, groupIndex, datFieldTypes::FloatArray));
 	if (!floatArr)
 		return error(11, 21);
-	int index = 0;
-	int floatArrLength = partman::field_size(loader_table, groupIndex, datFieldTypes::FloatArray) >> 2;
-	if (floatArrLength > 0)
+
+	int floatArrLength = partman::field_size(loader_table, groupIndex, datFieldTypes::FloatArray) / 4;
+	for (auto index = 0; index < floatArrLength; index += 2)
 	{
-		do
+		switch (static_cast<int>(floor(floatArr[index])))
 		{
-			float* nextFloatVal = floatArr + 1;
-			switch (static_cast<int>(floor(*floatArr)))
-			{
-			case 301:
-				visual->Smoothness = *nextFloatVal;
-				break;
-			case 302:
-				visual->Elasticity = *nextFloatVal;
-				break;
-			case 304:
-				visual->SoftHitSoundId = get_sound_id((int)floor(*nextFloatVal));
-				break;
-			default:
-				return error(9, 21);
-			}
-			floatArr = nextFloatVal + 1;
-			index += 2;
+		case 301:
+			visual->Smoothness = floatArr[index + 1];
+			break;
+		case 302:
+			visual->Elasticity = floatArr[index + 1];
+			break;
+		case 304:
+			visual->SoftHitSoundId = get_sound_id(static_cast<int>(floor(floatArr[index + 1])));
+			break;
+		default:
+			return error(9, 21);
 		}
-		while (index < floatArrLength);
 	}
 	return 0;
 }
@@ -331,12 +287,10 @@ float loader::play_sound(int soundIndex)
 
 int loader::state_id(int groupIndex, int groupIndexOffset)
 {
-	int result;
-	int groupIndex2 = groupIndex;
-	__int16 visualState = query_visual_states(groupIndex);
+	auto visualState = query_visual_states(groupIndex);
 	if (visualState <= 0)
 		return error(12, 24);
-	__int16* shortArr = (__int16*)partman::field(loader_table, groupIndex, datFieldTypes::ShortValue);
+	auto shortArr = reinterpret_cast<__int16*>(partman::field(loader_table, groupIndex, datFieldTypes::ShortValue));
 	if (!shortArr)
 		return error(1, 24);
 	if (*shortArr != 200)
@@ -344,36 +298,34 @@ int loader::state_id(int groupIndex, int groupIndexOffset)
 	if (groupIndexOffset > visualState)
 		return error(12, 24);
 	if (!groupIndexOffset)
-		return groupIndex2;
+		return groupIndex;
 
-	groupIndex2 = groupIndexOffset + groupIndex;
-	shortArr = (__int16*)partman::field(loader_table, groupIndexOffset + groupIndex, datFieldTypes::ShortValue);
+	groupIndex += groupIndexOffset;
+	shortArr = reinterpret_cast<__int16*>(partman::field(loader_table, groupIndex, datFieldTypes::ShortValue));
 	if (!shortArr)
 		return error(1, 24);
 	if (*shortArr != 201)
-		result = error(6, 24);
-	else
-		result = groupIndex2;
-	return result;
+		return error(6, 24);
+	return groupIndex;
 }
 
 int loader::kicker(int groupIndex, visualKickerStruct* kicker)
 {
 	if (groupIndex < 0)
 		return error(0, 20);
-	__int16* shortArr = (__int16*)partman::field(loader_table, groupIndex, datFieldTypes::ShortValue);
+	auto shortArr = reinterpret_cast<__int16*>(partman::field(loader_table, groupIndex, datFieldTypes::ShortValue));
 	if (!shortArr)
 		return error(1, 20);
 	if (*shortArr != 400)
 		return error(4, 20);
-	float* floatArr = (float*)partman::field(loader_table, groupIndex, datFieldTypes::FloatArray);
+	auto floatArr = reinterpret_cast<float*>(partman::field(loader_table, groupIndex, datFieldTypes::FloatArray));
 	if (!floatArr)
 		return error(11, 20);
-	int floatArrLength = partman::field_size(loader_table, groupIndex, datFieldTypes::FloatArray) >> 2;
-	int index = 0;
+	int floatArrLength = partman::field_size(loader_table, groupIndex, datFieldTypes::FloatArray) / 4;
 	if (floatArrLength <= 0)
 		return 0;
-	while (index < floatArrLength)
+
+	for (auto index = 0; index < floatArrLength;)
 	{
 		int floorVal = static_cast<int>(floor(*floatArr++));
 		switch (floorVal)
@@ -411,158 +363,135 @@ int loader::kicker(int groupIndex, visualKickerStruct* kicker)
 }
 
 
-
-int  loader::query_visual(int groupIndex, int groupIndexOffset, visualStruct* visual)
+int loader::query_visual(int groupIndex, int groupIndexOffset, visualStruct* visual)
 {
-	visualStruct* visual2; 
-	int groupIndexSum; 
-	int groupIndexSum2; 
-	zmap_header_type* bitmap16; 
-	__int16* shortArr; 
-	unsigned int shortArrSize; 
-	int index; 
-	int shortVal; 
-	__int16* nextShortVal; 
-	int nextIndex; 
-	int shortValSub100; 
-	int shortValSub300; 
-	int shortValSub304; 
-	int shortValSub602; 
-	int shortValSub1100; 
-	int shortValSub1101; 
-	float* floatArr; 
-	float* nextFloatVal; 
-	__int64 floatVal; 
-	float* floatArrPtr; 
-	int groupIndexSum3; 
-	int shortArrLength; 
+	int shortVal;
+	__int16* nextShortVal;
+	int shortValSub100;
+	int shortValSub300;
+	int shortValSub304;
+	int shortValSub602;
+	int shortValSub1100;
+	int shortValSub1101;
 
-	visual2 = visual;
 	default_vsi(visual);
 	if (groupIndex < 0)
 		return error(0, 18);
-	groupIndexSum = state_id(groupIndex, groupIndexOffset);
-	groupIndexSum2 = groupIndexSum;
-	groupIndexSum3 = groupIndexSum;
-	if (groupIndexSum < 0)
+	auto stateId = state_id(groupIndex, groupIndexOffset);
+	if (stateId < 0)
 		return error(16, 18);
-	visual->Bitmap = (gdrv_bitmap8*)partman::field(loader_table, groupIndexSum, datFieldTypes::Bitmap8bit);
-	bitmap16 = (zmap_header_type*)partman::field(loader_table, groupIndexSum2, datFieldTypes::Bitmap16bit);
-	visual->ZMap = bitmap16;
-	if (bitmap16)
+
+	visual->Bitmap = reinterpret_cast<gdrv_bitmap8*>(partman::field(loader_table, stateId, datFieldTypes::Bitmap8bit));
+	visual->ZMap = reinterpret_cast<zmap_header_type*>(partman::field(loader_table, stateId, datFieldTypes::Bitmap16bit)
+	);
+	if (visual->ZMap)
 	{
-		bitmap16->ZPtr1 = bitmap16->ZBuffer;
+		visual->ZMap->ZPtr1 = visual->ZMap->ZBuffer;
 		visual->ZMap->ZPtr2 = visual->ZMap->ZPtr1;
 	}
-	shortArr = (__int16*)partman::field(loader_table, groupIndexSum2, datFieldTypes::ShortArray);
+
+	auto shortArr = reinterpret_cast<__int16*>(partman::field(loader_table, stateId, datFieldTypes::ShortArray));
 	if (shortArr)
 	{
-		shortArrSize = partman::field_size(loader_table, groupIndexSum2, datFieldTypes::ShortArray);
-		index = 0;
-		shortArrLength = shortArrSize >> 1;
-		if ((__int16)(shortArrSize >> 1) > 0)
+		unsigned int shortArrSize = partman::field_size(loader_table, stateId, datFieldTypes::ShortArray);
+		for (auto index = 0u; index < shortArrSize / 2;)
 		{
-			while (1)
+			shortVal = *shortArr;
+			nextShortVal = shortArr + 1;
+			if (shortVal <= 406)
 			{
-				shortVal = *shortArr;
-				nextShortVal = shortArr + 1;
-				nextIndex = index + 1;
-				if (shortVal <= 406)
+				if (shortVal == 406)
 				{
-					if (shortVal == 406)
+					visual->Kicker.HardHitSoundId = get_sound_id(*nextShortVal);
+				}
+				else
+				{
+					shortValSub100 = shortVal - 100;
+					if (shortValSub100)
 					{
-						visual2->Kicker.HardHitSoundId = get_sound_id(*nextShortVal);
-					}
-					else
-					{
-						shortValSub100 = shortVal - 100;
-						if (shortValSub100)
+						shortValSub300 = shortValSub100 - 200;
+						if (shortValSub300)
 						{
-							shortValSub300 = shortValSub100 - 200;
-							if (shortValSub300)
+							shortValSub304 = shortValSub300 - 4;
+							if (shortValSub304)
 							{
-								shortValSub304 = shortValSub300 - 4;
-								if (shortValSub304)
-								{
-									if (shortValSub304 != 96)
-										return error(9, 18);
-									if (kicker(*nextShortVal, &visual2->Kicker))
-										return error(14, 18);
-								}
-								else
-								{
-									visual2->SoftHitSoundId = get_sound_id(*nextShortVal);
-								}
+								if (shortValSub304 != 96)
+									return error(9, 18);
+								if (kicker(*nextShortVal, &visual->Kicker))
+									return error(14, 18);
 							}
-							else if (material(*nextShortVal, visual2))
+							else
 							{
-								return error(15, 18);
+								visual->SoftHitSoundId = get_sound_id(*nextShortVal);
 							}
 						}
-						else if (groupIndexOffset)
+						else if (material(*nextShortVal, visual))
 						{
-							return error(7, 18);
+							return error(15, 18);
 						}
 					}
-					goto LABEL_31;
+					else if (groupIndexOffset)
+					{
+						return error(7, 18);
+					}
 				}
-				shortValSub602 = shortVal - 602;
-				if (!shortValSub602)
-				{
-					visual2->Flag |= 1 << *nextShortVal;
-					goto LABEL_31;
-				}
-				shortValSub1100 = shortValSub602 - 498;
-				if (!shortValSub1100)
-					break;
-				shortValSub1101 = shortValSub1100 - 1;
-				if (!shortValSub1101)
-				{
-					visual2->SoundIndex3 = get_sound_id(*nextShortVal);
-				LABEL_31:
-					shortArr = nextShortVal + 1;
-					index = nextIndex + 1;
-					goto LABEL_32;
-				}
-				if (shortValSub1101 != 399)
-					return error(9, 18);
-				shortArr = nextShortVal + 8;
-				index = nextIndex + 8;
-			LABEL_32:
-				if (index >= shortArrLength)
-					goto LABEL_33;
+				goto LABEL_31;
 			}
-			visual2->SoundIndex4 = get_sound_id(*nextShortVal);
-			goto LABEL_31;
+			shortValSub602 = shortVal - 602;
+			if (!shortValSub602)
+			{
+				visual->CollisionGroup |= 1 << *nextShortVal;
+				goto LABEL_31;
+			}
+			shortValSub1100 = shortValSub602 - 498;
+			if (!shortValSub1100)
+			{
+				visual->SoundIndex4 = get_sound_id(*nextShortVal);
+				goto LABEL_31;
+			}
+			shortValSub1101 = shortValSub1100 - 1;
+			if (!shortValSub1101)
+			{
+				visual->SoundIndex3 = get_sound_id(*nextShortVal);
+			LABEL_31:
+				shortArr = nextShortVal + 1;
+				index = index + 2;
+				goto LABEL_32;
+			}
+			if (shortValSub1101 != 399)
+				return error(9, 18);
+			shortArr = nextShortVal + 8;
+			index = index + 9;
+		LABEL_32:
+			{
+			}
 		}
 	}
-LABEL_33:
-	if (!visual2->Flag)
-		visual2->Flag = 1;
-	floatArr = (float*)partman::field(loader_table, groupIndexSum3, datFieldTypes::FloatArray);
+
+	if (!visual->CollisionGroup)
+		visual->CollisionGroup = 1;
+	auto floatArr = reinterpret_cast<float*>(partman::field(loader_table, stateId, datFieldTypes::FloatArray));
 	if (!floatArr)
 		return 0;
-	nextFloatVal = floatArr + 1;
 	if (*floatArr != 600.0)
 		return 0;
-	visual2->FloatArrCount = (partman::field_size(loader_table, groupIndexSum3, datFieldTypes::FloatArray) >> 2)/ 2- 2;
-	floatVal = (__int64)(floor(*nextFloatVal) - 1.0);
-	floatArrPtr = nextFloatVal + 1;
-	if ((int)floatVal)
+
+	visual->FloatArrCount = (partman::field_size(loader_table, stateId, datFieldTypes::FloatArray) / 4) / 2 - 2;
+	auto floatVal = static_cast<int>(floor(floatArr[1]) - 1.0);
+	switch (floatVal)
 	{
-		if ((int)floatVal == 1)
-		{
-			visual2->FloatArrCount = 2;
-		}
-		else if ((int)floatVal != visual2->FloatArrCount)
-		{
+	case 0:
+		visual->FloatArrCount = 1;
+		break;
+	case 1:
+		visual->FloatArrCount = 2;
+		break;
+	default:
+		if (floatVal != visual->FloatArrCount)
 			return error(8, 18);
-		}
+		break;
 	}
-	else
-	{
-		visual2->FloatArrCount = 1;
-	}
-	visual2->FloatArr = floatArrPtr;
+
+	visual->FloatArr = floatArr + 2;
 	return 0;
 }

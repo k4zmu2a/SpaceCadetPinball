@@ -4,8 +4,8 @@
 #include "TTableLayer.h"
 
 
-TLine::TLine(TCollisionComponent* collCmp, char* flagPtr, unsigned int visualFlag, float x0, float y0, float x1,
-             float y1): TEdgeSegment(collCmp, flagPtr, visualFlag)
+TLine::TLine(TCollisionComponent* collCmp, char* activeFlag, unsigned int collisionGroup, float x0, float y0, float x1,
+             float y1): TEdgeSegment(collCmp, activeFlag, collisionGroup)
 {
 	X0 = x0;
 	Y0 = y0;
@@ -14,8 +14,8 @@ TLine::TLine(TCollisionComponent* collCmp, char* flagPtr, unsigned int visualFla
 	maths::line_init(&Line, x0, y0, x1, y1);
 }
 
-TLine::TLine(TCollisionComponent* collCmp, char* flagPtr, unsigned int visualFlag, struct vector_type* start,
-             struct vector_type* end) : TEdgeSegment(collCmp, flagPtr, visualFlag)
+TLine::TLine(TCollisionComponent* collCmp, char* activeFlag, unsigned int collisionGroup, struct vector_type* start,
+             struct vector_type* end) : TEdgeSegment(collCmp, activeFlag, collisionGroup)
 {
 	X0 = start->X;
 	Y0 = start->Y;

@@ -11,9 +11,9 @@ vector_type TFlipperEdge::A1, TFlipperEdge::A2, TFlipperEdge::B1, TFlipperEdge::
 line_type TFlipperEdge::lineA, TFlipperEdge::lineB;
 circle_type TFlipperEdge::circlebase, TFlipperEdge::circleT1;
 
-TFlipperEdge::TFlipperEdge(TCollisionComponent* collComp, char* someFlag, unsigned int visualFlag, TPinballTable* table,
+TFlipperEdge::TFlipperEdge(TCollisionComponent* collComp, char* activeFlag, unsigned int collisionGroup, TPinballTable* table,
                            vector_type* origin, vector_type* vecT1, vector_type* vecT2, float bmpCoef1, float bmpCoef2,
-                           float collMult, float elasticity, float smoothness): TEdgeSegment(collComp, someFlag, visualFlag)
+                           float collMult, float elasticity, float smoothness): TEdgeSegment(collComp, activeFlag, collisionGroup)
 {
 	vector_type crossProd{}, vecDir1{}, vecDir2{};
 

@@ -26,13 +26,13 @@ int TSoloTarget::Message(int code, float value)
 	{
 	case 49:
 	case 50:
-		UnknownBaseFlag2 = code == 50;
+		ActiveFlag = code == 50;
 		break;
 	case 1024:
 		if (Timer)
 			timer::kill(Timer);
 		Timer = 0;
-		UnknownBaseFlag2 = 1;
+		ActiveFlag = 1;
 		break;
 	default:
 		return 0;
@@ -40,7 +40,7 @@ int TSoloTarget::Message(int code, float value)
 
 	if (ListBitmap)
 	{
-		auto index = 1 - UnknownBaseFlag2;
+		auto index = 1 - ActiveFlag;
 		auto bmp = static_cast<gdrv_bitmap8*>(ListBitmap->Get(index));
 		auto zMap = static_cast<zmap_header_type*>(ListZMap->Get(index));
 		render::sprite_set(

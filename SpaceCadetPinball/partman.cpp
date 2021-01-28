@@ -3,7 +3,8 @@
 #include "gdrv.h"
 #include "memory.h"
 
-short partman::_field_size[] = {
+short partman::_field_size[] = 
+{
 	2, -1, 2, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 0
 };
 
@@ -11,34 +12,31 @@ short partman::_field_size[] = {
 datFileStruct* partman::load_records(LPCSTR lpFileName)
 {
 	_OFSTRUCT ReOpenBuff{};
-	datFileHeader Buffer{};
+	datFileHeader header{};
 	dat8BitBmpHeader bmpHeader{};
-	datFileStruct* datFile;
-	int groupIndex, groupDataSize;
-	datGroupData** groupDataBuf;
 
 	const HFILE fileHandle = OpenFile(lpFileName, &ReOpenBuff, 0);
 	if (fileHandle == -1)
 		return nullptr;
-	_lread(fileHandle, &Buffer, 183u);
-	if (lstrcmpA("PARTOUT(4.0)RESOURCE", Buffer.FileSignature))
+	_lread(fileHandle, &header, 183u);
+	if (lstrcmpA("PARTOUT(4.0)RESOURCE", header.FileSignature))
 	{
 		_lclose(fileHandle);
 		return nullptr;
 	}
-	datFile = (datFileStruct*)memory::allocate(sizeof(datFileStruct));
+	auto datFile = (datFileStruct*)memory::allocate(sizeof(datFileStruct));
 	if (!datFile)
 	{
 		_lclose(fileHandle);
 		return nullptr;
 	}
-	if (lstrlenA(Buffer.Description) <= 0)
+	if (lstrlenA(header.Description) <= 0)
 	{
 		datFile->Description = nullptr;
 	}
 	else
 	{
-		int lenOfStr = lstrlenA(Buffer.Description);
+		int lenOfStr = lstrlenA(header.Description);
 		auto descriptionBuf = static_cast<char*>(memory::allocate(lenOfStr + 1));
 		datFile->Description = descriptionBuf;
 		if (!descriptionBuf)
@@ -47,12 +45,12 @@ datFileStruct* partman::load_records(LPCSTR lpFileName)
 			memory::free(datFile);
 			return nullptr;
 		}
-		lstrcpyA(descriptionBuf, Buffer.Description);
+		lstrcpyA(descriptionBuf, header.Description);
 	}
 
-	if (Buffer.Unknown)
+	if (header.Unknown)
 	{
-		auto unknownBuf = static_cast<char*>(memory::allocate(Buffer.Unknown));
+		auto unknownBuf = static_cast<char*>(memory::allocate(header.Unknown));
 		if (!unknownBuf)
 		{
 			_lclose(fileHandle);
@@ -61,11 +59,11 @@ datFileStruct* partman::load_records(LPCSTR lpFileName)
 			memory::free(datFile);
 			return nullptr;
 		}
-		_lread(fileHandle, static_cast<void*>(unknownBuf), Buffer.Unknown);
+		_lread(fileHandle, static_cast<void*>(unknownBuf), header.Unknown);
 		memory::free(unknownBuf);
 	}
 
-	groupDataBuf = (datGroupData**)memory::allocate(sizeof(void*) * Buffer.NumberOfGroups);
+	auto groupDataBuf = (datGroupData**)memory::allocate(sizeof(void*) * header.NumberOfGroups);
 	datFile->GroupData = groupDataBuf;
 	if (!groupDataBuf)
 	{
@@ -75,75 +73,70 @@ datFileStruct* partman::load_records(LPCSTR lpFileName)
 		return nullptr;
 	}
 
-	groupIndex = 0;
-	if (Buffer.NumberOfGroups)
+	bool abort = false;
+	for (auto groupIndex = 0; !abort && groupIndex < header.NumberOfGroups; ++groupIndex)
 	{
-		do
-		{
-			char entryCount = _lread_char(fileHandle);
-			if (entryCount <= 0)
-				groupDataSize = 0;
-			else
-				groupDataSize = entryCount - 1;
-			datFile->GroupData[groupIndex] = (datGroupData*)memory::allocate(
-				sizeof(datEntryData) * groupDataSize + sizeof(datGroupData));
-			datGroupData* groupData = datFile->GroupData[groupIndex];
-			if (!groupData)
-				break;
-			int entryIndex = 0;
-			groupData->EntryCount = entryCount;
-			if (entryCount > 0)
-			{
-				datEntryData* entryData = groupData->Entries;
-				do
-				{
-					auto entryType = static_cast<datFieldTypes>(_lread_char(fileHandle));
-					entryData->EntryType = entryType;
-					int fieldSize = _field_size[static_cast<int>(entryType)];
-					if (fieldSize < 0)
-					{
-						fieldSize = _lread_long(fileHandle);
-					}
-					if (entryType == datFieldTypes::Bitmap8bit)
-					{
-						_hread(fileHandle, &bmpHeader, 14);
-						auto bmp = (gdrv_bitmap8*)memory::allocate(sizeof(gdrv_bitmap8));
-						entryData->Buffer = (char*)bmp;
-						if (!bmp)
-							goto LABEL_41;
-						if (bmpHeader.Unknown2 & 2
-							    ? gdrv::create_bitmap(bmp, bmpHeader.Width, bmpHeader.Height)
-							    : gdrv::create_raw_bitmap(bmp, bmpHeader.Width, bmpHeader.Height,
-							                              bmpHeader.Unknown2 & 1))
-							goto LABEL_41;
-						_hread(fileHandle, bmp->BmpBufPtr1, bmpHeader.Size);
-						bmp->XPosition = bmpHeader.XPosition;
-						bmp->YPosition = bmpHeader.YPosition;
-					}
-					else
-					{
-						char* entryBuffer = static_cast<char*>(memory::allocate(fieldSize));
-						entryData->Buffer = entryBuffer;
-						if (!entryBuffer)
-							goto LABEL_41;
-						_hread(fileHandle, entryBuffer, fieldSize);
-					}
+		auto entryCount = _lread_char(fileHandle);
+		auto groupDataSize = entryCount <= 0 ? 0 : entryCount - 1;
+		auto groupData = reinterpret_cast<datGroupData*>(memory::allocate(
+			sizeof(datEntryData) * groupDataSize + sizeof(datGroupData)));
+		datFile->GroupData[groupIndex] = groupData;
+		if (!groupData)
+			break;
 
-					++entryIndex;
-					entryData->FieldSize = fieldSize;
-					datFile->NumberOfGroups = groupIndex + 1;
-					++entryData;
-				}
-				while (entryIndex < entryCount);
+		groupData->EntryCount = entryCount;
+		datEntryData* entryData = groupData->Entries;
+		for (auto entryIndex = 0; entryIndex < entryCount; ++entryIndex)
+		{
+			auto entryType = static_cast<datFieldTypes>(_lread_char(fileHandle));
+			entryData->EntryType = entryType;
+			int fieldSize = _field_size[static_cast<int>(entryType)];
+			if (fieldSize < 0)
+			{
+				fieldSize = _lread_long(fileHandle);
 			}
-			++groupIndex;
+			if (entryType == datFieldTypes::Bitmap8bit)
+			{
+				_hread(fileHandle, &bmpHeader, sizeof(dat8BitBmpHeader));
+				auto bmp = reinterpret_cast<gdrv_bitmap8*>(memory::allocate(sizeof(gdrv_bitmap8)));
+				entryData->Buffer = reinterpret_cast<char*>(bmp);
+				if (!bmp)
+				{
+					abort = true;
+					break;
+				}
+				if (bmpHeader.IsFlagSet(bmp8Flags::DibBitmap)
+					    ? gdrv::create_bitmap(bmp, bmpHeader.Width, bmpHeader.Height)
+					    : gdrv::create_raw_bitmap(bmp, bmpHeader.Width, bmpHeader.Height,
+					                              bmpHeader.IsFlagSet(bmp8Flags::RawBmpUnaligned)))
+				{
+					abort = true;
+					break;
+				}
+				_hread(fileHandle, bmp->BmpBufPtr1, bmpHeader.Size);
+				bmp->XPosition = bmpHeader.XPosition;
+				bmp->YPosition = bmpHeader.YPosition;
+			}
+			else
+			{
+				char* entryBuffer = static_cast<char*>(memory::allocate(fieldSize));
+				entryData->Buffer = entryBuffer;
+				if (!entryBuffer)
+				{
+					abort = true;
+					break;
+				}
+				_hread(fileHandle, entryBuffer, fieldSize);
+			}
+
+			entryData->FieldSize = fieldSize;
+			datFile->NumberOfGroups = groupIndex + 1;
+			++entryData;
 		}
-		while (groupIndex < Buffer.NumberOfGroups);
 	}
 
-LABEL_41:
 	_lclose(fileHandle);
-	if (datFile->NumberOfGroups == Buffer.NumberOfGroups)
+	if (datFile->NumberOfGroups == header.NumberOfGroups)
 		return datFile;
 	unload_records(datFile);
 	return nullptr;

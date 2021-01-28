@@ -16,7 +16,7 @@ TBall::TBall(TPinballTable* table) : TPinballComponent(table, -1, false)
 
 	TimeNow = 0.0;
 	RayMaxDistance = 0.0;
-	UnknownBaseFlag2 = 1;
+	ActiveFlag = 1;
 	CollisionComp = nullptr;
 	EdgeCollisionCount = 0;
 	TimeDelta = 0.0;
@@ -115,7 +115,7 @@ int TBall::Message(int code, float value)
 		Position.X = 0.0;
 		CollisionComp = nullptr;
 		Position.Y = 0.0;
-		UnknownBaseFlag2 = 0;
+		ActiveFlag = 0;
 		CollisionFlag = 0;
 		FieldFlag = 1;
 		Acceleration.Y = 0.0;

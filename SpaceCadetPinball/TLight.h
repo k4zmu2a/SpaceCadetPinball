@@ -45,7 +45,7 @@ public:
 	int FlasherActive;
 	int FlasherFlag1;
 	int FlasherFlag2;
-	int Unknown13;
+	int TurnOffAfterFlashingFg;
 	int BmpIndex2;
 	float FlasherDelay[2];
 	int Timer1;

@@ -19,8 +19,8 @@ TDemo::TDemo(TPinballTable* table, int groupIndex)
 	FlipLeftTimer = 0;
 	FlipRightTimer = 0;
 	MessageField = 0;
-	UnknownBaseFlag1 = 0;
-	UnknownBaseFlag2 = 0;
+	UnusedBaseFlag = 0;
+	ActiveFlag = 0;
 	FlipRightFlag = 0;
 	FlipLeftFlag = 0;
 	table->Demo = this;
@@ -41,19 +41,19 @@ TDemo::TDemo(TPinballTable* table, int groupIndex)
 	}
 	loader::query_visual(groupIndex, 0, &visual);
 	auto v5 = loader::query_float_attribute(groupIndex, 0, 1400);
-	Edge1 = TEdgeSegment::install_wall(v5, this, &UnknownBaseFlag2, visual.Flag, 0.0, 1400);
+	Edge1 = TEdgeSegment::install_wall(v5, this, &ActiveFlag, visual.CollisionGroup, 0.0, 1400);
 
 	auto v6 = loader::query_float_attribute(groupIndex, 0, 1401);
-	TEdgeSegment::install_wall(v6, this, &UnknownBaseFlag2, visual.Flag, 0.0, 1401);
+	TEdgeSegment::install_wall(v6, this, &ActiveFlag, visual.CollisionGroup, 0.0, 1401);
 
 	auto v7 = loader::query_float_attribute(groupIndex, 0, 1402);
-	Edge2 = TEdgeSegment::install_wall(v7, this, &UnknownBaseFlag2, visual.Flag, 0.0, 1402);
+	Edge2 = TEdgeSegment::install_wall(v7, this, &ActiveFlag, visual.CollisionGroup, 0.0, 1402);
 
 	auto v8 = loader::query_float_attribute(groupIndex, 0, 1403);
-	TEdgeSegment::install_wall(v8, this, &UnknownBaseFlag2, visual.Flag, 0.0, 1403);
+	TEdgeSegment::install_wall(v8, this, &ActiveFlag, visual.CollisionGroup, 0.0, 1403);
 
 	auto v9 = loader::query_float_attribute(groupIndex, 0, 1404);
-	Edge3 = TEdgeSegment::install_wall(v9, this, &UnknownBaseFlag2, visual.Flag, table->CollisionCompOffset, 1404);
+	Edge3 = TEdgeSegment::install_wall(v9, this, &ActiveFlag, visual.CollisionGroup, table->CollisionCompOffset, 1404);
 }
 
 int TDemo::Message(int code, float value)
@@ -69,7 +69,7 @@ int TDemo::Message(int code, float value)
 		if (RestartGameTimer)
 			timer::kill(RestartGameTimer);
 		RestartGameTimer = 0;
-		if (UnknownBaseFlag2 != 0)
+		if (ActiveFlag != 0)
 			RestartGameTimer = timer::set(5.0, this, NewGameRestartTimer);
 		break;
 	case 1024:

@@ -85,7 +85,7 @@ void TSink::Collision(TBall* ball, vector_type* nextPosition, vector_type* direc
 	}
 	else
 	{
-		ball->UnknownBaseFlag2 = 0;
+		ball->ActiveFlag = 0;
 		render::sprite_set_bitmap(ball->RenderSprite, nullptr);
 		loader::play_sound(SoundIndex4);
 		control::handler(63, this);
@@ -97,7 +97,7 @@ void TSink::TimerExpired(int timerId, void* caller)
 	auto sink = static_cast<TSink*>(caller);
 	auto ball = static_cast<TBall*>(sink->PinballTable->BallList->Get(0));
 	ball->CollisionComp = nullptr;
-	ball->UnknownBaseFlag2 = 1;
+	ball->ActiveFlag = 1;
 	ball->Position.X = sink->BallPosition.X;
 	ball->Position.Y = sink->BallPosition.Y;
 	TBall::throw_ball(ball, &sink->BallAcceleration, sink->ThrowAngleMult, sink->ThrowSpeedMult1,

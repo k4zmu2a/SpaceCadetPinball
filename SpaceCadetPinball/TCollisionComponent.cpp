@@ -13,9 +13,9 @@ TCollisionComponent::TCollisionComponent(TPinballTable* table, int groupIndex, b
 	visualStruct visual{};
 
 	EdgeList = new objlist_class(4, 4);
-	UnknownBaseFlag2 = 1;
+	ActiveFlag = 1;
 	if (GroupName != nullptr)
-		UnknownBaseFlag1 = 1;
+		UnusedBaseFlag = 1;
 	if (groupIndex <= 0)
 	{
 		loader::default_vsi(&visual);
@@ -27,7 +27,7 @@ TCollisionComponent::TCollisionComponent(TPinballTable* table, int groupIndex, b
 		{
 			float offset = table->CollisionCompOffset;
 			float* floatArr = loader::query_float_attribute(groupIndex, 0, 600);
-			TEdgeSegment::install_wall(floatArr, this, &UnknownBaseFlag2, visual.Flag, offset, 0);
+			TEdgeSegment::install_wall(floatArr, this, &ActiveFlag, visual.CollisionGroup, offset, 0);
 		}
 	}
 

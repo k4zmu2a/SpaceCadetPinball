@@ -18,9 +18,9 @@ TRamp::TRamp(TPinballTable* table, int groupIndex) : TCollisionComponent(table, 
 	vector_type end{}, start{}, *end2, *start2, *start3, *end3;
 
 	MessageField = 0;
-	UnknownBaseFlag1 = 1;
+	UnusedBaseFlag = 1;
 	loader::query_visual(groupIndex, 0, &visual);
-	VisualFlag = visual.Flag;
+	CollisionGroup = visual.CollisionGroup;
 
 	auto floatArr1 = loader::query_float_attribute(groupIndex, 0, 701);
 	if (floatArr1)
@@ -42,7 +42,7 @@ TRamp::TRamp(TPinballTable* table, int groupIndex) : TCollisionComponent(table, 
 	end.Y = floatArr4[3];
 	start.X = floatArr4[4];
 	start.Y = floatArr4[5];
-	Line1 = new TLine(this, &UnknownBaseFlag2, 1 << static_cast<int>(floor(floatArr4[0])), &start, &end);
+	Line1 = new TLine(this, &ActiveFlag, 1 << static_cast<int>(floor(floatArr4[0])), &start, &end);
 	EdgeList->Add(Line1);
 	if (Line1)
 	{
@@ -60,7 +60,7 @@ TRamp::TRamp(TPinballTable* table, int groupIndex) : TCollisionComponent(table, 
 		reinterpret_cast<wall_point_type*>(floatArr5WallPoint + 3),
 		&end2,
 		&start2);
-	Line2 = new TLine(this, &UnknownBaseFlag2, VisualFlag, start2, end2);
+	Line2 = new TLine(this, &ActiveFlag, CollisionGroup, start2, end2);
 	EdgeList->Add(Line2);
 	if (Line2)
 	{
@@ -78,7 +78,7 @@ TRamp::TRamp(TPinballTable* table, int groupIndex) : TCollisionComponent(table, 
 		reinterpret_cast<wall_point_type*>(floatArr6WallPoint + 3),
 		&end3,
 		&start3);
-	Line3 = new TLine(this, &UnknownBaseFlag2, VisualFlag, start3, end3);
+	Line3 = new TLine(this, &ActiveFlag, CollisionGroup, start3, end3);
 	EdgeList->Add(Line3);
 	if (Line3)
 	{
@@ -107,25 +107,25 @@ TRamp::TRamp(TPinballTable* table, int groupIndex) : TCollisionComponent(table, 
 		for (auto pt = 0; pt < 3; pt++)
 		{
 			auto point1 = pointOrder[pt], point2 = pointOrder[pt + 1];
-			auto lineFlag = 0;
+			auto collisionGroup = 0;
 			if (point1 != end2 || point2 != start2)
 			{
 				if (point1 != end3 || point2 != start3)
 				{
-					lineFlag = visual.Flag;
+					collisionGroup = visual.CollisionGroup;
 				}
 				else if (wall2Pt1_2)
 				{
-					lineFlag = Wall2PointFirst;
+					collisionGroup = Wall2PointFirst;
 				}
 			}
 			else if (wallPt1_2)
 			{
-				lineFlag = Wall1PointFirst;
+				collisionGroup = Wall1PointFirst;
 			}
-			if (lineFlag)
+			if (collisionGroup)
 			{
-				auto line = new TLine(this, &UnknownBaseFlag2, lineFlag, point1, point2);
+				auto line = new TLine(this, &ActiveFlag, collisionGroup, point1, point2);
 				EdgeList->Add(line);
 				if (line)
 				{
@@ -141,9 +141,9 @@ TRamp::TRamp(TPinballTable* table, int groupIndex) : TCollisionComponent(table, 
 			PinballTable->GravityDirVectMult;
 	}
 
-	Field.Flag2Ptr = &UnknownBaseFlag2;
+	Field.Flag2Ptr = &ActiveFlag;
 	Field.CollisionComp = this;
-	Field.Mask = visual.Flag;
+	Field.Mask = visual.CollisionGroup;
 
 	auto x1 = xMax;
 	auto y1 = yMax;
@@ -181,7 +181,7 @@ void TRamp::Collision(TBall* ball, vector_type* nextPosition, vector_type* direc
 		ball->RampFieldForce.Y = plane->FieldForce.Y;
 		ball->Position.Z = ball->Position.X * ball->CollisionOffset.X + ball->Position.Y * ball->CollisionOffset.Y +
 			ball->Offset + ball->CollisionOffset.Z;
-		ball->FieldFlag = VisualFlag;
+		ball->FieldFlag = CollisionGroup;
 		return;
 	}
 

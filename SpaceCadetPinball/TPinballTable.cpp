@@ -54,7 +54,7 @@ TPinballTable::TPinballTable(): TPinballComponent(nullptr, -1, false)
 	ScoreBallcount = nullptr;
 	ScorePlayerNumber1 = nullptr;
 	BallInSink = 0;
-	UnknownBaseFlag2 = 1;
+	ActiveFlag = 1;
 	TiltLockFlag = 0;
 	EndGameTimeoutTimer = 0;
 	LightShowTimer = 0;
@@ -66,7 +66,7 @@ TPinballTable::TPinballTable(): TPinballComponent(nullptr, -1, false)
 	auto ballObj = new TBall(this);
 	BallList->Add(ballObj);
 	if (ballObj)
-		ballObj->UnknownBaseFlag2 = 0;
+		ballObj->ActiveFlag = 0;
 	new TTableLayer(this);
 	LightGroup = new TLightGroup(this, 0);
 
@@ -381,7 +381,7 @@ int TPinballTable::Message(int code, float value)
 		LightGroup->Message(34, 0.0);
 		LightGroup->Message(20, 0.0);
 		Plunger->Message(1016, 0.0);
-		if (Demo->UnknownBaseFlag2)
+		if (Demo->ActiveFlag)
 			rc_text = pinball::get_rc_string(30, 0);
 		else
 			rc_text = pinball::get_rc_string(26, 0);
@@ -478,7 +478,7 @@ int TPinballTable::Message(int code, float value)
 			if (PlayerCount <= 1)
 			{
 				char* textboxText;
-				if (Demo->UnknownBaseFlag2)
+				if (Demo->ActiveFlag)
 					textboxText = pinball::get_rc_string(30, 0);
 				else
 					textboxText = pinball::get_rc_string(26, 0);
@@ -522,25 +522,25 @@ int TPinballTable::Message(int code, float value)
 			switch (nextPlayer)
 			{
 			case 0:
-				if (Demo->UnknownBaseFlag2)
+				if (Demo->ActiveFlag)
 					textboxText = pinball::get_rc_string(30, 0);
 				else
 					textboxText = pinball::get_rc_string(26, 0);
 				break;
 			case 1:
-				if (Demo->UnknownBaseFlag2)
+				if (Demo->ActiveFlag)
 					textboxText = pinball::get_rc_string(31, 0);
 				else
 					textboxText = pinball::get_rc_string(27, 0);
 				break;
 			case 2:
-				if (Demo->UnknownBaseFlag2)
+				if (Demo->ActiveFlag)
 					textboxText = pinball::get_rc_string(32, 0);
 				else
 					textboxText = pinball::get_rc_string(28, 0);
 				break;
 			case 3:
-				if (Demo->UnknownBaseFlag2)
+				if (Demo->ActiveFlag)
 					textboxText = pinball::get_rc_string(33, 0);
 				else
 					textboxText = pinball::get_rc_string(29, 0);

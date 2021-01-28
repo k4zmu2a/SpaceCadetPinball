@@ -5,8 +5,8 @@
 #include "TCollisionComponent.h"
 #include "TTableLayer.h"
 
-TCircle::TCircle(TCollisionComponent* collComp, char* someFlagPtr, unsigned visualFlag, vector_type* center,
-                 float radius): TEdgeSegment(collComp, someFlagPtr, visualFlag)
+TCircle::TCircle(TCollisionComponent* collComp, char* activeFlag, unsigned collisionGroup, vector_type* center,
+                 float radius): TEdgeSegment(collComp, activeFlag, collisionGroup)
 {
 	Circle.RadiusSq = radius * radius;
 	Circle.Center = *center;

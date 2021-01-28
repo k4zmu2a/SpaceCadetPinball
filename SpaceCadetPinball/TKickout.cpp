@@ -19,7 +19,7 @@ TKickout::TKickout(TPinballTable* table, int groupIndex, bool someFlag): TCollis
 
 	NotSomeFlag = !someFlag;
 	if (!someFlag)
-		UnknownBaseFlag2 = 0;
+		ActiveFlag = 0;
 	TimerTime1 = 1.5;
 	TimerTime2 = 0.05f;
 	MessageField = 0;
@@ -35,7 +35,7 @@ TKickout::TKickout(TPinballTable* table, int groupIndex, bool someFlag): TCollis
 	Circle.RadiusSq = *loader::query_float_attribute(groupIndex, 0, 306) * visual.FloatArr[2];
 	if (Circle.RadiusSq == 0.0)
 		Circle.RadiusSq = 0.001f;
-	auto tCircle = new TCircle(this, &UnknownBaseFlag2, visual.Flag,
+	auto tCircle = new TCircle(this, &ActiveFlag, visual.CollisionGroup,
 	                           reinterpret_cast<vector_type*>(visual.FloatArr), Circle.RadiusSq);
 	if (tCircle)
 	{
@@ -54,9 +54,9 @@ TKickout::TKickout(TPinballTable* table, int groupIndex, bool someFlag): TCollis
 	circle.Center.X = Circle.Center.X;
 	circle.Center.Y = Circle.Center.Y;
 	circle.Center.Z = Circle.Center.Z;
-	Field.Flag2Ptr = &UnknownBaseFlag2;
+	Field.Flag2Ptr = &ActiveFlag;
 	Field.CollisionComp = this;
-	Field.Mask = visual.Flag;
+	Field.Mask = visual.CollisionGroup;
 	TTableLayer::edges_insert_circle(&circle, nullptr, &Field);
 }
 
@@ -74,7 +74,7 @@ int TKickout::Message(int code, float value)
 		break;
 	case 1011:
 		if (NotSomeFlag)
-			UnknownBaseFlag2 = 0;
+			ActiveFlag = 0;
 		break;
 	case 1024:
 		if (KickFlag1)
@@ -84,7 +84,7 @@ int TKickout::Message(int code, float value)
 			TimerExpired(0, this);
 		}
 		if (NotSomeFlag)
-			UnknownBaseFlag2 = 0;
+			ActiveFlag = 0;
 		break;
 	default:
 		break;
@@ -156,7 +156,7 @@ void TKickout::TimerExpired(int timerId, void* caller)
 			kick->Ball->Position.Z = kick->OriginalBallZ;
 			TBall::throw_ball(kick->Ball, &kick->BallAcceleration, kick->ThrowAngleMult, kick->ThrowSpeedMult1,
 			                  kick->ThrowSpeedMult2);
-			kick->UnknownBaseFlag2 = 0;
+			kick->ActiveFlag = 0;
 			kick->Ball = nullptr;
 			loader::play_sound(kick->HardHitSoundId);
 		}
@@ -167,6 +167,6 @@ void TKickout::ResetTimerExpired(int timerId, void* caller)
 {
 	auto kick = static_cast<TKickout*>(caller);
 	if (!kick->NotSomeFlag)
-		kick->UnknownBaseFlag2 = 1;
+		kick->ActiveFlag = 1;
 	kick->Timer = 0;
 }

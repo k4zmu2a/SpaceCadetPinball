@@ -146,7 +146,7 @@ void pb::mode_change(int mode)
 			if (MainTable)
 			{
 				if (MainTable->Demo)
-					MainTable->Demo->UnknownBaseFlag2 = 1;
+					MainTable->Demo->ActiveFlag = 1;
 			}
 		}
 		else
@@ -157,7 +157,7 @@ void pb::mode_change(int mode)
 			if (MainTable)
 			{
 				if (MainTable->Demo)
-					MainTable->Demo->UnknownBaseFlag2 = 0;
+					MainTable->Demo->ActiveFlag = 0;
 			}
 		}
 		break;
@@ -260,7 +260,7 @@ void pb::timed_frame(float timeNow, float timeDelta, bool drawBalls)
 	for (int i = 0; i < MainTable->BallList->Count(); i++)
 	{
 		auto ball = static_cast<TBall*>(MainTable->BallList->Get(i));
-		if (ball->UnknownBaseFlag2 != 0)
+		if (ball->ActiveFlag != 0)
 		{
 			auto collComp = ball->CollisionComp;
 			if (collComp)
@@ -270,7 +270,7 @@ void pb::timed_frame(float timeNow, float timeDelta, bool drawBalls)
 			}
 			else
 			{
-				if (MainTable->UnknownBaseFlag2)
+				if (MainTable->ActiveFlag)
 				{
 					vec2.X = 0.0;
 					vec2.Y = 0.0;
@@ -303,7 +303,7 @@ void pb::timed_frame(float timeNow, float timeDelta, bool drawBalls)
 		for (int i = 0; i < MainTable->BallList->Count(); i++)
 		{
 			auto ball = static_cast<TBall*>(MainTable->BallList->Get(i));
-			if (ball->UnknownBaseFlag2)
+			if (ball->ActiveFlag)
 				ball->Repaint();
 		}
 	}
@@ -449,7 +449,7 @@ void pb::keydown(int key)
 				for (auto index = 0; ;)
 				{
 					ball = static_cast<TBall*>(MainTable->BallList->Get(index));
-					if (!ball->UnknownBaseFlag2)
+					if (!ball->ActiveFlag)
 						break;
 					++index;
 					if (index >= MainTable->BallList->Count())
@@ -460,7 +460,7 @@ void pb::keydown(int key)
 				}
 			}
 			ball->Position.X = 1.0;
-			ball->UnknownBaseFlag2 = 1;
+			ball->ActiveFlag = 1;
 			ball->Position.Z = ball->Offset;
 			ball->Position.Y = 1.0;
 			ball->Acceleration.Z = 0.0;
@@ -601,7 +601,7 @@ float pb::collide(float timeNow, float timeDelta, TBall* ball)
 	ray_type ray{};
 	vector_type positionMod{};
 
-	if (ball->UnknownBaseFlag2 && !ball->CollisionComp)
+	if (ball->ActiveFlag && !ball->CollisionComp)
 	{
 		if (ball_speed_limit < ball->Speed)
 			ball->Speed = ball_speed_limit;

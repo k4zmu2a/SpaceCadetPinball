@@ -14,7 +14,7 @@ TGate::TGate(TPinballTable* table, int groupIndex) : TCollisionComponent(table, 
 	loader::query_visual(groupIndex, 0, &visual);
 	SoundIndex4 = visual.SoundIndex4;
 	SoundIndex3 = visual.SoundIndex3;
-	UnknownBaseFlag2 = 1;
+	ActiveFlag = 1;
 	render::sprite_set_bitmap(RenderSprite, static_cast<gdrv_bitmap8*>(ListBitmap->Get(0)));
 	control::handler(1024, this);
 }
@@ -25,13 +25,13 @@ int TGate::Message(int code, float value)
 	{
 		if (code == 53)
 		{
-			UnknownBaseFlag2 = 0;
+			ActiveFlag = 0;
 			render::sprite_set_bitmap(RenderSprite, nullptr);
 			loader::play_sound(SoundIndex3);
 		}
 		else if (code == 54 || code == 1024)
 		{
-			UnknownBaseFlag2 = 1;
+			ActiveFlag = 1;
 			render::sprite_set_bitmap(RenderSprite, static_cast<gdrv_bitmap8*>(ListBitmap->Get(0)));
 			if (code == 54)
 				loader::play_sound(SoundIndex4);

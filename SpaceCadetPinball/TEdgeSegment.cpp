@@ -6,11 +6,11 @@
 #include "TCollisionComponent.h"
 #include "TLine.h"
 
-TEdgeSegment::TEdgeSegment(TCollisionComponent* collComp, char* someFlag, unsigned visualFlag)
+TEdgeSegment::TEdgeSegment(TCollisionComponent* collComp, char* activeFlag, unsigned collisionGroup)
 {
 	CollisionComponent = collComp;
-	PinbCompFlag2Ptr = someFlag;
-	VisualFlag = visualFlag;
+	ActiveFlag = activeFlag;
+	CollisionGroup = collisionGroup;
 	ProcessedFlag = 0;
 }
 
@@ -18,9 +18,8 @@ void TEdgeSegment::port_draw()
 {
 }
 
-TEdgeSegment* TEdgeSegment::install_wall(float* floatArr, TCollisionComponent* collComp, char* flagPtr,
-                                         unsigned int visual_flag,
-                                         float offset, int wallValue)
+TEdgeSegment* TEdgeSegment::install_wall(float* floatArr, TCollisionComponent* collComp, char* activeFlagPtr,
+                                         unsigned int collisionGroup, float offset, int wallValue)
 {
 	vector_type center{}, start{}, end{}, prevCenter{}, vec1{}, vec2{}, dstVec{};
 	TEdgeSegment* edge = nullptr;
@@ -33,7 +32,7 @@ TEdgeSegment* TEdgeSegment::install_wall(float* floatArr, TCollisionComponent* c
 			center.X = floatArr[1];
 			center.Y = floatArr[2];
 			auto radius = offset + floatArr[3];
-			auto circle = new TCircle(collComp, flagPtr, visual_flag, &center, radius);
+			auto circle = new TCircle(collComp, activeFlagPtr, collisionGroup, &center, radius);
 			edge = circle;
 
 			if (circle)
@@ -51,7 +50,7 @@ TEdgeSegment* TEdgeSegment::install_wall(float* floatArr, TCollisionComponent* c
 			start.Y = floatArr[2];
 			end.X = floatArr[3];
 			end.Y = floatArr[4];
-			auto line = new TLine(collComp, flagPtr, visual_flag, &start, &end);
+			auto line = new TLine(collComp, activeFlagPtr, collisionGroup, &start, &end);
 			edge = line;
 
 			if (line)
@@ -99,7 +98,7 @@ TEdgeSegment* TEdgeSegment::install_wall(float* floatArr, TCollisionComponent* c
 						dstVec.Z < 0.0 && offset < 0.0)
 					{
 						float radius = offset * 1.001f;
-						auto circle = new TCircle(collComp, flagPtr, visual_flag, &center, radius);
+						auto circle = new TCircle(collComp, activeFlagPtr, collisionGroup, &center, radius);
 
 						if (circle)
 						{
@@ -114,7 +113,7 @@ TEdgeSegment* TEdgeSegment::install_wall(float* floatArr, TCollisionComponent* c
 				start.Y = floatArrPtr[1];
 				end.X = floatArrPtr[2];
 				end.Y = floatArrPtr[3];
-				auto line = new TLine(collComp, flagPtr, visual_flag, &start, &end);
+				auto line = new TLine(collComp, activeFlagPtr, collisionGroup, &start, &end);
 				edge = line;
 
 				if (line)

@@ -20,7 +20,7 @@ int TPopupTarget::Message(int code, float value)
 	switch (code)
 	{
 	case 49:
-		this->UnknownBaseFlag2 = 0;
+		this->ActiveFlag = 0;
 		render::sprite_set_bitmap(this->RenderSprite, nullptr);
 		break;
 	case 50:
@@ -90,7 +90,7 @@ void TPopupTarget::TimerExpired(int timerId, void* caller)
 {
 	auto target = static_cast<TPopupTarget*>(caller);
 	target->Timer = 0;
-	target->UnknownBaseFlag2 = 1;
+	target->ActiveFlag = 1;
 	render::sprite_set_bitmap(target->RenderSprite, static_cast<gdrv_bitmap8*>(target->ListBitmap->Get(0)));
 	if (timerId)
 	{

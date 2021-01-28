@@ -11,8 +11,8 @@ TPinballComponent::TPinballComponent(TPinballTable* table, int groupIndex, bool 
 	visualStruct visual{};
 
 	MessageField = 0;
-	UnknownBaseFlag1 = 0;
-	UnknownBaseFlag2 = 0;
+	UnusedBaseFlag = 0;
+	ActiveFlag = 0;
 	PinballTable = table;
 	RenderSprite = nullptr;
 	ListBitmap = nullptr;

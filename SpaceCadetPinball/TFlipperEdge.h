@@ -7,7 +7,7 @@ class TPinballTable;
 class TFlipperEdge : public TEdgeSegment
 {
 public:
-	TFlipperEdge(TCollisionComponent* collComp, char* someFlag, unsigned int visualFlag, TPinballTable* table,
+	TFlipperEdge(TCollisionComponent* collComp, char* activeFlag, unsigned int collisionGroup, TPinballTable* table,
 	             vector_type* origin, vector_type* vecT1, vector_type* vecT2, float bmpCoef1, float bmpCoef2, float collMult,
 	             float elasticity, float smoothness);
 	void port_draw() override;

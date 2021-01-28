@@ -19,7 +19,7 @@ public:
 
 	int Scores[4];
 	field_effect_type Field;
-	int VisualFlag;
+	int CollisionGroup;
 	int RampFlag1;
 	int RampPlaneCount;
 	float BallFieldMult;

@@ -24,7 +24,7 @@ int TLightRollover::Message(int code, float value)
 {
 	if (code == 1024)
 	{
-		UnknownBaseFlag2 = 1;
+		ActiveFlag = 1;
 		RolloverFlag = 0;
 		if (Timer)
 			timer::kill(Timer);
@@ -47,7 +47,7 @@ void TLightRollover::Collision(TBall* ball, vector_type* nextPosition, vector_ty
 		if (RolloverFlag)
 		{
 			timer::set(0.1f, this, TimerExpired);
-			UnknownBaseFlag2 = 0;
+			ActiveFlag = 0;
 			RolloverFlag = RolloverFlag == 0;
 			if (Timer == 0)
 				Timer = timer::set(FloatArr, this, delay_expired);

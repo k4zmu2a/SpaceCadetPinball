@@ -87,7 +87,7 @@ int TLight::Message(int code, float value)
 			FlasherActive = 1;
 			FlasherFlag2 = 0;
 			FlasherFlag1 = 0;
-			Unknown13 = 0;
+			TurnOffAfterFlashingFg = 0;
 			flasher_start(&Flasher, BmpIndex1);
 		}
 		break;
@@ -104,7 +104,7 @@ int TLight::Message(int code, float value)
 			flasher_start(&Flasher, BmpIndex1);
 		FlasherActive = 1;
 		FlasherFlag2 = 0;
-		Unknown13 = 0;
+		TurnOffAfterFlashingFg = 0;
 		FlasherFlag1 = 0;
 		schedule_timeout(value);
 		break;
@@ -191,7 +191,7 @@ int TLight::Message(int code, float value)
 		render::sprite_set_bitmap(RenderSprite, Flasher.BmpArr[BmpIndex1]);
 		break;
 	case 15:
-		Unknown13 = 0;
+		TurnOffAfterFlashingFg = 0;
 		if (Timer2)
 			timer::kill(Timer2);
 		Timer2 = 0;
@@ -203,7 +203,7 @@ int TLight::Message(int code, float value)
 			timer::kill(Timer2);
 		Timer2 = 0;
 		Message(7, value);
-		Unknown13 = 1;
+		TurnOffAfterFlashingFg = 1;
 		break;
 	case 17:
 		Message(static_cast<int>(floor(value)) != 0, 0.0);
@@ -252,7 +252,7 @@ void TLight::Reset()
 	FlasherFlag1 = 0;
 	FlasherFlag2 = 0;
 	FlasherActive = 0;
-	Unknown13 = 0;
+	TurnOffAfterFlashingFg = 0;
 	render::sprite_set_bitmap(RenderSprite, nullptr);
 	Flasher.Sprite = RenderSprite;
 	Flasher.BmpArr[0] = nullptr;
@@ -284,9 +284,9 @@ void TLight::TimerExpired(int timerId, void* caller)
 	light->FlasherFlag2 = 0;
 	light->FlasherActive = 0;
 	light->Timer1 = 0;
-	if (light->Unknown13 != 0)
+	if (light->TurnOffAfterFlashingFg != 0)
 	{
-		light->Unknown13 = 0;
+		light->TurnOffAfterFlashingFg = 0;
 		light->Message(20, 0.0);
 	}
 	if (light->Control)

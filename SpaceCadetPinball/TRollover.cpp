@@ -31,7 +31,7 @@ int TRollover::Message(int code, float value)
 {
 	if (code == 1024)
 	{
-		this->UnknownBaseFlag2 = 1;
+		this->ActiveFlag = 1;
 		this->RolloverFlag = 0;
 		if (this->ListBitmap)
 			render::sprite_set_bitmap(this->RenderSprite, static_cast<gdrv_bitmap8*>(this->ListBitmap->Get(0)));
@@ -52,7 +52,7 @@ void TRollover::Collision(TBall* ball, vector_type* nextPosition, vector_type* d
 		if (RolloverFlag)
 		{
 			timer::set(0.1f, this, TimerExpired);
-			UnknownBaseFlag2 = 0;
+			ActiveFlag = 0;
 		}
 		else
 		{
@@ -87,13 +87,13 @@ void TRollover::build_walls(int groupIndex)
 
 	loader::query_visual(groupIndex, 0, &visual);
 	float* arr1 = loader::query_float_attribute(groupIndex, 0, 600);
-	TEdgeSegment::install_wall(arr1, this, &UnknownBaseFlag2, visual.Flag, 0.0, 600);
+	TEdgeSegment::install_wall(arr1, this, &ActiveFlag, visual.CollisionGroup, 0.0, 600);
 	float* arr2 = loader::query_float_attribute(groupIndex, 0, 603);
-	TEdgeSegment::install_wall(arr2, this, &RolloverFlag, visual.Flag, 0.0, 603);
+	TEdgeSegment::install_wall(arr2, this, &RolloverFlag, visual.CollisionGroup, 0.0, 603);
 }
 
 void TRollover::TimerExpired(int timerId, void* caller)
 {
 	auto roll = static_cast<TRollover*>(caller);
-	roll->UnknownBaseFlag2 = 1;
+	roll->ActiveFlag = 1;
 }

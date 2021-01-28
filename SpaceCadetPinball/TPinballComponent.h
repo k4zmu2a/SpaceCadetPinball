@@ -26,8 +26,8 @@ public:
 	void* operator new(size_t Size);
 	void operator delete(void* p);
 
-	__int8 UnknownBaseFlag1;
-	__int8 UnknownBaseFlag2;
+	__int8 UnusedBaseFlag;
+	__int8 ActiveFlag;
 	int MessageField;
 	char* GroupName;
 	int Unknown4;

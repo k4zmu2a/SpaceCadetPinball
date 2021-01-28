@@ -25,6 +25,13 @@ enum class datFieldTypes : __int16
 	//             16 bpp bitmap(Heightmap ? )
 };
 
+enum class bmp8Flags : unsigned char
+{
+	RawBmpUnaligned = 1 << 0,
+	DibBitmap = 1 << 1,	
+};
+
+
 #pragma pack(push)
 #pragma pack(1)
 struct datFileHeader
@@ -70,7 +77,12 @@ struct dat8BitBmpHeader
 	__int16 XPosition;
 	__int16 YPosition;
 	int Size;
-	char Unknown2;
+	bmp8Flags Flags;
+
+	bool IsFlagSet(bmp8Flags flag)
+	{
+		return static_cast<char>(Flags) & static_cast<char>(flag);
+	}
 };
 
 #pragma pack(pop)

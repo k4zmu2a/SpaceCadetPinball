@@ -77,8 +77,8 @@ TTableLayer::TTableLayer(TPinballTable* table): TCollisionComponent(table, -1, f
 	for (auto visFloatArrCount = visual.FloatArrCount; visFloatArrCount > 0; visFloatArrCount--)
 	{
 		auto line = new TLine(this,
-		                      &UnknownBaseFlag2,
-		                      visual.Flag,
+		                      &ActiveFlag,
+		                      visual.CollisionGroup,
 		                      visArrPtr[2],
 		                      visArrPtr[3],
 		                      visArrPtr[0],
@@ -93,7 +93,7 @@ TTableLayer::TTableLayer(TPinballTable* table): TCollisionComponent(table, -1, f
 	}
 
 	Field.Mask = -1;
-	Field.Flag2Ptr = &UnknownBaseFlag2;
+	Field.Flag2Ptr = &ActiveFlag;
 	Field.CollisionComp = this;
 	edges_insert_square(Unknown2F, Unknown1F, Unknown4F, Unknown3F, nullptr,
 	                    &Field);

@@ -67,7 +67,7 @@ int TEdgeManager::TestGridBox(int x, int y, float* distPtr, TEdgeSegment** edgeD
 		for (auto index = edgeBox->EdgeList->Count() - 1; index >= 0; --index)
 		{
 			auto edge = static_cast<TEdgeSegment*>(edgeBox->EdgeList->Get(index));
-			if (!edge->ProcessedFlag && *edge->PinbCompFlag2Ptr && (edge->VisualFlag & ray->FieldFlag))
+			if (!edge->ProcessedFlag && *edge->ActiveFlag && (edge->CollisionGroup & ray->FieldFlag))
 			{
 				if (!ball->already_hit(edge))
 				{

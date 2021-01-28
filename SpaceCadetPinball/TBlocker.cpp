@@ -20,7 +20,7 @@ TBlocker::TBlocker(TPinballTable* table, int groupIndex) : TCollisionComponent(t
 	Threshold = 1000000000.0f;
 	Timer = 0;
 	MessageField = 0;
-	UnknownBaseFlag2 = 0;
+	ActiveFlag = 0;
 	render::sprite_set_bitmap(RenderSprite, nullptr);
 }
 
@@ -38,13 +38,13 @@ int TBlocker::Message(int code, float value)
 			Timer = 0;
 		}
 		MessageField = 0;
-		UnknownBaseFlag2 = 0;
+		ActiveFlag = 0;
 		render::sprite_set_bitmap(RenderSprite, nullptr);
 		if (code == 51)
 			loader::play_sound(SoundIndex3);
 		return 0;
 	case 52:
-		UnknownBaseFlag2 = 1;
+		ActiveFlag = 1;
 		loader::play_sound(SoundIndex4);
 		render::sprite_set_bitmap(RenderSprite, static_cast<gdrv_bitmap8*>(ListBitmap->Get(0)));
 		break;
