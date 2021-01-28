@@ -22,6 +22,7 @@ XWAVEHDR* WaveMix::block_array1[10];
 XWAVEHDR* WaveMix::block_array2[10];
 unsigned char* WaveMix::play_data[MAXCHANNELS];
 volume_struct WaveMix::play_volume[MAXCHANNELS];
+int WaveMix::play_counter = 0;
 
 HANDLE WaveMix::Init()
 {
@@ -573,7 +574,253 @@ void WaveMix::Pump()
 
 int WaveMix::Play(MIXPLAYPARAMS* lpMixPlayParams)
 {
-	return 0;
+	++play_counter;
+	auto result = 12;
+	auto remixFlag = 0;
+
+	do
+	{
+		if (play_counter > 1)
+			break;
+
+		if (!lpMixPlayParams)
+		{
+			if (ShowDebugDialogs)
+				MessageBoxA(nullptr, "NULL parameters pointer passed to WaveMixPlay!", "WavMix32", 0x30u);
+			result = 5;
+			break;
+		}
+
+		auto globals = SessionToGlobalDataPtr(lpMixPlayParams->hMixSession);
+		Globals = globals;
+		if (!globals)
+		{
+			if (ShowDebugDialogs)
+				MessageBoxA(nullptr, "Invalid session handle passed to WaveMixPlay", "WavMix32", 0x30u);
+			result = 5;
+			break;
+		}
+
+		if (!IsValidLPMIXWAVE(lpMixPlayParams->lpMixWave))
+		{
+			if (ShowDebugDialogs)
+				MessageBoxA(nullptr, "Invalid or NULL wave pointer passed to WaveMixPlay!", "WavMix32", 0x30u);
+			break;
+		}
+
+		if (!HasCurrentOutputFormat(lpMixPlayParams->lpMixWave))
+		{
+			wsprintfA(
+				string_buffer,
+				"The LPMIXWAVE 0x%lx is not in the current output format, close the wave and reopen it.",
+				lpMixPlayParams->lpMixWave);
+			if (ShowDebugDialogs)
+				MessageBoxA(nullptr, string_buffer, "WavMix32", 0x30u);
+			result = 8;
+			break;
+		}
+		if (!globals->fActive)
+		{
+			if (ShowDebugDialogs)
+				MessageBoxA(nullptr, "Wave device not allocated, call WaveMixActivate(hMixSession,TRUE)", "WavMix32",
+				            0x30u);
+			result = 4;
+			break;
+		}
+		if (!globals->iChannels)
+		{
+			if (ShowDebugDialogs)
+				MessageBoxA(nullptr, "You must open a channel before you can play a wave!", "WavMix32", 0x30u);
+			result = 5;
+			break;
+		}
+
+		int iChannel;
+		if ((lpMixPlayParams->dwFlags & WMIX_USELRUCHANNEL) != 0)
+		{
+			iChannel = 0;
+			for (auto channelIndex = 0; channelIndex < 16; ++channelIndex)
+			{
+				if (globals->aChannel[channelIndex] != reinterpret_cast<CHANNELNODE*>(-1))
+				{
+					if (!globals->aChannel[iChannel])
+						break;
+					if (channelIndex != iChannel && globals->MRUChannel[channelIndex] < globals->MRUChannel[iChannel])
+						iChannel = channelIndex;
+				}
+			}
+			lpMixPlayParams->iChannel = iChannel;
+		}
+		else
+		{
+			iChannel = lpMixPlayParams->iChannel;
+		}
+		++globals->dwMRU;
+		globals->MRUChannel[iChannel] = globals->dwMRU;
+		if (globals->aChannel[iChannel] == reinterpret_cast<CHANNELNODE*>(-1))
+		{
+			result = 5;
+			break;
+		}
+
+		auto channel = GetChannelNode();
+		if (!channel)
+			break;
+
+		memcpy(&channel->PlayParams, lpMixPlayParams, sizeof(channel->PlayParams));
+		channel->lpMixWave = channel->PlayParams.lpMixWave;
+		channel->dwNumSamples = channel->PlayParams.lpMixWave->wh.dwBufferLength;
+		auto lpData = (unsigned __int8*)channel->PlayParams.lpMixWave->wh.lpData;
+		channel->lpPos = lpData;
+		channel->lpEnd = &lpData[channel->dwNumSamples - globals->PCM.wf.nBlockAlign];
+		channel->PlayParams.iChannel = iChannel;
+		if (globals->pWaitList)
+		{
+			channel->next = globals->pWaitList->next;
+			globals->pWaitList->next = channel;
+			globals->pWaitList = channel;
+		}
+		else
+		{
+			globals->pWaitList = channel;
+			channel->next = channel;
+		}
+
+		if ((channel->PlayParams.dwFlags & WMIX_WAIT) != 0)
+		{
+			result = 0;
+			break;
+		}
+
+		ResetWavePosIfNoChannelData();
+		auto globals2 = Globals;
+		unsigned wavePosition;
+		if (Globals->pfnRemix == ResetRemix)
+		{
+			wavePosition = MyWaveOutGetPosition(Globals->hWaveOut, Globals->fGoodGetPos);
+			globals2 = Globals;
+		}
+		else
+		{
+			wavePosition = Globals->dwCurrentSample;
+		}
+
+		while (globals2->pWaitList)
+		{
+			auto curChannel = globals2->pWaitList->next;
+			if (globals2->pWaitList->next == globals2->pWaitList)
+				globals2->pWaitList = nullptr;
+			else
+				globals2->pWaitList->next = curChannel->next;
+
+			iChannel = curChannel->PlayParams.iChannel;
+			curChannel->next = nullptr;
+			if ((curChannel->PlayParams.dwFlags & WMIX_CustomVolume) != 0)
+			{
+				curChannel->Volume.L = curChannel->PlayParams.Volume.L;
+				curChannel->Volume.R = curChannel->PlayParams.Volume.R;
+			}
+			else
+			{
+				curChannel->Volume.L = globals2->ChannelVolume[iChannel].L;
+				curChannel->Volume.R = globals2->ChannelVolume[iChannel].R;
+			}
+			if (curChannel->Volume.L > 10u)
+				curChannel->Volume.L = 10;
+			if (curChannel->Volume.R > 10u)
+				curChannel->Volume.R = 10;
+
+			if ((curChannel->PlayParams.dwFlags & WMIX_CLEARQUEUE) != 0)
+			{
+				for (auto tmpCh = globals2->aChannel[iChannel]; tmpCh;)
+				{
+					auto nextChannel = tmpCh->next;
+					FreeChannelNode(tmpCh);
+					tmpCh = nextChannel;
+				}
+				globals2->aChannel[iChannel] = curChannel;
+				if (play_queue.first != nullptr)
+					remixFlag = 1;
+				if ((curChannel->PlayParams.dwFlags & WMIX_HIPRIORITY) != 0)
+					curChannel->dwStartPos = wavePosition;
+				else
+					curChannel->dwStartPos = globals2->dwCurrentSample;
+			}
+			else
+			{
+				DWORD dwStartPos;
+				if (globals2->aChannel[iChannel])
+				{
+					auto tmpCh = globals2->aChannel[iChannel];
+					while (tmpCh->next)
+						tmpCh = tmpCh->next;
+					tmpCh->next = curChannel;
+					dwStartPos = tmpCh->dwEndPos;
+
+					if ((curChannel->PlayParams.dwFlags & WMIX_HIPRIORITY) != 0)
+					{
+						if (dwStartPos <= wavePosition)
+							dwStartPos = wavePosition;
+					}
+					else if (globals2->dwCurrentSample > dwStartPos)
+					{
+						dwStartPos = globals2->dwCurrentSample;
+					}
+				}
+				else
+				{
+					dwStartPos = wavePosition;
+					globals2->aChannel[iChannel] = curChannel;
+					if ((curChannel->PlayParams.dwFlags & WMIX_HIPRIORITY) == 0)
+						dwStartPos = globals2->dwCurrentSample;
+				}
+				curChannel->dwStartPos = dwStartPos;
+				if (globals2->dwCurrentSample > curChannel->dwStartPos)
+					remixFlag = 1;
+			}
+			if (curChannel->PlayParams.wLoops == 0xFFFF)
+				curChannel->dwEndPos = -1;
+			else
+				curChannel->dwEndPos = curChannel->dwStartPos + curChannel->dwNumSamples * (curChannel
+				                                                                            ->PlayParams.wLoops + 1) -
+					globals2->PCM.wf.nBlockAlign;
+		}
+
+		if (!remixFlag || !globals2->pfnRemix(wavePosition, nullptr))
+		{
+			int pauseFlag;
+			if (play_queue.first || globals2->PauseBlocks <= 0)
+			{
+				pauseFlag = 0;
+			}
+			else
+			{
+				waveOutPause(globals2->hWaveOut);
+				pauseFlag = 1;
+			}
+
+			auto pauseCounter = 0;
+			while (MixerPlay(GetWaveBlock(), 1))
+			{
+				if (pauseFlag)
+				{
+					if (++pauseCounter >= Globals->PauseBlocks)
+					{
+						waveOutRestart(Globals->hWaveOut);
+						pauseFlag = 0;
+					}
+				}
+			}
+			if (pauseFlag)
+				waveOutRestart(Globals->hWaveOut);
+		}
+
+		result = 0;
+	}
+	while (false);
+
+	--play_counter;
+	return result;
 }
 
 GLOBALS* WaveMix::SessionToGlobalDataPtr(HANDLE hMixSession)
@@ -2255,6 +2502,38 @@ void WaveMix::FreePlayedBlocks()
 	}
 }
 
+int WaveMix::HasCurrentOutputFormat(MIXWAVE* lpMixWave)
+{
+	return memcmp(lpMixWave, &Globals->PCM, 0x10u) == 0;
+}
+
+CHANNELNODE* WaveMix::GetChannelNode()
+{
+	CHANNELNODE* result = free_channel_nodes;
+	if (result)
+	{
+		free_channel_nodes = free_channel_nodes->next;
+		result->next = nullptr;
+	}
+	return result;
+}
+
+void WaveMix::ResetWavePosIfNoChannelData()
+{
+	if (!play_queue.first)
+	{
+		int channelIndex = 0;
+		for (CHANNELNODE** i = Globals->aChannel; !*i || *i == reinterpret_cast<CHANNELNODE*>(-1); ++i)
+		{
+			if (++channelIndex >= 16)
+			{
+				SetWaveOutPosition(0);
+				return;
+			}
+		}
+	}
+}
+
 void WaveMix::cmixit(unsigned __int8* lpDest, unsigned __int8** rgWaveSrc, volume_struct* volumeArr, int iNumWaves,
                      unsigned __int16 length)
 {
@@ -2326,7 +2605,7 @@ void WaveMix::cmixit(unsigned __int8* lpDest, unsigned __int8** rgWaveSrc, volum
 
 LRESULT WaveMix::WndProc(HWND hWnd, UINT Msg, WPARAM wParam, LPARAM lParam)
 {
-	if (Msg != 957 && Msg != 1024)
+	if (Msg != MM_WOM_DONE && Msg != WM_USER)
 		return DefWindowProcA(hWnd, Msg, wParam, lParam);
 	Pump();
 	return 0;
@@ -2334,9 +2613,9 @@ LRESULT WaveMix::WndProc(HWND hWnd, UINT Msg, WPARAM wParam, LPARAM lParam)
 
 INT_PTR WaveMix::SettingsDlgProc(HWND hWnd, UINT Msg, WPARAM wParam, LPARAM lParam)
 {
-	if (Msg == 272)
+	if (Msg == WM_INITDIALOG)
 		return Settings_OnInitDialog(hWnd, wParam, (MIXCONFIG*)lParam);
-	if (Msg != 273)
+	if (Msg != WM_COMMAND)
 		return 0;
 	Settings_OnCommand(hWnd, static_cast<unsigned __int16>(wParam), lParam, HIWORD(wParam));
 	return 1;

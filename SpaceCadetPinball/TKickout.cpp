@@ -113,9 +113,9 @@ void TKickout::Collision(TBall* ball, vector_type* nextPosition, vector_type* di
 		KickFlag1 = 1;
 		ball->CollisionComp = this;
 		ball->Position.X = Circle.Center.X;
-		ball->Position.Y = Circle.Center.Y;		
-		ball->Position.Z = CollisionBallSetZ;
-		FieldBallZSet = ball->Position.Z;
+		ball->Position.Y = Circle.Center.Y;
+		OriginalBallZ = ball->Position.Z;
+		ball->Position.Z = CollisionBallSetZ;		
 		if (PinballTable->TiltLockFlag)
 		{
 			Message(55, 0.1f);
@@ -153,7 +153,7 @@ void TKickout::TimerExpired(int timerId, void* caller)
 		kick->Timer = timer::set(kick->TimerTime2, kick, ResetTimerExpired);
 		if (kick->Ball)
 		{		
-			kick->Ball->Position.Z = kick->FieldBallZSet;
+			kick->Ball->Position.Z = kick->OriginalBallZ;
 			TBall::throw_ball(kick->Ball, &kick->BallAcceleration, kick->ThrowAngleMult, kick->ThrowSpeedMult1,
 			                  kick->ThrowSpeedMult2);
 			kick->UnknownBaseFlag2 = 0;

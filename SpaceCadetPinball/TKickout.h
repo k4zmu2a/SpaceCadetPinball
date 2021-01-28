@@ -27,7 +27,7 @@ public:
 	TBall* Ball;
 	float FieldMult;
 	circle_type Circle;
-	float FieldBallZSet;
+	float OriginalBallZ;
 	vector_type BallAcceleration;
 	float ThrowAngleMult;
 	float ThrowSpeedMult1;

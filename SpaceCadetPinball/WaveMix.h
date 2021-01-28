@@ -6,6 +6,7 @@
 #define WMIX_USELRUCHANNEL 0x02
 #define WMIX_HIPRIORITY 0x04
 #define WMIX_WAIT 0x08
+#define WMIX_CustomVolume 0x10
 
 #define MAXCHANNELS 16
 #define MAXQUEUEDWAVES 100
@@ -36,7 +37,7 @@ struct MIXPLAYPARAMS
 	HWND hWndNotify;
 	DWORD dwFlags;
 	WORD wLoops;
-	int Unknown0;
+	volume_struct Volume;
 };
 
 struct CHANNELNODE
@@ -94,45 +95,14 @@ struct GLOBALS
 	int fActive;
 	int SettingsDialogActiveFlag;
 	unsigned int wDeviceID;
-	char szDevicePName[32];
-	int unknown15;
-	int unknown16;
-	int unknown17;
-	int unknown18;
-	int unknown19;
-	int unknown20;
-	int unknown21;
-	int unknown22;
-	int unknown23;
-	int unknown24;
-	int unknown25;
-	int unknown26;
-	int unknown27;
-	int unknown28;
-	int unknown29;
-	int unknown30;
+	char szDevicePName[96];	
 	WAVEOUTCAPSA WaveoutCaps;
 	volume_struct DefaultVolume;
 	volume_struct ChannelVolume[MAXCHANNELS];
 	CHANNELNODE* aChannel[MAXCHANNELS];
 	int iChannels;
-	int unknown78;
-	int unknown79;
-	int unknown80;
-	int unknown81;
-	int unknown82;
-	int unknown83;
-	int unknown84;
-	int unknown85;
-	int unknown86;
-	int unknown87;
-	int unknown88;
-	int unknown89;
-	int unknown90;
-	int unknown91;
-	int unknown92;
-	int unknown93;
-	int unknown94;
+	DWORD MRUChannel[MAXCHANNELS];
+	DWORD dwMRU;
 	PCMWAVEFORMAT PCM;
 	DWORD dwWaveBlockLen;
 	int WaveBlockCount;
@@ -146,7 +116,7 @@ struct GLOBALS
 	                unsigned __int16 length);
 	int (* pfnRemix)(DWORD, CHANNELNODE*);
 	DWORD (* pfnSampleAdjust)(DWORD, DWORD);
-	int unknown110;
+	CHANNELNODE* pWaitList;
 	__int16 wMagic2;
 	__int16 unknown112;
 };
@@ -242,6 +212,9 @@ private:
 	static void RepSample(HPSTR lpOutData, HPSTR lpInData, unsigned nRep, int nBytesPerSample, int nChannels);
 	static bool IsValidLPMIXWAVE(MIXWAVE* lpMixWave);
 	static void FreePlayedBlocks();
+	static int HasCurrentOutputFormat(MIXWAVE* lpMixWave);
+	static CHANNELNODE* GetChannelNode();
+	static void ResetWavePosIfNoChannelData();
 	static void cmixit(unsigned __int8* lpDest, unsigned __int8** rgWaveSrc, volume_struct* volumeArr, int iNumWaves,
 	                   unsigned __int16 length);
 	static LRESULT __stdcall WndProc(HWND hWnd, UINT Msg, WPARAM wParam, LPARAM lParam);
@@ -266,4 +239,5 @@ private:
 	static XWAVEHDR* block_array2[10];
 	static unsigned char* play_data[MAXCHANNELS];
 	static volume_struct play_volume[MAXCHANNELS];
+	static int play_counter;
 };

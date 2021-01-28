@@ -187,7 +187,7 @@ void high_score::show_and_set_high_score_dialog(high_score_struct* table, int sc
 	}
 }
 
-INT_PTR __stdcall high_score::HighScore(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
+INT_PTR high_score::HighScore(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
 {
 	HWND parent;
 	int nIDDlgItem;

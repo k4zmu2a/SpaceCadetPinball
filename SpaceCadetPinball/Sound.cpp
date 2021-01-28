@@ -241,7 +241,7 @@ void Sound::NullCallback(int a1, MIXWAVE* a2, int a3)
 
 LRESULT Sound::SoundCallBackWndProc(HWND hWnd, UINT Msg, WPARAM wParam, LPARAM lParam)
 {
-	if (Msg != 957)
+	if (Msg != MM_WOM_DONE)
 		return DefWindowProcA(hWnd, Msg, wParam, lParam);
 
 	auto wavePtr = reinterpret_cast<MIXWAVE*>(lParam);
