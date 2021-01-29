@@ -1,7 +1,7 @@
 #pragma once
 #include "pinball.h"
 
-struct __declspec(align(4)) optionsStruct
+struct optionsStruct
 {
 	int Sounds;
 	int Music;

@@ -22,18 +22,18 @@ struct soundListStruct
 	char* PtrToSmth;
 };
 
-struct __declspec(align(4)) visualKickerStruct
+struct visualKickerStruct
 {
 	float Threshold;
 	float Boost;
 	float ThrowBallMult;
-	vector_type ThrowBallAcceleration;	
+	vector_type ThrowBallAcceleration;
 	float ThrowBallAngleMult;
 	int HardHitSoundId;
 };
 
 
-struct __declspec(align(4)) visualStruct
+struct visualStruct
 {
 	float Smoothness;
 	float Elasticity;
@@ -69,7 +69,7 @@ public:
 	static float play_sound(int soundIndex);
 	static datFileStruct* loader_table;
 private:
-	static errorMsg loader_errors[];	
+	static errorMsg loader_errors[];
 	static datFileStruct* sound_record_table;
 	static int sound_count;
 	static int loader_sound_count;

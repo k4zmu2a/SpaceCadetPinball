@@ -3,7 +3,7 @@
 
 struct gdrv_bitmap8;
 
-struct __declspec(align(4)) flasher_type
+struct flasher_type
 {
 	render_sprite_type_struct* Sprite;
 	gdrv_bitmap8* BmpArr[2];
@@ -15,7 +15,7 @@ struct __declspec(align(4)) flasher_type
 };
 
 
-struct __declspec(align(4)) TLight_player_backup
+struct TLight_player_backup
 {
 	int MessageField;
 	int BmpIndex1;

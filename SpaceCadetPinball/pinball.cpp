@@ -37,7 +37,7 @@ int pinball::get_rc_int(int uID, int* dst)
 void pinball::FindShiftKeys()
 {
 	signed int i;
-	int rightShift;   
+	int rightShift;
 	CHAR stringBuf[20];
 
 	RightShift = -1;
@@ -80,26 +80,32 @@ void pinball::FindShiftKeys()
 }
 
 
-HANDLE pinball::adjust_priority(int priority)
+void pinball::adjust_priority(int priority)
 {
-	HANDLE result = GetCurrentThread();
+	auto thread = GetCurrentThread();
 	switch (priority)
 	{
 	case -2:
-		return (HANDLE)SetThreadPriority(result, -2);
+		SetThreadPriority(thread, -2);
+		break;
 	case -1:
-		return (HANDLE)SetThreadPriority(result, -1);
+		SetThreadPriority(thread, -1);
+		break;
 	case 0:
-		return (HANDLE)SetThreadPriority(result, 0);
+		SetThreadPriority(thread, 0);
+		break;
 	case 1:
-		return (HANDLE)SetThreadPriority(result, 1);
+		SetThreadPriority(thread, 1);
+		break;
 	case 2:
-		return (HANDLE)SetThreadPriority(result, 2);
+		SetThreadPriority(thread, 2);
+		break;
 	case 3:
-		result = (HANDLE)SetThreadPriority(result, 15);
+		SetThreadPriority(thread, 15);
+		break;
+	default:
 		break;
 	}
-	return result;
 }
 
 int pinball::make_path_name(LPSTR lpFilename, LPCSTR lpString2, int nSize)

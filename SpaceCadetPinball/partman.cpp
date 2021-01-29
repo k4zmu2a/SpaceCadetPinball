@@ -2,8 +2,9 @@
 #include "partman.h"
 #include "gdrv.h"
 #include "memory.h"
+#include "zdrv.h"
 
-short partman::_field_size[] = 
+short partman::_field_size[] =
 {
 	2, -1, 2, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 0
 };
@@ -14,6 +15,7 @@ datFileStruct* partman::load_records(LPCSTR lpFileName)
 	_OFSTRUCT ReOpenBuff{};
 	datFileHeader header{};
 	dat8BitBmpHeader bmpHeader{};
+	dat16BitBmpHeader zMapHeader{};
 
 	const HFILE fileHandle = OpenFile(lpFileName, &ReOpenBuff, 0);
 	if (fileHandle == -1)
@@ -90,11 +92,11 @@ datFileStruct* partman::load_records(LPCSTR lpFileName)
 		{
 			auto entryType = static_cast<datFieldTypes>(_lread_char(fileHandle));
 			entryData->EntryType = entryType;
+
 			int fieldSize = _field_size[static_cast<int>(entryType)];
 			if (fieldSize < 0)
-			{
 				fieldSize = _lread_long(fileHandle);
-			}
+
 			if (entryType == datFieldTypes::Bitmap8bit)
 			{
 				_hread(fileHandle, &bmpHeader, sizeof(dat8BitBmpHeader));
@@ -116,6 +118,18 @@ datFileStruct* partman::load_records(LPCSTR lpFileName)
 				_hread(fileHandle, bmp->BmpBufPtr1, bmpHeader.Size);
 				bmp->XPosition = bmpHeader.XPosition;
 				bmp->YPosition = bmpHeader.YPosition;
+			}
+			else if (entryType == datFieldTypes::Bitmap16bit)
+			{
+				_hread(fileHandle, &zMapHeader, sizeof(dat16BitBmpHeader));
+				int length = fieldSize - sizeof(dat16BitBmpHeader);
+				
+				auto zmap = reinterpret_cast<zmap_header_type*>(memory::allocate(sizeof(zmap_header_type) + length));
+				zmap->Width = zMapHeader.Width;
+				zmap->Height = zMapHeader.Height;
+				zmap->Stride = zMapHeader.Stride;
+				_hread(fileHandle, zmap->ZBuffer, length);
+				entryData->Buffer = reinterpret_cast<char*>(zmap);
 			}
 			else
 			{

@@ -10,7 +10,7 @@ struct vector_type
 };
 
 
-struct __declspec(align(4)) rectangle_type
+struct rectangle_type
 {
 	int XPosition;
 	int YPosition;
@@ -24,7 +24,7 @@ struct circle_type
 	float RadiusSq;
 };
 
-struct __declspec(align(4)) ray_type
+struct ray_type
 {
 	vector_type Origin;
 	vector_type Direction;
@@ -35,7 +35,7 @@ struct __declspec(align(4)) ray_type
 	int FieldFlag;
 };
 
-struct __declspec(align(4)) line_type
+struct line_type
 {
 	vector_type PerpendicularL;
 	vector_type Direction;
@@ -59,7 +59,7 @@ struct wall_point_type
 	float Y1;
 };
 
-struct __declspec(align(4)) ramp_plane_type
+struct ramp_plane_type
 {
 	vector_type BallCollisionOffset;
 	vector_type2 V1;
@@ -84,7 +84,8 @@ public:
 	static void cross(vector_type* vec1, vector_type* vec2, vector_type* dstVec);
 	static float magnitude(vector_type* vec);
 	static void vector_add(vector_type* vec1Dst, vector_type* vec2);
-	static float basic_collision(TBall* ball, vector_type* nextPosition, vector_type* direction, float elasticity, float smoothness,
+	static float basic_collision(TBall* ball, vector_type* nextPosition, vector_type* direction, float elasticity,
+	                             float smoothness,
 	                             float threshold, float boost);
 	static float Distance_Squared(vector_type vec1, vector_type vec2);
 	static float DotProduct(vector_type* vec1, vector_type* vec2);

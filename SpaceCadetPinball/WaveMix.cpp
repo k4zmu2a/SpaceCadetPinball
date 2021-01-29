@@ -33,13 +33,13 @@ HANDLE WaveMix::ConfigureInit(MIXCONFIG* lpConfig)
 {
 	MIXCONFIG mixConfig{};
 
-	memset(&mixConfig, 0, 0x1Cu);
-	unsigned int copySize = 30;
+	memset(&mixConfig, 0, sizeof(MIXCONFIG));
+	unsigned int copySize = sizeof(MIXCONFIG);
 	mixConfig.RegistryKey = nullptr;
-	mixConfig.wSize = 30;
+	mixConfig.wSize = sizeof(MIXCONFIG);
 	if (lpConfig)
 	{
-		if (lpConfig->wSize < 30u)
+		if (lpConfig->wSize < sizeof(MIXCONFIG))
 			copySize = lpConfig->wSize;
 		memcpy(&mixConfig, lpConfig, copySize);
 	}
@@ -63,7 +63,7 @@ HANDLE WaveMix::ConfigureInit(MIXCONFIG* lpConfig)
 
 		if (GetPrivateProfileIntA("general", "ShowDevices", 0, FileName))
 			ShowWaveOutDevices();
-		auto globals = static_cast<GLOBALS*>(LocalAlloc(0x40u, 0x1C0u));
+		auto globals = static_cast<GLOBALS*>(LocalAlloc(0x40u, sizeof(GLOBALS)));
 		Globals = globals;
 		if (!globals)
 			return nullptr;
@@ -262,7 +262,7 @@ MIXWAVE* WaveMix::OpenWave(HANDLE hMixSession, LPCSTR szWaveFilename, HINSTANCE 
 		return nullptr;
 	}
 
-	auto mixWave = static_cast<MIXWAVE*>(GlobalLock(GlobalAlloc(0x2040u, 0x42u)));
+	auto mixWave = static_cast<MIXWAVE*>(GlobalLock(GlobalAlloc(0x2040u, sizeof(MIXWAVE))));
 	if (!mixWave)
 	{
 		if (ShowDebugDialogs)
@@ -1180,7 +1180,7 @@ int WaveMix::Configure(GLOBALS* hMixSession, HWND hWndParent, MIXCONFIG* lpConfi
 
 	if (!mixConfig)
 	{
-		mixConfigLocal.wSize = 30;
+		mixConfigLocal.wSize = sizeof(MIXCONFIG);
 		mixConfigLocal.dwFlags = 1023;
 		GetConfig(static_cast<GLOBALS*>(hMixSession), &mixConfigLocal);
 		auto dialog = MakeSettingsDlgTemplate();
@@ -1821,7 +1821,7 @@ int WaveMix::Settings_OnInitDialog(HWND hWnd, int wParam, MIXCONFIG* lpMixconfig
 	GetWindowTextA(hWnd, String, 256);
 	wsprintfA(string_buffer, String, 2, 81);
 	SetWindowTextA(hWnd, string_buffer);
-	SetWindowLongA(hWnd, -21, (LONG)lpMixconfig);
+	SetWindowLongPtr(hWnd, -21, reinterpret_cast<LONG_PTR>(lpMixconfig));
 	SendMessageA(GetDlgItem(hWnd, 1000), 0xF1u, lpMixconfig->wChannels > 1u, 0);
 	SendMessageA(GetDlgItem(hWnd, 1001), 0xF1u, lpMixconfig->ResetMixDefaultFlag != 0, 0);
 	SendMessageA(GetDlgItem(hWnd, 1004), 0xF1u, lpMixconfig->GoodWavePos != 0, 0);
@@ -1880,7 +1880,7 @@ int WaveMix::Settings_OnInitDialog(HWND hWnd, int wParam, MIXCONFIG* lpMixconfig
 
 int WaveMix::Settings_OnCommand(HWND hWnd, int command, int lParam, int wParam)
 {
-	auto userData = (MIXCONFIG*)GetWindowLongA(hWnd, -21);
+	auto userData = reinterpret_cast<MIXCONFIG*>(GetWindowLongPtrA(hWnd, -21));
 	if (command == 1)
 	{
 		if (userData)

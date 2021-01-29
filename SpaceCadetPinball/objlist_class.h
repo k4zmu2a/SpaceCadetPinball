@@ -6,7 +6,6 @@ struct  objlist_struct1
 	int Count;
 	void* Array[1];
 };
-static_assert(sizeof(objlist_struct1) == 12, "Wrong size of objlist_struct1");
 
 class objlist_class
 {

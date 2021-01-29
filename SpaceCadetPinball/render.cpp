@@ -18,9 +18,9 @@ void render::init(gdrv_bitmap8* bmp, float zMin, float zScaler, int width, int h
 	zscaler = zScaler;
 	zmin = zMin;
 	zmax = 4294967300.0f / zScaler + zMin;
-	sprite_list = (render_sprite_type_struct**)memory::allocate(0xFA0u);
-	dirty_list = (render_sprite_type_struct**)memory::allocate(0xFA0u);
-	ball_list = (render_sprite_type_struct**)memory::allocate(0x50u);
+	sprite_list = reinterpret_cast<render_sprite_type_struct**>(memory::allocate(1000 * sizeof(void*)));
+	dirty_list = reinterpret_cast<render_sprite_type_struct**>(memory::allocate(1000 * sizeof(void*)));
+	ball_list = reinterpret_cast<render_sprite_type_struct**>(memory::allocate(20 * sizeof(void*)));
 	gdrv::create_bitmap(&vscreen, width, height);
 	zdrv::create_zmap(&zscreen, width, height);
 	zdrv::fill(&zscreen, zscreen.Width, zscreen.Height, 0, 0, 0xFFFF);
@@ -542,7 +542,7 @@ void render::build_occlude_list()
 		if (!curSprite->UnknownFlag && curSprite->BoundingRect.Width != -1)
 		{
 			if (!spriteArr)
-				spriteArr = reinterpret_cast<render_sprite_type_struct**>(memory::allocate(0xFA0u));
+				spriteArr = reinterpret_cast<render_sprite_type_struct**>(memory::allocate(1000 * sizeof(void*)));
 			int occludeCount = 0;
 			auto spritePtr2 = sprite_list;
 			for (int i = 0; i < many_sprites; ++i, ++spritePtr2)
@@ -561,7 +561,7 @@ void render::build_occlude_list()
 			if (occludeCount)
 			{
 				curSprite->SpriteArray = reinterpret_cast<render_sprite_type_struct**>(memory::realloc(
-					spriteArr, 4 * occludeCount));
+					spriteArr, sizeof(void*) * occludeCount));
 				curSprite->SpriteCount = occludeCount;
 				spriteArr = nullptr;
 			}

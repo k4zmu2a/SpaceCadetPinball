@@ -313,7 +313,7 @@ LRESULT CALLBACK winmain::message_handler(HWND hWnd, UINT Msg, WPARAM wParam, LP
 		SetForegroundWindow(hWnd);
 		return 0;
 	}
-	
+
 	if (Msg <= WM_ACTIVATEAPP)
 	{
 		switch (Msg)
@@ -532,20 +532,15 @@ LRESULT CALLBACK winmain::message_handler(HWND hWnd, UINT Msg, WPARAM wParam, LP
 				{
 					char cmdLine[0x1F4u];
 					options::get_string(nullptr, "Shell Exe", tmpBuf, pinball::WindowName, 500);
+					auto iHwnd = reinterpret_cast<size_t>(hwnd_frame);
 					sprintf_s(
 						cmdLine,
 						"%s %s%lX  %s%lX",
 						tmpBuf,
 						"select=",
-						(int)hwnd_frame,
+						iHwnd,
 						"confirm=",
-						(int)hwnd_frame
-						* (int)hwnd_frame
-						* (int)hwnd_frame
-						* (int)hwnd_frame
-						* (int)hwnd_frame
-						* (int)hwnd_frame
-						* (int)hwnd_frame);
+						iHwnd * iHwnd * iHwnd * iHwnd * iHwnd * iHwnd * iHwnd);
 					if (static_cast<int>(WinExec(cmdLine, 5u)) < 32)
 					{
 						auto caption = pinball::get_rc_string(170, 0);

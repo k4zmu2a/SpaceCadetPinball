@@ -109,7 +109,7 @@ int fullscrn::enableFullscreen()
 		if (trick)
 		{
 			GetWindowRect(GetDesktopWindow(), &Rect);
-			SetWindowPos(hWnd, (HWND)((int)HWND_MESSAGE | 0x2), 0, 0, Rect.right - Rect.left + 1,
+			SetWindowPos(hWnd, (HWND)-1, 0, 0, Rect.right - Rect.left + 1,
 			             Rect.bottom - Rect.top + 1, 8u);
 		}
 		SmthFullScrnFlag2 = 1;
@@ -126,7 +126,7 @@ int fullscrn::enableFullscreen()
 	}
 	GetWindowRect(GetDesktopWindow(), &Rect);
 	disableWindowFlagsDisDlg();
-	SetWindowPos(hWnd, (HWND)0xFFFFFFFE, 0, 0, Rect.right - Rect.left + 1, Rect.bottom - Rect.top + 1, 8u);
+	SetWindowPos(hWnd, (HWND)-1, 0, 0, Rect.right - Rect.left + 1, Rect.bottom - Rect.top + 1, 8u);
 	return 0;
 }
 
@@ -138,7 +138,7 @@ int fullscrn::disableFullscreen()
 		SmthFullScrnFlag2 = 1;
 		ChangeDisplaySettingsA(nullptr, 4u);
 		if (trick)
-			SetWindowPos(hWnd, (HWND)0xFFFFFFFE, 0, 0, 0, 0, 0x13u);
+			SetWindowPos(hWnd, (HWND)-1, 0, 0, 0, 0, 0x13u);
 	}
 	setWindowFlagsDisDlg();
 	SetWindowPos(

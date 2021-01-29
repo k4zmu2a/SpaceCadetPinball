@@ -1,8 +1,7 @@
 #pragma once
 #include "gdrv.h"
 
-#pragma pack(push, 1)
-struct __declspec(align(1)) zmap_header_type
+struct zmap_header_type
 {
 	__int16 Width;
 	__int16 Height;
@@ -11,10 +10,6 @@ struct __declspec(align(1)) zmap_header_type
 	unsigned __int16* ZPtr2;
 	unsigned __int16 ZBuffer[1];
 };
-
-#pragma pack(pop)
-
-static_assert(sizeof(zmap_header_type) == 16, "Wrong size of zmap_header_type");
 
 class zdrv
 {

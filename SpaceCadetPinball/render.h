@@ -10,7 +10,7 @@ enum class VisualType : char
 	Ball = 2
 };
 
-struct __declspec(align(4)) render_sprite_type_struct
+struct render_sprite_type_struct
 {
 	rectangle_type BmpRect;
 	gdrv_bitmap8* Bmp;
@@ -27,8 +27,6 @@ struct __declspec(align(4)) render_sprite_type_struct
 	rectangle_type BoundingRect;
 };
 
-
-static_assert(sizeof(render_sprite_type_struct) == 0x5c, "Wrong size render_sprite_type_struct");
 
 class render
 {

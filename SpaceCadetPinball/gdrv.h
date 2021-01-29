@@ -4,12 +4,10 @@ enum class BitmapType : char
 {
 	None = 0,
 	RawBitmap = 1,
-	DibBitmap=2,
+	DibBitmap = 2,
 };
 
-
-#pragma pack(push, 1)
-struct __declspec(align(1)) gdrv_bitmap8
+struct gdrv_bitmap8
 {
 	BITMAPINFO* Dib;
 	char* BmpBufPtr2;
@@ -22,8 +20,6 @@ struct __declspec(align(1)) gdrv_bitmap8
 	int XPosition;
 	int YPosition;
 };
-#pragma pack(pop)
-
 
 struct LOGPALETTEx256
 {
@@ -36,7 +32,6 @@ struct LOGPALETTEx256
 	}
 };
 
-static_assert(sizeof(gdrv_bitmap8) == 37, "Wrong size of gdrv_bitmap8");
 
 class gdrv
 {

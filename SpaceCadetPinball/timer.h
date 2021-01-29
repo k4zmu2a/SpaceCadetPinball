@@ -1,6 +1,6 @@
 #pragma once
 
-struct __declspec(align(4)) timer_struct
+struct timer_struct
 {
 	int TargetTime;
 	void* Caller;

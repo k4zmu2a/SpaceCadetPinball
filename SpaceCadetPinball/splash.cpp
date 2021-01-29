@@ -12,7 +12,7 @@ splash_struct* splash::splash_screen(HINSTANCE hInstance, LPCSTR bmpName1, LPCST
 	WNDCLASSA WndClass{};
 	tagRECT Rect{};
 
-	auto splashStruct = reinterpret_cast<splash_struct*>(memory::allocate(0x1B0u));
+	auto splashStruct = reinterpret_cast<splash_struct*>(memory::allocate(sizeof(splash_struct)));
 	if (!splashStruct)
 		return nullptr;
 
@@ -43,7 +43,7 @@ splash_struct* splash::splash_screen(HINSTANCE hInstance, LPCSTR bmpName1, LPCST
 		return nullptr;
 	}
 
-	SetWindowLongA(windowHandle, 0, reinterpret_cast<LONG>(splashStruct));
+	SetWindowLongPtrA(windowHandle, -21, reinterpret_cast<LONG_PTR>(splashStruct));
 	GetWindowRect(GetDesktopWindow(), &Rect);
 	splash_bitmap_setup(splashStruct);
 	//MoveWindow(splashStruct->WindowHandle, 0, 0, Rect.right - Rect.left, Rect.bottom - Rect.top, 0);
@@ -62,7 +62,7 @@ splash_struct* splash::splash_screen(HINSTANCE hInstance, LPCSTR bmpName1, LPCST
 void splash::splash_bitmap_setup(splash_struct* splashStruct)
 {
 	HBITMAP bmpHandle2;
-	BITMAP bmp;
+	BITMAP bmp{};
 
 	HBITMAP bmpHandle1 = nullptr;
 	HDC desktopDC = GetDC(GetDesktopWindow());
@@ -92,7 +92,7 @@ void splash::splash_bitmap_setup(splash_struct* splashStruct)
 				{
 					SelectObject(splashStruct->DrawingContext, bmpHandle2);
 					DeleteObject(bmpHandle1);
-					GetObjectA(splashStruct->Bitmap, 24, &bmp);
+					GetObjectA(splashStruct->Bitmap, sizeof(BITMAP), &bmp);
 					splashStruct->Width = bmp.bmWidth;
 					splashStruct->Height = bmp.bmHeight;
 					return;
@@ -224,8 +224,8 @@ void splash::splash_paint(splash_struct* splashStruct, HDC dc)
 		       splashStruct->Height, splashStruct->DrawingContext, 0, 0, SRCCOPY);*/
 
 		/*Mod - less intrusive splash*/
-		BitBlt(dc, 0, 0, splashStruct->Width, splashStruct->Height, 
-			splashStruct->DrawingContext, 0, 0, SRCCOPY);
+		BitBlt(dc, 0, 0, splashStruct->Width, splashStruct->Height,
+		       splashStruct->DrawingContext, 0, 0, SRCCOPY);
 	}
 }
 
@@ -274,7 +274,7 @@ LRESULT splash::splash_message_handler(HWND hWnd, UINT Msg, WPARAM wParam, LPARA
 	{
 	case WM_PAINT:
 		{
-			auto splashStruct = reinterpret_cast<splash_struct*>(GetWindowLongA(hWnd, 0));
+			auto splashStruct = reinterpret_cast<splash_struct*>(GetWindowLongPtrA(hWnd, -21));
 			BeginPaint(hWnd, &Paint);
 			EndPaint(hWnd, &Paint);
 			auto dc = GetDC(hWnd);
