@@ -176,6 +176,7 @@
     <ClInclude Include="resource.h" />
     <ClInclude Include="score.h" />
     <ClInclude Include="Sound.h" />
+    <ClInclude Include="splash.h" />
     <ClInclude Include="TBall.h" />
     <ClInclude Include="TBlocker.h" />
     <ClInclude Include="TBumper.h" />
@@ -247,6 +248,7 @@
     <ClCompile Include="score.cpp" />
     <ClCompile Include="Sound.cpp" />
     <ClCompile Include="SpaceCadetPinball.cpp" />
+    <ClCompile Include="splash.cpp" />
     <ClCompile Include="TBall.cpp" />
     <ClCompile Include="TBlocker.cpp" />
     <ClCompile Include="TBumper.cpp" />
@@ -302,6 +304,7 @@
   </ItemGroup>
   <ItemGroup>
     <Image Include="Icon_1.ico" />
+    <Image Include="splash_bitmap.bmp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

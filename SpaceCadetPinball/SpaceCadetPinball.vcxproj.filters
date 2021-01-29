@@ -225,6 +225,9 @@
     <ClInclude Include="WaveMix.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="splash.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="pch.cpp">
@@ -416,6 +419,9 @@
     <ClCompile Include="WaveMix.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="splash.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Natvis Include="NatvisFile.natvis" />
@@ -432,6 +438,9 @@
   </ItemGroup>
   <ItemGroup>
     <Image Include="Icon_1.ico">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="splash_bitmap.bmp">
       <Filter>Resource Files</Filter>
     </Image>
   </ItemGroup>

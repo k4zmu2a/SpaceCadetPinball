@@ -7,7 +7,7 @@
 #include "zdrv.h"
 
 
-errorMsg loader::loader_errors[] = 
+errorMsg loader::loader_errors[] =
 {
 	errorMsg{0, "Bad Handle"},
 	errorMsg{1, "No Type Field"},
@@ -365,15 +365,6 @@ int loader::kicker(int groupIndex, visualKickerStruct* kicker)
 
 int loader::query_visual(int groupIndex, int groupIndexOffset, visualStruct* visual)
 {
-	int shortVal;
-	__int16* nextShortVal;
-	int shortValSub100;
-	int shortValSub300;
-	int shortValSub304;
-	int shortValSub602;
-	int shortValSub1100;
-	int shortValSub1101;
-
 	default_vsi(visual);
 	if (groupIndex < 0)
 		return error(0, 18);
@@ -396,75 +387,44 @@ int loader::query_visual(int groupIndex, int groupIndexOffset, visualStruct* vis
 		unsigned int shortArrSize = partman::field_size(loader_table, stateId, datFieldTypes::ShortArray);
 		for (auto index = 0u; index < shortArrSize / 2;)
 		{
-			shortVal = *shortArr;
-			nextShortVal = shortArr + 1;
-			if (shortVal <= 406)
+			switch (shortArr[0])
 			{
-				if (shortVal == 406)
-				{
-					visual->Kicker.HardHitSoundId = get_sound_id(*nextShortVal);
-				}
-				else
-				{
-					shortValSub100 = shortVal - 100;
-					if (shortValSub100)
-					{
-						shortValSub300 = shortValSub100 - 200;
-						if (shortValSub300)
-						{
-							shortValSub304 = shortValSub300 - 4;
-							if (shortValSub304)
-							{
-								if (shortValSub304 != 96)
-									return error(9, 18);
-								if (kicker(*nextShortVal, &visual->Kicker))
-									return error(14, 18);
-							}
-							else
-							{
-								visual->SoftHitSoundId = get_sound_id(*nextShortVal);
-							}
-						}
-						else if (material(*nextShortVal, visual))
-						{
-							return error(15, 18);
-						}
-					}
-					else if (groupIndexOffset)
-					{
-						return error(7, 18);
-					}
-				}
-				goto LABEL_31;
-			}
-			shortValSub602 = shortVal - 602;
-			if (!shortValSub602)
-			{
-				visual->CollisionGroup |= 1 << *nextShortVal;
-				goto LABEL_31;
-			}
-			shortValSub1100 = shortValSub602 - 498;
-			if (!shortValSub1100)
-			{
-				visual->SoundIndex4 = get_sound_id(*nextShortVal);
-				goto LABEL_31;
-			}
-			shortValSub1101 = shortValSub1100 - 1;
-			if (!shortValSub1101)
-			{
-				visual->SoundIndex3 = get_sound_id(*nextShortVal);
-			LABEL_31:
-				shortArr = nextShortVal + 1;
-				index = index + 2;
-				goto LABEL_32;
-			}
-			if (shortValSub1101 != 399)
+			case 100:
+				if (groupIndexOffset)
+					return error(7, 18);
+				break;
+			case 300:
+				if (material(shortArr[1], visual))
+					return error(15, 18);
+				break;
+			case 304:
+				visual->SoftHitSoundId = get_sound_id(shortArr[1]);
+				break;
+			case 400:
+				if (kicker(shortArr[1], &visual->Kicker))
+					return error(14, 18);
+				break;
+			case 406:
+				visual->Kicker.HardHitSoundId = get_sound_id(shortArr[1]);
+				break;
+			case 602:
+				visual->CollisionGroup |= 1 << shortArr[1];
+				break;
+			case 1100:
+				visual->SoundIndex4 = get_sound_id(shortArr[1]);
+				break;
+			case 1101:
+				visual->SoundIndex3 = get_sound_id(shortArr[1]);
+				break;
+			case 1500:
+				shortArr += 7;
+				index += 7;
+				break;
+			default:
 				return error(9, 18);
-			shortArr = nextShortVal + 8;
-			index = index + 9;
-		LABEL_32:
-			{
 			}
+			shortArr += 2;
+			index += 2;
 		}
 	}
 

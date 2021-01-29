@@ -9,6 +9,7 @@
 #include "pb.h"
 #include "Sound.h"
 #include "resource.h"
+#include "splash.h"
 
 HINSTANCE winmain::hinst = nullptr;
 HWND winmain::hwnd_frame = nullptr;
@@ -143,7 +144,7 @@ int winmain::WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLi
 	WndClass.hbrBackground = (HBRUSH)16;
 	WndClass.lpszMenuName = "MENU_1";
 	WndClass.lpszClassName = windowClass;
-	//auto tmpBuf = splash_screen((int)hInstance, "splash_bitmap", "splash_bitmap"); // No splash for now
+	auto splash = splash::splash_screen(hInstance, "splash_bitmap", "splash_bitmap");
 	RegisterClassA(&WndClass);
 
 	pinball::FindShiftKeys();
@@ -174,11 +175,11 @@ int winmain::WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLi
 	fullscrn::set_screen_mode(options::Options.FullScreen);
 	UpdateWindow(hwnd_frame);
 
-	/*if (tmpBuf) //Close splash
+	if (splash)
 	{
-		splash_hide(tmpBuf);
-		splash_destroy(tmpBuf);
-	}*/
+		splash::splash_hide(splash);
+		splash::splash_destroy(splash);
+	}
 
 	pinball::adjust_priority(options::Options.PriorityAdj);
 	const auto startTime = timeGetTime();
