@@ -4,10 +4,10 @@
 
 #include "control.h"
 #include "loader.h"
+#include "objlist_class.h"
 #include "render.h"
 #include "timer.h"
 #include "TPinballTable.h"
-#include "TZmapList.h"
 
 TPopupTarget::TPopupTarget(TPinballTable* table, int groupIndex) : TCollisionComponent(table, groupIndex, true)
 {
@@ -91,7 +91,7 @@ void TPopupTarget::TimerExpired(int timerId, void* caller)
 	auto target = static_cast<TPopupTarget*>(caller);
 	target->Timer = 0;
 	target->ActiveFlag = 1;
-	render::sprite_set_bitmap(target->RenderSprite, static_cast<gdrv_bitmap8*>(target->ListBitmap->Get(0)));
+	render::sprite_set_bitmap(target->RenderSprite, target->ListBitmap->Get(0));
 	if (timerId)
 	{
 		if (target->SoftHitSoundId)

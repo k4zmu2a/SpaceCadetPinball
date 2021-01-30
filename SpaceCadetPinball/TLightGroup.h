@@ -1,6 +1,8 @@
 #pragma once
 #include "TPinballComponent.h"
-class objlist_class;
+
+
+class TLight;
 
 struct TLightGroup_player_backup
 {
@@ -27,7 +29,7 @@ public:
 	static void TimerExpired(int timerId, void* caller);
 	static void NotifyTimerExpired(int timerId, void* caller);
 
-	objlist_class* List;
+	objlist_class<TLight>* List;
 	float Timer1Time;
 	float Timer1TimeDefault;
 	int MessageField2;

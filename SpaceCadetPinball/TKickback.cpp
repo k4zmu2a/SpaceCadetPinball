@@ -5,10 +5,10 @@
 #include "control.h"
 #include "loader.h"
 #include "maths.h"
+#include "objlist_class.h"
 #include "render.h"
 #include "timer.h"
 #include "TPinballTable.h"
-#include "TZmapList.h"
 
 TKickback::TKickback(TPinballTable* table, int groupIndex): TCollisionComponent(table, groupIndex, true)
 {
@@ -66,8 +66,8 @@ void TKickback::TimerExpired(int timerId, void* caller)
 		loader::play_sound(kick->HardHitSoundId);
 		if (kick->ListBitmap)
 		{
-			auto bmp = static_cast<gdrv_bitmap8*>(kick->ListBitmap->Get(1));
-			auto zMap = static_cast<zmap_header_type*>(kick->ListZMap->Get(1));
+			auto bmp = kick->ListBitmap->Get(1);
+			auto zMap = kick->ListZMap->Get(1);
 			render::sprite_set(
 				kick->RenderSprite,
 				bmp,
@@ -80,8 +80,8 @@ void TKickback::TimerExpired(int timerId, void* caller)
 	{
 		if (kick->ListBitmap)
 		{
-			auto bmp = static_cast<gdrv_bitmap8*>(kick->ListBitmap->Get(0));
-			auto zMap = static_cast<zmap_header_type*>(kick->ListZMap->Get(0));
+			auto bmp = kick->ListBitmap->Get(0);
+			auto zMap = kick->ListZMap->Get(0);
 			render::sprite_set(
 				kick->RenderSprite,
 				bmp,

@@ -1,7 +1,6 @@
 #pragma once
 #include "TPinballComponent.h"
 
-class objlist_class;
 struct vector_type;
 class TEdgeSegment;
 class TBall;
@@ -9,7 +8,7 @@ class TBall;
 class TCollisionComponent : public TPinballComponent
 {
 public:
-	objlist_class* EdgeList;
+	objlist_class<TEdgeSegment>* EdgeList;
 	float Elasticity;
 	float Smoothness;
 	float Boost;

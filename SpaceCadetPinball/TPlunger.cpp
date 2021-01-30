@@ -5,12 +5,12 @@
 #include "control.h"
 #include "loader.h"
 #include "maths.h"
+#include "objlist_class.h"
 #include "pb.h"
 #include "render.h"
 #include "TBall.h"
 #include "timer.h"
 #include "TPinballTable.h"
-#include "TZmapList.h"
 
 TPlunger::TPlunger(TPinballTable* table, int groupIndex) : TCollisionComponent(table, groupIndex, true)
 {
@@ -27,7 +27,7 @@ TPlunger::TPlunger(TPinballTable* table, int groupIndex) : TCollisionComponent(t
 	MaxPullback = 100;
 	Elasticity = 0.5f;
 	Smoothness = 0.5f;
-	PullbackIncrement = static_cast<int>(100.0 / (ListBitmap->Count() * 8.0));
+	PullbackIncrement = static_cast<int>(100.0 / (ListBitmap->GetCount() * 8.0));
 	Unknown4F = 0.025f;
 	float* floatArr = loader::query_float_attribute(groupIndex, 0, 601);
 	table->PlungerPositionX = floatArr[0];
@@ -65,8 +65,8 @@ int TPlunger::Message(int code, float value)
 			PullbackTimer_ = 0;
 			if (code == 1005)
 				loader::play_sound(SoundIndexP2);
-			auto bmp = static_cast<gdrv_bitmap8*>(ListBitmap->Get(0));
-			auto zMap = static_cast<zmap_header_type*>(ListZMap->Get(0));
+			auto bmp = ListBitmap->Get(0);
+			auto zMap = ListZMap->Get(0);
 			render::sprite_set(
 				RenderSprite,
 				bmp,
@@ -79,7 +79,7 @@ int TPlunger::Message(int code, float value)
 		}
 	case 1015:
 		{
-			auto ball = static_cast<TBall*>(PinballTable->ComponentList->Get(0));
+			auto ball = PinballTable->BallList->Get(0);
 			ball->Message(1024, 0.0);
 			ball->Position.X = PinballTable->PlungerPositionX;
 			ball->Position.Y = PinballTable->PlungerPositionY;
@@ -112,8 +112,8 @@ int TPlunger::Message(int code, float value)
 			PullbackTimer_ = 0;
 			if (code == 1005)
 				loader::play_sound(SoundIndexP2);
-			auto bmp = static_cast<gdrv_bitmap8*>(ListBitmap->Get(0));
-			auto zMap = static_cast<zmap_header_type*>(ListZMap->Get(0));
+			auto bmp = ListBitmap->Get(0);
+			auto zMap = ListZMap->Get(0);
 			render::sprite_set(
 				RenderSprite,
 				bmp,
@@ -151,10 +151,10 @@ void TPlunger::PullbackTimer(int timerId, void* caller)
 		plunger->Boost = static_cast<float>(plunger->MaxPullback);
 	}
 	int index = static_cast<int>(floor(
-		static_cast<float>(plunger->ListBitmap->Count() - 1) *
+		static_cast<float>(plunger->ListBitmap->GetCount() - 1) *
 		(plunger->Boost / static_cast<float>(plunger->MaxPullback))));
-	auto bmp = static_cast<gdrv_bitmap8*>(plunger->ListBitmap->Get(index));
-	auto zMap = static_cast<zmap_header_type*>(plunger->ListZMap->Get(index));
+	auto bmp = plunger->ListBitmap->Get(index);
+	auto zMap = plunger->ListZMap->Get(index);
 	render::sprite_set(
 		plunger->RenderSprite,
 		bmp,

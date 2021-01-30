@@ -4,10 +4,10 @@
 
 #include "control.h"
 #include "loader.h"
+#include "objlist_class.h"
 #include "render.h"
 #include "timer.h"
 #include "TPinballTable.h"
-#include "TZmapList.h"
 
 TBumper::TBumper(TPinballTable* table, int groupIndex) : TCollisionComponent(table, groupIndex, true)
 {
@@ -29,8 +29,8 @@ int TBumper::Message(int code, float value)
 	case 11:
 		{
 			auto nextBmp = static_cast<int>(floor(value));
-			if (2 * nextBmp > ListBitmap->Count() - 1)
-				nextBmp = (ListBitmap->Count() - 1) / 2;
+			if (2 * nextBmp > ListBitmap->GetCount() - 1)
+				nextBmp = (ListBitmap->GetCount() - 1) / 2;
 			if (nextBmp < 0)
 				nextBmp = 0;
 			if (nextBmp != BmpIndex)
@@ -48,7 +48,7 @@ int TBumper::Message(int code, float value)
 	case 12:
 		{
 			auto nextBmp = BmpIndex + 1;
-			auto maxBmp = ListBitmap->Count() - 1;
+			auto maxBmp = ListBitmap->GetCount() - 1;
 			if (2 * nextBmp > maxBmp)
 				nextBmp = maxBmp / 2;
 			TBumper::Message(11, static_cast<float>(nextBmp));
@@ -124,8 +124,8 @@ int TBumper::get_scoring(int index)
 void TBumper::TimerExpired(int timerId, void* caller)
 {
 	auto bump = static_cast<TBumper*>(caller);
-	auto bmp = static_cast<gdrv_bitmap8*>(bump->ListBitmap->Get(bump->BmpIndex * 2));
-	auto zMap = static_cast<zmap_header_type*>(bump->ListZMap->Get(bump->BmpIndex * 2));
+	auto bmp = bump->ListBitmap->Get(bump->BmpIndex * 2);
+	auto zMap = bump->ListZMap->Get(bump->BmpIndex * 2);
 	bump->Timer = 0;
 	render::sprite_set(
 		bump->RenderSprite,
@@ -139,8 +139,8 @@ void TBumper::TimerExpired(int timerId, void* caller)
 void TBumper::Fire()
 {
 	int bmpIndex = 2 * BmpIndex + 1;
-	auto bmp = static_cast<gdrv_bitmap8*>(ListBitmap->Get(bmpIndex));
-	auto zMap = static_cast<zmap_header_type*>(ListZMap->Get(bmpIndex));
+	auto bmp = ListBitmap->Get(bmpIndex);
+	auto zMap = ListZMap->Get(bmpIndex);
 	render::sprite_set(
 		RenderSprite,
 		bmp,

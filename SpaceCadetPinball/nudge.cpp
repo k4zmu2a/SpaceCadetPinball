@@ -71,9 +71,9 @@ void nudge::_nudge(float xDiff, float yDiff)
 	auto ballList = pb::MainTable->BallList;
 	accelMod.X = xDiff * 0.5f;
 	accelMod.Y = yDiff * 0.5f;
-	for (auto index = 0; index < ballList->Count(); index++)
+	for (auto index = 0; index < ballList->GetCount(); index++)
 	{
-		auto ball = static_cast<TBall*>(ballList->Get(index));
+		auto ball = ballList->Get(index);
 		if (ball->ActiveFlag && !ball->CollisionComp)
 		{
 			ball->Acceleration.X = ball->Acceleration.X * ball->Speed;

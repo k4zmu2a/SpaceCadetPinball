@@ -11,7 +11,7 @@
 
 TLightGroup::TLightGroup(TPinballTable* table, int groupIndex) : TPinballComponent(table, groupIndex, false)
 {
-	List = new objlist_class(4, 4);
+	List = new objlist_class<TLight>(4, 4);
 	Timer = 0;
 	NotifyTimer = 0;
 	Reset();
@@ -22,7 +22,7 @@ TLightGroup::TLightGroup(TPinballTable* table, int groupIndex) : TPinballCompone
 		__int16* groupIndArr = loader::query_iattribute(groupIndex, 1027, &count);
 		for (int index = 0; index < count; ++groupIndArr)
 		{
-			auto comp = table->find_component(*groupIndArr);
+			auto comp = dynamic_cast<TLight*>(table->find_component(*groupIndArr));
 			if (comp)
 				List->Add(comp);
 			++index;
@@ -71,8 +71,8 @@ int TLightGroup::Message(int code, float value)
 		break;
 	case 24:
 		{
-			auto count = List->Count();
-			auto lastLight = static_cast<TLight*>(List->Get(count - 1));
+			auto count = List->GetCount();
+			auto lastLight = List->Get(count - 1);
 			if (lastLight->FlasherActive || lastLight->FlasherFlag2 || lastLight->FlasherFlag1)
 				break;
 			if (MessageField2)
@@ -85,12 +85,12 @@ int TLightGroup::Message(int code, float value)
 			auto bmpIndex1 = lastLight->BmpIndex1;
 			for (auto index = count - 1; index > 0; --index)
 			{
-				auto lightCur = static_cast<TLight*>(List->Get(index));
-				auto lightPrev = static_cast<TLight*>(List->Get(index - 1));
+				auto lightCur = List->Get(index);
+				auto lightPrev = List->Get(index - 1);
 				lightCur->Message(lightPrev->BmpIndex1 != 0, 0.0);
 				lightCur->MessageField = lightPrev->MessageField;
 			}
-			auto firstLight = static_cast<TLight*>(List->Get(0));
+			auto firstLight = List->Get(0);
 			firstLight->Message(bmpIndex1 != 0, 0.0);
 			firstLight->MessageField = lightMessageField;
 			reschedule_animation(value);
@@ -98,23 +98,23 @@ int TLightGroup::Message(int code, float value)
 		}
 	case 25:
 		{
-			auto count = List->Count();
-			auto lastLight = static_cast<TLight*>(List->Get(count - 1));
+			auto count = List->GetCount();
+			auto lastLight = List->Get(count - 1);
 			if (lastLight->FlasherActive || lastLight->FlasherFlag2 || lastLight->FlasherFlag1)
 				break;
 			if (MessageField2)
 			{
 				TLightGroup::Message(34, 0.0);
 			}
-			auto firstLight = static_cast<TLight*>(List->Get(0));
+			auto firstLight = List->Get(0);
 			AnimationFlag = 1;
 			MessageField2 = code;
 			auto lightMessageField = firstLight->MessageField;
 			auto bmpIndex1 = firstLight->BmpIndex1;
 			for (auto index = 0; index < count - 1; index++)
 			{
-				auto lightCur = static_cast<TLight*>(List->Get(index));
-				auto lightNext = static_cast<TLight*>(List->Get(index + 1));
+				auto lightCur = List->Get(index);
+				auto lightNext = List->Get(index + 1);
 				lightCur->Message(lightNext->BmpIndex1 != 0, 0.0);
 				lightCur->MessageField = lightNext->MessageField;
 			}
@@ -129,16 +129,16 @@ int TLightGroup::Message(int code, float value)
 				start_animation();
 			MessageField2 = code;
 			AnimationFlag = 0;
-			auto count = List->Count();
-			auto lastLight = static_cast<TLight*>(List->Get(count - 1));
+			auto count = List->GetCount();
+			auto lastLight = List->Get(count - 1);
 			auto flasherFlag2 = lastLight->FlasherFlag2;
 			for (auto i = count - 1; i > 0; --i)
 			{
-				auto lightCur = static_cast<TLight*>(List->Get(i));
-				auto lightPrev = static_cast<TLight*>(List->Get(i - 1));
+				auto lightCur = List->Get(i);
+				auto lightPrev = List->Get(i - 1);
 				lightCur->Message((lightPrev->FlasherFlag2 != 0) + 8, 0.0);
 			}
-			auto firstLight = static_cast<TLight*>(List->Get(0));
+			auto firstLight = List->Get(0);
 			firstLight->Message((flasherFlag2 != 0) + 8, 0);
 			reschedule_animation(value);
 			break;
@@ -149,16 +149,16 @@ int TLightGroup::Message(int code, float value)
 				start_animation();
 			MessageField2 = code;
 			AnimationFlag = 0;
-			auto count = List->Count();
-			auto firstLight = static_cast<TLight*>(List->Get(0));
+			auto count = List->GetCount();
+			auto firstLight = List->Get(0);
 			auto flasherFlag2 = firstLight->FlasherFlag2;
 			for (auto i = 0; i < count - 1; i++)
 			{
-				auto lightCur = static_cast<TLight*>(List->Get(i));
-				auto lightNext = static_cast<TLight*>(List->Get(i + 1));
+				auto lightCur = List->Get(i);
+				auto lightNext = List->Get(i + 1);
 				lightCur->Message((lightNext->FlasherFlag2 != 0) + 8, 0.0);
 			}
-			auto lastLight = static_cast<TLight*>(List->Get(count - 1));
+			auto lastLight = List->Get(count - 1);
 			lastLight->Message((flasherFlag2 != 0) + 8, 0);
 			reschedule_animation(value);
 			break;
@@ -169,12 +169,12 @@ int TLightGroup::Message(int code, float value)
 				start_animation();
 			MessageField2 = code;
 			AnimationFlag = 0;
-			auto count = List->Count();
+			auto count = List->GetCount();
 			for (auto i = 0; i < count - 1; i++)
 			{
 				if (rand() % 100 > 70)
 				{
-					auto light = static_cast<TLight*>(List->Get(i));
+					auto light = List->Get(i);
 					auto randVal = static_cast<float>(rand()) * 0.00003051850947599719f * value * 3.0f + 0.1f;
 					light->Message(9, randVal);
 				}
@@ -188,10 +188,10 @@ int TLightGroup::Message(int code, float value)
 				start_animation();
 			MessageField2 = code;
 			AnimationFlag = 0;
-			auto count = List->Count();
+			auto count = List->GetCount();
 			for (auto i = 0; i < count - 1; i++)
 			{
-				auto light = static_cast<TLight*>(List->Get(i));
+				auto light = List->Get(i);
 				auto randVal = static_cast<float>(rand() % 100 > 70);
 				light->Message(18, randVal);
 			}
@@ -201,13 +201,13 @@ int TLightGroup::Message(int code, float value)
 	case 30:
 		{
 			auto noBmpInd1Count = 0;
-			auto countSub1 = List->Count() - 1;
+			auto countSub1 = List->GetCount() - 1;
 			if (countSub1 < 0)
 				break;
 
 			for (auto i = countSub1; i >= 0; i--)
 			{
-				if (!static_cast<TLight*>(List->Get(i))->BmpIndex1)
+				if (!List->Get(i)->BmpIndex1)
 					++noBmpInd1Count;
 			}
 			if (!noBmpInd1Count)
@@ -216,7 +216,7 @@ int TLightGroup::Message(int code, float value)
 			auto randModCount = rand() % noBmpInd1Count;
 			for (auto i = countSub1; i >= 0; i--)
 			{
-				auto light = static_cast<TLight*>(List->Get(i));
+				auto light = List->Get(i);
 				if (!light->BmpIndex1 && randModCount-- == 0)
 				{
 					light->Message(1, 0.0);
@@ -231,13 +231,13 @@ int TLightGroup::Message(int code, float value)
 	case 31:
 		{
 			auto bmpInd1Count = 0;
-			auto countSub1 = List->Count() - 1;
+			auto countSub1 = List->GetCount() - 1;
 			if (countSub1 < 0)
 				break;
 
 			for (auto i = countSub1; i >= 0; i--)
 			{
-				if (static_cast<TLight*>(List->Get(i))->BmpIndex1)
+				if (List->Get(i)->BmpIndex1)
 					++bmpInd1Count;
 			}
 			if (!bmpInd1Count)
@@ -246,7 +246,7 @@ int TLightGroup::Message(int code, float value)
 			auto randModCount = rand() % bmpInd1Count;
 			for (auto i = countSub1; i >= 0; i--)
 			{
-				auto light = static_cast<TLight*>(List->Get(i));
+				auto light = List->Get(i);
 				if (light->BmpIndex1 && randModCount-- == 0)
 				{
 					light->Message(0, 0.0);
@@ -263,7 +263,7 @@ int TLightGroup::Message(int code, float value)
 			auto index = next_light_up();
 			if (index < 0)
 				break;
-			static_cast<TLight*>(List->Get(index))->Message(1, 0.0);
+			List->Get(index)->Message(1, 0.0);
 			if (MessageField2)
 				start_animation();
 			return 1;
@@ -273,7 +273,7 @@ int TLightGroup::Message(int code, float value)
 			auto index = next_light_down();
 			if (index < 0)
 				break;
-			static_cast<TLight*>(List->Get(index))->Message(0, 0.0);
+			List->Get(index)->Message(0, 0.0);
 			if (MessageField2)
 				start_animation();
 			return 1;
@@ -292,10 +292,10 @@ int TLightGroup::Message(int code, float value)
 	case 35:
 		{
 			auto index = static_cast<int>(floor(value));
-			if (index >= List->Count() || index < 0)
+			if (index >= List->GetCount() || index < 0)
 				break;
 
-			auto light = static_cast<TLight*>(List->Get(index));
+			auto light = List->Get(index);
 			light->Message(1, 0.0);
 			if (MessageField2)
 				start_animation();
@@ -304,10 +304,10 @@ int TLightGroup::Message(int code, float value)
 	case 36:
 		{
 			auto index = static_cast<int>(floor(value));
-			if (index >= List->Count() || index < 0)
+			if (index >= List->GetCount() || index < 0)
 				break;
 
-			auto light = static_cast<TLight*>(List->Get(index));
+			auto light = List->Get(index);
 			light->Message(0, 0.0);
 			if (MessageField2)
 				start_animation();
@@ -316,16 +316,16 @@ int TLightGroup::Message(int code, float value)
 	case 37:
 		{
 			auto bmp1Count = 0;
-			auto countSub1 = List->Count() - 1;
+			auto countSub1 = List->GetCount() - 1;
 			for (auto i = countSub1; i >= 0; i--)
 			{
-				if (static_cast<TLight*>(List->Get(i))->BmpIndex1)
+				if (List->Get(i)->BmpIndex1)
 					++bmp1Count;
 			}
 			return bmp1Count;
 		}
 	case 38:
-		return List->Count();
+		return List->GetCount();
 	case 39:
 		return MessageField2;
 	case 40:
@@ -337,7 +337,7 @@ int TLightGroup::Message(int code, float value)
 				break;
 			if (MessageField2 || AnimationFlag)
 				TLightGroup::Message(34, 0.0);
-			static_cast<TLight*>(List->Get(index))->Message(15, value);
+			List->Get(index)->Message(15, value);
 			return 1;
 		}
 	case 42:
@@ -347,7 +347,7 @@ int TLightGroup::Message(int code, float value)
 				break;
 			if (MessageField2 || AnimationFlag)
 				TLightGroup::Message(34, 0.0);
-			static_cast<TLight*>(List->Get(index))->Message(16, value);
+			List->Get(index)->Message(16, value);
 			return 1;
 		}
 	case 43:
@@ -359,10 +359,10 @@ int TLightGroup::Message(int code, float value)
 		break;
 	case 44:
 		{
-			auto countSub1 = List->Count() - 1;
+			auto countSub1 = List->GetCount() - 1;
 			for (auto index = countSub1; index >= 0; index--)
 			{
-				auto light = static_cast<TLight*>(List->Get(index));
+				auto light = List->Get(index);
 				if (light->BmpIndex1)
 				{
 					light->Message(0, 0.0);
@@ -378,7 +378,7 @@ int TLightGroup::Message(int code, float value)
 			auto index = static_cast<int>(floor(value));
 			if (index >= 0)
 			{
-				auto count = List->Count();
+				auto count = List->GetCount();
 				if (index <= count)
 				{
 					auto countSub1 = count - 1;
@@ -387,7 +387,7 @@ int TLightGroup::Message(int code, float value)
 						countSub1 = index;
 						for (auto i = countSub1, k = countSub1 - index; k != 0; i--, k--)
 						{
-							auto light = static_cast<TLight*>(List->Get(i));
+							auto light = List->Get(i);
 							light->Message(20, 0.0);
 						}
 					}
@@ -395,7 +395,7 @@ int TLightGroup::Message(int code, float value)
 					{
 						for (auto i = countSub1; i != 0; i--)
 						{
-							auto light = static_cast<TLight*>(List->Get(i));
+							auto light = List->Get(i);
 							light->Message(19, 0.0);
 						}
 					}
@@ -408,14 +408,14 @@ int TLightGroup::Message(int code, float value)
 			auto index = next_light_down();
 			if (index >= 0)
 			{
-				static_cast<TLight*>(List->Get(index))->Message(4, 0.0);
+				List->Get(index)->Message(4, 0.0);
 			}
 			break;
 		}
 	default:
-		for (auto index = List->Count() - 1; index >= 0; index--)
+		for (auto index = List->GetCount() - 1; index >= 0; index--)
 		{
-			static_cast<TLight*>(List->Get(index))->Message(code, value);
+			List->Get(index)->Message(code, value);
 		}
 		break;
 	}
@@ -453,9 +453,9 @@ void TLightGroup::reschedule_animation(float time)
 
 void TLightGroup::start_animation()
 {
-	for (int index = List->Count() - 1; index >= 0; --index)
+	for (int index = List->GetCount() - 1; index >= 0; --index)
 	{
-		auto light = static_cast<TLight*>(List->Get(index));
+		auto light = List->Get(index);
 		if (light->BmpIndex1)
 			light->Message(9, 0.0);
 		else
@@ -465,9 +465,9 @@ void TLightGroup::start_animation()
 
 int TLightGroup::next_light_up()
 {
-	for (int index = 0; index < List->Count(); ++index)
+	for (int index = 0; index < List->GetCount(); ++index)
 	{
-		if (!static_cast<TLight*>(List->Get(index))->BmpIndex1)
+		if (!List->Get(index)->BmpIndex1)
 			return index;
 	}
 	return -1;
@@ -475,9 +475,9 @@ int TLightGroup::next_light_up()
 
 int TLightGroup::next_light_down()
 {
-	for (int index = List->Count() - 1; index >= 0; --index)
+	for (int index = List->GetCount() - 1; index >= 0; --index)
 	{
-		if (!static_cast<TLight*>(List->Get(index))->BmpIndex1)
+		if (!List->Get(index)->BmpIndex1)
 			return index;
 	}
 	return -1;

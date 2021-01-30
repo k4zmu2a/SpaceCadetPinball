@@ -219,7 +219,6 @@
     <ClInclude Include="TTimer.h" />
     <ClInclude Include="TTripwire.h" />
     <ClInclude Include="TWall.h" />
-    <ClInclude Include="TZmapList.h" />
     <ClInclude Include="WaveMix.h" />
     <ClInclude Include="winmain.h" />
     <ClInclude Include="zdrv.h" />
@@ -234,7 +233,6 @@
     <ClCompile Include="memory.cpp" />
     <ClCompile Include="midi.cpp" />
     <ClCompile Include="nudge.cpp" />
-    <ClCompile Include="objlist_class.cpp" />
     <ClCompile Include="options.cpp" />
     <ClCompile Include="partman.cpp" />
     <ClCompile Include="pb.cpp" />

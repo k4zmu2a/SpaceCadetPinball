@@ -8,7 +8,6 @@
 #include "proj.h"
 #include "render.h"
 #include "TPinballTable.h"
-#include "TZmapList.h"
 
 TBall::TBall(TPinballTable* table) : TPinballComponent(table, -1, false)
 {
@@ -30,7 +29,7 @@ TBall::TBall(TPinballTable* table) : TPinballComponent(table, -1, false)
 	Position.X = 0.0;
 	Position.Y = 0.0;
 
-	ListBitmap = new TZmapList(0, 4);
+	ListBitmap = new objlist_class<gdrv_bitmap8>(0, 4);
 	auto groupIndex = loader::query_handle("ball");
 	Offset = *loader::query_float_attribute(groupIndex, 0, 500);
 	auto visualCount = loader::query_visual_states(groupIndex);
@@ -73,12 +72,12 @@ void TBall::Repaint()
 
 	auto zArrPtr = VisualZArray;
 	int index;
-	for (index = 0; index < ListBitmap->Count() - 1; ++index, zArrPtr++)
+	for (index = 0; index < ListBitmap->GetCount() - 1; ++index, zArrPtr++)
 	{
 		if (*zArrPtr <= zDepth) break;
 	}
 
-	auto bmp = static_cast<gdrv_bitmap8*>(ListBitmap->Get(index));
+	auto bmp = ListBitmap->Get(index);
 	render::ball_set(
 		RenderSprite,
 		bmp,

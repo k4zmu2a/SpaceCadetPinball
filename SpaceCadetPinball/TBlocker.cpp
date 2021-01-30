@@ -4,9 +4,9 @@
 
 #include "control.h"
 #include "loader.h"
+#include "objlist_class.h"
 #include "render.h"
 #include "timer.h"
-#include "TZmapList.h"
 
 TBlocker::TBlocker(TPinballTable* table, int groupIndex) : TCollisionComponent(table, groupIndex, true)
 {
@@ -46,7 +46,7 @@ int TBlocker::Message(int code, float value)
 	case 52:
 		ActiveFlag = 1;
 		loader::play_sound(SoundIndex4);
-		render::sprite_set_bitmap(RenderSprite, static_cast<gdrv_bitmap8*>(ListBitmap->Get(0)));
+		render::sprite_set_bitmap(RenderSprite, ListBitmap->Get(0));
 		break;
 	case 59:
 		break;

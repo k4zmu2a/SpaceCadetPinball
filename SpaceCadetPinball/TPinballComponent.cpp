@@ -3,7 +3,6 @@
 #include "loader.h"
 #include "objlist_class.h"
 #include "render.h"
-#include "TZmapList.h"
 #include "TPinballTable.h"
 
 TPinballComponent::TPinballComponent(TPinballTable* table, int groupIndex, bool loadVisuals)
@@ -32,32 +31,32 @@ TPinballComponent::TPinballComponent(TPinballTable* table, int groupIndex, bool 
 			if (visual.Bitmap)
 			{
 				if (!ListBitmap)
-					ListBitmap = new TZmapList(visualCount, 4);
+					ListBitmap = new objlist_class<gdrv_bitmap8>(visualCount, 4);
 				if (ListBitmap)
 					ListBitmap->Add(visual.Bitmap);
 			}
 			if (visual.ZMap)
 			{
 				if (!ListZMap)
-					ListZMap = new TZmapList(visualCount, 4);
+					ListZMap = new objlist_class<zmap_header_type>(visualCount, 4);
 				if (ListZMap)
 					ListZMap->Add(visual.ZMap);
 			}
 		}
 		zmap_header_type* zMap = nullptr;
 		if (ListZMap)
-			zMap = static_cast<zmap_header_type*>(ListZMap->Get(0));
+			zMap = ListZMap->Get(0);
 		if (ListBitmap)
 		{
 			rectangle_type bmp1Rect{}, tmpRect{};
-			auto rootBmp = static_cast<gdrv_bitmap8*>(ListBitmap->Get(0));
+			auto rootBmp = ListBitmap->Get(0);
 			bmp1Rect.XPosition = rootBmp->XPosition - table->XOffset;
 			bmp1Rect.YPosition = rootBmp->YPosition - table->YOffset;
 			bmp1Rect.Width = rootBmp->Width;
 			bmp1Rect.Height = rootBmp->Height;
-			for (int index = 1; index < ListBitmap->Count(); index++)
+			for (int index = 1; index < ListBitmap->GetCount(); index++)
 			{
-				auto bmp = static_cast<gdrv_bitmap8*>(ListBitmap->Get(index));
+				auto bmp = ListBitmap->Get(index);
 				tmpRect.XPosition = bmp->XPosition - table->XOffset;
 				tmpRect.YPosition = bmp->YPosition - table->YOffset;
 				tmpRect.Width = bmp->Width;

@@ -4,11 +4,11 @@
 
 #include "control.h"
 #include "loader.h"
+#include "objlist_class.h"
 #include "render.h"
 #include "TBall.h"
 #include "timer.h"
 #include "TPinballTable.h"
-#include "TZmapList.h"
 
 TLightRollover::TLightRollover(TPinballTable* table, int groupIndex) : TRollover(table, groupIndex, false)
 {
@@ -58,7 +58,7 @@ void TLightRollover::Collision(TBall* ball, vector_type* nextPosition, vector_ty
 			control::handler(63, this);
 			RolloverFlag = RolloverFlag == 0;
 			if (ListBitmap)
-				render::sprite_set_bitmap(RenderSprite, static_cast<gdrv_bitmap8*>(ListBitmap->Get(0)));
+				render::sprite_set_bitmap(RenderSprite, ListBitmap->Get(0));
 		}
 	}
 }

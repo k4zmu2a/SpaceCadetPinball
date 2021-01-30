@@ -5,8 +5,8 @@
 
 TEdgeBox::TEdgeBox()
 {
-	EdgeList = new objlist_class(0, 4);
-	FieldList = new objlist_class(0, 1);
+	EdgeList = new objlist_class<TEdgeSegment>(0, 4);
+	FieldList = new objlist_class<field_effect_type>(0, 1);
 }
 
 TEdgeBox::~TEdgeBox()

@@ -48,8 +48,8 @@ TPinballTable::TPinballTable(): TPinballComponent(nullptr, -1, false)
 {
 	int shortArrLength;
 
-	ComponentList = new objlist_class(32, 16);
-	BallList = new objlist_class(3, 1);
+	ComponentList = new objlist_class<TPinballComponent>(32, 16);
+	BallList = new objlist_class<TBall>(3, 1);
 	CurScoreStruct = nullptr;
 	ScoreBallcount = nullptr;
 	ScorePlayerNumber1 = nullptr;
@@ -213,9 +213,9 @@ TPinballTable::~TPinballTable()
 		ScoreBallcount = nullptr;
 	}
 	delete LightGroup;
-	while (ComponentList->Count() > 0)
+	while (ComponentList->GetCount() > 0)
 	{
-		delete static_cast<TPinballComponent*>(ComponentList->Get(0));
+		delete ComponentList->Get(0);
 	}
 	delete BallList;
 	delete ComponentList;
@@ -223,12 +223,12 @@ TPinballTable::~TPinballTable()
 
 TPinballComponent* TPinballTable::find_component(LPCSTR componentName)
 {
-	int objCount = ComponentList->Count();
+	int objCount = ComponentList->GetCount();
 	if (objCount > 0)
 	{
 		for (int index = 0; index < objCount; ++index)
 		{
-			TPinballComponent* obj = static_cast<TPinballComponent*>(ComponentList->Get(index));
+			TPinballComponent* obj = ComponentList->Get(index);
 			const CHAR* groupName = obj->GroupName;
 			if (groupName && !lstrcmpA(groupName, componentName))
 			{
@@ -243,12 +243,12 @@ TPinballComponent* TPinballTable::find_component(LPCSTR componentName)
 TPinballComponent* TPinballTable::find_component(int groupIndex)
 {
 	char Buffer[40];
-	int objCount = ComponentList->Count();
+	int objCount = ComponentList->GetCount();
 	if (objCount > 0)
 	{
 		for (int index = 0; index < objCount; ++index)
 		{
-			TPinballComponent* obj = static_cast<TPinballComponent*>(ComponentList->Get(index));
+			TPinballComponent* obj = ComponentList->Get(index);
 			if (obj->GroupIndex == groupIndex)
 				return obj;
 		}
@@ -307,9 +307,9 @@ void TPinballTable::tilt(float time)
 		loader::play_sound(SoundIndex3);
 		TiltTimeoutTimer = timer::set(30.0, this, tilt_timeout);
 
-		for (int i = 0; i < ComponentList->Count(); i++)
+		for (int i = 0; i < ComponentList->GetCount(); i++)
 		{
-			static_cast<TPinballComponent*>(ComponentList->Get(i))->Message(1011, time);
+			ComponentList->Get(i)->Message(1011, time);
 		}
 		LightGroup->Message(8, 0);
 		TiltLockFlag = 1;
@@ -320,9 +320,9 @@ void TPinballTable::tilt(float time)
 
 void TPinballTable::port_draw()
 {
-	for (int index = ComponentList->Count() - 1; index >= 0; index--)
+	for (int index = ComponentList->GetCount() - 1; index >= 0; index--)
 	{
-		static_cast<TPinballComponent*>(ComponentList->Get(index))->port_draw();
+		ComponentList->Get(index)->port_draw();
 	}
 }
 
@@ -362,9 +362,9 @@ int TPinballTable::Message(int code, float value)
 	case 1008:
 	case 1009:
 	case 1010:
-		for (int i = 0; i < ComponentList->Count(); i++)
+		for (int i = 0; i < ComponentList->GetCount(); i++)
 		{
-			static_cast<TPinballComponent*>(ComponentList->Get(i))->Message(code, value);
+			ComponentList->Get(i)->Message(code, value);
 		}
 		break;
 	case 1012:
@@ -406,7 +406,7 @@ int TPinballTable::Message(int code, float value)
 		{
 			CheatsUsed = 0;
 			Message(1024, 0.0);
-			auto ball = static_cast<TBall*>(BallList->Get(0));
+			auto ball = BallList->Get(0);
 			ball->Position.Y = 0.0;
 			ball->Position.X = 0.0;
 			ball->Position.Z = -0.8f;
@@ -513,9 +513,9 @@ int TPinballTable::Message(int code, float value)
 			score::set(ScorePlayerNumber1, nextPlayer + 1);
 			score::update(ScorePlayerNumber1);
 
-			for (int i = 0; i < ComponentList->Count(); i++)
+			for (int i = 0; i < ComponentList->GetCount(); i++)
 			{
-				static_cast<TPinballComponent*>(ComponentList->Get(i))->Message(1020, static_cast<float>(nextPlayer));
+				ComponentList->Get(i)->Message(1020, static_cast<float>(nextPlayer));
 			}
 
 			char* textboxText = nullptr;
@@ -564,9 +564,9 @@ int TPinballTable::Message(int code, float value)
 		EndGameTimeoutTimer = timer::set(3.0, this, EndGame_timeout);
 		break;
 	case 1024:
-		for (int i = 0; i < ComponentList->Count(); i++)
+		for (int i = 0; i < ComponentList->GetCount(); i++)
 		{
-			static_cast<TPinballComponent*>(ComponentList->Get(i))->Message(1024, 0);
+			ComponentList->Get(i)->Message(1024, 0);
 		}
 		if (ReplayTimer)
 			timer::kill(ReplayTimer);
@@ -608,9 +608,9 @@ void TPinballTable::EndGame_timeout(int timerId, void* caller)
 	table->EndGameTimeoutTimer = 0;
 	pb::end_game();
 
-	for (int i = 0; i < table->ComponentList->Count(); i++)
+	for (int i = 0; i < table->ComponentList->GetCount(); i++)
 	{
-		static_cast<TPinballComponent*>(table->ComponentList->Get(i))->Message(1022, 0);
+		table->ComponentList->Get(i)->Message(1022, 0);
 	}
 	if (table->Demo)
 		table->Demo->Message(1022, 0.0);
@@ -640,9 +640,9 @@ void TPinballTable::tilt_timeout(int timerId, void* caller)
 	table->TiltTimeoutTimer = 0;
 	if (table->TiltLockFlag)
 	{
-		for (int i = 0; i < table->BallList->Count(); i++)
+		for (int i = 0; i < table->BallList->GetCount(); i++)
 		{
-			table->Drain->Collision(static_cast<TBall*>(table->BallList->Get(i)), &vec, &vec, 0.0, nullptr);
+			table->Drain->Collision(table->BallList->Get(i), &vec, &vec, 0.0, nullptr);
 		}
 	}
 }

@@ -10,7 +10,7 @@
 
 TComponentGroup::TComponentGroup(TPinballTable* table, int groupIndex) : TPinballComponent(table, groupIndex, false)
 {
-	List = new objlist_class(4, 4);
+	List = new objlist_class<TPinballComponent>(4, 4);
 	Timer = 0;
 	if (groupIndex > 0)
 	{
@@ -50,9 +50,9 @@ int TComponentGroup::Message(int code, float value)
 	}
 	else if (code <= 1007 || code > 1011 && code != 1020 && code != 1022)
 	{
-		for (int i = 0; i < List->Count(); i++)
+		for (int i = 0; i < List->GetCount(); i++)
 		{
-			static_cast<TPinballComponent*>(List->Get(i))->Message(code, value);
+			List->Get(i)->Message(code, value);
 		}
 	}
 	return 0;

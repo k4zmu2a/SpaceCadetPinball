@@ -29,7 +29,7 @@ int main()
 	auto dib = gdrv::DibCreate(8, 1, 1);
 	gdrv::DibSetUsage(dib, 0, 1);
 
-	objlist_class d = objlist_class(2, 4);
+	auto d = objlist_class<void>(2, 4);
 	for (int i = 0; i < 100; i++)
 	{
 		d.Add((void*)i);

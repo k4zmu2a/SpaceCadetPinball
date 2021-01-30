@@ -597,9 +597,9 @@ TPinballComponent* control::make_component_link(component_tag_base* tag)
 		return tag->GetComponent();
 
 	auto compList = TableG->ComponentList;
-	for (int index = 0; index < compList->Count(); index++)
+	for (int index = 0; index < compList->GetCount(); index++)
 	{
-		auto comp = static_cast<TPinballComponent*>(compList->Get(index));
+		auto comp = compList->Get(index);
 		if (comp->GroupName)
 		{
 			if (!strcmp(comp->GroupName, tag->Name))

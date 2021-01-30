@@ -10,7 +10,6 @@
 #include "timer.h"
 #include "TLine.h"
 #include "TPinballTable.h"
-#include "TZmapList.h"
 
 TFlagSpinner::TFlagSpinner(TPinballTable* table, int groupIndex) : TCollisionComponent(table, groupIndex, false)
 {
@@ -62,8 +61,8 @@ int TFlagSpinner::Message(int code, float value)
 			Timer = 0;
 		}
 		BmpIndex = 0;
-		auto bmp = static_cast<gdrv_bitmap8*>(ListBitmap->Get(0));
-		auto zMap = static_cast<zmap_header_type*>(ListZMap->Get(0));
+		auto bmp = ListBitmap->Get(0);
+		auto zMap = ListZMap->Get(0);
 		render::sprite_set(
 			RenderSprite,
 			bmp,
@@ -109,7 +108,7 @@ void TFlagSpinner::NextFrame()
 {
 	BmpIndex += SpinDirection;
 	int bmpIndex = BmpIndex;
-	int bmpCount = ListBitmap->Count();
+	int bmpCount = ListBitmap->GetCount();
 	if (bmpIndex >= bmpCount)
 		BmpIndex = 0;
 	else if (bmpIndex < 0)
@@ -124,8 +123,8 @@ void TFlagSpinner::NextFrame()
 			control::handler(62, this);
 	}
 
-	auto bmp = static_cast<gdrv_bitmap8*>(ListBitmap->Get(BmpIndex));
-	auto zMap = static_cast<zmap_header_type*>(ListZMap->Get(BmpIndex));
+	auto bmp = ListBitmap->Get(BmpIndex);
+	auto zMap = ListZMap->Get(BmpIndex);
 	render::sprite_set(
 		RenderSprite,
 		bmp,

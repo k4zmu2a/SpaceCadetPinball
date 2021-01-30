@@ -290,7 +290,7 @@ MIXWAVE* WaveMix::OpenWave(HANDLE hMixSession, LPCSTR szWaveFilename, HINSTANCE 
 				break;
 			}
 
-			memset(&pmmioinfo, 0, sizeof(pmmioinfo));
+			memset(&pmmioinfo, 0, sizeof pmmioinfo);
 			pmmioinfo.pchBuffer = static_cast<HPSTR>(LockResource(hResData));
 			if (!pmmioinfo.pchBuffer)
 			{
@@ -319,7 +319,7 @@ MIXWAVE* WaveMix::OpenWave(HANDLE hMixSession, LPCSTR szWaveFilename, HINSTANCE 
 		}
 		else if ((dwFlags & 4) != 0)
 		{
-			memcpy(&pmmioinfo, szWaveFilename, sizeof(pmmioinfo));
+			memcpy(&pmmioinfo, szWaveFilename, sizeof pmmioinfo);
 			hMmio = mmioOpenA(nullptr, &pmmioinfo, 0);
 			if (!hMmio)
 			{
@@ -667,7 +667,7 @@ int WaveMix::Play(MIXPLAYPARAMS* lpMixPlayParams)
 		if (!channel)
 			break;
 
-		memcpy(&channel->PlayParams, lpMixPlayParams, sizeof(channel->PlayParams));
+		memcpy(&channel->PlayParams, lpMixPlayParams, sizeof channel->PlayParams);
 		channel->lpMixWave = channel->PlayParams.lpMixWave;
 		channel->dwNumSamples = channel->PlayParams.lpMixWave->wh.dwBufferLength;
 		auto lpData = (unsigned __int8*)channel->PlayParams.lpMixWave->wh.lpData;

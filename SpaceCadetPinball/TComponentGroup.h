@@ -1,7 +1,6 @@
 #pragma once
 #include "TPinballComponent.h"
 
-class objlist_class;
 
 class TComponentGroup :
 	public TPinballComponent
@@ -12,6 +11,6 @@ public:
 	int Message(int code, float value) override;
 	static void NotifyTimerExpired(int timerId, void* caller);
 
-	objlist_class* List;
+	objlist_class<TPinballComponent>* List;
 	int Timer;
 };

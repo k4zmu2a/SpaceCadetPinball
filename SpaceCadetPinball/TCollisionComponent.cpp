@@ -12,7 +12,7 @@ TCollisionComponent::TCollisionComponent(TPinballTable* table, int groupIndex, b
 {
 	visualStruct visual{};
 
-	EdgeList = new objlist_class(4, 4);
+	EdgeList = new objlist_class<TEdgeSegment>(4, 4);
 	ActiveFlag = 1;
 	if (GroupName != nullptr)
 		UnusedBaseFlag = 1;
@@ -42,9 +42,9 @@ TCollisionComponent::TCollisionComponent(TPinballTable* table, int groupIndex, b
 
 TCollisionComponent::~TCollisionComponent()
 {
-	for (TEdgeSegment* edge; EdgeList->Count() > 0;)
+	for (TEdgeSegment* edge; EdgeList->GetCount() > 0;)
 	{
-		edge = static_cast<TEdgeSegment*>(EdgeList->Get(0));
+		edge = EdgeList->Get(0);
 		EdgeList->Delete(edge);
 		delete edge;
 	}
@@ -54,9 +54,9 @@ TCollisionComponent::~TCollisionComponent()
 
 void TCollisionComponent::port_draw()
 {
-	for (int index = EdgeList->Count() - 1; index >= 0; index--)
+	for (int index = EdgeList->GetCount() - 1; index >= 0; index--)
 	{
-		static_cast<TEdgeSegment*>(EdgeList->Get(index))->port_draw();
+		EdgeList->Get(index)->port_draw();
 	}
 }
 

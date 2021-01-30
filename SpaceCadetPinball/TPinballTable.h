@@ -2,12 +2,12 @@
 
 #include "TPinballComponent.h"
 
+class TBall;
 struct scoreStruct;
 class TFlipper;
 class TPlunger;
 class TDrain;
 class TDemo;
-class objlist_class;
 class TLightGroup;
 
 struct score_struct_super
@@ -65,8 +65,8 @@ public:
 	int YOffset;
 	int Width;
 	int Height;
-	objlist_class* ComponentList;
-	objlist_class* BallList;
+	objlist_class<TPinballComponent>* ComponentList;
+	objlist_class<TBall>* BallList;
 	TLightGroup* LightGroup;
 	float GravityDirVectMult;
 	float GravityAngleX;

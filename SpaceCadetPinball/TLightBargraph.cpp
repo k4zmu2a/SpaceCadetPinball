@@ -18,7 +18,7 @@ TLightBargraph::TLightBargraph(TPinballTable* table, int groupIndex) : TLightGro
 		float* floatArr = loader::query_float_attribute(groupIndex, 0, 904);
 		if (floatArr)
 		{
-			int count = 2 * List->Count();
+			int count = 2 * List->GetCount();
 			TimerTimeArray = reinterpret_cast<float*>(memory::allocate(count * sizeof(float)));
 			if (TimerTimeArray)
 			{
@@ -49,7 +49,7 @@ int TLightBargraph::Message(int code, float value)
 				TimerBargraph = 0;
 			}
 			auto timeIndex = static_cast<int>(floor(value));
-			auto maxCount = 2 * List->Count();
+			auto maxCount = 2 * List->GetCount();
 			if (timeIndex >= maxCount)
 				timeIndex = maxCount - 1;
 			if (timeIndex >= 0)

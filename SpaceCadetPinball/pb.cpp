@@ -94,7 +94,7 @@ int pb::init()
 	MainTable = new TPinballTable();
 
 	high_score::read(highscore_table, &state);
-	ball_speed_limit = static_cast<TBall*>(MainTable->BallList->Get(0))->Offset * 200.0f;
+	ball_speed_limit = MainTable->BallList->Get(0)->Offset * 200.0f;
 	--memory::critical_allocation;
 	return 0;
 }
@@ -209,7 +209,7 @@ void pb::replay_level(int demoMode)
 
 void pb::ballset(int x, int y)
 {
-	TBall* ball = static_cast<TBall*>(MainTable->BallList->Get(0));
+	TBall* ball = MainTable->BallList->Get(0);
 	ball->Acceleration.X = x * 30.0f;
 	ball->Acceleration.Y = y * 30.0f;
 	ball->Speed = maths::normalize_2d(&ball->Acceleration);
@@ -257,9 +257,9 @@ void pb::timed_frame(float timeNow, float timeDelta, bool drawBalls)
 {
 	vector_type vec1{}, vec2{};
 
-	for (int i = 0; i < MainTable->BallList->Count(); i++)
+	for (int i = 0; i < MainTable->BallList->GetCount(); i++)
 	{
-		auto ball = static_cast<TBall*>(MainTable->BallList->Get(i));
+		auto ball = MainTable->BallList->Get(i);
 		if (ball->ActiveFlag != 0)
 		{
 			auto collComp = ball->CollisionComp;
@@ -300,9 +300,9 @@ void pb::timed_frame(float timeNow, float timeDelta, bool drawBalls)
 
 	if (drawBalls)
 	{
-		for (int i = 0; i < MainTable->BallList->Count(); i++)
+		for (int i = 0; i < MainTable->BallList->GetCount(); i++)
 		{
-			auto ball = static_cast<TBall*>(MainTable->BallList->Get(i));
+			auto ball = MainTable->BallList->Get(i);
 			if (ball->ActiveFlag)
 				ball->Repaint();
 		}
@@ -440,7 +440,7 @@ void pb::keydown(int key)
 		{
 		case 'B':
 			TBall* ball;
-			if (MainTable->BallList->Count() <= 0)
+			if (MainTable->BallList->GetCount() <= 0)
 			{
 				ball = new TBall(MainTable);
 			}
@@ -448,11 +448,11 @@ void pb::keydown(int key)
 			{
 				for (auto index = 0; ;)
 				{
-					ball = static_cast<TBall*>(MainTable->BallList->Get(index));
+					ball = MainTable->BallList->Get(index);
 					if (!ball->ActiveFlag)
 						break;
 					++index;
-					if (index >= MainTable->BallList->Count())
+					if (index >= MainTable->BallList->GetCount())
 					{
 						ball = new TBall(MainTable);
 						break;

@@ -4,8 +4,8 @@
 
 #include "control.h"
 #include "loader.h"
+#include "objlist_class.h"
 #include "render.h"
-#include "TZmapList.h"
 
 TGate::TGate(TPinballTable* table, int groupIndex) : TCollisionComponent(table, groupIndex, true)
 {
@@ -15,7 +15,7 @@ TGate::TGate(TPinballTable* table, int groupIndex) : TCollisionComponent(table, 
 	SoundIndex4 = visual.SoundIndex4;
 	SoundIndex3 = visual.SoundIndex3;
 	ActiveFlag = 1;
-	render::sprite_set_bitmap(RenderSprite, static_cast<gdrv_bitmap8*>(ListBitmap->Get(0)));
+	render::sprite_set_bitmap(RenderSprite, ListBitmap->Get(0));
 	control::handler(1024, this);
 }
 
@@ -32,7 +32,7 @@ int TGate::Message(int code, float value)
 		else if (code == 54 || code == 1024)
 		{
 			ActiveFlag = 1;
-			render::sprite_set_bitmap(RenderSprite, static_cast<gdrv_bitmap8*>(ListBitmap->Get(0)));
+			render::sprite_set_bitmap(RenderSprite, ListBitmap->Get(0));
 			if (code == 54)
 				loader::play_sound(SoundIndex4);
 		}

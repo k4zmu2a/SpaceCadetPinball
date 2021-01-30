@@ -81,9 +81,6 @@
     <ClInclude Include="TTimer.h">
       <Filter>Header Files\TPinballComponent</Filter>
     </ClInclude>
-    <ClInclude Include="TZmapList.h">
-      <Filter>Header Files\TPinballComponent</Filter>
-    </ClInclude>
     <ClInclude Include="memory.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -234,9 +231,6 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="SpaceCadetPinball.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="objlist_class.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="partman.cpp">

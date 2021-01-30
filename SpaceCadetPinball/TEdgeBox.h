@@ -1,5 +1,9 @@
 #pragma once
-class objlist_class;
+#include "objlist_class.h"
+
+
+struct field_effect_type;
+class TEdgeSegment;
 
 class TEdgeBox
 {
@@ -7,7 +11,7 @@ public:
 	TEdgeBox();
 	~TEdgeBox();
 
-	objlist_class* EdgeList;
-	objlist_class* FieldList;
+	objlist_class<TEdgeSegment>* EdgeList;
+	objlist_class<field_effect_type>* FieldList;
 };
 

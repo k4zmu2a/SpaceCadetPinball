@@ -4,10 +4,10 @@
 
 #include "control.h"
 #include "loader.h"
+#include "objlist_class.h"
 #include "render.h"
 #include "timer.h"
 #include "TPinballTable.h"
-#include "TZmapList.h"
 
 TLight::TLight(TPinballTable* table, int groupIndex) : TPinballComponent(table, groupIndex, true)
 {
@@ -144,13 +144,13 @@ int TLight::Message(int code, float value)
 		break;
 	case 11:
 		BmpIndex2 = static_cast<int>(floor(value));
-		if (BmpIndex2 > ListBitmap->Count())
-			BmpIndex2 = ListBitmap->Count();
+		if (BmpIndex2 > ListBitmap->GetCount())
+			BmpIndex2 = ListBitmap->GetCount();
 		bmpIndex = 0;
 		if (BmpIndex2 < 0)
 			BmpIndex2 = 0;
 		Flasher.BmpArr[0] = nullptr;
-		Flasher.BmpArr[1] = static_cast<gdrv_bitmap8*>(ListBitmap->Get(BmpIndex2));
+		Flasher.BmpArr[1] = ListBitmap->Get(BmpIndex2);
 		if (FlasherActive == 0)
 		{
 			if (!FlasherFlag1)
@@ -169,8 +169,8 @@ int TLight::Message(int code, float value)
 		break;
 	case 12:
 		bmpIndex = BmpIndex2 + 1;
-		if (bmpIndex > ListBitmap->Count())
-			bmpIndex = ListBitmap->Count();
+		if (bmpIndex > ListBitmap->GetCount())
+			bmpIndex = ListBitmap->GetCount();
 		Message(11, static_cast<float>(bmpIndex));
 		break;
 	case 13:
@@ -257,7 +257,7 @@ void TLight::Reset()
 	Flasher.Sprite = RenderSprite;
 	Flasher.BmpArr[0] = nullptr;
 	if (ListBitmap)
-		Flasher.BmpArr[1] = static_cast<gdrv_bitmap8*>(ListBitmap->Get(0));
+		Flasher.BmpArr[1] = ListBitmap->Get(0);
 	Flasher.Unknown4 = 0;
 	Flasher.Unknown3 = 0;
 	MessageField = 0;

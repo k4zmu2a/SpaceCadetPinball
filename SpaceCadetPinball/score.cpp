@@ -70,7 +70,7 @@ void score::load_msg_font(LPCSTR lpName)
 		FreeResource(resGlobal);
 		return;
 	}
-	memset(fontp->Chars, 0, sizeof(fontp->Chars));
+	memset(fontp->Chars, 0, sizeof fontp->Chars);
 
 	auto maxWidth = 0;
 	auto ptrToWidths = (char*)rcData + 6;

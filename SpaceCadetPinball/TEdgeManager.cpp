@@ -64,9 +64,9 @@ int TEdgeManager::TestGridBox(int x, int y, float* distPtr, TEdgeSegment** edgeD
 	{
 		TEdgeBox* edgeBox = &BoxArray[x + y * MaxBoxX];
 		TEdgeSegment** edgePtr = &EdgeArray[edgeIndex];
-		for (auto index = edgeBox->EdgeList->Count() - 1; index >= 0; --index)
+		for (auto index = edgeBox->EdgeList->GetCount() - 1; index >= 0; --index)
 		{
-			auto edge = static_cast<TEdgeSegment*>(edgeBox->EdgeList->Get(index));
+			auto edge = edgeBox->EdgeList->Get(index);
 			if (!edge->ProcessedFlag && *edge->ActiveFlag && (edge->CollisionGroup & ray->FieldFlag))
 			{
 				if (!ball->already_hit(edge))
@@ -94,9 +94,9 @@ void TEdgeManager::FieldEffects(TBall* ball, vector_type* dstVec)
 	TEdgeBox* edgeBox = &BoxArray[box_x(ball->Position.X) + box_y(ball->Position.Y) *
 		MaxBoxX];
 
-	for (int index = edgeBox->FieldList->Count() - 1; index >= 0; --index)
+	for (int index = edgeBox->FieldList->GetCount() - 1; index >= 0; --index)
 	{
-		auto field = static_cast<field_effect_type*>(edgeBox->FieldList->Get(index));
+		auto field = edgeBox->FieldList->Get(index);
 		if (*field->Flag2Ptr && ball->FieldFlag & field->Mask)
 		{
 			if (field->CollisionComp->FieldEffect(ball, &vec))

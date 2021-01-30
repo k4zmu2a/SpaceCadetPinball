@@ -4,11 +4,11 @@
 
 #include "control.h"
 #include "loader.h"
+#include "objlist_class.h"
 #include "pb.h"
 #include "render.h"
 #include "TFlipperEdge.h"
 #include "timer.h"
-#include "TZmapList.h"
 
 TFlipper::TFlipper(TPinballTable* table, int groupIndex) : TCollisionComponent(table, groupIndex, false)
 {
@@ -47,8 +47,8 @@ TFlipper::TFlipper(TPinballTable* table, int groupIndex) : TCollisionComponent(t
 	FlipperEdge = flipperEdge;
 	if (flipperEdge)
 	{
-		BmpCoef1 = flipperEdge->BmpCoef1 / static_cast<float>(ListBitmap->Count() - 1);
-		BmpCoef2 = flipperEdge->BmpCoef2 / static_cast<float>(ListBitmap->Count() - 1);
+		BmpCoef1 = flipperEdge->BmpCoef1 / static_cast<float>(ListBitmap->GetCount() - 1);
+		BmpCoef2 = flipperEdge->BmpCoef2 / static_cast<float>(ListBitmap->GetCount() - 1);
 	}
 	BmpIndex = 0;
 	InputTime = 0.0;
@@ -137,7 +137,7 @@ void TFlipper::TimerExpired(int timerId, void* caller)
 
 	bool bmpIndexOutOfBounds = false;
 	auto bmpIndexAdvance = static_cast<int>(floor((pb::time_now - flip->InputTime) / flip->TimerTime + 0.5f));
-	int bmpCount = flip->ListBitmap->Count();
+	int bmpCount = flip->ListBitmap->GetCount();
 	if (bmpIndexAdvance > bmpCount)
 		bmpIndexAdvance = bmpCount;
 	if (bmpIndexAdvance < 0)
@@ -149,7 +149,7 @@ void TFlipper::TimerExpired(int timerId, void* caller)
 	if (flip->MessageField == 1)
 	{
 		flip->BmpIndex += bmpIndexAdvance;
-		int countSub1 = flip->ListBitmap->Count() - 1;
+		int countSub1 = flip->ListBitmap->GetCount() - 1;
 		if (flip->BmpIndex >= countSub1)
 		{
 			flip->BmpIndex = countSub1;
@@ -177,8 +177,8 @@ void TFlipper::TimerExpired(int timerId, void* caller)
 		timer = timer::set(flip->TimerTime, flip, TimerExpired);
 	flip->Timer = timer;
 
-	auto bmp = static_cast<gdrv_bitmap8*>(flip->ListBitmap->Get(flip->BmpIndex));
-	auto zMap = static_cast<zmap_header_type*>(flip->ListZMap->Get(flip->BmpIndex));
+	auto bmp = flip->ListBitmap->Get(flip->BmpIndex);
+	auto zMap = flip->ListZMap->Get(flip->BmpIndex);
 	render::sprite_set(
 		flip->RenderSprite,
 		bmp,

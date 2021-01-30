@@ -262,7 +262,7 @@ void TTextBox::Draw()
 		}
 		else
 		{
-			auto timeLeft = (Message1->TimeLeft());
+			auto timeLeft = Message1->TimeLeft();
 			if (timeLeft >= -2.0f)
 			{
 				int timer;

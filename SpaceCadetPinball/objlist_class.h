@@ -1,28 +1,78 @@
 #pragma once
 
-struct  objlist_struct1
-{
-	int Size;
-	int Count;
-	void* Array[1];
-};
+#include "memory.h"
 
+template <class T>
 class objlist_class
 {
 public:
-	objlist_class(int SizeInt, int growSize);
-	~objlist_class();
-	void Add(void* value);
-	void Grow();
-	int Delete(void* value);
-	void* Get(int index);
-	int Count() const { return !ListPtr ? 0 : ListPtr->Count; }
-	int Size() const { return !ListPtr ? 0 : ListPtr->Size; }	
+	objlist_class(int sizeInt, int growSize)
+	{
+		ListPtr = reinterpret_cast<T**>(memory::allocate(sizeof(T*) * sizeInt));
+		Count = 0;
+		Size = sizeInt;
+		GrowSize = growSize;
+	}
+
+	~objlist_class()
+	{
+		if (ListPtr)
+			memory::free(ListPtr);
+	}
+
+	void Add(T* value)
+	{
+		if (Count == Size)
+			Grow();
+		if (Count >= Size)
+			return;
+
+		ListPtr[Count] = value;
+		Count++;
+	}
+
+	void Grow()
+	{
+		if (!ListPtr)
+			return;
+		auto newSize = Count + GrowSize;
+		if (newSize <= Size)
+			return;
+
+		auto newList = reinterpret_cast<T**>(memory::realloc(ListPtr, sizeof(T*) * newSize));
+		if (!newList)
+			return;
+
+		ListPtr = newList;
+		Size = newSize;
+	}
+
+	int Delete(T* value)
+	{
+		for (auto index = Count - 1; index >= 0; index--)
+		{
+			if (ListPtr[index] == value)
+			{
+				ListPtr[index] = ListPtr[Count - 1];
+				Count--;
+				return 1;
+			}
+		}
+		return 0;
+	}
+
+	T* Get(int index) const
+	{
+		if (index >= Count)
+			return nullptr;
+		return ListPtr[index];
+	}
+
+	int GetCount() const { return Count; }
+	int GetSize() const { return Size; }
 private:
-	objlist_struct1* ListPtr;
+	T** ListPtr;
 	int GrowSize;
-	static objlist_struct1* objlist_new(int sizeInt);
-	static int objlist_add_object(objlist_struct1* ptrToStruct, void* value);
-	static objlist_struct1* objlist_grow(objlist_struct1* ptrToStruct, int growSize);
-	static int objlist_delete_object(objlist_struct1* ptrToStruct, void* value);
+	int Size;
+	int Count;
 };

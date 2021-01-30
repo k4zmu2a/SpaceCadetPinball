@@ -3,16 +3,16 @@
 
 
 #include "control.h"
+#include "objlist_class.h"
 #include "render.h"
 #include "timer.h"
-#include "TZmapList.h"
 
 TWall::TWall(TPinballTable* table, int groupIndex) : TCollisionComponent(table, groupIndex, true)
 {
 	if (RenderSprite)
 		render::sprite_set_bitmap(RenderSprite, nullptr);
 	if (ListBitmap)
-		BmpPtr = static_cast<gdrv_bitmap8*>(ListBitmap->Get(0));
+		BmpPtr = ListBitmap->Get(0);
 	Timer = 0;
 }
 

@@ -4,10 +4,10 @@
 
 #include "control.h"
 #include "loader.h"
+#include "objlist_class.h"
 #include "render.h"
 #include "timer.h"
 #include "TPinballTable.h"
-#include "TZmapList.h"
 
 TSoloTarget::TSoloTarget(TPinballTable* table, int groupIndex) : TCollisionComponent(table, groupIndex, true)
 {
@@ -41,8 +41,8 @@ int TSoloTarget::Message(int code, float value)
 	if (ListBitmap)
 	{
 		auto index = 1 - ActiveFlag;
-		auto bmp = static_cast<gdrv_bitmap8*>(ListBitmap->Get(index));
-		auto zMap = static_cast<zmap_header_type*>(ListZMap->Get(index));
+		auto bmp = ListBitmap->Get(index);
+		auto zMap = ListZMap->Get(index);
 		render::sprite_set(
 			RenderSprite,
 			bmp,

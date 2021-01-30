@@ -1,9 +1,11 @@
 #pragma once
+#include "objlist_class.h"
 
+struct zmap_header_type;
+struct gdrv_bitmap8;
 struct render_sprite_type_struct;
 struct component_control;
 class TPinballTable;
-class TZmapList;
 
 enum class message_code
 {
@@ -35,6 +37,6 @@ public:
 	int GroupIndex;
 	render_sprite_type_struct* RenderSprite;
 	TPinballTable* PinballTable;
-	TZmapList* ListBitmap;
-	TZmapList* ListZMap;
+	objlist_class<gdrv_bitmap8>* ListBitmap;
+	objlist_class<zmap_header_type>* ListZMap;
 };
