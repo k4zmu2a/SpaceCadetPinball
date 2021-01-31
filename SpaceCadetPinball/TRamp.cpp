@@ -22,16 +22,8 @@ TRamp::TRamp(TPinballTable* table, int groupIndex) : TCollisionComponent(table, 
 	loader::query_visual(groupIndex, 0, &visual);
 	CollisionGroup = visual.CollisionGroup;
 
-	auto floatArr1 = loader::query_float_attribute(groupIndex, 0, 701);
-	if (floatArr1)
-		BallFieldMult = *floatArr1;
-	else
-		BallFieldMult = 0.2f;
-	auto floatArr2 = loader::query_float_attribute(groupIndex, 0, 1305);
-	if (floatArr2)
-		RampFlag1 = static_cast<int>(floor(*floatArr2));
-	else
-		RampFlag1 = 0;
+	BallFieldMult = loader::query_float_attribute(groupIndex, 0, 701, 0.2f);
+	RampFlag1 = static_cast<int>(loader::query_float_attribute(groupIndex, 0, 1305, 0));
 
 	auto floatArr3Plane = loader::query_float_attribute(groupIndex, 0, 1300);
 	RampPlaneCount = static_cast<int>(floor(*floatArr3Plane));

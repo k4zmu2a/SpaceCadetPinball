@@ -27,6 +27,12 @@ TFlipper::TFlipper(TPinballTable* table, int groupIndex) : TCollisionComponent(t
 	auto collMult = *floatArr;
 	auto bmpCoef2 = *floatArr2;
 	auto bmpCoef1 = *floatArr3;
+	
+	/*Full tilt hack: different flipper speed*/
+	if (bmpCoef2 > 1)
+		bmpCoef2 = 0.08f;
+	if (bmpCoef1 > 1)
+		bmpCoef1 = 0.04f;
 	auto vecT2 = reinterpret_cast<vector_type*>(loader::query_float_attribute(groupIndex, 0, 802));
 	auto vecT1 = reinterpret_cast<vector_type*>(loader::query_float_attribute(groupIndex, 0, 801));
 	auto origin = reinterpret_cast<vector_type*>(loader::query_float_attribute(groupIndex, 0, 800));

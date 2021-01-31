@@ -25,4 +25,13 @@
 /*Sound uses PlaySound*/
 #undef PlaySound
 
+
+inline size_t pgm_save(int width, int height, char* data, FILE* outfile)
+{
+	size_t n = 0;
+	n += fprintf(outfile, "P5\n%d %d\n%d\n", width, height, 0xFF);
+	n += fwrite(data, 1, width * height, outfile);
+	return n;
+}
+
 #endif //PCH_H

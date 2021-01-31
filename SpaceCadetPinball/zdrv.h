@@ -24,4 +24,6 @@ public:
 	static void paint_flat(int width, int height, gdrv_bitmap8* dstBmp, int dstBmpXOff, int dstBmpYOff,
 	                       zmap_header_type* zMap, int dstZMapXOff, int dstZMapYOff, gdrv_bitmap8* srcBmp,
 	                       int srcBmpXOff, int srcBmpYOff, unsigned __int16 depth);
+	static void paint_spliced_bmp(int xPos, int yPos, gdrv_bitmap8* dstBmp, zmap_header_type* dstZmap,
+	                          gdrv_bitmap8* srcBmp);
 };

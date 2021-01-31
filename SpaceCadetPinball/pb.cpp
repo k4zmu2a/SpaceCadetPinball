@@ -37,8 +37,9 @@ int pb::init()
 
 	++memory::critical_allocation;
 	lstrcpyA(datFileName, winmain::DatFileName);
+	//lstrcpyA(datFileName, "cadet.dat");
 	pinball::make_path_name(dataFilePath, datFileName, 300);
-	record_table = partman::load_records(dataFilePath);
+	record_table = partman::load_records(dataFilePath, 0, strstr(datFileName, "cadet"));
 
 	auto useBmpFont = 0;
 	pinball::get_rc_int(158, &useBmpFont);
@@ -54,6 +55,10 @@ int pb::init()
 	auto tableSize = (__int16*)partman::field_labeled(record_table, "table_size", datFieldTypes::ShortArray);
 	auto backgroundBmp = (gdrv_bitmap8*)partman::field_labeled(record_table, "background", datFieldTypes::Bitmap8bit);
 	auto cameraInfo = (float*)partman::field_labeled(record_table, "camera_info", datFieldTypes::FloatArray);
+
+	/*Full tilt hack - table size is hardcoded*/
+	if (!tableSize)
+		tableSize = new short[2]{600, 800};
 
 	if (cameraInfo)
 	{
@@ -545,7 +550,7 @@ void pb::end_game()
 				scores[j] = scores[i];
 				scores[i] = score;
 
-				int index = scoreIndex[j];				
+				int index = scoreIndex[j];
 				scoreIndex[j] = scoreIndex[i];
 				scoreIndex[i] = index;
 			}

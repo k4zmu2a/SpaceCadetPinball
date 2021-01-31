@@ -31,6 +31,10 @@ TBall::TBall(TPinballTable* table) : TPinballComponent(table, -1, false)
 
 	ListBitmap = new objlist_class<gdrv_bitmap8>(0, 4);
 	auto groupIndex = loader::query_handle("ball");
+
+	/*Full tilt hack - ball is ball0*/
+	if (groupIndex < 0)
+		groupIndex = loader::query_handle("ball0");
 	Offset = *loader::query_float_attribute(groupIndex, 0, 500);
 	auto visualCount = loader::query_visual_states(groupIndex);
 	auto index = 0;

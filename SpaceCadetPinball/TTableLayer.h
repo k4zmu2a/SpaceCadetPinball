@@ -26,7 +26,7 @@ public:
 	float Unknown3F;
 	float Unknown4F;
 	float GraityDirX;
-	float GraityDiY;
+	float GraityDirY;
 	int Unknown7;
 	float GraityMult;
 	field_effect_type Field;

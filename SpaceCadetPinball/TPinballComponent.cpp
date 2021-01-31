@@ -48,6 +48,19 @@ TPinballComponent::TPinballComponent(TPinballTable* table, int groupIndex, bool 
 			zMap = ListZMap->Get(0);
 		if (ListBitmap)
 		{
+			/* Full tilt hack - spliced bitmap includes zMap
+			 * Users access bitmap-zMap in pairs, pad zMap list with 0 for such users
+			 * zdrv does not access zMap when drawing spliced bitmap*/
+			if (!ListZMap)
+			{
+				ListZMap = new objlist_class<zmap_header_type>(0, 4);
+				for (int index = 0; index < ListBitmap->GetCount(); index++)
+				{
+					assertm(ListBitmap->Get(index)->BitmapType == BitmapType::Spliced, "Wrong zMap padding");
+					ListZMap->Add(visual.ZMap);
+				}
+			}
+
 			rectangle_type bmp1Rect{}, tmpRect{};
 			auto rootBmp = ListBitmap->Get(0);
 			bmp1Rect.XPosition = rootBmp->XPosition - table->XOffset;

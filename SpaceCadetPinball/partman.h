@@ -28,7 +28,8 @@ enum class datFieldTypes : __int16
 enum class bmp8Flags : unsigned char
 {
 	RawBmpUnaligned = 1 << 0,
-	DibBitmap = 1 << 1,	
+	DibBitmap = 1 << 1,
+	Spliced = 1 << 2,
 };
 
 
@@ -71,7 +72,7 @@ struct datFileStruct
 #pragma pack(1)
 struct dat8BitBmpHeader
 {
-	char Unknown1;
+	char Resolution;
 	__int16 Width;
 	__int16 Height;
 	__int16 XPosition;
@@ -108,7 +109,7 @@ static_assert(sizeof(dat16BitBmpHeader) == 14, "Wrong size of zmap_header_type")
 class partman
 {
 public:
-	static datFileStruct* load_records(LPCSTR lpFileName);
+	static datFileStruct* load_records(LPCSTR lpFileName, int resolution, bool fullTiltMode);
 	static void unload_records(datFileStruct* datFile);
 	static char* field_nth(datFileStruct* datFile, int groupIndex, datFieldTypes targetEntryType, int skipFirstN);
 	static char* field(datFileStruct* datFile, int groupIndex, datFieldTypes entryType);

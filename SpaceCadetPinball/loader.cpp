@@ -242,6 +242,37 @@ float* loader::query_float_attribute(int groupIndex, int groupIndexOffset, int f
 	return nullptr;
 }
 
+float loader::query_float_attribute(int groupIndex, int groupIndexOffset, int firstValue, float defVal)
+{
+	if (groupIndex < 0)
+	{
+		error(0, 22);
+		return NAN;
+	}
+
+	int stateId = state_id(groupIndex, groupIndexOffset);
+	if (stateId < 0)
+	{
+		error(16, 22);
+		return NAN;
+	}
+
+	for (auto skipIndex = 0;; ++skipIndex)
+	{
+		auto floatArr = reinterpret_cast<float*>(partman::field_nth(loader_table, stateId,
+			datFieldTypes::FloatArray,skipIndex));
+		if (!floatArr)
+			break;
+		if (static_cast<__int16>(floor(*floatArr)) == firstValue)
+			return floatArr[1];
+	}
+
+	if (!isnan(defVal))
+		return defVal;
+	error(13, 22);
+	return NAN;
+}
+
 int loader::material(int groupIndex, visualStruct* visual)
 {
 	if (groupIndex < 0)

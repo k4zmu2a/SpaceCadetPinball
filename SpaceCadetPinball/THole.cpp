@@ -19,16 +19,8 @@ THole::THole(TPinballTable* table, int groupIndex) : TCollisionComponent(table, 
 	MessageField = 0;
 	Timer = 0;
 	BallCapturedFlag = 0;
-	auto floatArr1 = loader::query_float_attribute(groupIndex, 0, 407);
-	if (floatArr1)
-		Unknown3 = *floatArr1;
-	else
-		Unknown3 = 0.25;
-	auto floatArr2 = loader::query_float_attribute(groupIndex, 0, 701);
-	if (floatArr2)
-		GravityMult = *floatArr2;
-	else
-		GravityMult = 0.5;
+	Unknown3 = loader::query_float_attribute(groupIndex, 0, 407, 0.25f);
+	GravityMult = loader::query_float_attribute(groupIndex, 0, 701, 0.2f);
 	GravityPull = *loader::query_float_attribute(groupIndex, 0, 305);
 
 	loader::query_visual(groupIndex, 0, &visual);
@@ -38,7 +30,8 @@ THole::THole(TPinballTable* table, int groupIndex) : TCollisionComponent(table, 
 	if (Circle.RadiusSq == 0.0)
 		Circle.RadiusSq = 0.001f;
 
-	auto tCircle = new TCircle(this, &ActiveFlag, visual.CollisionGroup, reinterpret_cast<vector_type*>(visual.FloatArr),
+	auto tCircle = new TCircle(this, &ActiveFlag, visual.CollisionGroup,
+	                           reinterpret_cast<vector_type*>(visual.FloatArr),
 	                           Circle.RadiusSq);
 	if (tCircle)
 	{
@@ -48,6 +41,10 @@ THole::THole(TPinballTable* table, int groupIndex) : TCollisionComponent(table, 
 
 	ZSetValue = loader::query_float_attribute(groupIndex, 0, 408)[2];
 	FieldFlag = static_cast<int>(floor(*loader::query_float_attribute(groupIndex, 0, 1304)));
+
+	/*Full tilt hack - FieldFlag should be on*/
+	if (!FieldFlag)
+		FieldFlag = 1;
 
 	Circle.RadiusSq = visual.FloatArr[2] * visual.FloatArr[2];
 	circle.RadiusSq = Circle.RadiusSq;

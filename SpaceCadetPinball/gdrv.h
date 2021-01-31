@@ -5,6 +5,7 @@ enum class BitmapType : char
 	None = 0,
 	RawBitmap = 1,
 	DibBitmap = 2,
+	Spliced = 4,
 };
 
 struct gdrv_bitmap8
@@ -50,6 +51,7 @@ public:
 	static int create_bitmap_dib(gdrv_bitmap8* bmp, int width, int height);
 	static int create_bitmap(gdrv_bitmap8* bmp, int width, int height);
 	static int create_raw_bitmap(gdrv_bitmap8* bmp, int width, int height, int flag);
+	static int create_spliced_bitmap(gdrv_bitmap8* bmp, int width, int height, int size);
 	static int destroy_bitmap(gdrv_bitmap8* bmp);
 	static int display_palette(PALETTEENTRY* plt);
 	static UINT start_blit_sequence();

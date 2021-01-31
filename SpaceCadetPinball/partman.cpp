@@ -9,8 +9,7 @@ short partman::_field_size[] =
 	2, -1, 2, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 0
 };
 
-
-datFileStruct* partman::load_records(LPCSTR lpFileName)
+datFileStruct* partman::load_records(LPCSTR lpFileName, int resolution, bool fullTiltMode)
 {
 	_OFSTRUCT ReOpenBuff{};
 	datFileHeader header{};
@@ -86,10 +85,10 @@ datFileStruct* partman::load_records(LPCSTR lpFileName)
 		if (!groupData)
 			break;
 
-		groupData->EntryCount = entryCount;
-		datEntryData* entryData = groupData->Entries;
+		groupData->EntryCount = 0;
 		for (auto entryIndex = 0; entryIndex < entryCount; ++entryIndex)
 		{
+			auto entryData = &groupData->Entries[groupData->EntryCount];
 			auto entryType = static_cast<datFieldTypes>(_lread_char(fileHandle));
 			entryData->EntryType = entryType;
 
@@ -100,6 +99,12 @@ datFileStruct* partman::load_records(LPCSTR lpFileName)
 			if (entryType == datFieldTypes::Bitmap8bit)
 			{
 				_hread(fileHandle, &bmpHeader, sizeof(dat8BitBmpHeader));
+				if (bmpHeader.Resolution != resolution && bmpHeader.Resolution != -1)
+				{
+					_llseek(fileHandle, bmpHeader.Size, 1);
+					continue;
+				}
+
 				auto bmp = reinterpret_cast<gdrv_bitmap8*>(memory::allocate(sizeof(gdrv_bitmap8)));
 				entryData->Buffer = reinterpret_cast<char*>(bmp);
 				if (!bmp)
@@ -107,10 +112,15 @@ datFileStruct* partman::load_records(LPCSTR lpFileName)
 					abort = true;
 					break;
 				}
-				if (bmpHeader.IsFlagSet(bmp8Flags::DibBitmap)
-					    ? gdrv::create_bitmap(bmp, bmpHeader.Width, bmpHeader.Height)
-					    : gdrv::create_raw_bitmap(bmp, bmpHeader.Width, bmpHeader.Height,
-					                              bmpHeader.IsFlagSet(bmp8Flags::RawBmpUnaligned)))
+				int bmpRez;
+				if (bmpHeader.IsFlagSet(bmp8Flags::Spliced))
+					bmpRez = gdrv::create_spliced_bitmap(bmp, bmpHeader.Width, bmpHeader.Height, bmpHeader.Size);
+				else if (bmpHeader.IsFlagSet(bmp8Flags::DibBitmap))
+					bmpRez = gdrv::create_bitmap(bmp, bmpHeader.Width, bmpHeader.Height);
+				else
+					bmpRez = gdrv::create_raw_bitmap(bmp, bmpHeader.Width, bmpHeader.Height,
+					                                 bmpHeader.IsFlagSet(bmp8Flags::RawBmpUnaligned));
+				if (bmpRez)
 				{
 					abort = true;
 					break;
@@ -121,9 +131,21 @@ datFileStruct* partman::load_records(LPCSTR lpFileName)
 			}
 			else if (entryType == datFieldTypes::Bitmap16bit)
 			{
+				/*Full tilt has extra byte(@0:resolution) in zMap*/
+				if (fullTiltMode)
+				{
+					char zMapResolution = _lread_char(fileHandle);
+					fieldSize--;
+					if (zMapResolution != resolution && zMapResolution != -1)
+					{
+						_llseek(fileHandle, fieldSize, 1);
+						continue;
+					}
+				}
+
 				_hread(fileHandle, &zMapHeader, sizeof(dat16BitBmpHeader));
 				int length = fieldSize - sizeof(dat16BitBmpHeader);
-				
+
 				auto zmap = reinterpret_cast<zmap_header_type*>(memory::allocate(sizeof(zmap_header_type) + length));
 				zmap->Width = zMapHeader.Width;
 				zmap->Height = zMapHeader.Height;
@@ -144,9 +166,9 @@ datFileStruct* partman::load_records(LPCSTR lpFileName)
 			}
 
 			entryData->FieldSize = fieldSize;
-			datFile->NumberOfGroups = groupIndex + 1;
-			++entryData;
+			groupData->EntryCount++;
 		}
+		datFile->NumberOfGroups = groupIndex + 1;
 	}
 
 	_lclose(fileHandle);

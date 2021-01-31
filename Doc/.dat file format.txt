@@ -39,21 +39,21 @@ Type            Meaning/comments
 9               String (content)
 10              Array of 16bits integer values
 11              Array of 32bits floating point values (collision box, ...)
-12              16 bpp bitmap (Heightmap?)
+12              16 bpp bitmap (zMap)
 
 
 //-- 8bpp bitmap data header --//
-+0:     Unknown (0)     BYTE
++0:     Resolution      BYTE	0=640x480, 1=800x600, 2=1024x768, -1=Load in all resolutions
 +1:     Width           WORD
 +3:     Height          WORD
 +5:     X position      WORD
 +7      Y position      WORD
 +9:     Size of bitmap  DWORD
-+13:    Unknown (1)     BYTE
++13:    Flags           BYTE	bit0=Raw bmp align; bit1=DibBitmap, raw when 0; bit2=Spliced bitmap (aka skipline), combines bmp and zMap in RLE-like way
 +14:    Bitmap data     BYTE*(DWORD@+9)
 
 
-//-- 16bpp bitmap data header --//
+//-- 16bpp zMap data header --//
 +0:     Width           WORD
 +2:     Height          WORD
 +4:     Pitch/2         WORD
@@ -61,6 +61,16 @@ Type            Meaning/comments
 +10:    Unknown (0)     WORD
 +12:    Unknown (80)    WORD
 +14:    Bitmap data     BYTE*(DWORD@+9)
+
+//-- 16bpp zMap data header full tilt --//
++0:     Resolution      BYTE	0=640x480, 1=800x600, 2=1024x768, -1=Load in all resolutions
++1:     Width           WORD
++3:     Height          WORD
++5:     Pitch/2         WORD
++7:     Unknown (0)     DWORD
++11:    Unknown (0)     WORD
++13:    Unknown (80)    WORD
++15:    Bitmap data     BYTE*(DWORD@+9)
 
 
 //-- Pinball 3D remarkable groups --//

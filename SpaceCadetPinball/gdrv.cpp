@@ -185,6 +185,21 @@ int gdrv::create_raw_bitmap(gdrv_bitmap8* bmp, int width, int height, int flag)
 	return 0;
 }
 
+int gdrv::create_spliced_bitmap(gdrv_bitmap8* bmp, int width, int height, int size)
+{
+	bmp->Dib = nullptr;
+	bmp->Width = width;
+	bmp->Stride = width;
+	bmp->BitmapType = BitmapType::Spliced;
+	bmp->Height = height;
+	char* buf = memory::allocate(size);
+	bmp->BmpBufPtr1 = buf;
+	if (!buf)
+		return -1;
+	bmp->BmpBufPtr2 = bmp->BmpBufPtr1;
+	return 0;
+}
+
 
 int gdrv::display_palette(PALETTEENTRY* plt)
 {

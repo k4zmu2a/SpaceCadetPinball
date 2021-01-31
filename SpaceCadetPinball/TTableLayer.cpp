@@ -49,11 +49,12 @@ TTableLayer::TTableLayer(TPinballTable* table): TCollisionComponent(table, -1, f
 		PinballTable->GravityAnglY = 1.570796f;
 	}
 
-	auto table3 = PinballTable;
-	GraityDirX = cos(table3->GravityAnglY) * sin(table3->GravityAngleX) * table3->GravityDirVectMult;
-	GraityDiY = sin(table3->GravityAnglY) * sin(table3->GravityAngleX) * table3->GravityDirVectMult;
+	GraityDirX = cos(PinballTable->GravityAnglY) * sin(PinballTable->GravityAngleX) * PinballTable->GravityDirVectMult;
+	GraityDirY = sin(PinballTable->GravityAnglY) * sin(PinballTable->GravityAngleX) * PinballTable->GravityDirVectMult;
 	auto angleMultArr = loader::query_float_attribute(groupIndex, 0, 701);
-	if (angleMultArr)
+
+	/*Full tilt hack - GraityMult should be 0.2*/
+	if (angleMultArr && *angleMultArr < 1)
 		GraityMult = *angleMultArr;
 	else
 		GraityMult = 0.2f;
@@ -109,7 +110,7 @@ int TTableLayer::FieldEffect(TBall* ball, vector_type* vecDst)
 {
 	vecDst->X = GraityDirX - (0.5f - static_cast<float>(rand()) * 0.00003051850947599719f + ball->Acceleration.X) *
 		ball->Speed * GraityMult;
-	vecDst->Y = GraityDiY - ball->Acceleration.Y * ball->Speed * GraityMult;
+	vecDst->Y = GraityDirY - ball->Acceleration.Y * ball->Speed * GraityMult;
 	return 1;
 }
 
@@ -254,7 +255,7 @@ void TTableLayer::edges_insert_circle(circle_type* circle, TEdgeSegment* edge, f
 					ray.Origin.Y = ray.Origin.Y - edge_manager->AdvanceY;
 					if (maths::ray_intersect_circle(&ray, circle) < 1000000000.0)
 						break;
-					
+
 					collision = false;
 				}
 				while (false);
