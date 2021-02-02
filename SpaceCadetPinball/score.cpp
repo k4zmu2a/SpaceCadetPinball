@@ -16,7 +16,7 @@ int score::init()
 
 scoreStruct* score::create(LPCSTR fieldName, gdrv_bitmap8* renderBgBmp)
 {
-	auto score = reinterpret_cast<scoreStruct*>(memory::allocate(sizeof(scoreStruct)));
+	auto score = memory::allocate<scoreStruct>();
 	if (!score)
 		return nullptr;
 	score->Score = -9999;
@@ -45,7 +45,7 @@ scoreStruct* score::create(LPCSTR fieldName, gdrv_bitmap8* renderBgBmp)
 
 scoreStruct* score::dup(scoreStruct* score, int scoreIndex)
 {
-	auto result = reinterpret_cast<scoreStruct*>(memory::allocate(sizeof(scoreStruct)));
+	auto result = memory::allocate<scoreStruct>();
 	if (result)
 		memcpy(result, score, sizeof(scoreStruct));
 	return result;
@@ -63,7 +63,7 @@ void score::load_msg_font(LPCSTR lpName)
 
 	auto rcData = static_cast<__int16*>(LockResource(resGlobal));
 
-	auto fontp = reinterpret_cast<score_msg_font_type*>(memory::allocate(sizeof(score_msg_font_type)));
+	auto fontp = memory::allocate<score_msg_font_type>();
 	msg_fontp = fontp;
 	if (!fontp)
 	{
@@ -102,7 +102,7 @@ void score::load_msg_font(LPCSTR lpName)
 		if (!width)
 			continue;
 
-		auto bmp = reinterpret_cast<gdrv_bitmap8*>(memory::allocate(sizeof(gdrv_bitmap8)));
+		auto bmp = memory::allocate<gdrv_bitmap8>();
 		msg_fontp->Chars[charInd] = bmp;
 		if (!bmp)
 		{
@@ -130,6 +130,7 @@ void score::load_msg_font(LPCSTR lpName)
 		}
 	}
 
+	memory::free(tmpCharBur);
 	if (charInd != 128)
 		unload_msg_font();
 	FreeResource(resGlobal);
@@ -147,6 +148,7 @@ void score::unload_msg_font()
 				memory::free(msg_fontp->Chars[i]);
 			}
 		}
+		memory::free(msg_fontp);
 		msg_fontp = nullptr;
 	}
 }
@@ -191,7 +193,7 @@ void score::set(scoreStruct* score, int value)
 
 void score::update(scoreStruct* score)
 {
-	char scoreBuf[12];
+	char scoreBuf[12]{};
 	if (score && score->DirtyFlag && score->Score <= 1000000000)
 	{
 		score->DirtyFlag = false;

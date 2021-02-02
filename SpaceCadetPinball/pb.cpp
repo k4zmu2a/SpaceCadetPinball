@@ -47,7 +47,7 @@ int pb::init()
 		score::load_msg_font("pbmsg_ft");
 
 	if (!record_table)
-		return (int)&record_table->NumberOfGroups + 1;
+		return 1;
 
 	auto plt = (PALETTEENTRY*)partman::field_labeled(record_table, "background", datFieldTypes::Palette);
 	gdrv::display_palette(plt);

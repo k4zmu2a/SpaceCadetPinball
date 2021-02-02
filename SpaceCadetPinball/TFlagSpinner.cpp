@@ -18,7 +18,7 @@ TFlagSpinner::TFlagSpinner(TPinballTable* table, int groupIndex) : TCollisionCom
 
 	Timer = 0;
 	loader::query_visual(groupIndex, 0, &visual);
-	end.X = *visual.FloatArr;
+	end.X = visual.FloatArr[0];
 	end.Y = visual.FloatArr[1];
 	start.X = visual.FloatArr[2];
 	start.Y = visual.FloatArr[3];

@@ -25,7 +25,7 @@ datFileStruct* partman::load_records(LPCSTR lpFileName, int resolution, bool ful
 		_lclose(fileHandle);
 		return nullptr;
 	}
-	auto datFile = (datFileStruct*)memory::allocate(sizeof(datFileStruct));
+	auto datFile = memory::allocate<datFileStruct>();
 	if (!datFile)
 	{
 		_lclose(fileHandle);
@@ -38,7 +38,7 @@ datFileStruct* partman::load_records(LPCSTR lpFileName, int resolution, bool ful
 	else
 	{
 		int lenOfStr = lstrlenA(header.Description);
-		auto descriptionBuf = static_cast<char*>(memory::allocate(lenOfStr + 1));
+		auto descriptionBuf = memory::allocate(lenOfStr + 1);
 		datFile->Description = descriptionBuf;
 		if (!descriptionBuf)
 		{
@@ -51,7 +51,7 @@ datFileStruct* partman::load_records(LPCSTR lpFileName, int resolution, bool ful
 
 	if (header.Unknown)
 	{
-		auto unknownBuf = static_cast<char*>(memory::allocate(header.Unknown));
+		auto unknownBuf = memory::allocate(header.Unknown);
 		if (!unknownBuf)
 		{
 			_lclose(fileHandle);
@@ -64,7 +64,7 @@ datFileStruct* partman::load_records(LPCSTR lpFileName, int resolution, bool ful
 		memory::free(unknownBuf);
 	}
 
-	auto groupDataBuf = (datGroupData**)memory::allocate(sizeof(void*) * header.NumberOfGroups);
+	auto groupDataBuf = memory::allocate<datGroupData*>(header.NumberOfGroups);
 	datFile->GroupData = groupDataBuf;
 	if (!groupDataBuf)
 	{
@@ -79,8 +79,7 @@ datFileStruct* partman::load_records(LPCSTR lpFileName, int resolution, bool ful
 	{
 		auto entryCount = _lread_char(fileHandle);
 		auto groupDataSize = entryCount <= 0 ? 0 : entryCount - 1;
-		auto groupData = reinterpret_cast<datGroupData*>(memory::allocate(
-			sizeof(datEntryData) * groupDataSize + sizeof(datGroupData)));
+		auto groupData = memory::allocate<datGroupData>(1, sizeof(datEntryData) * groupDataSize);
 		datFile->GroupData[groupIndex] = groupData;
 		if (!groupData)
 			break;
@@ -105,7 +104,7 @@ datFileStruct* partman::load_records(LPCSTR lpFileName, int resolution, bool ful
 					continue;
 				}
 
-				auto bmp = reinterpret_cast<gdrv_bitmap8*>(memory::allocate(sizeof(gdrv_bitmap8)));
+				auto bmp = memory::allocate<gdrv_bitmap8>();
 				entryData->Buffer = reinterpret_cast<char*>(bmp);
 				if (!bmp)
 				{
@@ -146,7 +145,7 @@ datFileStruct* partman::load_records(LPCSTR lpFileName, int resolution, bool ful
 				_hread(fileHandle, &zMapHeader, sizeof(dat16BitBmpHeader));
 				int length = fieldSize - sizeof(dat16BitBmpHeader);
 
-				auto zmap = reinterpret_cast<zmap_header_type*>(memory::allocate(sizeof(zmap_header_type) + length));
+				auto zmap = memory::allocate<zmap_header_type>(1, length);
 				zmap->Width = zMapHeader.Width;
 				zmap->Height = zMapHeader.Height;
 				zmap->Stride = zMapHeader.Stride;
@@ -155,7 +154,7 @@ datFileStruct* partman::load_records(LPCSTR lpFileName, int resolution, bool ful
 			}
 			else
 			{
-				char* entryBuffer = static_cast<char*>(memory::allocate(fieldSize));
+				char* entryBuffer = memory::allocate(fieldSize);
 				entryData->Buffer = entryBuffer;
 				if (!entryBuffer)
 				{
@@ -181,30 +180,23 @@ datFileStruct* partman::load_records(LPCSTR lpFileName, int resolution, bool ful
 
 void partman::unload_records(datFileStruct* datFile)
 {
-	for (int groupIndex = 0; groupIndex < datFile->NumberOfGroups; ++groupIndex)
+	for (auto groupIndex = 0; groupIndex < datFile->NumberOfGroups; ++groupIndex)
 	{
-		datGroupData* group = datFile->GroupData[groupIndex];
-		if (group)
+		auto group = datFile->GroupData[groupIndex];
+		if (!group)
+			continue;
+
+		for (auto entryIndex = 0; entryIndex < group->EntryCount; ++entryIndex)
 		{
-			int entryIndex = 0;
-			if (group->EntryCount > 0)
+			auto entry = &group->Entries[entryIndex];
+			if (entry->Buffer)
 			{
-				datEntryData* entry = group->Entries;
-				do
-				{
-					if (entry->Buffer)
-					{
-						if (entry->EntryType == datFieldTypes::Bitmap8bit)
-							gdrv::destroy_bitmap((gdrv_bitmap8*)entry->Buffer);
-						memory::free(entry->Buffer);
-					}
-					++entryIndex;
-					++entry;
-				}
-				while (entryIndex < group->EntryCount);
+				if (entry->EntryType == datFieldTypes::Bitmap8bit)
+					gdrv::destroy_bitmap(reinterpret_cast<gdrv_bitmap8*>(entry->Buffer));
+				memory::free(entry->Buffer);
 			}
-			memory::free(group);
 		}
+		memory::free(group);
 	}
 	if (datFile->Description)
 		memory::free(datFile->Description);
@@ -214,91 +206,45 @@ void partman::unload_records(datFileStruct* datFile)
 
 char* partman::field(datFileStruct* datFile, int groupIndex, datFieldTypes targetEntryType)
 {
-	datGroupData* groupData = datFile->GroupData[groupIndex];
-	int entryCount = groupData->EntryCount;
-	int entryIndex = 0;
-	if (entryCount <= 0)
-		return nullptr;
-	datEntryData* entry = groupData->Entries;
-	while (true)
+	auto group = datFile->GroupData[groupIndex];
+	for (auto entryIndex = 0; entryIndex < group->EntryCount; ++entryIndex)
 	{
-		auto entryType = entry->EntryType;
-		if (entryType == targetEntryType)
+		auto entry = &group->Entries[entryIndex];
+		if (entry->EntryType == targetEntryType)
+			return entry->Buffer;
+		if (entry->EntryType > targetEntryType)
 			break;
-		if (entryType > targetEntryType)
-			return nullptr;
-		++entryIndex;
-		++entry;
-		if (entryIndex < entryCount)
-			continue;
-		return nullptr;
 	}
-	return entry->Buffer;
+	return nullptr;
 }
 
 
 char* partman::field_nth(datFileStruct* datFile, int groupIndex, datFieldTypes targetEntryType, int skipFirstN)
 {
-	datGroupData* groupData = datFile->GroupData[groupIndex];
-	int entryCount = groupData->EntryCount, skipCount = 0, entryIndex = 0;
-	if (0 < entryCount)
+	auto group = datFile->GroupData[groupIndex];
+	for (auto skipCount = 0, entryIndex = 0; entryIndex < group->EntryCount; ++entryIndex)
 	{
-		datEntryData* entry = groupData->Entries;
-		do
-		{
-			auto entryType = entry->EntryType;
-			if (entryType == targetEntryType)
-			{
-				if (skipCount == skipFirstN)
-				{
-					return entry->Buffer;
-				}
-				skipCount++;
-			}
-			else
-			{
-				if (targetEntryType < entryType)
-				{
-					return nullptr;
-				}
-			}
-			entryIndex++;
-			entry++;
-		}
-		while (entryIndex < entryCount);
+		auto entry = &group->Entries[entryIndex];
+		if (entry->EntryType > targetEntryType)
+			break;
+		if (entry->EntryType == targetEntryType)
+			if (skipCount++ == skipFirstN)
+				return entry->Buffer;
 	}
 	return nullptr;
 }
 
 int partman::field_size_nth(datFileStruct* datFile, int groupIndex, datFieldTypes targetEntryType, int skipFirstN)
 {
-	datGroupData* groupData = datFile->GroupData[groupIndex];
-	int entryCount = groupData->EntryCount, skipCount = 0, entryIndex = 0;
-	if (0 < entryCount)
+	auto group = datFile->GroupData[groupIndex];
+	for (auto skipCount = 0, entryIndex = 0; entryIndex < group->EntryCount; ++entryIndex)
 	{
-		datEntryData* entry = groupData->Entries;
-		do
-		{
-			auto entryType = entry->EntryType;
-			if (entryType == targetEntryType)
-			{
-				if (skipCount == skipFirstN)
-				{
-					return entry->FieldSize;
-				}
-				skipCount++;
-			}
-			else
-			{
-				if (targetEntryType < entryType)
-				{
-					return 0;
-				}
-			}
-			entryIndex++;
-			entry++;
-		}
-		while (entryIndex < entryCount);
+		auto entry = &group->Entries[entryIndex];
+		if (entry->EntryType > targetEntryType)
+			return 0;
+		if (entry->EntryType == targetEntryType)
+			if (skipCount++ == skipFirstN)
+				return entry->FieldSize;
 	}
 	return 0;
 }
@@ -310,46 +256,28 @@ int partman::field_size(datFileStruct* datFile, int groupIndex, datFieldTypes ta
 
 int partman::record_labeled(datFileStruct* datFile, LPCSTR targetGroupName)
 {
-	int trgGroupNameLen = lstrlenA(targetGroupName);
-	int groupIndex = datFile->NumberOfGroups;
-	while (true)
+	auto targetLength = lstrlenA(targetGroupName);
+	for (int groupIndex = datFile->NumberOfGroups - 1; groupIndex >= 0; --groupIndex)
 	{
-		if (--groupIndex < 0)
-			return -1;
-		char* groupName = field(datFile, groupIndex, datFieldTypes::GroupName);
-		if (groupName)
-		{
-			int index = 0;
-			bool found = trgGroupNameLen == 0;
-			if (trgGroupNameLen > 0)
-			{
-				LPCSTR targetNamePtr = targetGroupName;
-				do
-				{
-					if (*targetNamePtr != targetNamePtr[groupName - targetGroupName])
-						break;
-					++index;
-					++targetNamePtr;
-				}
-				while (index < trgGroupNameLen);
-				found = index == trgGroupNameLen;
-			}
-			if (found && !targetGroupName[index] && !groupName[index])
+		auto groupName = field(datFile, groupIndex, datFieldTypes::GroupName);
+		if (!groupName)
+			continue;
+
+		int index;
+		for (index = 0; index < targetLength; index++)
+			if (targetGroupName[index] != groupName[index])
 				break;
-		}
+		if (index == targetLength && !targetGroupName[index] && !groupName[index])
+			return groupIndex;
 	}
-	return groupIndex;
+
+	return -1;
 }
 
 char* partman::field_labeled(datFileStruct* datFile, LPCSTR lpString, datFieldTypes fieldType)
 {
-	char* result;
-	int groupIndex = record_labeled(datFile, lpString);
-	if (groupIndex < 0)
-		result = nullptr;
-	else
-		result = field(datFile, groupIndex, fieldType);
-	return result;
+	auto groupIndex = record_labeled(datFile, lpString);
+	return groupIndex < 0 ? nullptr : field(datFile, groupIndex, fieldType);
 }
 
 char partman::_lread_char(HFILE hFile)

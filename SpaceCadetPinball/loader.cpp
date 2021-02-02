@@ -47,20 +47,19 @@ soundListStruct loader::sound_list[65];
 
 int loader::error(int errorCode, int captionCode)
 {
-	int curCode = loader_errors[0].Code;
+	auto curCode = loader_errors;
 	const char *errorText = nullptr, *errorCaption = nullptr;
-	int index = 0, index2 = 0;
-	if (loader_errors[0].Code >= 0)
-		do
-		{
-			if (errorCode == curCode)
-				errorText = loader_errors[index2].Message;
-			if (captionCode == curCode)
-				errorCaption = loader_errors[index2].Message;
-			index2 = ++index;
-			curCode = loader_errors[index].Code;
-		}
-		while (curCode >= 0);
+	auto index = 0;
+	while (curCode->Code >= 0)
+	{
+		if (errorCode == curCode->Code)
+			errorText = curCode->Message;
+		if (captionCode == curCode->Code)
+			errorCaption = curCode->Message;
+		curCode++;
+		index++;
+	}
+
 	if (!errorText)
 		errorText = loader_errors[index].Message;
 	MessageBoxA(nullptr, errorText, errorCaption, 0x2000u);
@@ -260,7 +259,7 @@ float loader::query_float_attribute(int groupIndex, int groupIndexOffset, int fi
 	for (auto skipIndex = 0;; ++skipIndex)
 	{
 		auto floatArr = reinterpret_cast<float*>(partman::field_nth(loader_table, stateId,
-			datFieldTypes::FloatArray,skipIndex));
+		                                                            datFieldTypes::FloatArray, skipIndex));
 		if (!floatArr)
 			break;
 		if (static_cast<__int16>(floor(*floatArr)) == firstValue)

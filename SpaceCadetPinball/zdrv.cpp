@@ -8,7 +8,7 @@ int zdrv::create_zmap(zmap_header_type* zmap, int width, int height)
 {
 	int stride = pad(width);
 	zmap->Stride = stride;
-	auto bmpBuf = (unsigned short*)memory::allocate(2 * height * stride);
+	auto bmpBuf = memory::allocate<unsigned short>(height * stride);
 	zmap->ZPtr1 = bmpBuf;
 	if (!bmpBuf)
 		return -1;
@@ -36,22 +36,16 @@ int zdrv::destroy_zmap(zmap_header_type* zmap)
 	return 0;
 }
 
-void zdrv::fill(zmap_header_type* zmap, int width, int height, int xOff, int yOff, unsigned __int16 fillChar)
+void zdrv::fill(zmap_header_type* zmap, int width, int height, int xOff, int yOff, unsigned __int16 fillWord)
 {
-	int fillCharInt = fillChar | (fillChar << 16);
-	auto zmapPtr = &zmap->ZPtr1[xOff + zmap->Stride * (zmap->Height - height - yOff)];
-
-	for (int y = height; width > 0 && y > 0; y--)
+	auto dstPtr = &zmap->ZPtr1[zmap->Stride * (zmap->Height - height - yOff) + xOff];
+	for (int y = height; y > 0; --y)
 	{
-		char widthMod2 = width & 1;
-		unsigned int widthDiv2 = static_cast<unsigned int>(width) >> 1;
-		memset32(zmapPtr, fillCharInt, widthDiv2);
-
-		auto lastShort = &zmapPtr[2 * widthDiv2];
-		for (int i = widthMod2; i; --i)
-			*lastShort++ = fillChar;
-
-		zmapPtr += zmap->Stride;
+		for (int x = width; x > 0; --x)
+		{
+			*dstPtr++ = fillWord;
+		}
+		dstPtr += zmap->Stride - width;		
 	}
 }
 

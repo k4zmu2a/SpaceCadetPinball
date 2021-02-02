@@ -616,17 +616,15 @@ TPinballComponent* control::make_component_link(component_tag_base* tag)
 void control::handler(int code, TPinballComponent* cmp)
 {
 	component_control* control = cmp->Control;
-	int scoreInd = 0;
+	
 	if (control)
 	{
-		if (code == 1019 && control->ScoreCount > 0)
+		if (code == 1019)
 		{
-			do
+			for (auto scoreInd = 0; scoreInd < control->ScoreCount; ++scoreInd)
 			{
 				cmp->put_scoring(scoreInd, control->Scores[scoreInd]);
-				++scoreInd;
 			}
-			while (scoreInd < control->ScoreCount);
 		}
 		control->ControlFunc(code, cmp);
 	}
@@ -3019,7 +3017,7 @@ void control::GameoverController(int code, TPinballComponent* caller)
 	int missionMsg = control_mission_text_box_tag.Component->MessageField;
 	if (missionMsg & 0x100)
 	{
-		int playerId = missionMsg & 0xF;
+		int playerId = missionMsg % 4;
 		int playerScore = TableG->PlayerScores[playerId].ScoreStruct->Score;
 		auto nextPlayerId = playerId + 1;
 		if (playerScore >= 0)
@@ -3056,7 +3054,7 @@ void control::GameoverController(int code, TPinballComponent* caller)
 
 	if (missionMsg & 0x200)
 	{
-		int highscoreId = missionMsg & 0xF;
+		int highscoreId = missionMsg % 4;
 		int highScore = pb::highscore_table[highscoreId].Score;
 		auto nextHidhscoreId = highscoreId + 1;
 		if (highScore > 0)

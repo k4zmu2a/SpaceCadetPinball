@@ -6,13 +6,14 @@
 #include "pinball.h"
 
 HINSTANCE splash::HInstance;
+HGDIOBJ splash::OriginalDcBitmap = nullptr;
 
 splash_struct* splash::splash_screen(HINSTANCE hInstance, LPCSTR bmpName1, LPCSTR bmpName2)
 {
 	WNDCLASSA WndClass{};
 	tagRECT Rect{};
 
-	auto splashStruct = reinterpret_cast<splash_struct*>(memory::allocate(sizeof(splash_struct)));
+	auto splashStruct = memory::allocate<splash_struct>();
 	if (!splashStruct)
 		return nullptr;
 
@@ -75,7 +76,7 @@ void splash::splash_bitmap_setup(splash_struct* splashStruct)
 		{
 			if (splashStruct->DrawingContext)
 			{
-				SelectObject(splashStruct->DrawingContext, bmpHandle1);
+				OriginalDcBitmap = SelectObject(splashStruct->DrawingContext, bmpHandle1);
 				if ((GetDeviceCaps(splashStruct->DrawingContext, RASTERCAPS) & RC_PALETTE) != 0
 					|| GetDeviceCaps(splashStruct->DrawingContext, NUMCOLORS) >= 256)
 				{
@@ -85,6 +86,7 @@ void splash::splash_bitmap_setup(splash_struct* splashStruct)
 				else
 				{
 					bmpHandle2 = LoadBitmapA(HInstance, splashStruct->BmpName2);
+					splashStruct->Palette = nullptr;
 				}
 				splashStruct->Bitmap = bmpHandle2;
 
@@ -162,11 +164,11 @@ HBITMAP splash::load_title_bitmap(HMODULE hModule, HDC hdc, LPCSTR lpName, UINT 
 	return resBmp;
 }
 
-HPALETTE splash::splash_init_palette(LOGPALETTEx256* plpal)
+HPALETTE splash::splash_init_palette(LOGPALETTE* plpal)
 {
 	plpal->palVersion = 768;
 	plpal->palNumEntries = 256;
-	auto hPalette = CreatePalette(reinterpret_cast<const LOGPALETTE*>(plpal));
+	auto hPalette = CreatePalette(static_cast<const LOGPALETTE*>(plpal));
 	auto dc = GetDC(GetDesktopWindow());
 	GetDeviceCaps(dc, RASTERCAPS);
 	if (GetDeviceCaps(dc, SIZEPALETTE) != 256)
@@ -243,7 +245,11 @@ void splash::splash_destroy(splash_struct* splashStruct)
 			splashStruct->Palette = nullptr;
 
 			if (splashStruct->DrawingContext)
+			{
+				if (OriginalDcBitmap)
+					SelectObject(splashStruct->DrawingContext, OriginalDcBitmap);
 				DeleteDC(splashStruct->DrawingContext);
+			}
 			if (splashStruct->Bitmap)
 				DeleteObject(splashStruct->Bitmap);
 		}

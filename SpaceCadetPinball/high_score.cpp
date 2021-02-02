@@ -9,7 +9,7 @@
 
 int high_score::dlg_enter_name;
 int high_score::dlg_score;
-int high_score::position;
+int high_score::dlg_position;
 LPCSTR high_score::default_name;
 high_score_struct* high_score::dlg_hst;
 
@@ -48,11 +48,10 @@ int high_score::read(high_score_struct* table, int* ptrToSmth)
 	if (!buf1)
 		return 1;
 	char* buf2 = memory::allocate(300u);
-	int position = 0;
-	high_score_struct* tablePtr = table;
-	const CHAR* optPath = pinball::get_rc_string(166, 0);
-	do
+	auto optPath = pinball::get_rc_string(166, 0);
+	for (auto position = 0; position < 5; ++position)
 	{
+		auto tablePtr = &table[position];
 		_itoa_s(position, Buffer, 10);
 		lstrcatA(Buffer, ".Name");
 		options::get_string(optPath, Buffer, buf1, pinball::WindowName, 32);
@@ -66,10 +65,8 @@ int high_score::read(high_score_struct* table, int* ptrToSmth)
 		{
 		}
 		scoreSum += tablePtr->Score;
-		++position;
-		++tablePtr;
 	}
-	while (position < 5);
+
 	scramble_number_string(scoreSum, buf1);
 	options::get_string(optPath, "Verification", buf2, pinball::WindowName, 300);
 	if (lstrcmpA(buf1, buf2))
@@ -88,9 +85,8 @@ int high_score::write(high_score_struct* table, int* ptrToSmth)
 	CHAR* buf = memory::allocate(300u);
 	if (!buf)
 		return 1;
-	int position = 0;
 	const CHAR* optPath = pinball::get_rc_string(166, 0);
-	do
+	for (auto position = 0; position < 5; ++position)
 	{
 		_itoa_s(position, Buffer, 10);
 		lstrcatA(Buffer, ".Name");
@@ -106,7 +102,6 @@ int high_score::write(high_score_struct* table, int* ptrToSmth)
 		++position;
 		++tablePtr;
 	}
-	while (position < 5);
 	scramble_number_string(scoreSum, buf);
 	options::set_string(optPath, "Verification", buf);
 	memory::free(buf);
@@ -177,7 +172,7 @@ void high_score::show_high_score_dialog(high_score_struct* table)
 
 void high_score::show_and_set_high_score_dialog(high_score_struct* table, int score, int pos, LPCSTR defaultName)
 {
-	position = pos;
+	dlg_position = pos;
 	dlg_score = score;
 	dlg_hst = table;
 	dlg_enter_name = 1;
@@ -214,12 +209,12 @@ INT_PTR high_score::HighScore(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
 		}
 		if (dlg_enter_name == 1)
 		{
-			if (position == -1)
+			if (dlg_position == -1)
 			{
 				dlg_enter_name = 0;
 				return 1;
 			}
-			HWND nameTextBox = GetDlgItem(hWnd, position + DLG_HIGHSCORES_EditName1);
+			HWND nameTextBox = GetDlgItem(hWnd, dlg_position + DLG_HIGHSCORES_EditName1);
 			ShowWindow(nameTextBox, 5);
 			EnableWindow(nameTextBox, 1);
 			SetFocus(nameTextBox);
@@ -246,9 +241,9 @@ INT_PTR high_score::HighScore(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
 			{
 				break;
 			}
-			GetDlgItemTextA(hWnd, position + DLG_HIGHSCORES_EditName1, name, 32);
+			GetDlgItemTextA(hWnd, dlg_position + DLG_HIGHSCORES_EditName1, name, 32);
 			name[31] = 0;
-			place_new_score_into(dlg_hst, dlg_score, name, position);
+			place_new_score_into(dlg_hst, dlg_score, name, dlg_position);
 			break;
 		case DLG_HIGHSCORES_Cancel:
 			break;
@@ -281,7 +276,7 @@ void high_score::show_high_scores(HWND hDlg, high_score_struct* table)
 	int nextPosition = 0;
 	for (int i = 0; i < 5; ++i)
 	{
-		if (dlg_enter_name == 1 && position == i)
+		if (dlg_enter_name == 1 && dlg_position == i)
 		{
 			hsdlg_show_score(hDlg, " ", dlg_score, i);
 			nextPosition = 1;

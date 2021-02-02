@@ -26,7 +26,7 @@ struct component_tag : component_tag_base
 	static_assert(std::is_base_of<TPinballComponent, T>::value, "T must inherit from TPinballComponent");
 	T* Component;
 
-	component_tag(LPCSTR name, TPinballComponent* component): component_tag_base(name)
+	component_tag(LPCSTR name, TPinballComponent* component): component_tag_base(name), Component(nullptr)
 	{
 		component_tag::SetComponent(component);
 	}

@@ -8,7 +8,7 @@ class objlist_class
 public:
 	objlist_class(int sizeInt, int growSize)
 	{
-		ListPtr = reinterpret_cast<T**>(memory::allocate(sizeof(T*) * sizeInt));
+		ListPtr = memory::allocate<T*>(sizeInt);
 		Count = 0;
 		Size = sizeInt;
 		GrowSize = growSize;
@@ -39,7 +39,7 @@ public:
 		if (newSize <= Size)
 			return;
 
-		auto newList = reinterpret_cast<T**>(memory::realloc(ListPtr, sizeof(T*) * newSize));
+		auto newList = memory::realloc(ListPtr, sizeof(T*) * newSize);
 		if (!newList)
 			return;
 

@@ -26,7 +26,7 @@ public:
 private :
 	static int dlg_enter_name;
 	static int dlg_score;
-	static int position;
+	static int dlg_position;
 	static LPCSTR default_name;
 	static high_score_struct* dlg_hst;
 	static winhelp_entry help[21];

@@ -13,7 +13,7 @@ timer_struct* timer::TimerBuffer;
 
 int timer::init(int count)
 {
-	auto buf = (timer_struct*)memory::allocate(sizeof(timer_struct) * count);
+	auto buf = memory::allocate<timer_struct>(count);
 	TimerBuffer = buf;
 	if (!buf)
 		return 1;

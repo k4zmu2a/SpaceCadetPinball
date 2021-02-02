@@ -22,14 +22,14 @@ struct gdrv_bitmap8
 	int YPosition;
 };
 
-struct LOGPALETTEx256
+struct LOGPALETTEx256 : LOGPALETTE
 {
-	WORD palVersion;
-	WORD palNumEntries;
-	PALETTEENTRY palPalEntry[256];
+	PALETTEENTRY palPalEntry2[256 - 1];
 
-	LOGPALETTEx256() : palVersion(0x300), palNumEntries(256), palPalEntry{}
+	LOGPALETTEx256() : palPalEntry2{}
 	{
+		palVersion = 0x300;
+		palNumEntries = 256;
 	}
 };
 
@@ -38,7 +38,6 @@ class gdrv
 {
 public:
 	static HPALETTE palette_handle;
-	static LOGPALETTEx256 current_palette;
 	static int sequence_handle;
 	static HDC sequence_hdc;
 	static int use_wing;

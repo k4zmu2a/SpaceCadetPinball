@@ -19,7 +19,7 @@ TLightBargraph::TLightBargraph(TPinballTable* table, int groupIndex) : TLightGro
 		if (floatArr)
 		{
 			int count = 2 * List->GetCount();
-			TimerTimeArray = reinterpret_cast<float*>(memory::allocate(count * sizeof(float)));
+			TimerTimeArray = memory::allocate<float>(count);
 			if (TimerTimeArray)
 			{
 				for (int i = 0; i < count; ++floatArr)

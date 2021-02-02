@@ -7,7 +7,6 @@
 HPALETTE gdrv::palette_handle = nullptr;
 HINSTANCE gdrv::hinst;
 HWND gdrv::hwnd;
-LOGPALETTEx256 gdrv::current_palette{};
 int gdrv::sequence_handle;
 HDC gdrv::sequence_hdc;
 int gdrv::use_wing = 0;
@@ -18,10 +17,12 @@ int gdrv::grtext_red = -1;
 
 int gdrv::init(HINSTANCE hInst, HWND hWnd)
 {
+	LOGPALETTEx256 current_palette{};
+
 	hinst = hInst;
 	hwnd = hWnd;
 	if (!palette_handle)
-		palette_handle = CreatePalette((LOGPALETTE*)&current_palette);
+		palette_handle = CreatePalette(&current_palette);
 	return 0;
 }
 
@@ -39,15 +40,15 @@ void gdrv::get_focus()
 
 BITMAPINFO* gdrv::DibCreate(__int16 bpp, int width, int height)
 {
-	auto sizeBytes = height * ((width * bpp / 8 + 3) & 0xFFFFFFFC);
-	auto buf = GlobalAlloc(0x42u, sizeBytes + 1064);
+	auto sizeBytes = height * (width * bpp / 8 + 3 & 0xFFFFFFFC);
+	auto buf = GlobalAlloc(GHND, sizeBytes + sizeof(BITMAPINFOHEADER) + 256 * sizeof(RGBQUAD));
 	auto dib = static_cast<BITMAPINFO*>(GlobalLock(buf));
 
 	if (!dib)
 		return nullptr;
 	dib->bmiHeader.biSizeImage = sizeBytes;
 	dib->bmiHeader.biWidth = width;
-	dib->bmiHeader.biSize = 40;
+	dib->bmiHeader.biSize = sizeof(BITMAPINFOHEADER);
 	dib->bmiHeader.biHeight = height;
 	dib->bmiHeader.biPlanes = 1;
 	dib->bmiHeader.biBitCount = bpp;
@@ -65,25 +66,15 @@ BITMAPINFO* gdrv::DibCreate(__int16 bpp, int width, int height)
 		dib->bmiHeader.biClrUsed = 256;
 	}
 
-	int index = 0;
-	for (auto i = (int*)dib->bmiColors; index < static_cast<signed int>(dib->bmiHeader.biClrUsed) / 16; ++index)
+
+	uint32_t paletteColors[]
 	{
-		*i++ = 0;
-		*i++ = 0x800000;
-		*i++ = 0x8000;
-		*i++ = 8421376;
-		*i++ = 128;
-		*i++ = 8388736;
-		*i++ = 32896;
-		*i++ = 12632256;
-		*i++ = 8421504;
-		*i++ = 16711680;
-		*i++ = 65280;
-		*i++ = 16776960;
-		*i++ = 255;
-		*i++ = 16711935;
-		*i++ = 0xFFFF;
-		*i++ = 0xFFFFFF;
+		0, 0x800000, 0x8000, 8421376, 128, 8388736, 32896, 12632256,
+		8421504, 16711680, 65280, 16776960, 255, 16711935, 0xFFFF, 0xFFFFFF,
+	};
+	for (auto index = 0u; index < dib->bmiHeader.biClrUsed; index += 16)
+	{
+		memcpy(&dib->bmiColors[index], paletteColors, sizeof paletteColors);
 	}
 	return dib;
 }
@@ -108,31 +99,24 @@ void gdrv::DibSetUsage(BITMAPINFO* dib, HPALETTE hpal, int someFlag)
 	{
 		if (someFlag && someFlag <= 2)
 		{
-			auto pltPtr = (short*)((char*)dib + dib->bmiHeader.biSize);
-			for (int i = 0; i < numOfColors; ++i)
+			auto pltPtr = reinterpret_cast<short*>(dib->bmiColors);
+			for (auto i = 0; i < numOfColors; ++i)
 			{
 				*pltPtr++ = i;
 			}
 		}
 		else
 		{
-			assertm(false, "Entered bad code");
-			char* dibPtr = (char*)dib + dib->bmiHeader.biSize;
 			if (numOfColors >= 256)
 				numOfColors = 256;
 			GetPaletteEntries(hpal, 0, numOfColors, pPalEntries);
-			int index = 0;
-			char* dibPtr2 = dibPtr + 1;
-			do
+			for (auto index = 0; index < numOfColors; index++)
 			{
-				char v9 = pPalEntries[index++].peRed;
-				dibPtr2[1] = v9;
-				*dibPtr2 = dibPtr2[(char*)pPalEntries - dibPtr];
-				*(dibPtr2 - 1) = dibPtr2[&pPalEntries[0].peGreen - (unsigned char*)dibPtr];
-				dibPtr2[2] = 0;
-				dibPtr2 += 4;
+				dib->bmiColors[index].rgbRed = pPalEntries[index].peRed;
+				dib->bmiColors[index].rgbGreen = pPalEntries[index].peGreen;
+				dib->bmiColors[index].rgbBlue = pPalEntries[index].peBlue;
+				dib->bmiColors[index].rgbReserved = 0;
 			}
-			while (index < numOfColors);
 		}
 	}
 }
@@ -156,7 +140,7 @@ int gdrv::create_bitmap_dib(gdrv_bitmap8* bmp, int width, int height)
 	if (dib->bmiHeader.biCompression == 3)
 		bmpBufPtr = (char*)&dib->bmiHeader.biPlanes + dib->bmiHeader.biSize;
 	else
-		bmpBufPtr = (char*)&dib->bmiHeader.biSize + 4 * dib->bmiHeader.biClrUsed + dib->bmiHeader.biSize;
+		bmpBufPtr = reinterpret_cast<char*>(&dib->bmiColors[dib->bmiHeader.biClrUsed]);
 	bmp->BmpBufPtr1 = bmpBufPtr;
 	bmp->BmpBufPtr2 = bmpBufPtr;
 	return 0;
@@ -203,17 +187,19 @@ int gdrv::create_spliced_bitmap(gdrv_bitmap8* bmp, int width, int height, int si
 
 int gdrv::display_palette(PALETTEENTRY* plt)
 {
+	LOGPALETTEx256 current_palette{};
+
 	if (palette_handle)
 		DeleteObject(palette_handle);
-	palette_handle = CreatePalette((LOGPALETTE*)&current_palette);
+	palette_handle = CreatePalette(&current_palette);
 	auto windowHandle = GetDesktopWindow();
 	auto dc = winmain::_GetDC(windowHandle);
 	SetSystemPaletteUse(dc, 2u);
 	SetSystemPaletteUse(dc, 1u);
-	auto pltHandle = SelectPalette(dc, palette_handle, 0);
+	auto originalPalette = SelectPalette(dc, palette_handle, 0);
 	RealizePalette(dc);
-	SelectPalette(dc, pltHandle, 0);
-	GetSystemPaletteEntries(dc, 0, 0x100u, current_palette.palPalEntry);
+	SelectPalette(dc, originalPalette, 0);
+	GetSystemPaletteEntries(dc, 0, 256, current_palette.palPalEntry);
 	for (int i = 0; i < 256; i++)
 	{
 		current_palette.palPalEntry[i].peFlags = 0;
@@ -234,15 +220,15 @@ int gdrv::display_palette(PALETTEENTRY* plt)
 		pltDst++;
 	}
 
-	if (!(GetDeviceCaps(dc, 38) & 0x100))
+	if (!(GetDeviceCaps(dc, RASTERCAPS) & RC_PALETTE))
 	{
 		current_palette.palPalEntry[255].peBlue = -1;
 		current_palette.palPalEntry[255].peGreen = -1;
 		current_palette.palPalEntry[255].peRed = -1;
 	}
 
-	ResizePalette(palette_handle, 0x100u);
-	SetPaletteEntries(palette_handle, 0, 0x100u, current_palette.palPalEntry);
+	ResizePalette(palette_handle, 256);
+	SetPaletteEntries(palette_handle, 0, 256, current_palette.palPalEntry);
 	windowHandle = GetDesktopWindow();
 	ReleaseDC(windowHandle, dc);
 	return 0;
@@ -355,16 +341,11 @@ void gdrv::fill_bitmap(gdrv_bitmap8* bmp, int width, int height, int xOff, int y
 	if (bmpHeight < 0)
 		bmpHeight = -bmpHeight;
 	char* bmpPtr = &bmp->BmpBufPtr1[bmp->Width * (bmpHeight - height - yOff) + xOff];
-	if (height > 0)
+	for (; height > 0; --height)
 	{
-		do
-		{
-			if (width > 0)
-				memset(bmpPtr, fillChar, width);
-			bmpPtr += bmp->Stride;
-			--height;
-		}
-		while (height);
+		if (width > 0)
+			memset(bmpPtr, fillChar, width);
+		bmpPtr += bmp->Stride;
 	}
 }
 
@@ -429,7 +410,7 @@ void gdrv::grtext_draw_ttext_in_box(LPCSTR text, int xOff, int yOff, int width, 
 			sscanf_s(fontColor, "%d %d %d", &grtext_red, &grtext_green, &grtext_blue);
 	}
 	int prevMode = SetBkMode(dc, 1);
-	COLORREF color = SetTextColor(dc, (grtext_red) | (grtext_green << 8) | (grtext_blue << 16));
+	COLORREF color = SetTextColor(dc, grtext_red | grtext_green << 8 | grtext_blue << 16);
 	DrawTextA(dc, text, lstrlenA(text), &rc, 0x810u);
 	SetBkMode(dc, prevMode);
 	SetTextColor(dc, color);
