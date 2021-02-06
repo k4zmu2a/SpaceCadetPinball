@@ -224,10 +224,14 @@
 #define Menu1_2Players                  409
 #define Menu1_3Players                  410
 #define Menu1_4Players                  411
+#define Menu1_MaximumResolution         500
 #define DLG_HIGHSCORES_Score1           501
 #define KEYMAPPER_Default               501
+#define Menu1_640x480                   501
 #define DLG_HIGHSCORES_Score2           502
+#define Menu1_800x600                   502
 #define DLG_HIGHSCORES_Score3           503
+#define Menu1_1024x768                  503
 #define DLG_HIGHSCORES_Score4           504
 #define DLG_HIGHSCORES_Score5           505
 #define DLG_HIGHSCORES_EditName1        601
@@ -243,6 +247,6 @@
 #define _APS_NEXT_RESOURCE_VALUE        204
 #define _APS_NEXT_COMMAND_VALUE         40004
 #define _APS_NEXT_CONTROL_VALUE         1001
-#define _APS_NEXT_SYMED_VALUE           102
+#define _APS_NEXT_SYMED_VALUE           104
 #endif
 #endif

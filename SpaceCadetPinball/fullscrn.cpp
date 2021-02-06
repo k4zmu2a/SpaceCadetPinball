@@ -1,5 +1,7 @@
 #include "pch.h"
 #include "fullscrn.h"
+
+#include "pb.h"
 #include "render.h"
 #include "winmain.h"
 
@@ -14,6 +16,14 @@ int fullscrn::ChangeDisplay, fullscrn::SmthFullScrnFlag2;
 int fullscrn::trick = 1;
 int fullscrn::MenuEnabled;
 HMENU fullscrn::MenuHandle;
+int fullscrn::resolution = 0;
+int fullscrn::maxResolution = 0;
+const resolution_info fullscrn::resolution_array[3] =
+{
+	{640, 480, 600, 416, 501},
+	{800, 600, 752, 520, 502},
+	{1024, 768, 960, 666, 503},
+};
 
 void fullscrn::init(int width, int height, int isFullscreen, HWND winHandle, HMENU menuHandle, int changeDisplay)
 {
@@ -102,9 +112,9 @@ int fullscrn::enableFullscreen()
 	{
 		DevMode.dmSize = 156;
 		DevMode.dmFields = 1835008;
-		DevMode.dmPelsWidth = 640;
-		DevMode.dmPelsHeight = 480;
-		DevMode.dmBitsPerPel = 8;
+		DevMode.dmPelsWidth = resolution_array[resolution].ScreenWidth;
+		DevMode.dmPelsHeight = resolution_array[resolution].ScreenHeight;
+		DevMode.dmBitsPerPel = 32;
 		disableWindowFlagsDisDlg();
 		if (trick)
 		{
@@ -359,4 +369,53 @@ void fullscrn::paint()
 	}
 	render::paint();
 	fullscrn_flag1 = 0;
+}
+
+int fullscrn::GetResolution()
+{
+	return resolution;
+}
+
+void fullscrn::SetResolution(int resolution)
+{
+	if (!pb::FullTiltMode)
+		resolution = 0;
+	assertm(resolution >= 0 && resolution <= 2, "Resolution value out of bounds");
+	fullscrn::resolution = resolution;
+}
+
+int fullscrn::GetMaxResolution()
+{
+	return maxResolution;
+}
+
+void fullscrn::SetMaxResolution(int resolution)
+{
+	assertm(resolution >= 0 && resolution <= 2, "Resolution value out of bounds");
+	maxResolution = resolution;
+}
+
+int fullscrn::get_max_supported_resolution()
+{
+	if (!pb::FullTiltMode)
+		return 0;
+
+	auto resolutionWH = get_screen_resolution();
+	auto width = LOWORD(resolutionWH);
+	auto height = HIWORD(resolutionWH);
+	auto result = 0;
+
+	for (auto index = 1; index < 3; ++index)
+	{
+		auto resPtr = &resolution_array[index];
+		if (resPtr->ScreenWidth <= width && resPtr->ScreenHeight <= height)
+			result = index;
+	}
+	return result;
+}
+
+int fullscrn::get_screen_resolution()
+{
+	auto height = static_cast<unsigned __int16>(GetSystemMetrics(SM_CYSCREEN));
+	return static_cast<unsigned __int16>(GetSystemMetrics(SM_CXSCREEN)) | (height << 16);
 }

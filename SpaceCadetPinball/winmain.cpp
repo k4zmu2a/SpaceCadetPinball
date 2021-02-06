@@ -30,6 +30,7 @@ int winmain::no_time_loss;
 DWORD winmain::then;
 DWORD winmain::now;
 UINT winmain::iFrostUniqueMsg;
+bool winmain::restart = false;
 
 gdrv_bitmap8 winmain::gfr_display{};
 char winmain::DatFileName[300]{};
@@ -116,6 +117,18 @@ int winmain::WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLi
 	hinst = hInstance;
 	options::get_string(regSpaceCadet, "Pinball Data", DatFileName, pinball::get_rc_string(168, 0), 300);
 
+	/*Check for full tilt .dat file and switch to it automatically*/
+	char cadetFilePath[300]{};
+	pinball::make_path_name(cadetFilePath, "CADET.DAT", 300);
+	FILE* cadetDat;
+	fopen_s(&cadetDat, cadetFilePath, "r");
+	if (cadetDat)
+	{
+		fclose(cadetDat);
+		strcpy_s(DatFileName, "CADET.DAT");
+		pb::FullTiltMode = true;
+	}
+
 	iFrostUniqueMsg = RegisterWindowMessageA("PinballThemeSwitcherUniqueMsgString");
 	auto windowClass = pinball::get_rc_string(167, 0);
 	auto windowHandle = FindWindowA(windowClass, nullptr);
@@ -148,6 +161,7 @@ int winmain::WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLi
 	RegisterClassA(&WndClass);
 
 	pinball::FindShiftKeys();
+	options::init_resolution();
 
 	char windowName[40];
 	lstrcpyA(windowName, pinball::get_rc_string(38, 0));
@@ -301,6 +315,24 @@ int winmain::WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLi
 	DestroyWindow(hwnd_frame);
 	options::path_uninit();
 	UnregisterClassA(windowClass, hinst);
+
+	if (restart)
+	{
+		char restartPath[300]{};
+		if (GetModuleFileNameA(nullptr, restartPath, 300))
+		{
+			STARTUPINFO si{};
+			PROCESS_INFORMATION pi{};
+			si.cb = sizeof si;
+			if (CreateProcess(restartPath, nullptr, nullptr, nullptr,
+			                  FALSE, 0, nullptr, nullptr, &si, &pi))
+			{
+				CloseHandle(pi.hProcess);
+				CloseHandle(pi.hThread);
+			}
+		}
+	}
+
 	return return_value;
 }
 
@@ -350,11 +382,6 @@ LRESULT CALLBACK winmain::message_handler(HWND hWnd, UINT Msg, WPARAM wParam, LP
 				RECT rect{};
 				++memory::critical_allocation;
 
-				GetWindowRect(GetDesktopWindow(), &rect);
-				int width = rect.right - rect.left;
-				int height = rect.bottom - rect.top;
-				pb::window_size(&width, &height);
-
 				auto prevCursor = SetCursor(LoadCursorA(nullptr, IDC_WAIT));
 				gdrv::init(hinst, hWnd);
 
@@ -371,6 +398,11 @@ LRESULT CALLBACK winmain::message_handler(HWND hWnd, UINT Msg, WPARAM wParam, LP
 				SetCursor(prevCursor);
 				auto changeDisplayFg = options::get_int(nullptr, "Change Display", 1);
 				auto menuHandle = GetMenu(hWnd);
+
+				GetWindowRect(GetDesktopWindow(), &rect);
+				int width = rect.right - rect.left;
+				int height = rect.bottom - rect.top;
+				pb::window_size(&width, &height);
 				fullscrn::init(width, height, options::Options.FullScreen, hWnd, menuHandle,
 				               changeDisplayFg);
 
@@ -428,6 +460,7 @@ LRESULT CALLBACK winmain::message_handler(HWND hWnd, UINT Msg, WPARAM wParam, LP
 		fullscrn::getminmaxinfo((MINMAXINFO*)lParam);
 		return DefWindowProcA(hWnd, Msg, wParam, lParam);
 	case WM_DISPLAYCHANGE:
+		options::update_resolution_menu();
 		if (fullscrn::displaychange())
 		{
 			options::Options.FullScreen = 0;
@@ -557,6 +590,12 @@ LRESULT CALLBACK winmain::message_handler(HWND hWnd, UINT Msg, WPARAM wParam, LP
 		case Menu1_4Players:
 			options::toggle(wParam);
 			new_game();
+			break;
+		case Menu1_MaximumResolution:
+		case Menu1_640x480:
+		case Menu1_800x600:
+		case Menu1_1024x768:
+			options::toggle(wParam);
 			break;
 		case Menu1_Help_Topics:
 			if (!single_step)
@@ -778,4 +817,10 @@ void winmain::help_introduction(HINSTANCE a1, HWND a2)
 			memory::free(buf1);
 		}
 	}
+}
+
+void winmain::Restart()
+{
+	restart = true;
+	PostMessageA(hwnd_frame, WM_QUIT, 0, 0);
 }

@@ -239,7 +239,7 @@ int gdrv::destroy_bitmap(gdrv_bitmap8* bmp)
 {
 	if (!bmp)
 		return -1;
-	if (bmp->BitmapType == BitmapType::RawBitmap)
+	if (bmp->BitmapType == BitmapType::RawBitmap || bmp->BitmapType == BitmapType::Spliced)
 	{
 		memory::free(bmp->BmpBufPtr1);
 	}

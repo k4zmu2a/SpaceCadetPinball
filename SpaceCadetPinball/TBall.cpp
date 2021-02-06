@@ -2,9 +2,11 @@
 #include "TBall.h"
 
 
+#include "fullscrn.h"
 #include "loader.h"
 #include "maths.h"
 #include "objlist_class.h"
+#include "pb.h"
 #include "proj.h"
 #include "render.h"
 #include "TPinballTable.h"
@@ -12,6 +14,7 @@
 TBall::TBall(TPinballTable* table) : TPinballComponent(table, -1, false)
 {
 	visualStruct visual{};
+	char ballGroupName[10]{"ball"};
 
 	TimeNow = 0.0;
 	RayMaxDistance = 0.0;
@@ -30,11 +33,12 @@ TBall::TBall(TPinballTable* table) : TPinballComponent(table, -1, false)
 	Position.Y = 0.0;
 
 	ListBitmap = new objlist_class<gdrv_bitmap8>(0, 4);
-	auto groupIndex = loader::query_handle("ball");
 
-	/*Full tilt hack - ball is ball0*/
-	if (groupIndex < 0)
-		groupIndex = loader::query_handle("ball0");
+	/*Full tilt: ball is ballN, where N[0,2] resolution*/
+	if (pb::FullTiltMode)
+		ballGroupName[4] = '0' + fullscrn::GetResolution();
+	auto groupIndex = loader::query_handle(ballGroupName);
+
 	Offset = *loader::query_float_attribute(groupIndex, 0, 500);
 	auto visualCount = loader::query_visual_states(groupIndex);
 	auto index = 0;

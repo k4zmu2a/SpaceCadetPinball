@@ -21,6 +21,7 @@ struct optionsStruct
 	int LeftTableBumpKeyDft;
 	int RightTableBumpKeyDft;
 	int BottomTableBumpKeyDft;
+	int Resolution;
 };
 
 
@@ -38,6 +39,8 @@ public:
 	static void menu_check(UINT uIDCheckItem, int check);
 	static void menu_set(UINT uIDEnableItem, int enable);
 	static void toggle(UINT uIDCheckItem);
+	static void update_resolution_menu();
+	static void init_resolution();
 
 	static void keyboard();
 	static INT_PTR _stdcall KeyMapDlgProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam);

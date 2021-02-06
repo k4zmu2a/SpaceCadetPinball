@@ -2,6 +2,7 @@
 #include "loader.h"
 #include "memory.h"
 #include "partman.h"
+#include "pb.h"
 #include "pinball.h"
 #include "Sound.h"
 #include "zdrv.h"
@@ -142,12 +143,17 @@ int loader::get_sound_id(int groupIndex)
 			                                                       datFieldTypes::ShortValue));
 			if (value && *value == 202)
 			{
+				/*FT sounds are in SOUND subfolder*/
+				char filePath[300]{}, fileName2[100]{};
 				auto fileName = partman::field(loader_table, soundGroupId, datFieldTypes::String);
-				HFILE hFile = _lopen(fileName, 0);
+				sprintf_s(fileName2, pb::FullTiltMode ? "SOUND\\%s" : "%s", fileName);
+				pinball::make_path_name(filePath, fileName2);
+
+				HFILE hFile = _lopen(filePath, 0);
 				sound_list[soundIndex].Duration = static_cast<float>(static_cast<double>(_llseek(hFile, 0, SEEK_END)) *
 					0.0000909090909090909);
 				_lclose(hFile);
-				sound_list[soundIndex].WavePtr = Sound::LoadWaveFile(fileName);
+				sound_list[soundIndex].WavePtr = Sound::LoadWaveFile(filePath);
 			}
 		}
 	}

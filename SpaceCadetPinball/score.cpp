@@ -1,8 +1,11 @@
 #include "pch.h"
 #include "score.h"
+
+#include "fullscrn.h"
 #include "loader.h"
 #include "memory.h"
 #include "partman.h"
+#include "pb.h"
 #include "render.h"
 #include "TDrain.h"
 #include "winmain.h"
@@ -21,18 +24,21 @@ scoreStruct* score::create(LPCSTR fieldName, gdrv_bitmap8* renderBgBmp)
 		return nullptr;
 	score->Score = -9999;
 	score->BackgroundBmp = renderBgBmp;
-	auto shortArr = reinterpret_cast<__int16*>(partman::field_labeled(loader::loader_table, fieldName,
-	                                                                  datFieldTypes::ShortArray));
-	if (!shortArr)
+
+	/*Full tilt: score box dimensions index is offset by resolution*/
+	auto dimensionsId = partman::record_labeled(pb::record_table, fieldName) + fullscrn::GetResolution();
+	auto dimensions = reinterpret_cast<__int16*>(partman::field(loader::loader_table, dimensionsId,
+	                                                            datFieldTypes::ShortArray));
+	if (!dimensions)
 	{
 		memory::free(score);
 		return nullptr;
 	}
-	int groupIndex = *shortArr++;
-	score->OffsetX = *shortArr++;
-	score->OffsetY = *shortArr++;
-	score->Width = *shortArr++;
-	score->Height = *shortArr;
+	int groupIndex = *dimensions++;
+	score->OffsetX = *dimensions++;
+	score->OffsetY = *dimensions++;
+	score->Width = *dimensions++;
+	score->Height = *dimensions;
 
 	for (int index = 0; index < 10; index++)
 	{
@@ -52,6 +58,15 @@ scoreStruct* score::dup(scoreStruct* score, int scoreIndex)
 }
 
 void score::load_msg_font(LPCSTR lpName)
+{
+	/*3DPB stores font in resources, FT in dat. FT font has multiple resolutions*/
+	if (pb::FullTiltMode)
+		load_msg_font_FT(lpName);
+	else
+		load_msg_font_3DPB(lpName);
+}
+
+void score::load_msg_font_3DPB(LPCSTR lpName)
 {
 	auto resHandle = FindResourceA(winmain::hinst, lpName, RT_RCDATA);
 	if (!resHandle)
@@ -136,18 +151,49 @@ void score::load_msg_font(LPCSTR lpName)
 	FreeResource(resGlobal);
 }
 
+void score::load_msg_font_FT(LPCSTR lpName)
+{
+	if (!pb::record_table)
+		return;
+	int groupIndex = partman::record_labeled(pb::record_table, lpName);
+	if (groupIndex < 0)
+		return;
+	msg_fontp = reinterpret_cast<score_msg_font_type*>(memory::allocate(sizeof(score_msg_font_type)));
+	if (!msg_fontp)
+		return;
+
+	memset(msg_fontp, 0, sizeof(score_msg_font_type));
+	auto gapArray = reinterpret_cast<__int16*>(partman::field(pb::record_table, groupIndex, datFieldTypes::ShortArray));
+	if (gapArray)
+		msg_fontp->GapWidth = gapArray[fullscrn::GetResolution()];
+	else
+		msg_fontp->GapWidth = 0;
+	for (auto charIndex = 32; charIndex < 128; charIndex++, ++groupIndex)
+	{
+		auto bmp = reinterpret_cast<gdrv_bitmap8*>(partman::field(pb::record_table, groupIndex,
+		                                                          datFieldTypes::Bitmap8bit));
+		if (!bmp)
+			break;
+		if (!msg_fontp->Height)
+			msg_fontp->Height = bmp->Height;
+		msg_fontp->Chars[charIndex] = bmp;
+	}
+}
+
 void score::unload_msg_font()
 {
 	if (msg_fontp)
 	{
-		for (int i = 0; i < 128; i++)
-		{
-			if (msg_fontp->Chars[i])
+		/*3DB creates bitmaps, FT just references them from partman*/
+		if (!pb::FullTiltMode)
+			for (int i = 0; i < 128; i++)
 			{
-				gdrv::destroy_bitmap(msg_fontp->Chars[i]);
-				memory::free(msg_fontp->Chars[i]);
+				if (msg_fontp->Chars[i])
+				{
+					gdrv::destroy_bitmap(msg_fontp->Chars[i]);
+					memory::free(msg_fontp->Chars[i]);
+				}
 			}
-		}
 		memory::free(msg_fontp);
 		msg_fontp = nullptr;
 	}

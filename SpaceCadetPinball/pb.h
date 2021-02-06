@@ -14,6 +14,7 @@ public:
 	static datFileStruct* record_table;
 	static TPinballTable* MainTable;
 	static high_score_struct highscore_table[5];
+	static bool FullTiltMode;
 
 	static int init();
 	static int uninit();
@@ -38,7 +39,7 @@ public:
 	static void tilt_no_more();
 	static bool chk_highscore();
 	static float collide(float timeNow, float timeDelta, TBall* ball);
-private :
+private:
 	static int demo_mode, mode_countdown_;
 	static int state;
 };

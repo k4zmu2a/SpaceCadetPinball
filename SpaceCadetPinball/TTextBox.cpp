@@ -2,7 +2,9 @@
 #include "TTextBox.h"
 
 #include "control.h"
+#include "fullscrn.h"
 #include "loader.h"
+#include "pb.h"
 #include "render.h"
 #include "score.h"
 #include "timer.h"
@@ -22,8 +24,9 @@ TTextBox::TTextBox(TPinballTable* table, int groupIndex) : TPinballComponent(tab
 
 	if (groupIndex > 0)
 	{
-		int arrLength;
-		auto dimensions = loader::query_iattribute(groupIndex, 1500, &arrLength);
+		/*Full tilt: text box dimensions index is offset by resolution*/
+		int arrLength;		
+		auto dimensions = loader::query_iattribute(groupIndex + fullscrn::GetResolution(), 1500, &arrLength);
 		OffsetX = dimensions[0];
 		OffsetY = dimensions[1];
 		Width = dimensions[2];

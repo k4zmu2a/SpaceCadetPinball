@@ -1,6 +1,8 @@
 #include "pch.h"
 #include "Sound.h"
 
+
+#include "pb.h"
 #include "pinball.h"
 #include "WaveMix.h"
 #include "winmain.h"
@@ -45,7 +47,9 @@ int Sound::Init(HINSTANCE hInstance, int voices, void (* someFuncPtr)(int, MIXWA
 	}
 	else
 	{
-		MessageBoxA(winmain::hwnd_frame, pinball::get_rc_string(42, 0), pinball::WindowName, 0x2000u);
+		/*FT does not have the file, defaults work OK*/
+		if (!pb::FullTiltMode)
+			MessageBoxA(winmain::hwnd_frame, pinball::get_rc_string(42, 0), pinball::WindowName, 0x2000u);
 	}
 
 	WndClass.style = 0;

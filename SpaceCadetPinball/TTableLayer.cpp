@@ -1,8 +1,11 @@
 #include "pch.h"
 #include "TTableLayer.h"
 
+
+#include "fullscrn.h"
 #include "loader.h"
 #include "objlist_class.h"
+#include "pb.h"
 #include "proj.h"
 #include "render.h"
 #include "TBall.h"
@@ -19,7 +22,8 @@ TTableLayer::TTableLayer(TPinballTable* table): TCollisionComponent(table, -1, f
 	auto groupIndex = loader::query_handle("table");
 	loader::query_visual(groupIndex, 0, &visual);
 
-	auto projCenter = loader::query_float_attribute(groupIndex, 0, 700);
+	/*Full tilt: proj center first value is offset by resolution*/
+	auto projCenter = loader::query_float_attribute(groupIndex, 0, 700 + fullscrn::GetResolution());
 	proj::recenter(projCenter[0], projCenter[1]);
 	render::set_background_zmap(visual.ZMap, 0, 0);
 
@@ -54,7 +58,7 @@ TTableLayer::TTableLayer(TPinballTable* table): TCollisionComponent(table, -1, f
 	auto angleMultArr = loader::query_float_attribute(groupIndex, 0, 701);
 
 	/*Full tilt hack - GraityMult should be 0.2*/
-	if (angleMultArr && *angleMultArr < 1)
+	if (angleMultArr && !pb::FullTiltMode)
 		GraityMult = *angleMultArr;
 	else
 		GraityMult = 0.2f;

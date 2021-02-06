@@ -5,6 +5,7 @@
 #include "control.h"
 #include "loader.h"
 #include "objlist_class.h"
+#include "pb.h"
 #include "TBall.h"
 #include "timer.h"
 #include "TPinballTable.h"
@@ -43,7 +44,7 @@ THole::THole(TPinballTable* table, int groupIndex) : TCollisionComponent(table, 
 	FieldFlag = static_cast<int>(floor(*loader::query_float_attribute(groupIndex, 0, 1304)));
 
 	/*Full tilt hack - FieldFlag should be on*/
-	if (!FieldFlag)
+	if (pb::FullTiltMode)
 		FieldFlag = 1;
 
 	Circle.RadiusSq = visual.FloatArr[2] * visual.FloatArr[2];

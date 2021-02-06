@@ -3,6 +3,7 @@
 
 
 #include "control.h"
+#include "fullscrn.h"
 #include "high_score.h"
 #include "memory.h"
 #include "pinball.h"
@@ -28,6 +29,8 @@ datFileStruct* pb::record_table = nullptr;
 int pb::time_ticks = 0, pb::demo_mode = 0, pb::cheat_mode = 0, pb::game_mode = 2, pb::mode_countdown_, pb::state;
 float pb::time_now, pb::time_next, pb::ball_speed_limit;
 high_score_struct pb::highscore_table[5];
+bool pb::FullTiltMode = false;
+
 
 int pb::init()
 {
@@ -37,9 +40,8 @@ int pb::init()
 
 	++memory::critical_allocation;
 	lstrcpyA(datFileName, winmain::DatFileName);
-	//lstrcpyA(datFileName, "cadet.dat");
 	pinball::make_path_name(dataFilePath, datFileName, 300);
-	record_table = partman::load_records(dataFilePath, 0, strstr(datFileName, "cadet"));
+	record_table = partman::load_records(dataFilePath, fullscrn::GetResolution(), FullTiltMode);
 
 	auto useBmpFont = 0;
 	pinball::get_rc_int(158, &useBmpFont);
@@ -52,28 +54,27 @@ int pb::init()
 	auto plt = (PALETTEENTRY*)partman::field_labeled(record_table, "background", datFieldTypes::Palette);
 	gdrv::display_palette(plt);
 
-	auto tableSize = (__int16*)partman::field_labeled(record_table, "table_size", datFieldTypes::ShortArray);
 	auto backgroundBmp = (gdrv_bitmap8*)partman::field_labeled(record_table, "background", datFieldTypes::Bitmap8bit);
-	auto cameraInfo = (float*)partman::field_labeled(record_table, "camera_info", datFieldTypes::FloatArray);
+	auto cameraInfoId = partman::record_labeled(record_table, "camera_info") + fullscrn::GetResolution();
+	auto cameraInfo = (float*)partman::field(record_table, cameraInfoId, datFieldTypes::FloatArray);
 
-	/*Full tilt hack - table size is hardcoded*/
-	if (!tableSize)
-		tableSize = new short[2]{600, 800};
+	/*Full tilt: table size depends on resolution*/
+	auto resInfo = &fullscrn::resolution_array[fullscrn::GetResolution()];
 
 	if (cameraInfo)
 	{
 		memcpy(&projMat, cameraInfo, sizeof(float) * 4 * 3);
 		cameraInfo += 12;
 
-		auto projCenterX = tableSize[0] * 0.5f;
-		auto projCenterY = tableSize[1] * 0.5f;
+		auto projCenterX = resInfo->TableWidth * 0.5f;
+		auto projCenterY = resInfo->TableHeight * 0.5f;
 		auto projD = cameraInfo[0];
 		proj::init(projMat, projD, projCenterX, projCenterY);
 		zMin = cameraInfo[1];
 		zScaler = cameraInfo[2];
 	}
 
-	render::init(nullptr, zMin, zScaler, tableSize[0], tableSize[1]);
+	render::init(nullptr, zMin, zScaler, resInfo->TableWidth, resInfo->TableHeight);
 	gdrv::copy_bitmap(
 		&render::vscreen,
 		backgroundBmp->Width,
@@ -316,8 +317,8 @@ void pb::timed_frame(float timeNow, float timeDelta, bool drawBalls)
 
 void pb::window_size(int* width, int* height)
 {
-	*width = 600;
-	*height = 416;
+	*width = fullscrn::resolution_array[fullscrn::GetResolution()].TableWidth;
+	*height = fullscrn::resolution_array[fullscrn::GetResolution()].TableHeight;
 }
 
 void pb::pause_continue()

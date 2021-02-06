@@ -88,6 +88,13 @@ BEGIN
         MENUITEM "&Music",                      Menu1_Music
         MENUITEM SEPARATOR
         MENUITEM "P&layer Controls...\tF8",     Menu1_Player_Controls
+        POPUP "Table &Resolution"
+        BEGIN
+            MENUITEM "Use &Maximum Resolution",     Menu1_MaximumResolution
+            MENUITEM "&640 x 480",                  Menu1_640x480
+            MENUITEM "&800 x 600",                  Menu1_800x600
+            MENUITEM "&1024 x 768",                 Menu1_1024x768
+        END
     END
     POPUP "&Help"
     BEGIN
@@ -342,7 +349,7 @@ END
 // Bitmap
 //
 
-splash_bitmap             BITMAP                  "splash_bitmap.bmp"
+SPLASH_BITMAP           BITMAP                  "splash_bitmap.bmp"
 
 
 /////////////////////////////////////////////////////////////////////////////
@@ -585,6 +592,17 @@ BEGIN
     IDS_STRING287           "High Score 4\n%ld"
     IDS_STRING288           "High Score 5\n%ld"
     IDS_STRING289           "255 255 255   (R G B default font color)"
+END
+
+STRINGTABLE
+BEGIN
+    2030                    "Use &Maximum Resolution (640 x 480)"
+    2031                    "Use &Maximum Resolution (800 x 600)"
+END
+
+STRINGTABLE
+BEGIN
+    2032                    "Use &Maximum Resolution (1024 x 768)"
 END
 
 #endif    // English (United States) resources

@@ -4,6 +4,7 @@
 #include "fullscrn.h"
 #include "memory.h"
 #include "midi.h"
+#include "pb.h"
 #include "resource.h"
 #include "Sound.h"
 #include "winmain.h"
@@ -128,6 +129,8 @@ void options::init(HMENU menuHandle)
 		}
 		memory::free(tmpBuf);
 	}
+
+	update_resolution_menu();
 }
 
 void options::uninit()
@@ -142,6 +145,7 @@ void options::uninit()
 	set_int(nullptr, "Left Table Bump key", Options.LeftTableBumpKey);
 	set_int(nullptr, "Right Table Bump key", Options.RightTableBumpKey);
 	set_int(nullptr, "Bottom Table Bump key", Options.BottomTableBumpKey);
+	set_int(nullptr, "Screen Resolution", Options.Resolution);
 }
 
 void options::path_init(LPCSTR regPath)
@@ -187,7 +191,7 @@ void options::path_free()
 
 int options::get_int(LPCSTR optPath, LPCSTR lpValueName, int defaultValue)
 {
-	DWORD dwDisposition;	
+	DWORD dwDisposition;
 
 	HKEY result = (HKEY)defaultValue, Data = (HKEY)defaultValue;
 	if (!OptionsRegPath)
@@ -296,14 +300,78 @@ void options::toggle(UINT uIDCheckItem)
 		fullscrn::set_screen_mode(newValue);
 		menu_check(uIDCheckItem, newValue);
 		return;
-	}
-	if (uIDCheckItem > 407 && uIDCheckItem <= 411)
-	{
-		Options.Players = uIDCheckItem - 407;
+	case Menu1_1Player:
+	case Menu1_2Players:
+	case Menu1_3Players:
+	case Menu1_4Players:
+		Options.Players = uIDCheckItem - Menu1_1Player + 1;
 		menu_check(Menu1_1Player, Options.Players == 1);
 		menu_check(Menu1_2Players, Options.Players == 2);
 		menu_check(Menu1_3Players, Options.Players == 3);
 		menu_check(Menu1_4Players, Options.Players == 4);
+		break;
+	case Menu1_MaximumResolution:
+	case Menu1_640x480:
+	case Menu1_800x600:
+	case Menu1_1024x768:
+		{
+			menu_check(500u, uIDCheckItem == 500);
+			menu_check(501u, uIDCheckItem == 501);
+			menu_check(502u, uIDCheckItem == 502);
+			menu_check(503u, uIDCheckItem == 503);
+			int newResolution = uIDCheckItem - Menu1_640x480;
+			if (uIDCheckItem == Menu1_MaximumResolution)
+			{
+				Options.Resolution = -1;
+				if (fullscrn::GetMaxResolution() != fullscrn::GetResolution())
+					winmain::Restart();
+			}
+			else if (newResolution != fullscrn::GetResolution() && newResolution <= fullscrn::GetMaxResolution())
+			{
+				Options.Resolution = newResolution;
+				winmain::Restart();
+			}
+			break;
+		}
+	default:
+		break;
+	}
+}
+
+void options::update_resolution_menu()
+{
+	auto maxResolution = fullscrn::get_max_supported_resolution();
+	fullscrn::SetMaxResolution(maxResolution);
+	const CHAR* maxResText = pinball::get_rc_string(maxResolution + 2030, 0);
+	if (MenuHandle)
+		ModifyMenuA(MenuHandle, Menu1_MaximumResolution, 0, Menu1_MaximumResolution, maxResText);
+
+	for (auto resIndex = 0; resIndex < 3; resIndex++)
+	{
+		menu_set(fullscrn::resolution_array[resIndex].ResolutionMenuId, fullscrn::GetMaxResolution() >= resIndex);
+	}
+	for (auto i = Menu1_MaximumResolution; i <= Menu1_1024x768; ++i)
+	{
+		menu_check(i, 0);
+	}
+	if (Options.Resolution >= 0)
+		menu_check(fullscrn::resolution_array[fullscrn::GetResolution()].ResolutionMenuId, 1);
+	else
+		menu_check(Menu1_MaximumResolution, 1);
+}
+
+void options::init_resolution()
+{
+	Options.Resolution = get_int(nullptr, "Screen Resolution", -1);
+	int maxRes = fullscrn::get_max_supported_resolution();
+	if (Options.Resolution == -1 || maxRes <= Options.Resolution)
+	{
+		fullscrn::SetMaxResolution(maxRes);
+		fullscrn::SetResolution(maxRes);
+	}
+	else
+	{
+		fullscrn::SetResolution(Options.Resolution);
 	}
 }
 

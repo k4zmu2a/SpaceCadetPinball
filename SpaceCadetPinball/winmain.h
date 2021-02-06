@@ -20,6 +20,7 @@ public:
 	static void new_game();
 	static void pause();
 	static void help_introduction(HINSTANCE a1, HWND a2);
+	static void Restart();
 private:
 	static int return_value, bQuit, DispFrameRate, DispGRhistory, activated;
 	static int has_focus, mouse_down, last_mouse_x, last_mouse_y, no_time_loss;
@@ -27,6 +28,7 @@ private:
 	static UINT iFrostUniqueMsg;
 	static gdrv_bitmap8 gfr_display;
 	static HCURSOR mouse_hsave;
+	static bool restart;
 
 	static HDC _BeginPaint(HWND hWnd, LPPAINTSTRUCT lpPaint);
 };
