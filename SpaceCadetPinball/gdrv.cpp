@@ -1,5 +1,7 @@
 #include "pch.h"
 #include "gdrv.h"
+
+#include "fullscrn.h"
 #include "memory.h"
 #include "pinball.h"
 #include "winmain.h"
@@ -252,19 +254,20 @@ int gdrv::destroy_bitmap(gdrv_bitmap8* bmp)
 	return 0;
 }
 
-UINT gdrv::start_blit_sequence()
+void gdrv::start_blit_sequence()
 {
 	HDC dc = winmain::_GetDC(hwnd);
 	sequence_handle = 0;
 	sequence_hdc = dc;
 	SelectPalette(dc, palette_handle, 0);
-	return RealizePalette(sequence_hdc);
+	RealizePalette(sequence_hdc);
+	SetStretchBltMode(dc, stretchMode);
 }
 
 void gdrv::blit_sequence(gdrv_bitmap8* bmp, int xSrc, int ySrcOff, int xDest, int yDest, int DestWidth, int DestHeight)
 {
 	if (!use_wing)
-		StretchDIBits(
+		StretchDIBitsScaled(
 			sequence_hdc,
 			xDest,
 			yDest,
@@ -274,10 +277,10 @@ void gdrv::blit_sequence(gdrv_bitmap8* bmp, int xSrc, int ySrcOff, int xDest, in
 			bmp->Height - ySrcOff - DestHeight,
 			DestWidth,
 			DestHeight,
-			bmp->BmpBufPtr1,
-			bmp->Dib,
-			1u,
-			SRCCOPY);
+			bmp,
+			DIB_PAL_COLORS,
+			SRCCOPY
+		);
 }
 
 
@@ -289,12 +292,13 @@ void gdrv::end_blit_sequence()
 void gdrv::blit(gdrv_bitmap8* bmp, int xSrc, int ySrcOff, int xDest, int yDest, int DestWidth, int DestHeight)
 {
 	HDC dc = winmain::_GetDC(hwnd);
+	SetStretchBltMode(dc, stretchMode);
 	if (dc)
 	{
 		SelectPalette(dc, palette_handle, 0);
 		RealizePalette(dc);
 		if (!use_wing)
-			StretchDIBits(
+			StretchDIBitsScaled(
 				dc,
 				xDest,
 				yDest,
@@ -304,10 +308,10 @@ void gdrv::blit(gdrv_bitmap8* bmp, int xSrc, int ySrcOff, int xDest, int yDest, 
 				bmp->Height - ySrcOff - DestHeight,
 				DestWidth,
 				DestHeight,
-				bmp->BmpBufPtr1,
-				bmp->Dib,
-				1u,
-				SRCCOPY);
+				bmp,
+				DIB_PAL_COLORS,
+				SRCCOPY
+			);
 		ReleaseDC(hwnd, dc);
 	}
 }
@@ -317,8 +321,9 @@ void gdrv::blat(gdrv_bitmap8* bmp, int xDest, int yDest)
 	HDC dc = winmain::_GetDC(hwnd);
 	SelectPalette(dc, palette_handle, 0);
 	RealizePalette(dc);
+	SetStretchBltMode(dc, stretchMode);
 	if (!use_wing)
-		StretchDIBits(
+		StretchDIBitsScaled(
 			dc,
 			xDest,
 			yDest,
@@ -328,10 +333,10 @@ void gdrv::blat(gdrv_bitmap8* bmp, int xDest, int yDest)
 			0,
 			bmp->Width,
 			bmp->Height,
-			bmp->BmpBufPtr1,
-			bmp->Dib,
-			1u,
-			SRCCOPY);
+			bmp,
+			DIB_PAL_COLORS,
+			SRCCOPY
+		);
 	ReleaseDC(hwnd, dc);
 }
 
@@ -415,4 +420,43 @@ void gdrv::grtext_draw_ttext_in_box(LPCSTR text, int xOff, int yOff, int width, 
 	SetBkMode(dc, prevMode);
 	SetTextColor(dc, color);
 	ReleaseDC(hwnd, dc);
+}
+
+int gdrv::StretchDIBitsScaled(HDC hdc, int xDest, int yDest, int DestWidth, int DestHeight, int xSrc, int ySrc,
+                              int SrcWidth, int SrcHeight, gdrv_bitmap8* bmp, UINT iUsage,
+                              DWORD rop)
+{
+	/*Scaled partial updates may leave 1px border artifacts around update area.
+	 * Pad update area to compensate.*/
+	const int pad = 1, padX2 = pad * 2;
+	if (fullscrn::ScaleX > 1 && xSrc > pad && xSrc + pad < bmp->Width)
+	{
+		xSrc -= pad;
+		xDest -= pad;
+		SrcWidth += padX2;		
+		DestWidth += padX2;
+	}
+
+	if (fullscrn::ScaleY > 1 && ySrc > pad && ySrc + pad < bmp->Height)
+	{
+		ySrc -= pad;
+		yDest -= pad;
+		SrcHeight += padX2;		
+		DestHeight += padX2;
+	}
+
+	return StretchDIBits(
+		hdc,
+		static_cast<int>(round(xDest * fullscrn::ScaleX + fullscrn::OffsetX)),
+		static_cast<int>(round(yDest * fullscrn::ScaleY + fullscrn::OffsetY)),
+		static_cast<int>(round(DestWidth * fullscrn::ScaleX)),
+		static_cast<int>(round(DestHeight * fullscrn::ScaleY)),
+		xSrc,
+		ySrc,
+		SrcWidth,
+		SrcHeight,
+		bmp->BmpBufPtr1,
+		bmp->Dib,
+		iUsage,
+		rop);
 }

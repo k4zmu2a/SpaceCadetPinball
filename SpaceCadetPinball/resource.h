@@ -234,6 +234,7 @@
 #define Menu1_1024x768                  503
 #define DLG_HIGHSCORES_Score4           504
 #define DLG_HIGHSCORES_Score5           505
+#define Menu1_WindowUniformScale        600
 #define DLG_HIGHSCORES_EditName1        601
 #define DLG_HIGHSCORES_EditName2        602
 #define DLG_HIGHSCORES_EditName3        603
@@ -245,7 +246,7 @@
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NEXT_RESOURCE_VALUE        204
-#define _APS_NEXT_COMMAND_VALUE         40004
+#define _APS_NEXT_COMMAND_VALUE         40006
 #define _APS_NEXT_CONTROL_VALUE         1001
 #define _APS_NEXT_SYMED_VALUE           104
 #endif

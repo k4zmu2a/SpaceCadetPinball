@@ -4,6 +4,8 @@
 class winmain
 {
 public:
+	static const DWORD WndStyle = WS_GROUP | WS_SYSMENU | WS_DLGFRAME | WS_BORDER | WS_MAXIMIZE | WS_CLIPCHILDREN |
+		WS_THICKFRAME | WS_MAXIMIZEBOX;
 	static char DatFileName[300];
 	static int single_step;
 	static HINSTANCE hinst;

@@ -28,6 +28,10 @@ public:
 	static int ChangeDisplay, SmthFullScrnFlag2;
 	static int trick;
 	static const resolution_info resolution_array[3];
+	static float ScaleX;
+	static float ScaleY;
+	static float OffsetX;
+	static float OffsetY;
 
 	static void init(int width, int height, int isFullscreen, HWND winHandle, HMENU menuHandle, int changeDisplay);
 	static void shutdown();
@@ -46,6 +50,7 @@ public:
 	static void SetMaxResolution(int resolution);
 	static int get_max_supported_resolution();
 	static int get_screen_resolution();
+	static void window_size_changed();
 private :
 	static int MenuEnabled;
 	static HMENU MenuHandle;

@@ -1,6 +1,8 @@
 #include "pch.h"
 #include "fullscrn.h"
 
+
+#include "options.h"
 #include "pb.h"
 #include "render.h"
 #include "winmain.h"
@@ -24,6 +26,10 @@ const resolution_info fullscrn::resolution_array[3] =
 	{800, 600, 752, 520, 502},
 	{1024, 768, 960, 666, 503},
 };
+float fullscrn::ScaleX = 1;
+float fullscrn::ScaleY = 1;
+float fullscrn::OffsetX = 0;
+float fullscrn::OffsetY = 0;
 
 void fullscrn::init(int width, int height, int isFullscreen, HWND winHandle, HMENU menuHandle, int changeDisplay)
 {
@@ -46,15 +52,21 @@ void fullscrn::init(int width, int height, int isFullscreen, HWND winHandle, HME
 	WindowRect2.right = (WindowRect1.right - WindowRect1.left - widht2) / 2 - 2 + widht2 + 4;
 	WindowRect2.left = (WindowRect1.right - WindowRect1.left - widht2) / 2 - 2;
 	WindowRect2.top = borderHeight / 2 - (captionHeight + menuHeight) - 2;
+
+	/*RECT client{0,0,width,height};
+	AdjustWindowRect(&client, winmain::WndStyle, true);*/
 	MoveWindow(
 		hWnd,
 		(WindowRect1.right - WindowRect1.left - widht2) / 2 - 2,
 		WindowRect2.top,
-		widht2 + 4 + 10,
+		WindowRect2.right - WindowRect2.left + 10,
 		WindowRect2.bottom - WindowRect2.top + 10,
 		0);
 	// Todo: WH + 10 hack: original request 640x480 window but somehow receives 650x490, even thought spyxx says it is 640x480
 	fullscrn_flag1 = 0;
+
+	window_size_changed();
+	assertm(ScaleX == 1 && ScaleY == 1, "Wrong default client size");
 }
 
 void fullscrn::shutdown()
@@ -94,13 +106,13 @@ int fullscrn::set_screen_mode(int isFullscreen)
 int fullscrn::disableWindowFlagsDisDlg()
 {
 	long style = GetWindowLongA(hWnd, -16);
-	return SetWindowLongA(hWnd, -16, style & 0xFF3FFFFF);
+	return SetWindowLongA(hWnd, -16, style & ~(WS_CAPTION | WS_THICKFRAME));
 }
 
 int fullscrn::setWindowFlagsDisDlg()
 {
 	int style = GetWindowLongA(hWnd, -16);
-	return SetWindowLongA(hWnd, -16, style | 0xC00000);
+	return SetWindowLongA(hWnd, -16, style | WS_CAPTION | WS_THICKFRAME);
 }
 
 int fullscrn::enableFullscreen()
@@ -339,10 +351,12 @@ unsigned fullscrn::convert_mouse_pos(unsigned int mouseXY)
 
 void fullscrn::getminmaxinfo(MINMAXINFO* maxMin)
 {
-	maxMin->ptMaxSize.x = WindowRect2.right - WindowRect2.left;
-	maxMin->ptMaxSize.y = WindowRect2.bottom - WindowRect2.top;
-	maxMin->ptMaxPosition.x = WindowRect2.left;
-	maxMin->ptMaxPosition.y = WindowRect2.top;
+	/*Block down-scaling lower than min resolution*/
+	maxMin->ptMinTrackSize = POINT
+	{
+		resolution_array[0].ScreenWidth / 2,
+		resolution_array[0].ScreenHeight / 2
+	};
 }
 
 void fullscrn::paint()
@@ -418,4 +432,35 @@ int fullscrn::get_screen_resolution()
 {
 	auto height = static_cast<unsigned __int16>(GetSystemMetrics(SM_CYSCREEN));
 	return static_cast<unsigned __int16>(GetSystemMetrics(SM_CXSCREEN)) | (height << 16);
+}
+
+void fullscrn::window_size_changed()
+{
+	/*No scaling in fullscreen mode*/
+	if (display_changed)
+	{
+		ScaleY = ScaleX = 1;
+		OffsetX = OffsetY = 0;
+		return;
+	}
+
+	RECT client{};
+	GetClientRect(hWnd, &client);
+	auto res = &resolution_array[resolution];
+	ScaleX = static_cast<float>(client.right) / res->TableWidth;
+	ScaleY = static_cast<float>(client.bottom) / res->TableHeight;
+	OffsetX = OffsetY = 0;
+
+	if (options::Options.UniformScaling)
+	{
+		ScaleY = ScaleX = min(ScaleX, ScaleY);
+		OffsetX = floor((client.right - res->TableWidth * ScaleX) / 2);
+		OffsetY = floor((client.bottom - res->TableHeight * ScaleY) / 2);
+		auto dc = GetDC(hWnd);
+		if (dc)
+		{
+			BitBlt(dc, 0, 0, client.right, client.bottom, dc, 0, 0, BLACKNESS);
+			ReleaseDC(hWnd, dc);
+		}
+	}
 }

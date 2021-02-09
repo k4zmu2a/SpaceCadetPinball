@@ -146,26 +146,27 @@ int winmain::WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLi
 	picce.dwICC = 5885;
 	InitCommonControlsEx(&picce);
 
-	WNDCLASSA WndClass{};
-	WndClass.style = 4104;
-	WndClass.lpfnWndProc = message_handler;
-	WndClass.cbClsExtra = 0;
-	WndClass.cbWndExtra = 0;
-	WndClass.hInstance = hInstance;
-	WndClass.hIcon = LoadIconA(hInstance, "ICON_1");
-	WndClass.hCursor = LoadCursorA(nullptr, IDC_ARROW);
-	WndClass.hbrBackground = (HBRUSH)16;
-	WndClass.lpszMenuName = "MENU_1";
-	WndClass.lpszClassName = windowClass;
+	WNDCLASSEXA wndClass{};
+	wndClass.cbSize = sizeof wndClass;
+	wndClass.style = CS_DBLCLKS | CS_BYTEALIGNCLIENT;
+	wndClass.lpfnWndProc = message_handler;
+	wndClass.cbClsExtra = 0;
+	wndClass.cbWndExtra = 0;
+	wndClass.hInstance = hInstance;
+	wndClass.hIcon = LoadIconA(hInstance, "ICON_1");
+	wndClass.hCursor = LoadCursorA(nullptr, IDC_ARROW);
+	wndClass.hbrBackground = (HBRUSH)16;
+	wndClass.lpszMenuName = "MENU_1";
+	wndClass.lpszClassName = windowClass;
 	auto splash = splash::splash_screen(hInstance, "splash_bitmap", "splash_bitmap");
-	RegisterClassA(&WndClass);
+	RegisterClassExA(&wndClass);
 
 	pinball::FindShiftKeys();
 	options::init_resolution();
 
 	char windowName[40];
-	lstrcpyA(windowName, pinball::get_rc_string(38, 0));
-	windowHandle = CreateWindowExA(0, windowClass, windowName, 0x3CA0000u, 0, 0, 640, 480, nullptr, nullptr, hInstance,
+	lstrcpyA(windowName, pinball::get_rc_string(38, 0));	
+	windowHandle = CreateWindowExA(0, windowClass, windowName, WndStyle, 0, 0, 640, 480, nullptr, nullptr, hInstance,
 	                               nullptr);
 	hwnd_frame = windowHandle;
 	if (!windowHandle)
@@ -437,6 +438,11 @@ LRESULT CALLBACK winmain::message_handler(HWND hWnd, UINT Msg, WPARAM wParam, LP
 			return DefWindowProcA(hWnd, Msg, wParam, lParam);
 		case WM_ERASEBKGND:
 			break;
+		case WM_SIZE:
+			fullscrn::window_size_changed();
+			fullscrn::force_redraw();
+			pb::paint();
+			return DefWindowProcA(hWnd, Msg, wParam, lParam);
 		default:
 			return DefWindowProcA(hWnd, Msg, wParam, lParam);
 		}
@@ -595,6 +601,7 @@ LRESULT CALLBACK winmain::message_handler(HWND hWnd, UINT Msg, WPARAM wParam, LP
 		case Menu1_640x480:
 		case Menu1_800x600:
 		case Menu1_1024x768:
+		case Menu1_WindowUniformScale:
 			options::toggle(wParam);
 			break;
 		case Menu1_Help_Topics:
@@ -653,6 +660,9 @@ LRESULT CALLBACK winmain::message_handler(HWND hWnd, UINT Msg, WPARAM wParam, LP
 				last_mouse_y = mouseXY >> 16;
 				SetCapture(hWnd);
 			}
+			else
+				pb::keydown(options::Options.LeftFlipperKey);
+
 			return DefWindowProcA(hWnd, Msg, wParam, lParam);
 		}
 		break;
@@ -663,12 +673,27 @@ LRESULT CALLBACK winmain::message_handler(HWND hWnd, UINT Msg, WPARAM wParam, LP
 			SetCursor(mouse_hsave);
 			ReleaseCapture();
 		}
+		if (!pb::cheat_mode)
+			pb::keyup(options::Options.LeftFlipperKey);
 		return DefWindowProcA(hWnd, Msg, wParam, lParam);
 	case WM_RBUTTONDOWN:
-	case WM_MBUTTONDOWN:
+		if (!pb::cheat_mode)
+			pb::keydown(options::Options.RightFlipperKey);
 		if (pb::game_mode)
 			return DefWindowProcA(hWnd, Msg, wParam, lParam);
 		break;
+	case WM_RBUTTONUP:
+		if (!pb::cheat_mode)
+			pb::keyup(options::Options.RightFlipperKey);
+		return DefWindowProcA(hWnd, Msg, wParam, lParam);
+	case WM_MBUTTONDOWN:
+		pb::keydown(options::Options.PlungerKey);
+		if (pb::game_mode)
+			return DefWindowProcA(hWnd, Msg, wParam, lParam);
+		break;
+	case WM_MBUTTONUP:
+		pb::keyup(options::Options.PlungerKey);
+		return DefWindowProcA(hWnd, Msg, wParam, lParam);
 	case WM_POWERBROADCAST:
 		if (wParam == 4 && options::Options.FullScreen)
 		{

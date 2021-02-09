@@ -53,7 +53,7 @@ public:
 	static int create_spliced_bitmap(gdrv_bitmap8* bmp, int width, int height, int size);
 	static int destroy_bitmap(gdrv_bitmap8* bmp);
 	static int display_palette(PALETTEENTRY* plt);
-	static UINT start_blit_sequence();
+	static void start_blit_sequence();
 	static void blit_sequence(gdrv_bitmap8* bmp, int xSrc, int ySrcOff, int xDest, int yDest, int DestWidth,
 	                          int DestHeight);
 	static void end_blit_sequence();
@@ -66,9 +66,15 @@ public:
 	                                       gdrv_bitmap8* srcBmp, int srcXOff, int srcYOff);
 	static void grtext_draw_ttext_in_box(LPCSTR text, int xOff, int yOff, int width, int height, int a6);
 private:
+	/*COLORONCOLOR or HALFTONE*/
+	static const int stretchMode = COLORONCOLOR;
 	static HWND hwnd;
 	static HINSTANCE hinst;
 	static int grtext_blue;
 	static int grtext_green;
 	static int grtext_red;
+
+	static int StretchDIBitsScaled(HDC hdc, int xDest, int yDest, int DestWidth, int DestHeight, int xSrc, int ySrc,
+	                               int SrcWidth, int SrcHeight, gdrv_bitmap8* bmp, UINT iUsage,
+	                               DWORD rop);
 };

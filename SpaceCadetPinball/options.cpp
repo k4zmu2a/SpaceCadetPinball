@@ -12,7 +12,7 @@
 LPCSTR options::OptionsRegPath;
 LPSTR options::OptionsRegPathCur;
 HMENU options::MenuHandle;
-optionsStruct options::Options;
+optionsStruct options::Options{};
 
 winhelp_entry options::keymap_help[18]
 {
@@ -107,6 +107,7 @@ void options::init(HMENU menuHandle)
 	Options.LeftTableBumpKey = get_int(nullptr, "Left Table Bump key", Options.LeftTableBumpKey);
 	Options.RightTableBumpKey = get_int(nullptr, "Right Table Bump key", Options.RightTableBumpKey);
 	Options.BottomTableBumpKey = get_int(nullptr, "Bottom Table Bump key", Options.BottomTableBumpKey);
+	Options.UniformScaling = get_int(nullptr, "Uniform scaling", true);
 	menu_check(Menu1_Sounds, Options.Sounds);
 	Sound::Enable(0, 7, Options.Sounds);
 	menu_check(Menu1_Music, Options.Music);
@@ -115,6 +116,7 @@ void options::init(HMENU menuHandle)
 	menu_check(Menu1_2Players, Options.Players == 2);
 	menu_check(Menu1_3Players, Options.Players == 3);
 	menu_check(Menu1_4Players, Options.Players == 4);
+	menu_check(Menu1_WindowUniformScale, Options.UniformScaling);
 	auto tmpBuf = memory::allocate(0x1F4u);
 	if (tmpBuf)
 	{
@@ -146,6 +148,7 @@ void options::uninit()
 	set_int(nullptr, "Right Table Bump key", Options.RightTableBumpKey);
 	set_int(nullptr, "Bottom Table Bump key", Options.BottomTableBumpKey);
 	set_int(nullptr, "Screen Resolution", Options.Resolution);
+	set_int(nullptr, "Uniform scaling", Options.UniformScaling);
 }
 
 void options::path_init(LPCSTR regPath)
@@ -315,10 +318,9 @@ void options::toggle(UINT uIDCheckItem)
 	case Menu1_800x600:
 	case Menu1_1024x768:
 		{
-			menu_check(500u, uIDCheckItem == 500);
-			menu_check(501u, uIDCheckItem == 501);
-			menu_check(502u, uIDCheckItem == 502);
-			menu_check(503u, uIDCheckItem == 503);
+			for (unsigned i = Menu1_MaximumResolution; i <= Menu1_1024x768; ++i)
+				menu_check(i, i == uIDCheckItem);
+
 			int newResolution = uIDCheckItem - Menu1_640x480;
 			if (uIDCheckItem == Menu1_MaximumResolution)
 			{
@@ -333,6 +335,12 @@ void options::toggle(UINT uIDCheckItem)
 			}
 			break;
 		}
+	case Menu1_WindowUniformScale:
+		Options.UniformScaling ^= true;
+		menu_check(Menu1_WindowUniformScale, Options.UniformScaling);
+		fullscrn::window_size_changed();
+		fullscrn::paint();
+		break;
 	default:
 		break;
 	}

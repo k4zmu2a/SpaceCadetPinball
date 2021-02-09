@@ -95,6 +95,10 @@ BEGIN
             MENUITEM "&800 x 600",                  Menu1_800x600
             MENUITEM "&1024 x 768",                 Menu1_1024x768
         END
+        POPUP "&Window"
+        BEGIN
+            MENUITEM "&Uniform Scaling",            Menu1_WindowUniformScale
+        END
     END
     POPUP "&Help"
     BEGIN

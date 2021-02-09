@@ -473,35 +473,21 @@ void render::paint_balls()
 
 void render::unpaint_balls()
 {
-	auto ballPtr = &ball_list[many_balls - 1];
-	if (many_balls - 1 >= 0)
+	for (int index = many_balls-1; index >= 0; index--)
 	{
-		gdrv_bitmap8* bitmapPtr = &ball_bitmap[many_balls - 1];
-		for (int index = many_balls; index > 0; index--)
-		{
-			struct render_sprite_type_struct* curBall = *ballPtr;
-			rectangle_type* rect2 = &(*ballPtr)->DirtyRect;
-			int width = (*ballPtr)->DirtyRect.Width;
-			if (width > 0)
-				gdrv::copy_bitmap(
-					&vscreen,
-					width,
-					(*ballPtr)->DirtyRect.Height,
-					(*ballPtr)->DirtyRect.XPosition,
-					(*ballPtr)->DirtyRect.YPosition,
-					bitmapPtr,
-					0,
-					0);
+		auto curBall = ball_list[index];
+		if (curBall->DirtyRect.Width > 0)
+			gdrv::copy_bitmap(
+				&vscreen,
+				curBall->DirtyRect.Width,
+				curBall->DirtyRect.Height,
+				curBall->DirtyRect.XPosition,
+				curBall->DirtyRect.YPosition,
+				&ball_bitmap[index],
+				0,
+				0);
 
-			rectangle_type* rectCopy = &curBall->BmpRectCopy;
-			rectCopy->XPosition = rect2->XPosition;
-			rectCopy->YPosition = rect2->YPosition;
-			rectCopy->Width = rect2->Width;
-			rectCopy->Height = rect2->Height;
-
-			--ballPtr;
-			--bitmapPtr;
-		}
+		curBall->BmpRectCopy = curBall->DirtyRect;
 	}
 }
 
