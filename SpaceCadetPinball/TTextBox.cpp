@@ -25,7 +25,7 @@ TTextBox::TTextBox(TPinballTable* table, int groupIndex) : TPinballComponent(tab
 	if (groupIndex > 0)
 	{
 		/*Full tilt: text box dimensions index is offset by resolution*/
-		int arrLength;		
+		int arrLength;
 		auto dimensions = loader::query_iattribute(groupIndex + fullscrn::GetResolution(), 1500, &arrLength);
 		OffsetX = dimensions[0];
 		OffsetY = dimensions[1];
@@ -155,8 +155,6 @@ void TTextBox::Display(char* text, float time)
 
 void TTextBox::Draw()
 {
-	TTextBoxMessage* nextMessage = nullptr;
-
 	auto bmp = BgBmp;
 	if (bmp)
 		gdrv::copy_bitmap(
@@ -171,119 +169,112 @@ void TTextBox::Draw()
 	else
 		gdrv::fill_bitmap(&render::vscreen, Width, Height, OffsetX, OffsetY, 0);
 
+	bool display = false;
 	while (Message1)
 	{
-		auto message = Message1;
-		if (message->Time == -1.0)
+		if (Message1->Time == -1.0)
 		{
-			nextMessage = message->NextMessage;
-			if (!message->NextMessage)
+			if (!Message1->NextMessage)
 			{
 				Timer = -1;
-			LABEL_18:
-				auto font = Font;
-				if (!font)
-				{
-					gdrv::blit(
-						&render::vscreen,
-						OffsetX,
-						OffsetY,
-						OffsetX + render::vscreen.XPosition,
-						OffsetY + render::vscreen.YPosition,
-						Width,
-						Height);
-					gdrv::grtext_draw_ttext_in_box(
-						Message1->Text,
-						render::vscreen.XPosition + OffsetX,
-						render::vscreen.YPosition + OffsetY,
-						Width,
-						Height,
-						255);
-					return;
-				}
-				auto text = Message1->Text;
-				for (auto y = OffsetY; ; y += font->Height)
-				{
-					auto curChar = *text;
-					if (!curChar || y + font->Height > OffsetY + Height)
-						break;
-
-					auto totalWidth = 0;
-					char* textEndSpace = nullptr;
-					auto textEnd = text;
-					while (true)
-					{
-						auto maskedChar = curChar & 0x7F;
-						if (!maskedChar || maskedChar == '\n')
-							break;
-						auto charBmp = font->Chars[maskedChar];
-						if (charBmp)
-						{
-							auto width = charBmp->Width + font->GapWidth + totalWidth;
-							if (width > Width)
-							{
-								if (textEndSpace)
-									textEnd = textEndSpace;
-								break;
-							}
-							if (*textEnd == ' ')
-								textEndSpace = textEnd;
-							curChar = *(textEnd + 1);
-							totalWidth = width;
-							++textEnd;
-						}
-						else
-						{
-							curChar = *textEnd;
-						}
-					}
-
-					auto offX = OffsetX;
-					while (text < textEnd)
-					{
-						auto charBmp = font->Chars[*text++ & 0x7F];
-						if (charBmp)
-						{
-							auto height = charBmp->Height;
-							auto width = charBmp->Width;
-							if (render::background_bitmap)
-								gdrv::copy_bitmap_w_transparency(&render::vscreen, width, height, offX, y, charBmp, 0,
-								                                 0);
-							else
-								gdrv::copy_bitmap(&render::vscreen, width, height, offX, y, charBmp, 0, 0);
-							font = Font;
-							offX += charBmp->Width + font->GapWidth;
-						}
-					}
-					while ((*text & 0x7F) == ' ')
-						++text;
-					if ((*text & 0x7F) == '\n')
-						++text;
-				}
+				display = true;
 				break;
 			}
 		}
-		else
+		else if (Message1->TimeLeft() >= -2.0f)
 		{
-			auto timeLeft = Message1->TimeLeft();
-			if (timeLeft >= -2.0f)
+			Timer = timer::set(max(Message1->TimeLeft(), 0.25f), this, TimerExpired);
+			display = true;
+			break;
+		}
+
+		auto tmp = Message1;
+		Message1 = Message1->NextMessage;
+		delete tmp;
+	}
+
+	if (display)
+	{
+		auto font = Font;
+		if (!font)
+		{
+			gdrv::blit(
+				&render::vscreen,
+				OffsetX,
+				OffsetY,
+				OffsetX + render::vscreen.XPosition,
+				OffsetY + render::vscreen.YPosition,
+				Width,
+				Height);
+			gdrv::grtext_draw_ttext_in_box(
+				Message1->Text,
+				render::vscreen.XPosition + OffsetX,
+				render::vscreen.YPosition + OffsetY,
+				Width,
+				Height,
+				255);
+			return;
+		}
+
+		auto text = Message1->Text;
+		for (auto y = OffsetY; ; y += font->Height)
+		{
+			auto curChar = *text;
+			if (!curChar || y + font->Height > OffsetY + Height)
+				break;
+
+			auto totalWidth = 0;
+			char* textEndSpace = nullptr;
+			auto textEnd = text;
+			while (true)
 			{
-				int timer;
-				if (timeLeft >= 0.25f)
+				auto maskedChar = curChar & 0x7F;
+				if (!maskedChar || maskedChar == '\n')
+					break;
+				auto charBmp = font->Chars[maskedChar];
+				if (charBmp)
 				{
-					timer = timer::set(timeLeft, this, TimerExpired);
+					auto width = charBmp->Width + font->GapWidth + totalWidth;
+					if (width > Width)
+					{
+						if (textEndSpace)
+							textEnd = textEndSpace;
+						break;
+					}
+					if (*textEnd == ' ')
+						textEndSpace = textEnd;
+					curChar = *(textEnd + 1);
+					totalWidth = width;
+					++textEnd;
 				}
 				else
 				{
-					timer = timer::set(0.25, this, TimerExpired);
+					curChar = *textEnd;
 				}
-				Timer = timer;
-				goto LABEL_18;
 			}
-			nextMessage = message->NextMessage;
+
+			auto offX = OffsetX;
+			while (text < textEnd)
+			{
+				auto charBmp = font->Chars[*text++ & 0x7F];
+				if (charBmp)
+				{
+					auto height = charBmp->Height;
+					auto width = charBmp->Width;
+					if (render::background_bitmap)
+						gdrv::copy_bitmap_w_transparency(&render::vscreen, width, height, offX, y, charBmp, 0,
+						                                 0);
+					else
+						gdrv::copy_bitmap(&render::vscreen, width, height, offX, y, charBmp, 0, 0);
+					font = Font;
+					offX += charBmp->Width + font->GapWidth;
+				}
+			}
+			while ((*text & 0x7F) == ' ')
+				++text;
+			if ((*text & 0x7F) == '\n')
+				++text;
 		}
-		delete message;
-		Message1 = nextMessage;
 	}
 
 	gdrv::blit(

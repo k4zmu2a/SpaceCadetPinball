@@ -25,7 +25,7 @@ public:
 	static rectangle_type WHRect;
 	static int fullscrn_flag1;
 	static int display_changed;
-	static int ChangeDisplay, SmthFullScrnFlag2;
+	static int ChangeDisplay, ignoreNextDisplayChangeFg;
 	static int trick;
 	static const resolution_info resolution_array[3];
 	static float ScaleX;

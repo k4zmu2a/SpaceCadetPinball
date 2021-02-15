@@ -14,7 +14,7 @@ tagRECT fullscrn::WindowRect1, fullscrn::WindowRect2;
 rectangle_type fullscrn::WHRect;
 int fullscrn::fullscrn_flag1;
 int fullscrn::display_changed;
-int fullscrn::ChangeDisplay, fullscrn::SmthFullScrnFlag2;
+int fullscrn::ChangeDisplay, fullscrn::ignoreNextDisplayChangeFg;
 int fullscrn::trick = 1;
 int fullscrn::MenuEnabled;
 HMENU fullscrn::MenuHandle;
@@ -122,8 +122,8 @@ int fullscrn::enableFullscreen()
 
 	if (ChangeDisplay && !display_changed)
 	{
-		DevMode.dmSize = 156;
-		DevMode.dmFields = 1835008;
+		DevMode.dmSize = sizeof DevMode;
+		DevMode.dmFields = DM_BITSPERPEL | DM_PELSWIDTH | DM_PELSHEIGHT;
 		DevMode.dmPelsWidth = resolution_array[resolution].ScreenWidth;
 		DevMode.dmPelsHeight = resolution_array[resolution].ScreenHeight;
 		DevMode.dmBitsPerPel = 32;
@@ -131,24 +131,24 @@ int fullscrn::enableFullscreen()
 		if (trick)
 		{
 			GetWindowRect(GetDesktopWindow(), &Rect);
-			SetWindowPos(hWnd, (HWND)-1, 0, 0, Rect.right - Rect.left + 1,
-			             Rect.bottom - Rect.top + 1, 8u);
+			SetWindowPos(hWnd, HWND_TOPMOST, 0, 0, Rect.right - Rect.left + 1,
+			             Rect.bottom - Rect.top + 1, SWP_NOREDRAW);
 		}
-		SmthFullScrnFlag2 = 1;
-		LONG changeDispResult = ChangeDisplaySettingsA(&DevMode, 4u);
-		if (changeDispResult == 1)
+		ignoreNextDisplayChangeFg = 1;
+		LONG changeDispResult = ChangeDisplaySettingsA(&DevMode, CDS_FULLSCREEN);
+		if (changeDispResult == DISP_CHANGE_RESTART)
 		{
-			BYTE2(DevMode.dmFields) &= 0xFBu;
-			SmthFullScrnFlag2 = 1;
-			changeDispResult = ChangeDisplaySettingsA(&DevMode, 4u);
+			DevMode.dmFields &= ~DM_BITSPERPEL;
+			ignoreNextDisplayChangeFg = 1;
+			changeDispResult = ChangeDisplaySettingsA(&DevMode, CDS_FULLSCREEN);
 		}
-		display_changed = changeDispResult == 0;
-		if (changeDispResult == 0)
+		display_changed = changeDispResult == DISP_CHANGE_SUCCESSFUL;
+		if (display_changed)
 			return 1;
 	}
 	GetWindowRect(GetDesktopWindow(), &Rect);
 	disableWindowFlagsDisDlg();
-	SetWindowPos(hWnd, (HWND)-1, 0, 0, Rect.right - Rect.left + 1, Rect.bottom - Rect.top + 1, 8u);
+	SetWindowPos(hWnd, HWND_TOPMOST, 0, 0, Rect.right - Rect.left + 1, Rect.bottom - Rect.top + 1, SWP_NOREDRAW);
 	return 0;
 }
 
@@ -157,20 +157,20 @@ int fullscrn::disableFullscreen()
 	if (display_changed)
 	{
 		display_changed = 0;
-		SmthFullScrnFlag2 = 1;
-		ChangeDisplaySettingsA(nullptr, 4u);
+		ignoreNextDisplayChangeFg = 1;
+		ChangeDisplaySettingsA(nullptr, CDS_FULLSCREEN);
 		if (trick)
-			SetWindowPos(hWnd, (HWND)-1, 0, 0, 0, 0, 0x13u);
+			SetWindowPos(hWnd, HWND_TOPMOST, 0, 0, 0, 0, SWP_NOSIZE | SWP_NOMOVE | SWP_NOACTIVATE);
 	}
 	setWindowFlagsDisDlg();
 	SetWindowPos(
 		hWnd,
-		nullptr,
+		HWND_TOP,
 		WindowRect2.left,
 		WindowRect2.top,
 		WindowRect2.right - WindowRect2.left,
 		WindowRect2.bottom - WindowRect2.top,
-		0x14u);
+		SWP_NOZORDER | SWP_NOACTIVATE);
 	return 0;
 }
 
@@ -264,9 +264,9 @@ void fullscrn::center_in(HWND parent, HWND child)
 int fullscrn::displaychange()
 {
 	int result = 0;
-	if (SmthFullScrnFlag2)
+	if (ignoreNextDisplayChangeFg)
 	{
-		SmthFullScrnFlag2 = 0;
+		ignoreNextDisplayChangeFg = 0;
 	}
 	else
 	{
@@ -280,24 +280,24 @@ int fullscrn::displaychange()
 			set_menu_mode(1);
 			SetWindowPos(
 				hWnd,
-				nullptr,
+				HWND_TOP,
 				WindowRect2.left,
 				WindowRect2.top,
 				WindowRect2.right - WindowRect2.left,
 				WindowRect2.bottom - WindowRect2.top,
-				0x1Cu);
+				SWP_NOZORDER | SWP_NOREDRAW | SWP_NOACTIVATE);
 			result = 1;
 		}
 		else
 		{
 			SetWindowPos(
 				hWnd,
-				nullptr,
+				HWND_TOP,
 				WindowRect2.left,
 				WindowRect2.top,
 				WindowRect2.right - WindowRect2.left,
 				WindowRect2.bottom - WindowRect2.top,
-				0x14u);
+				SWP_NOZORDER | SWP_NOACTIVATE);
 		}
 		center_in(GetDesktopWindow(), hWnd);
 	}
@@ -311,7 +311,7 @@ void fullscrn::activate(int flag)
 		if (!flag)
 		{
 			set_screen_mode(0);
-			SetWindowPos(hWnd, (HWND)1, 0, 0, 0, 0, 0x13u);
+			SetWindowPos(hWnd, HWND_BOTTOM, 0, 0, 0, 0, SWP_NOSIZE | SWP_NOMOVE | SWP_NOACTIVATE);
 		}
 	}
 }

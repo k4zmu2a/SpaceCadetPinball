@@ -165,7 +165,7 @@ int winmain::WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLi
 	options::init_resolution();
 
 	char windowName[40];
-	lstrcpyA(windowName, pinball::get_rc_string(38, 0));	
+	lstrcpyA(windowName, pinball::get_rc_string(38, 0));
 	windowHandle = CreateWindowExA(0, windowClass, windowName, WndStyle, 0, 0, 640, 480, nullptr, nullptr, hInstance,
 	                               nullptr);
 	hwnd_frame = windowHandle;
@@ -268,10 +268,14 @@ int winmain::WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLi
 				now = timeGetTime();
 				if (now - then >= 2)
 				{
+					/*last_mouse_n is in client coordinates*/
 					POINT Point;
 					GetCursorPos(&Point);
+					ScreenToClient(hwnd_frame, &Point);
 					pb::ballset(last_mouse_x - Point.x, Point.y - last_mouse_y);
-					SetCursorPos(last_mouse_x, last_mouse_y);
+					Point = POINT{last_mouse_x, last_mouse_y};
+					ClientToScreen(hwnd_frame, &Point);
+					SetCursorPos(Point.x, Point.y);
 				}
 			}
 			if (!single_step)
@@ -705,7 +709,7 @@ LRESULT CALLBACK winmain::message_handler(HWND hWnd, UINT Msg, WPARAM wParam, LP
 	case WM_PALETTECHANGED:
 		InvalidateRect(hWnd, nullptr, 0);
 		return DefWindowProcA(hWnd, Msg, wParam, lParam);
-	case WM_POINTERDEVICEINRANGE | LB_ADDSTRING:
+	case MM_MCINOTIFY:
 		if (wParam == 1)
 			midi::restart_midi_seq(lParam);
 		return DefWindowProcA(hWnd, Msg, wParam, lParam);
