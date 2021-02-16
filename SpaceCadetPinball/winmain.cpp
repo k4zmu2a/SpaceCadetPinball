@@ -343,6 +343,8 @@ int winmain::WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLi
 
 LRESULT CALLBACK winmain::message_handler(HWND hWnd, UINT Msg, WPARAM wParam, LPARAM lParam)
 {
+	int wParamI = static_cast<int>(wParam);
+
 	if (Msg == iFrostUniqueMsg)
 	{
 		if (IsIconic(hWnd))
@@ -478,11 +480,11 @@ LRESULT CALLBACK winmain::message_handler(HWND hWnd, UINT Msg, WPARAM wParam, LP
 		}
 		return DefWindowProcA(hWnd, Msg, wParam, lParam);
 	case WM_KEYUP:
-		pb::keyup(wParam);
+		pb::keyup(wParamI);
 		return DefWindowProcA(hWnd, Msg, wParam, lParam);
 	case WM_KEYDOWN:
 		if (!(lParam & 0x40000000))
-			pb::keydown(wParam);
+			pb::keydown(wParamI);
 		switch (wParam)
 		{
 		case VK_ESCAPE:
@@ -506,6 +508,8 @@ LRESULT CALLBACK winmain::message_handler(HWND hWnd, UINT Msg, WPARAM wParam, LP
 			if (!single_step)
 				pause();
 			options::keyboard();
+			break;
+		default:
 			break;
 		}
 		if (!pb::cheat_mode)
@@ -578,7 +582,7 @@ LRESULT CALLBACK winmain::message_handler(HWND hWnd, UINT Msg, WPARAM wParam, LP
 					auto iHwnd = reinterpret_cast<size_t>(hwnd_frame);
 					sprintf_s(
 						cmdLine,
-						"%s %s%lX  %s%lX",
+						"%s %s%zX  %s%zX",
 						tmpBuf,
 						"select=",
 						iHwnd,
@@ -598,7 +602,7 @@ LRESULT CALLBACK winmain::message_handler(HWND hWnd, UINT Msg, WPARAM wParam, LP
 		case Menu1_2Players:
 		case Menu1_3Players:
 		case Menu1_4Players:
-			options::toggle(wParam);
+			options::toggle(wParamI);
 			new_game();
 			break;
 		case Menu1_MaximumResolution:
@@ -606,7 +610,7 @@ LRESULT CALLBACK winmain::message_handler(HWND hWnd, UINT Msg, WPARAM wParam, LP
 		case Menu1_800x600:
 		case Menu1_1024x768:
 		case Menu1_WindowUniformScale:
-			options::toggle(wParam);
+			options::toggle(wParamI);
 			break;
 		case Menu1_Help_Topics:
 			if (!single_step)
@@ -621,7 +625,7 @@ LRESULT CALLBACK winmain::message_handler(HWND hWnd, UINT Msg, WPARAM wParam, LP
 		case Menu1_Music:
 			if (!single_step)
 				pause();
-			options::toggle(wParam);
+			options::toggle(wParamI);
 			break;
 		case Menu1_Player_Controls:
 		case 204: // Second controls button?
@@ -659,7 +663,7 @@ LRESULT CALLBACK winmain::message_handler(HWND hWnd, UINT Msg, WPARAM wParam, LP
 			{
 				mouse_down = 1;
 				mouse_hsave = SetCursor(nullptr);
-				auto mouseXY = fullscrn::convert_mouse_pos(lParam);
+				auto mouseXY = fullscrn::convert_mouse_pos(static_cast<unsigned>(lParam));
 				last_mouse_x = mouseXY & 0xffFFu;
 				last_mouse_y = mouseXY >> 16;
 				SetCapture(hWnd);
@@ -733,7 +737,7 @@ int winmain::ProcessWindowMessages()
 			DispatchMessageA(&Msg);
 			if (Msg.message == 18)
 			{
-				return_value = Msg.wParam;
+				return_value = static_cast<int>(Msg.wParam);
 				return 0;
 			}
 		}
@@ -744,7 +748,7 @@ int winmain::ProcessWindowMessages()
 	DispatchMessageA(&Msg);
 	if (Msg.message == 18)
 	{
-		return_value = Msg.wParam;
+		return_value = static_cast<int>(Msg.wParam);
 		return 0;
 	}
 	return 1;

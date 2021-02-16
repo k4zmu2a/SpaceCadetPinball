@@ -45,7 +45,7 @@ public:
 	static int init(HINSTANCE hInst, HWND hWnd);
 	static int uninit();
 	static void get_focus();
-	static BITMAPINFO* DibCreate(__int16 bpp, int width, int height);
+	static BITMAPINFO* DibCreate(int16_t bpp, int width, int height);
 	static void DibSetUsage(BITMAPINFO* dib, HPALETTE hpal, int someFlag);
 	static int create_bitmap_dib(gdrv_bitmap8* bmp, int width, int height);
 	static int create_bitmap(gdrv_bitmap8* bmp, int width, int height);

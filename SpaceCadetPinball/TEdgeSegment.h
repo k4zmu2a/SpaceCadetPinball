@@ -28,5 +28,5 @@ public:
 	virtual float FindCollisionDistance(ray_type* ray) = 0;
 
 	static TEdgeSegment* install_wall(float* floatArr, TCollisionComponent* collComp, char* activeFlagPtr,
-	                                  unsigned int collisionGroup, float offset, int wallValue);
+	                                  unsigned int collisionGroup, float offset, size_t wallValue);
 };

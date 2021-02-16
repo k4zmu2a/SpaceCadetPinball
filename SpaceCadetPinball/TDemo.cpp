@@ -100,7 +100,7 @@ void TDemo::Collision(TBall* ball, vector_type* nextPosition, vector_type* direc
 	ball->Position.Y = nextPosition->Y;
 	ball->RayMaxDistance -= coef;
 
-	switch (reinterpret_cast<int>(edge->WallValue))
+	switch (reinterpret_cast<size_t>(edge->WallValue))
 	{
 	case 1400:
 		if (!FlipLeftTimer && !FlipLeftFlag)

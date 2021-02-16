@@ -17,7 +17,7 @@ struct render_sprite_type_struct
 	zmap_header_type* ZMap;
 	char UnknownFlag;
 	VisualType VisualType;
-	__int16 Depth;
+	int16_t Depth;
 	rectangle_type BmpRectCopy;
 	int ZMapOffestY;
 	int ZMapOffestX;

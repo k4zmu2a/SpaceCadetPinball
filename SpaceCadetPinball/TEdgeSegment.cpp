@@ -19,7 +19,7 @@ void TEdgeSegment::port_draw()
 }
 
 TEdgeSegment* TEdgeSegment::install_wall(float* floatArr, TCollisionComponent* collComp, char* activeFlagPtr,
-                                         unsigned int collisionGroup, float offset, int wallValue)
+                                         unsigned int collisionGroup, float offset, size_t wallValue)
 {
 	vector_type center{}, start{}, end{}, prevCenter{}, vec1{}, vec2{}, dstVec{};
 	TEdgeSegment* edge = nullptr;

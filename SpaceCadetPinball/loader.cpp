@@ -89,7 +89,7 @@ void loader::loadfrom(datFileStruct* datFile)
 
 	for (auto groupIndex = 0; groupIndex < datFile->NumberOfGroups; ++groupIndex)
 	{
-		auto value = reinterpret_cast<__int16*>(partman::field(datFile, groupIndex, datFieldTypes::ShortValue));
+		auto value = reinterpret_cast<int16_t*>(partman::field(datFile, groupIndex, datFieldTypes::ShortValue));
 		if (value && *value == 202)
 		{
 			if (sound_count < 65)
@@ -116,7 +116,7 @@ void loader::unload()
 
 int loader::get_sound_id(int groupIndex)
 {
-	__int16 soundIndex = 1;
+	int16_t soundIndex = 1;
 	if (sound_count <= 1)
 	{
 		error(25, 26);
@@ -139,7 +139,7 @@ int loader::get_sound_id(int groupIndex)
 		sound_list[soundIndex].Duration = 0.0;
 		if (soundGroupId > 0 && !pinball::quickFlag)
 		{
-			auto value = reinterpret_cast<__int16*>(partman::field(loader_table, soundGroupId,
+			auto value = reinterpret_cast<int16_t*>(partman::field(loader_table, soundGroupId,
 			                                                       datFieldTypes::ShortValue));
 			if (value && *value == 202)
 			{
@@ -173,7 +173,7 @@ short loader::query_visual_states(int groupIndex)
 	short result;
 	if (groupIndex < 0)
 		return error(0, 17);
-	auto shortArr = reinterpret_cast<__int16*>(partman::field(loader_table, groupIndex, datFieldTypes::ShortArray));
+	auto shortArr = reinterpret_cast<int16_t*>(partman::field(loader_table, groupIndex, datFieldTypes::ShortArray));
 	if (shortArr && *shortArr == 100)
 		result = shortArr[1];
 	else
@@ -192,7 +192,7 @@ char* loader::query_name(int groupIndex)
 	return partman::field(loader_table, groupIndex, datFieldTypes::GroupName);
 }
 
-__int16* loader::query_iattribute(int groupIndex, int firstValue, int* arraySize)
+int16_t* loader::query_iattribute(int groupIndex, int firstValue, int* arraySize)
 {
 	if (groupIndex < 0)
 	{
@@ -202,7 +202,7 @@ __int16* loader::query_iattribute(int groupIndex, int firstValue, int* arraySize
 
 	for (auto skipIndex = 0;; ++skipIndex)
 	{
-		auto shortArr = reinterpret_cast<__int16*>(partman::field_nth(loader_table, groupIndex,
+		auto shortArr = reinterpret_cast<int16_t*>(partman::field_nth(loader_table, groupIndex,
 		                                                              datFieldTypes::ShortArray, skipIndex));
 		if (!shortArr)
 			break;
@@ -239,7 +239,7 @@ float* loader::query_float_attribute(int groupIndex, int groupIndexOffset, int f
 		                                                            skipIndex));
 		if (!floatArr)
 			break;
-		if (static_cast<__int16>(floor(*floatArr)) == firstValue)
+		if (static_cast<int16_t>(floor(*floatArr)) == firstValue)
 			return floatArr + 1;
 	}
 
@@ -268,7 +268,7 @@ float loader::query_float_attribute(int groupIndex, int groupIndexOffset, int fi
 		                                                            datFieldTypes::FloatArray, skipIndex));
 		if (!floatArr)
 			break;
-		if (static_cast<__int16>(floor(*floatArr)) == firstValue)
+		if (static_cast<int16_t>(floor(*floatArr)) == firstValue)
 			return floatArr[1];
 	}
 
@@ -282,7 +282,7 @@ int loader::material(int groupIndex, visualStruct* visual)
 {
 	if (groupIndex < 0)
 		return error(0, 21);
-	auto shortArr = reinterpret_cast<__int16*>(partman::field(loader_table, groupIndex, datFieldTypes::ShortValue));
+	auto shortArr = reinterpret_cast<int16_t*>(partman::field(loader_table, groupIndex, datFieldTypes::ShortValue));
 	if (!shortArr)
 		return error(1, 21);
 	if (*shortArr != 300)
@@ -326,7 +326,7 @@ int loader::state_id(int groupIndex, int groupIndexOffset)
 	auto visualState = query_visual_states(groupIndex);
 	if (visualState <= 0)
 		return error(12, 24);
-	auto shortArr = reinterpret_cast<__int16*>(partman::field(loader_table, groupIndex, datFieldTypes::ShortValue));
+	auto shortArr = reinterpret_cast<int16_t*>(partman::field(loader_table, groupIndex, datFieldTypes::ShortValue));
 	if (!shortArr)
 		return error(1, 24);
 	if (*shortArr != 200)
@@ -337,7 +337,7 @@ int loader::state_id(int groupIndex, int groupIndexOffset)
 		return groupIndex;
 
 	groupIndex += groupIndexOffset;
-	shortArr = reinterpret_cast<__int16*>(partman::field(loader_table, groupIndex, datFieldTypes::ShortValue));
+	shortArr = reinterpret_cast<int16_t*>(partman::field(loader_table, groupIndex, datFieldTypes::ShortValue));
 	if (!shortArr)
 		return error(1, 24);
 	if (*shortArr != 201)
@@ -349,7 +349,7 @@ int loader::kicker(int groupIndex, visualKickerStruct* kicker)
 {
 	if (groupIndex < 0)
 		return error(0, 20);
-	auto shortArr = reinterpret_cast<__int16*>(partman::field(loader_table, groupIndex, datFieldTypes::ShortValue));
+	auto shortArr = reinterpret_cast<int16_t*>(partman::field(loader_table, groupIndex, datFieldTypes::ShortValue));
 	if (!shortArr)
 		return error(1, 20);
 	if (*shortArr != 400)
@@ -417,7 +417,7 @@ int loader::query_visual(int groupIndex, int groupIndexOffset, visualStruct* vis
 		visual->ZMap->ZPtr2 = visual->ZMap->ZPtr1;
 	}
 
-	auto shortArr = reinterpret_cast<__int16*>(partman::field(loader_table, stateId, datFieldTypes::ShortArray));
+	auto shortArr = reinterpret_cast<int16_t*>(partman::field(loader_table, stateId, datFieldTypes::ShortArray));
 	if (shortArr)
 	{
 		unsigned int shortArrSize = partman::field_size(loader_table, stateId, datFieldTypes::ShortArray);

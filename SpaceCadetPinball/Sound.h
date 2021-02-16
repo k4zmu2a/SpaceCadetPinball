@@ -10,7 +10,7 @@ public:
 	static void Activate();
 	static void Deactivate();
 	static void Close();
-	static void PlaySound(MIXWAVE* wavePtr, int minChannel, int maxChannel, unsigned int dwFlags, __int16 loops);
+	static void PlaySound(MIXWAVE* wavePtr, int minChannel, int maxChannel, unsigned int dwFlags, int16_t loops);
 	static MIXWAVE* LoadWaveFile(LPCSTR lpName);
 	static void FreeSound(MIXWAVE* wave);
 	static void Flush(int channelFrom, int channelTo);

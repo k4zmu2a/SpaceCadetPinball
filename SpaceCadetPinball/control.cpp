@@ -1922,7 +1922,7 @@ void control::GravityWellKickoutControl(int code, TPinballComponent* caller)
 		}
 	case 64:
 		{
-			auto score = reinterpret_cast<int>(caller);
+			auto score = reinterpret_cast<size_t>(caller);
 			if (score)
 			{
 				sprintf_s(Buffer, pinball::get_rc_string(82, 0), score);
@@ -2230,7 +2230,7 @@ void control::HyperspaceKickOutControl(int code, TPinballComponent* caller)
 	case 4:
 		{
 			control_hyper_lights_tag.Component->Message(0, 0.0);
-			auto addedScore = TableG->AddScore(caller->get_scoring(4));
+			size_t addedScore = TableG->AddScore(caller->get_scoring(4));
 			GravityWellKickoutControl(64, reinterpret_cast<TPinballComponent*>(addedScore));
 			break;
 		}

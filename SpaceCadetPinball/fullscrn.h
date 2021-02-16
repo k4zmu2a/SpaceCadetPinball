@@ -8,11 +8,11 @@
 
 struct resolution_info
 {
-	__int16 ScreenWidth;
-	__int16 ScreenHeight;
-	__int16 TableWidth;
-	__int16 TableHeight;
-	__int16 ResolutionMenuId;
+	int16_t ScreenWidth;
+	int16_t ScreenHeight;
+	int16_t TableWidth;
+	int16_t TableHeight;
+	int16_t ResolutionMenuId;
 };
 
 class fullscrn
@@ -62,5 +62,5 @@ private :
 	static int setWindowFlagsDisDlg();
 	static int enableFullscreen();
 	static int disableFullscreen();
-	static void fillRect(int right, int bottom);
+	static void fillRect(int right, int bottom, int left, int top);
 };

@@ -30,7 +30,7 @@ int main()
 	gdrv::DibSetUsage(dib, 0, 1);
 
 	auto d = objlist_class<void>(2, 4);
-	for (int i = 0; i < 100; i++)
+	for (size_t i = 0; i < 100; i++)
 	{
 		d.Add((void*)i);
 	}

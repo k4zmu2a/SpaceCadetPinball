@@ -480,7 +480,7 @@ void pb::keydown(int key)
 			break;
 		case 'M':
 			char buffer[20];
-			sprintf_s(buffer, "%ld", memory::use_total);
+			sprintf_s(buffer, "%zu", memory::use_total);
 			MessageBoxA(winmain::hwnd_frame, buffer, "Mem:", 0x2000u);
 			break;
 		case 'R':

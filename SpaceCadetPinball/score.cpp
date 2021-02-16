@@ -27,7 +27,7 @@ scoreStruct* score::create(LPCSTR fieldName, gdrv_bitmap8* renderBgBmp)
 
 	/*Full tilt: score box dimensions index is offset by resolution*/
 	auto dimensionsId = partman::record_labeled(pb::record_table, fieldName) + fullscrn::GetResolution();
-	auto dimensions = reinterpret_cast<__int16*>(partman::field(loader::loader_table, dimensionsId,
+	auto dimensions = reinterpret_cast<int16_t*>(partman::field(loader::loader_table, dimensionsId,
 	                                                            datFieldTypes::ShortArray));
 	if (!dimensions)
 	{
@@ -76,7 +76,7 @@ void score::load_msg_font_3DPB(LPCSTR lpName)
 	if (!resGlobal)
 		return;
 
-	auto rcData = static_cast<__int16*>(LockResource(resGlobal));
+	auto rcData = static_cast<int16_t*>(LockResource(resGlobal));
 
 	auto fontp = memory::allocate<score_msg_font_type>();
 	msg_fontp = fontp;
@@ -163,7 +163,7 @@ void score::load_msg_font_FT(LPCSTR lpName)
 		return;
 
 	memset(msg_fontp, 0, sizeof(score_msg_font_type));
-	auto gapArray = reinterpret_cast<__int16*>(partman::field(pb::record_table, groupIndex, datFieldTypes::ShortArray));
+	auto gapArray = reinterpret_cast<int16_t*>(partman::field(pb::record_table, groupIndex, datFieldTypes::ShortArray));
 	if (gapArray)
 		msg_fontp->GapWidth = gapArray[fullscrn::GetResolution()];
 	else
@@ -249,8 +249,7 @@ void score::update(scoreStruct* score)
 		if (score->Score >= 0)
 		{
 			_ltoa_s(score->Score, scoreBuf, 10);
-			int len = strlen(scoreBuf);
-			for (int index = len - 1; index >= 0; index--)
+			for (ptrdiff_t index = strlen(scoreBuf) - 1; index >= 0; index--)
 			{
 				unsigned char curChar = scoreBuf[index];
 				curChar -= '0';

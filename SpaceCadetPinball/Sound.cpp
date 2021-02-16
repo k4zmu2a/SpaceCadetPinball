@@ -147,7 +147,7 @@ void Sound::Close()
 	}
 }
 
-void Sound::PlaySound(MIXWAVE* wavePtr, int minChannel, int maxChannel, unsigned int dwFlags, __int16 loops)
+void Sound::PlaySound(MIXWAVE* wavePtr, int minChannel, int maxChannel, unsigned int dwFlags, int16_t loops)
 {
 	MIXPLAYPARAMS mixParams{};
 

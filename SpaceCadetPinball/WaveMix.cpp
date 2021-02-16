@@ -9,8 +9,8 @@ CHANNELNODE WaveMix::channel_nodes[MAXQUEUEDWAVES];
 CHANNELNODE* WaveMix::free_channel_nodes;
 unsigned char WaveMix::volume_table[11][256];
 int WaveMix::debug_flag;
-void (*WaveMix::cmixit_ptr)(unsigned __int8* lpDest, unsigned __int8** rgWaveSrc, volume_struct* volume, int iNumWaves,
-                            unsigned __int16 length);
+void (*WaveMix::cmixit_ptr)(uint8_t* lpDest, uint8_t** rgWaveSrc, volume_struct* volume, int iNumWaves,
+                            uint16_t length);
 HMODULE WaveMix::HModule;
 PCMWAVEFORMAT WaveMix::gpFormat = {{1u, 1u, 11025u, 11025u, 1u}, 8u};
 char WaveMix::string_buffer[256] = "WaveMix V 2.3 by Angel M. Diaz, Jr. (c) Microsoft 1993-1995";
@@ -670,7 +670,7 @@ int WaveMix::Play(MIXPLAYPARAMS* lpMixPlayParams)
 		memcpy(&channel->PlayParams, lpMixPlayParams, sizeof channel->PlayParams);
 		channel->lpMixWave = channel->PlayParams.lpMixWave;
 		channel->dwNumSamples = channel->PlayParams.lpMixWave->wh.dwBufferLength;
-		auto lpData = (unsigned __int8*)channel->PlayParams.lpMixWave->wh.lpData;
+		auto lpData = (uint8_t*)channel->PlayParams.lpMixWave->wh.lpData;
 		channel->lpPos = lpData;
 		channel->lpEnd = &lpData[channel->dwNumSamples - globals->PCM.wf.nBlockAlign];
 		channel->PlayParams.iChannel = iChannel;
@@ -781,9 +781,8 @@ int WaveMix::Play(MIXPLAYPARAMS* lpMixPlayParams)
 			if (curChannel->PlayParams.wLoops == 0xFFFF)
 				curChannel->dwEndPos = -1;
 			else
-				curChannel->dwEndPos = curChannel->dwStartPos + curChannel->dwNumSamples * (curChannel
-				                                                                            ->PlayParams.wLoops + 1) -
-					globals2->PCM.wf.nBlockAlign;
+				curChannel->dwEndPos = curChannel->dwStartPos + curChannel->dwNumSamples * (curChannel->PlayParams.
+					wLoops + 1) - globals2->PCM.wf.nBlockAlign;
 		}
 
 		if (!remixFlag || !globals2->pfnRemix(wavePosition, nullptr))
@@ -1098,18 +1097,18 @@ int WaveMix::ReadRegistryForAppSpecificConfigs(MIXCONFIG* lpConfig)
 		lpConfig->WaveBlockLen = static_cast<short>(ReadRegistryInt(phkResult, "WaveBlockLen", 0));
 	lpConfig->CmixPtrDefaultFlag = 1;
 	if ((dwFlags & 0x20) == 0)
-		lpConfig->ResetMixDefaultFlag = static_cast<unsigned __int16>(ReadRegistryInt(phkResult, "Remix", 1)) != 2;
+		lpConfig->ResetMixDefaultFlag = static_cast<uint16_t>(ReadRegistryInt(phkResult, "Remix", 1)) != 2;
 	if ((dwFlags & 0x40) == 0)
 	{
 		int defaultGoodWavePos = DefaultGoodWavePos(lpConfig->wDeviceID);
-		lpConfig->GoodWavePos = static_cast<unsigned __int16>(ReadRegistryInt(
+		lpConfig->GoodWavePos = static_cast<uint16_t>(ReadRegistryInt(
 			phkResult, "GoodWavePos", defaultGoodWavePos)) != 0;
 	}
 	if ((dwFlags & 0x100) == 0)
 		lpConfig->ShowDebugDialogs = static_cast<short>(ReadRegistryInt(phkResult, "ShowDebugDialogs", 0));
 	if ((dwFlags & 0x200) == 0)
 	{
-		int defaultPauseBlocks = DefaultPauseBlocks(static_cast<unsigned __int16>(lpConfig->WaveBlockCount));
+		int defaultPauseBlocks = DefaultPauseBlocks(static_cast<uint16_t>(lpConfig->WaveBlockCount));
 		lpConfig->PauseBlocks = static_cast<short>(ReadRegistryInt(phkResult, "PauseBlocks", defaultPauseBlocks));
 	}
 	lpConfig->dwFlags = 1023;
@@ -1153,7 +1152,7 @@ int WaveMix::DefaultGoodWavePos(unsigned uDeviceID)
 int WaveMix::DefaultPauseBlocks(int waveBlocks)
 {
 	int result;
-	if (GetVersion() < 0x80000000 || static_cast<unsigned __int8>(GetVersion()) < 4u)
+	if (GetVersion() < 0x80000000 || static_cast<uint8_t>(GetVersion()) < 4u)
 		result = waveBlocks;
 	else
 		result = 0;
@@ -1723,7 +1722,7 @@ DWORD WaveMix::AddFactor(DWORD a1, DWORD a2)
 
 dialog_template* WaveMix::MakeSettingsDlgTemplate()
 {
-	auto size = 0u;
+	size_t size = 0u;
 	dialog_template* temp = MakeDlgTemplate(&size, 0x80C80080, 0, 0, 212, 132, L"WavMix32 Settings (Ver %X.%X Static)");
 	temp = AddDlgControl(&size, temp, 128, 65537, 1, 155, 5, 50, 14, L"&Ok");
 	temp = AddDlgControl(&size, temp, 128, 0x10000, 2, 155, 25, 50, 14, L"&Cancel");
@@ -1745,7 +1744,7 @@ dialog_template* WaveMix::MakeSettingsDlgTemplate()
 	return AddDlgControl(&size, temp, 128, 65539, 1004, 55, 117, 75, 10, L"Good Get Position");
 }
 
-dialog_template* WaveMix::MakeDlgTemplate(unsigned* totalSize, unsigned style, short x, short y, short cx, short cy,
+dialog_template* WaveMix::MakeDlgTemplate(size_t* totalSize, unsigned style, short x, short y, short cx, short cy,
                                           const wchar_t* String)
 {
 	auto dlgSize = 2 * wcslen(String) + 24;
@@ -1769,7 +1768,7 @@ dialog_template* WaveMix::MakeDlgTemplate(unsigned* totalSize, unsigned style, s
 	return dlgTemplate;
 }
 
-dialog_template* WaveMix::AddDlgControl(unsigned* totalSize, dialog_template* dlgTemplate, short idClass,
+dialog_template* WaveMix::AddDlgControl(size_t* totalSize, dialog_template* dlgTemplate, short idClass,
                                         unsigned style, WORD id, short x, short y, short cx, short cy,
                                         const wchar_t* String)
 {
@@ -1782,7 +1781,7 @@ dialog_template* WaveMix::AddDlgControl(unsigned* totalSize, dialog_template* dl
 			*totalSize = *totalSize - (*totalSize & 3) + 4;
 
 		GlobalUnlock(GlobalHandle(dlgTemplate2));
-		unsigned int newSize = *totalSize;
+		auto newSize = *totalSize;
 		HGLOBAL hGlobal = GlobalReAlloc(GlobalHandle(dlgTemplate2), newSize, 0x42u);
 		dlgTemplate2 = static_cast<dialog_template*>(GlobalLock(hGlobal));
 		if (dlgTemplate2)
@@ -1813,7 +1812,7 @@ void WaveMix::DestroySettingsDlgTemplate(LPCVOID pMem)
 	}
 }
 
-int WaveMix::Settings_OnInitDialog(HWND hWnd, int wParam, MIXCONFIG* lpMixconfig)
+int WaveMix::Settings_OnInitDialog(HWND hWnd, WPARAM wParam, MIXCONFIG* lpMixconfig)
 {
 	tagWAVEOUTCAPSA pwoc{};
 	CHAR String[256];
@@ -1878,7 +1877,7 @@ int WaveMix::Settings_OnInitDialog(HWND hWnd, int wParam, MIXCONFIG* lpMixconfig
 	return 1;
 }
 
-int WaveMix::Settings_OnCommand(HWND hWnd, int command, int lParam, int wParam)
+int WaveMix::Settings_OnCommand(HWND hWnd, int command, LPARAM lParam, int wParam)
 {
 	auto userData = reinterpret_cast<MIXCONFIG*>(GetWindowLongPtrA(hWnd, -21));
 	if (command == 1)
@@ -1937,9 +1936,9 @@ const char* WaveMix::GetOperatingSystemPrefix()
 {
 	if (GetVersion() < 0x80000000)
 		return "WinNT:";
-	if (GetVersion() >= 0x80000000 && static_cast<unsigned __int8>(GetVersion()) >= 4u)
+	if (GetVersion() >= 0x80000000 && static_cast<uint8_t>(GetVersion()) >= 4u)
 		return "Win95:";
-	if (GetVersion() >= 0x80000000 && static_cast<unsigned __int8>(GetVersion()) < 4u)
+	if (GetVersion() >= 0x80000000 && static_cast<uint8_t>(GetVersion()) < 4u)
 		return "Win31:";
 	return "OS_X"; /*The next big thing: waveOut on OSX*/
 }
@@ -1977,7 +1976,7 @@ void WaveMix::SaveConfigSettings(unsigned dwFlags)
 	}
 	if ((dwFlags & 2) != 0)
 	{
-		wsprintfA(string_buffer, "%d", static_cast<unsigned __int16>(11 * (Globals->PCM.wf.nSamplesPerSec / 0x2B11)));
+		wsprintfA(string_buffer, "%d", static_cast<uint16_t>(11 * (Globals->PCM.wf.nSamplesPerSec / 0x2B11)));
 		WritePrivateProfileStringA(Globals->szDevicePName, "SamplesPerSec", string_buffer, FileName);
 	}
 	if ((dwFlags & 4) != 0)
@@ -2213,14 +2212,14 @@ HPSTR WaveMix::BitsPerSampleAlign(HPSTR lpInData, WORD nInBPS, WORD nOutBPS, DWO
 		{
 			if (nInBPS / 8u <= nOutBPS / 8u)
 			{
-				auto dst = static_cast<__int16*>(dataBuf);
+				auto dst = static_cast<int16_t*>(dataBuf);
 				for (auto src = lpInData; dwNumSamples; --dwNumSamples)
 					*dst++ = static_cast<short>((*src++ - 128) * 256);
 			}
 			else
 			{
 				auto dst = static_cast<char*>(dataBuf);
-				for (auto src = reinterpret_cast<__int16*>(lpInData); dwNumSamples; --dwNumSamples)
+				for (auto src = reinterpret_cast<int16_t*>(lpInData); dwNumSamples; --dwNumSamples)
 				{
 					*dst++ = static_cast<char>(*src++ / 256 + 128);
 				}
@@ -2288,8 +2287,8 @@ HPSTR WaveMix::ChannelAlign(HPSTR lpInData, WORD nInChannels, WORD nOutChannels,
 			}
 			else
 			{
-				auto src = reinterpret_cast<__int16*>(lpInData);
-				auto dst = reinterpret_cast<__int16*>(dataBuf);
+				auto src = reinterpret_cast<int16_t*>(lpInData);
+				auto dst = reinterpret_cast<int16_t*>(dataBuf);
 				for (; dwNumSamples; --dwNumSamples, src += 2)
 				{
 					*dst++ = static_cast<short>((src[0] + src[1]) / 2);
@@ -2394,7 +2393,7 @@ void WaveMix::AvgSample(HPSTR lpOutData, HPSTR lpInData, unsigned nSkip, int nBy
 			auto average = 0;
 			for (auto avgIndex = nSkip; avgIndex; --avgIndex)
 			{
-				average += static_cast<unsigned __int8>(*src) - 128;
+				average += static_cast<uint8_t>(*src) - 128;
 				src += nChannels;
 			}
 			*dst++ = static_cast<char>(average / nSkip + 128);
@@ -2402,8 +2401,8 @@ void WaveMix::AvgSample(HPSTR lpOutData, HPSTR lpInData, unsigned nSkip, int nBy
 	}
 	else
 	{
-		auto src = reinterpret_cast<__int16*>(lpInData);
-		auto dst = reinterpret_cast<__int16*>(lpOutData);
+		auto src = reinterpret_cast<int16_t*>(lpInData);
+		auto dst = reinterpret_cast<int16_t*>(lpOutData);
 		for (auto channelIndex = nChannels; channelIndex; --channelIndex)
 		{
 			auto curSrc = src++;
@@ -2422,8 +2421,8 @@ void WaveMix::RepSample(HPSTR lpOutData, HPSTR lpInData, unsigned nRep, int nByt
 {
 	if (nBytesPerSample == 1)
 	{
-		auto src = reinterpret_cast<unsigned __int8*>(lpInData);
-		auto dst = reinterpret_cast<unsigned __int8*>(lpOutData);
+		auto src = reinterpret_cast<uint8_t*>(lpInData);
+		auto dst = reinterpret_cast<uint8_t*>(lpOutData);
 		for (auto channelIndex = nChannels; channelIndex; --channelIndex)
 		{
 			auto sample = *src;
@@ -2442,8 +2441,8 @@ void WaveMix::RepSample(HPSTR lpOutData, HPSTR lpInData, unsigned nRep, int nByt
 	}
 	else
 	{
-		auto src = reinterpret_cast<__int16*>(lpInData);
-		auto dst = reinterpret_cast<__int16*>(lpOutData);
+		auto src = reinterpret_cast<int16_t*>(lpInData);
+		auto dst = reinterpret_cast<int16_t*>(lpOutData);
 		for (auto channelIndex2 = nChannels; channelIndex2; channelIndex2--)
 		{
 			auto sample = *src;
@@ -2534,8 +2533,8 @@ void WaveMix::ResetWavePosIfNoChannelData()
 	}
 }
 
-void WaveMix::cmixit(unsigned __int8* lpDest, unsigned __int8** rgWaveSrc, volume_struct* volumeArr, int iNumWaves,
-                     unsigned __int16 length)
+void WaveMix::cmixit(uint8_t* lpDest, uint8_t** rgWaveSrc, volume_struct* volumeArr, int iNumWaves,
+                     uint16_t length)
 {
 	if (!length)
 		return;
@@ -2614,9 +2613,9 @@ LRESULT WaveMix::WndProc(HWND hWnd, UINT Msg, WPARAM wParam, LPARAM lParam)
 INT_PTR WaveMix::SettingsDlgProc(HWND hWnd, UINT Msg, WPARAM wParam, LPARAM lParam)
 {
 	if (Msg == WM_INITDIALOG)
-		return Settings_OnInitDialog(hWnd, wParam, (MIXCONFIG*)lParam);
+		return Settings_OnInitDialog(hWnd, wParam, reinterpret_cast<MIXCONFIG*>(lParam));
 	if (Msg != WM_COMMAND)
 		return 0;
-	Settings_OnCommand(hWnd, static_cast<unsigned __int16>(wParam), lParam, HIWORD(wParam));
+	Settings_OnCommand(hWnd, LOWORD(wParam), lParam, HIWORD(wParam));
 	return 1;
 }

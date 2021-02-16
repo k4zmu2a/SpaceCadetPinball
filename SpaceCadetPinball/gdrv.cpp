@@ -40,7 +40,7 @@ void gdrv::get_focus()
 }
 
 
-BITMAPINFO* gdrv::DibCreate(__int16 bpp, int width, int height)
+BITMAPINFO* gdrv::DibCreate(int16_t bpp, int width, int height)
 {
 	auto sizeBytes = height * (width * bpp / 8 + 3 & 0xFFFFFFFC);
 	auto buf = GlobalAlloc(GHND, sizeBytes + sizeof(BITMAPINFOHEADER) + 256 * sizeof(RGBQUAD));

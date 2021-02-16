@@ -36,7 +36,7 @@ int zdrv::destroy_zmap(zmap_header_type* zmap)
 	return 0;
 }
 
-void zdrv::fill(zmap_header_type* zmap, int width, int height, int xOff, int yOff, unsigned __int16 fillWord)
+void zdrv::fill(zmap_header_type* zmap, int width, int height, int xOff, int yOff, uint16_t fillWord)
 {
 	auto dstPtr = &zmap->ZPtr1[zmap->Stride * (zmap->Height - height - yOff) + xOff];
 	for (int y = height; y > 0; --y)
@@ -92,7 +92,7 @@ void zdrv::paint(int width, int height, gdrv_bitmap8* dstBmp, int dstBmpXOff, in
 
 void zdrv::paint_flat(int width, int height, gdrv_bitmap8* dstBmp, int dstBmpXOff, int dstBmpYOff,
                       zmap_header_type* zMap, int dstZMapXOff, int dstZMapYOff, gdrv_bitmap8* srcBmp, int srcBmpXOff,
-                      int srcBmpYOff, unsigned __int16 depth)
+                      int srcBmpYOff, uint16_t depth)
 {
 	int dstHeightAbs = abs(dstBmp->Height);
 	int srcHeightAbs = abs(srcBmp->Height);

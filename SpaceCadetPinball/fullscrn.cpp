@@ -316,36 +316,32 @@ void fullscrn::activate(int flag)
 	}
 }
 
-void fullscrn::fillRect(int right, int bottom)
+void fullscrn::fillRect(int right, int bottom, int left, int top)
 {
-	// Weird reg usage, should be zero
-	int v2 = 0;
-	int v3 = 0;
-
 	RECT rc;
-	HGDIOBJ brush = CreateSolidBrush(0);
+	auto brush = CreateSolidBrush(0);
 	if (brush)
 	{
-		HDC dc = winmain::_GetDC(hWnd);
-		HGDIOBJ brushHandle = SelectObject(dc, brush);
+		auto dc = winmain::_GetDC(hWnd);
+		auto prevBrush = SelectObject(dc, brush);
 		if (dc)
 		{
-			rc.right = right + v2 + 1;
-			rc.bottom = bottom + v3 + 1;
-			rc.left = v2;
-			rc.top = v3;
-			FillRect(dc, &rc, static_cast<HBRUSH>(brush));
+			rc.right = left + right + 1;
+			rc.bottom = top + bottom + 1;
+			rc.left = left;
+			rc.top = top;
+			FillRect(dc, &rc, brush);
 			ReleaseDC(hWnd, dc);
 		}
-		SelectObject(dc, brushHandle);
+		SelectObject(dc, prevBrush);
 		DeleteObject(brush);
 	}
 }
 
 unsigned fullscrn::convert_mouse_pos(unsigned int mouseXY)
 {
-	unsigned __int16 x = mouseXY & 0xffFF - render::vscreen.XPosition;
-	unsigned __int16 y = (mouseXY >> 16) - render::vscreen.YPosition;
+	uint16_t x = mouseXY & 0xffFF - render::vscreen.XPosition;
+	uint16_t y = (mouseXY >> 16) - render::vscreen.YPosition;
 	return x | y << 16;
 }
 
@@ -369,7 +365,7 @@ void fullscrn::paint()
 			if (fullscrn_flag1 & 1)
 			{
 				menuHeight = GetSystemMetrics(SM_CYMENU);
-				fillRect(WindowRect1.right - 1, menuHeight);
+				fillRect(WindowRect1.right - 1, menuHeight, 0, 0);
 			}
 		}
 		else
@@ -378,7 +374,7 @@ void fullscrn::paint()
 				menuHeight = GetSystemMetrics(SM_CYMENU);
 			else
 				menuHeight = 0;
-			fillRect(WindowRect1.right, menuHeight + WindowRect1.bottom);
+			fillRect(WindowRect1.right, menuHeight + WindowRect1.bottom, 0, 0);
 		}
 	}
 	render::paint();
@@ -430,8 +426,8 @@ int fullscrn::get_max_supported_resolution()
 
 int fullscrn::get_screen_resolution()
 {
-	auto height = static_cast<unsigned __int16>(GetSystemMetrics(SM_CYSCREEN));
-	return static_cast<unsigned __int16>(GetSystemMetrics(SM_CXSCREEN)) | (height << 16);
+	auto height = static_cast<uint16_t>(GetSystemMetrics(SM_CYSCREEN));
+	return static_cast<uint16_t>(GetSystemMetrics(SM_CXSCREEN)) | (height << 16);
 }
 
 void fullscrn::window_size_changed()

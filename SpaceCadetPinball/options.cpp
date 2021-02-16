@@ -195,72 +195,74 @@ void options::path_free()
 int options::get_int(LPCSTR optPath, LPCSTR lpValueName, int defaultValue)
 {
 	DWORD dwDisposition;
+	HKEY hKey;
 
-	HKEY result = (HKEY)defaultValue, Data = (HKEY)defaultValue;
+	auto result = defaultValue;
 	if (!OptionsRegPath)
-		return defaultValue;
-	LPCSTR regPath = path(optPath);
-	if (!RegCreateKeyExA(HKEY_CURRENT_USER, regPath, 0, nullptr, 0, 0xF003Fu, nullptr, &result, &dwDisposition))
+		return result;
+
+	auto regPath = path(optPath);
+	if (!RegCreateKeyExA(HKEY_CURRENT_USER, regPath, 0, nullptr, 0, KEY_ALL_ACCESS, nullptr, &hKey, &dwDisposition))
 	{
-		optPath = (LPCSTR)4;
-		RegQueryValueExA(result, lpValueName, nullptr, nullptr, (LPBYTE)&Data, (LPDWORD)&optPath);
-		RegCloseKey(result);
+		DWORD bufferSize = 4;
+		RegQueryValueExA(hKey, lpValueName, nullptr, nullptr, reinterpret_cast<LPBYTE>(&result), &bufferSize);
+		RegCloseKey(hKey);
 	}
 	path_free();
-	return (int)Data;
+	return result;
 }
 
 void options::set_int(LPCSTR optPath, LPCSTR lpValueName, int data)
 {
 	DWORD dwDisposition;
+	HKEY hKey;
 
-	if (OptionsRegPath)
+	if (!OptionsRegPath)
+		return;
+
+	auto regPath = path(optPath);
+	if (!RegCreateKeyExA(HKEY_CURRENT_USER, regPath, 0, nullptr, 0, KEY_ALL_ACCESS, nullptr, &hKey, &dwDisposition))
 	{
-		const CHAR* regPath = path(optPath);
-		if (!RegCreateKeyExA(HKEY_CURRENT_USER, regPath, 0, nullptr, 0, 0xF003Fu, nullptr, (PHKEY)&optPath,
-		                     &dwDisposition))
-		{
-			RegSetValueExA((HKEY)optPath, lpValueName, 0, 4u, (const BYTE*)&data, 4u);
-			RegCloseKey((HKEY)optPath);
-		}
-		path_free();
+		RegSetValueExA(hKey, lpValueName, 0, 4u, reinterpret_cast<LPBYTE>(&data), 4u);
+		RegCloseKey(hKey);
 	}
+	path_free();
 }
 
-void options::get_string(LPCSTR optPath, LPCSTR lpValueName, LPSTR lpString1, LPCSTR lpString2, int iMaxLength)
+void options::get_string(LPCSTR optPath, LPCSTR lpValueName, LPSTR dst, LPCSTR defaultValue, int iMaxLength)
 {
-	const CHAR* v5 = (const CHAR*)iMaxLength;
-	lstrcpynA(lpString1, lpString2, iMaxLength);
-	if (OptionsRegPath)
+	DWORD dwDisposition;
+	HKEY hKey;
+
+	lstrcpynA(dst, defaultValue, iMaxLength);
+	if (!OptionsRegPath)
+		return;
+
+	auto regPath = path(optPath);
+	if (!RegCreateKeyExA(HKEY_CURRENT_USER, regPath, 0, nullptr, 0, KEY_ALL_ACCESS, nullptr, &hKey, &dwDisposition))
 	{
-		const CHAR* regPath = path(optPath);
-		if (!RegCreateKeyExA(HKEY_CURRENT_USER, regPath, 0, nullptr, 0, 0xF003Fu, nullptr, (PHKEY)&iMaxLength,
-		                     (LPDWORD)&optPath))
-		{
-			lpString2 = v5;
-			RegQueryValueExA((HKEY)iMaxLength, lpValueName, nullptr, nullptr, (LPBYTE)lpString1, (LPDWORD)&lpString2);
-			RegCloseKey((HKEY)iMaxLength);
-		}
-		path_free();
+		DWORD bufferSize = iMaxLength;
+		RegQueryValueExA(hKey, lpValueName, nullptr, nullptr, reinterpret_cast<LPBYTE>(dst), &bufferSize);
+		RegCloseKey(hKey);
 	}
+	path_free();
 }
 
 void options::set_string(LPCSTR optPath, LPCSTR lpValueName, LPCSTR value)
 {
 	DWORD dwDisposition;
+	HKEY hKey;
 
-	if (OptionsRegPath)
+	if (!OptionsRegPath)
+		return;
+
+	auto regPath = path(optPath);
+	if (!RegCreateKeyExA(HKEY_CURRENT_USER, regPath, 0, nullptr, 0, KEY_ALL_ACCESS, nullptr, &hKey, &dwDisposition))
 	{
-		const CHAR* regPath = path(optPath);
-		if (!RegCreateKeyExA(HKEY_CURRENT_USER, regPath, 0, nullptr, 0, 0xF003Fu, nullptr, (PHKEY)&optPath,
-		                     &dwDisposition))
-		{
-			int v4 = lstrlenA(value);
-			RegSetValueExA((HKEY)optPath, lpValueName, 0, 1u, (const BYTE*)value, v4 + 1);
-			RegCloseKey((HKEY)optPath);
-		}
-		path_free();
+		RegSetValueExA(hKey, lpValueName, 0, 1u, LPBYTE(value), lstrlenA(value) + 1);
+		RegCloseKey(hKey);
 	}
+	path_free();
 }
 
 
@@ -408,7 +410,7 @@ INT_PTR _stdcall options::KeyMapDlgProc(HWND hDlg, UINT msg, WPARAM wParam, LPAR
 		{
 			short vk = *vkPtr;
 			auto vk2And = vk & 0x4000;
-			auto vkChar = static_cast<unsigned __int8>(vk);
+			auto vkChar = static_cast<uint8_t>(vk);
 			unsigned short maxVk;
 
 			if (vk2And)
@@ -487,17 +489,17 @@ INT_PTR _stdcall options::KeyMapDlgProc(HWND hDlg, UINT msg, WPARAM wParam, LPAR
 		case KEYMAPPER_Ok:
 			{
 				auto ind = SendDlgItemMessageA(hDlg, KEYMAPPER_FlipperL, CB_GETCURSEL, 0, 0);
-				keyBindings[0] = SendDlgItemMessageA(hDlg, KEYMAPPER_FlipperL, CB_GETITEMDATA, ind, 0);
+				keyBindings[0] = static_cast<int>(SendDlgItemMessageA(hDlg, KEYMAPPER_FlipperL, CB_GETITEMDATA, ind, 0));
 				ind = SendDlgItemMessageA(hDlg, KEYMAPPER_FlipperR, CB_GETCURSEL, 0, 0);
-				keyBindings[1] = SendDlgItemMessageA(hDlg, KEYMAPPER_FlipperR, CB_GETITEMDATA, ind, 0);
+				keyBindings[1] = static_cast<int>(SendDlgItemMessageA(hDlg, KEYMAPPER_FlipperR, CB_GETITEMDATA, ind, 0));
 				ind = SendDlgItemMessageA(hDlg, KEYMAPPER_Plunger, CB_GETCURSEL, 0, 0);
-				keyBindings[2] = SendDlgItemMessageA(hDlg, KEYMAPPER_Plunger, CB_GETITEMDATA, ind, 0);
+				keyBindings[2] = static_cast<int>(SendDlgItemMessageA(hDlg, KEYMAPPER_Plunger, CB_GETITEMDATA, ind, 0));
 				ind = SendDlgItemMessageA(hDlg, KEYMAPPER_BumpLeft, CB_GETCURSEL, 0, 0);
-				keyBindings[3] = SendDlgItemMessageA(hDlg, KEYMAPPER_BumpLeft, CB_GETITEMDATA, ind, 0);
+				keyBindings[3] = static_cast<int>(SendDlgItemMessageA(hDlg, KEYMAPPER_BumpLeft, CB_GETITEMDATA, ind, 0));
 				ind = SendDlgItemMessageA(hDlg, KEYMAPPER_BumpRight, CB_GETCURSEL, 0, 0);
-				keyBindings[4] = SendDlgItemMessageA(hDlg, KEYMAPPER_BumpRight, CB_GETITEMDATA, ind, 0);
+				keyBindings[4] = static_cast<int>(SendDlgItemMessageA(hDlg, KEYMAPPER_BumpRight, CB_GETITEMDATA, ind, 0));
 				ind = SendDlgItemMessageA(hDlg, KEYMAPPER_BumpBottom, CB_GETCURSEL, 0, 0);
-				keyBindings[5] = SendDlgItemMessageA(hDlg, KEYMAPPER_BumpBottom, CB_GETITEMDATA, ind, 0);
+				keyBindings[5] = static_cast<int>(SendDlgItemMessageA(hDlg, KEYMAPPER_BumpBottom, CB_GETITEMDATA, ind, 0));
 
 				auto sameKeyBound = 0;
 				auto index = 1;
@@ -569,7 +571,7 @@ INT_PTR _stdcall options::KeyMapDlgProc(HWND hDlg, UINT msg, WPARAM wParam, LPAR
 }
 
 
-LPSTR options::get_vk_key_name(unsigned __int16 vk, LPSTR keyName)
+LPSTR options::get_vk_key_name(uint16_t vk, LPSTR keyName)
 {
 	LONG scanCode = MapVirtualKeyA(vk, MAPVK_VK_TO_VSC) << 16;
 	if (vk >= 0x21u && vk <= 0x2Eu)

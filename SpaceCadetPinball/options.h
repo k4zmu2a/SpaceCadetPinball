@@ -35,7 +35,7 @@ public:
 	static void path_uninit();
 	static int get_int(LPCSTR optPath, LPCSTR lpValueName, int defaultValue);
 	static void set_int(LPCSTR optPath, LPCSTR lpValueName, int data);
-	static void get_string(LPCSTR optPath, LPCSTR lpValueName, LPSTR lpString1, LPCSTR lpString2, int iMaxLength);
+	static void get_string(LPCSTR optPath, LPCSTR lpValueName, LPSTR dst, LPCSTR defaultValue, int iMaxLength);
 	static void set_string(LPCSTR optPath, LPCSTR lpValueName, LPCSTR value);
 	static void menu_check(UINT uIDCheckItem, int check);
 	static void menu_set(UINT uIDEnableItem, int enable);
@@ -45,7 +45,7 @@ public:
 
 	static void keyboard();
 	static INT_PTR _stdcall KeyMapDlgProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam);
-	static LPSTR get_vk_key_name(unsigned __int16 vk, LPSTR keyName);
+	static LPSTR get_vk_key_name(uint16_t vk, LPSTR keyName);
 
 	static optionsStruct Options;
 private:

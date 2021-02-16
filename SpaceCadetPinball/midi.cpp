@@ -61,7 +61,7 @@ int midi::music_init(HWND hwnd)
 	return midi_seq1_open;
 }
 
-MCIERROR midi::restart_midi_seq(int param)
+MCIERROR midi::restart_midi_seq(LPARAM param)
 {
 	if (pb::FullTiltMode)
 	{
