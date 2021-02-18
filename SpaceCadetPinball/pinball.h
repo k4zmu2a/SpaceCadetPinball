@@ -13,7 +13,6 @@ public:
 	static int quickFlag;
 	static TTextBox* InfoTextBox;
 	static TTextBox* MissTextBox;
-	static char WindowName[2];
 	static int RightShift;
 	static int LeftShift;
 

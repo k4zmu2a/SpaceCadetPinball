@@ -323,17 +323,17 @@ void fullscrn::fillRect(int right, int bottom, int left, int top)
 	if (brush)
 	{
 		auto dc = winmain::_GetDC(hWnd);
-		auto prevBrush = SelectObject(dc, brush);
 		if (dc)
 		{
+			auto prevBrush = SelectObject(dc, brush);
 			rc.right = left + right + 1;
 			rc.bottom = top + bottom + 1;
 			rc.left = left;
 			rc.top = top;
 			FillRect(dc, &rc, brush);
+			SelectObject(dc, prevBrush);
 			ReleaseDC(hWnd, dc);
 		}
-		SelectObject(dc, prevBrush);
 		DeleteObject(brush);
 	}
 }

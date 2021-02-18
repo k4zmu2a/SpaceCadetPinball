@@ -57,7 +57,7 @@ int TBlocker::Message(int code, float value)
 		timer::kill(Timer);
 
 	float timerTime;
-	if (value <= 0.0)
+	if (value <= 0.0f)
 		timerTime = 0.0;
 	else
 		timerTime = value;

@@ -16,18 +16,18 @@
 #include "winmain.h"
 
 int main()
-{	
+{
 	{
 		// Testing with UI
 		char cmdLine[1]{};
-		WinMain(GetModuleHandleA(nullptr), 0, cmdLine, 10);
+		WinMain(GetModuleHandleA(nullptr), nullptr, cmdLine, 10);
 		return 0;
 	}
-	
+
 	std::cout << "Hello World!\n";
-	gdrv::init(0, 0);
+	gdrv::init(nullptr, nullptr);
 	auto dib = gdrv::DibCreate(8, 1, 1);
-	gdrv::DibSetUsage(dib, 0, 1);
+	gdrv::DibSetUsage(dib, nullptr, 1);
 
 	auto d = objlist_class<void>(2, 4);
 	for (size_t i = 0; i < 100; i++)

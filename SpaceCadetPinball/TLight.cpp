@@ -270,7 +270,7 @@ void TLight::schedule_timeout(float time)
 	if (Timer1)
 		timer::kill(Timer1);
 	Timer1 = 0;
-	if (time > 0.0)
+	if (time > 0.0f)
 		Timer1 = timer::set(time, this, TimerExpired);
 }
 

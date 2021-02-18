@@ -131,7 +131,7 @@ float maths::ray_intersect_circle(ray_type* ray, circle_type* circle)
 
 	// Tca, L dot D, projection of L on D
 	float Tca = Ly * ray->Direction.Y + Lx * ray->Direction.X;
-	if (Tca < 0.0) // No intersection if Tca is negative
+	if (Tca < 0.0f) // No intersection if Tca is negative
 		return 1000000000.0f;
 
 	// L dot L, distance from ray origin to circle center
@@ -144,12 +144,12 @@ float maths::ray_intersect_circle(ray_type* ray, circle_type* circle)
 
 	// Thc^2 = rad^2 - d = rad^2 - L dot L + Tca dot Tca
 	float ThcSq = circle->RadiusSq - LMagSq + Tca * Tca;
-	if (ThcSq < 0.0) // No intersection if Thc is negative
+	if (ThcSq < 0.0f) // No intersection if Thc is negative
 		return 1000000000.0f;
 
 	// T0 = Tca - Thc, distance from origin to first intersection
 	float T0 = Tca - sqrt(ThcSq);
-	if (T0 < 0.0 || T0 > ray->MaxDistance)
+	if (T0 < 0.0f || T0 > ray->MaxDistance)
 		return 1000000000.0f;
 	return T0;
 }
@@ -158,7 +158,7 @@ float maths::ray_intersect_circle(ray_type* ray, circle_type* circle)
 float maths::normalize_2d(vector_type* vec)
 {
 	float mag = sqrt(vec->X * vec->X + vec->Y * vec->Y);
-	if (0.0 != mag)
+	if (mag != 0.0f)
 	{
 		vec->X = 1.0f / mag * vec->X;
 		vec->Y = 1.0f / mag * vec->Y;
@@ -179,7 +179,7 @@ void maths::line_init(line_type* line, float x0, float y0, float x1, float y1)
 	line->PerpendicularL.X = line->Direction.Y;
 	line->PerpendicularL.Y = -line->Direction.X;
 	line->PreComp1 = -(line->Direction.Y * x0) + line->Direction.X * y0;
-	if (line->Direction.X >= 0.000000001 || line->Direction.X <= -0.000000001)
+	if (line->Direction.X >= 0.000000001f || line->Direction.X <= -0.000000001f)
 	{
 		v9 = x1;
 		lineDirection = x0 >= x1;
@@ -210,7 +210,7 @@ float maths::ray_intersect_line(ray_type* ray, line_type* line)
 	bool v6;
 
 	float perpDot = line->PerpendicularL.Y * ray->Direction.Y + ray->Direction.X * line->PerpendicularL.X;
-	if (perpDot < 0.0)
+	if (perpDot < 0.0f)
 	{
 		float result = -((ray->Origin.X * line->PerpendicularL.X + ray->Origin.Y * line->PerpendicularL.Y + line->
 				PreComp1)
@@ -220,7 +220,7 @@ float maths::ray_intersect_line(ray_type* ray, line_type* line)
 			line->RayIntersect.X = result * ray->Direction.X + ray->Origin.X;
 			float v4 = result * ray->Direction.Y + ray->Origin.Y;
 			line->RayIntersect.Y = v4;
-			if (0.0 == line->Direction.X)
+			if (line->Direction.X == 0.0f)
 			{
 				if (v4 >= line->OriginX)
 				{
@@ -256,7 +256,7 @@ float maths::magnitude(vector_type* vec)
 {
 	float result;
 	auto magSq = vec->X * vec->X + vec->Y * vec->Y + vec->Z * vec->Z;
-	if (magSq == 0.0)
+	if (magSq == 0.0f)
 		result = 0.0;
 	else
 		result = sqrt(magSq);
@@ -342,7 +342,7 @@ float maths::distance_to_flipper(ray_type* ray1, ray_type* ray2)
 	auto distance = 1000000000.0f;
 	auto distanceType = -1;
 	auto newDistance = ray_intersect_line(ray1, &TFlipperEdge::lineA);
-	if (newDistance < 1000000000.0)
+	if (newDistance < 1000000000.0f)
 	{
 		distance = newDistance;
 		distanceType = 0;
@@ -365,7 +365,7 @@ float maths::distance_to_flipper(ray_type* ray1, ray_type* ray2)
 		distance = newDistance;
 		distanceType = 1;
 	}
-	if (!ray2 || distance >= 1000000000.0)
+	if (!ray2 || distance >= 1000000000.0f)
 		return distance;
 
 	if (distanceType != -1)

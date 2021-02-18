@@ -56,14 +56,14 @@ HANDLE WaveMix::ConfigureInit(MIXCONFIG* lpConfig)
 			if (ShowDebugDialogs)
 			{
 				wsprintfA(string_buffer, "This system does not have a valid wave output device.");
-				MessageBoxA(nullptr, string_buffer, "WavMix32", 0x40u);
+				MessageBoxA(nullptr, string_buffer, "WavMix32", MB_ICONINFORMATION);
 			}
 			return nullptr;
 		}
 
 		if (GetPrivateProfileIntA("general", "ShowDevices", 0, FileName))
 			ShowWaveOutDevices();
-		auto globals = static_cast<GLOBALS*>(LocalAlloc(0x40u, sizeof(GLOBALS)));
+		auto globals = static_cast<GLOBALS*>(LocalAlloc(LMEM_ZEROINIT, sizeof(GLOBALS)));
 		Globals = globals;
 		if (!globals)
 			return nullptr;
@@ -75,7 +75,7 @@ HANDLE WaveMix::ConfigureInit(MIXCONFIG* lpConfig)
 		globals->DefaultVolume.L = 10;
 		globals->DefaultVolume.R = 10;
 		memset(globals->aChannel, 0xFFu, sizeof globals->aChannel);
-		memmove(&globals->PCM, &gpFormat, 0x10u);
+		memmove(&globals->PCM, &gpFormat, sizeof(PCMWAVEFORMAT));
 		if (!ReadConfigSettings(&mixConfig))
 		{
 			Globals->wMagic2 = 0;
@@ -245,7 +245,7 @@ MIXWAVE* WaveMix::OpenWave(HANDLE hMixSession, LPCSTR szWaveFilename, HINSTANCE 
 	WAVEFORMATEX pwfx;
 	HMMIO hMmio = nullptr;
 	HGLOBAL hResData = nullptr;
-	HPSTR wavBuffer3 = nullptr;
+	HPSTR lpData = nullptr;
 	auto globals = SessionToGlobalDataPtr(hMixSession);
 	pwfx.wFormatTag = globals->PCM.wf.wFormatTag;
 	pwfx.nChannels = globals->PCM.wf.nChannels;
@@ -258,11 +258,11 @@ MIXWAVE* WaveMix::OpenWave(HANDLE hMixSession, LPCSTR szWaveFilename, HINSTANCE 
 	if (waveOutOpen(&phwo, 0xFFFFFFFF, &pwfx, 0, 0, 1u))
 	{
 		if (ShowDebugDialogs)
-			MessageBoxA(nullptr, "The waveform device can't play this format.", "WavMix32", 0x30u);
+			MessageBoxA(nullptr, "The waveform device can't play this format.", "WavMix32", MB_ICONWARNING);
 		return nullptr;
 	}
 
-	auto mixWave = static_cast<MIXWAVE*>(GlobalLock(GlobalAlloc(0x2040u, sizeof(MIXWAVE))));
+	auto mixWave = static_cast<MIXWAVE*>(GlobalLock(GlobalAlloc(GMEM_SHARE | GMEM_ZEROINIT, sizeof(MIXWAVE))));
 	if (!mixWave)
 	{
 		if (ShowDebugDialogs)
@@ -270,7 +270,7 @@ MIXWAVE* WaveMix::OpenWave(HANDLE hMixSession, LPCSTR szWaveFilename, HINSTANCE 
 				nullptr,
 				"Unable to allocate memory for waveform data.  Try making more memory available by closing other applications.",
 				"WavMix32",
-				0x40u);
+				MB_ICONINFORMATION);
 		return nullptr;
 	}
 
@@ -286,7 +286,7 @@ MIXWAVE* WaveMix::OpenWave(HANDLE hMixSession, LPCSTR szWaveFilename, HINSTANCE 
 				else
 					wsprintfA(string_buffer, "Failed to open 'WAVE' resource %u.", LOWORD(szWaveFilename));
 				if (ShowDebugDialogs)
-					MessageBoxA(nullptr, string_buffer, "WavMix32", 0x30u);
+					MessageBoxA(nullptr, string_buffer, "WavMix32", MB_ICONWARNING);
 				break;
 			}
 
@@ -295,7 +295,7 @@ MIXWAVE* WaveMix::OpenWave(HANDLE hMixSession, LPCSTR szWaveFilename, HINSTANCE 
 			if (!pmmioinfo.pchBuffer)
 			{
 				if (ShowDebugDialogs)
-					MessageBoxA(nullptr, "Failed to lock 'WAVE' resource", "WavMix32", 0x30u);
+					MessageBoxA(nullptr, "Failed to lock 'WAVE' resource", "WavMix32", MB_ICONWARNING);
 				FreeResource(hResData);
 				hResData = nullptr;
 				break;
@@ -312,7 +312,7 @@ MIXWAVE* WaveMix::OpenWave(HANDLE hMixSession, LPCSTR szWaveFilename, HINSTANCE 
 					wsprintfA(string_buffer,
 					          "Failed to open resource, mmioOpen error=%u.\nMay need to make sure resource is marked read-write",
 					          pmmioinfo.wErrorRet);
-					MessageBoxA(nullptr, string_buffer, "WavMix32", 0x30u);
+					MessageBoxA(nullptr, string_buffer, "WavMix32", MB_ICONWARNING);
 				}
 				break;
 			}
@@ -328,7 +328,7 @@ MIXWAVE* WaveMix::OpenWave(HANDLE hMixSession, LPCSTR szWaveFilename, HINSTANCE 
 					wsprintfA(string_buffer,
 					          "Failed to open memory file, mmioOpen error=%u.\nMay need to make sure memory is read-write",
 					          pmmioinfo.wErrorRet);
-					MessageBoxA(nullptr, string_buffer, "WavMix32", 0x30u);
+					MessageBoxA(nullptr, string_buffer, "WavMix32", MB_ICONWARNING);
 				}
 				break;
 			}
@@ -341,57 +341,57 @@ MIXWAVE* WaveMix::OpenWave(HANDLE hMixSession, LPCSTR szWaveFilename, HINSTANCE 
 				if (ShowDebugDialogs)
 				{
 					wsprintfA(string_buffer, "Failed to open wave file %s.", szWaveFilename);
-					MessageBoxA(nullptr, string_buffer, "WavMix32", 0x30u);
+					MessageBoxA(nullptr, string_buffer, "WavMix32", MB_ICONWARNING);
 				}
 				break;
 			}
 		}
 
 		pmmcki.fccType = mmioFOURCC('W', 'A', 'V', 'E');
-		if (mmioDescend(hMmio, &pmmcki, nullptr, 0x20u))
+		if (mmioDescend(hMmio, &pmmcki, nullptr, MMIO_FINDRIFF))
 		{
 			if (ShowDebugDialogs)
-				MessageBoxA(nullptr, "This is not a WAVE file.", "WavMix32", 0x30u);
+				MessageBoxA(nullptr, "This is not a WAVE file.", "WavMix32", MB_ICONWARNING);
 			break;
 		}
 
 		pmmFmt.ckid = mmioFOURCC('f', 'm', 't', ' ');
-		if (mmioDescend(hMmio, &pmmFmt, &pmmcki, 0x10u))
+		if (mmioDescend(hMmio, &pmmFmt, &pmmcki, MMIO_FINDCHUNK))
 		{
 			if (ShowDebugDialogs)
-				MessageBoxA(nullptr, "WAVE file is corrupted.", "WavMix32", 0x30u);
+				MessageBoxA(nullptr, "WAVE file is corrupted.", "WavMix32", MB_ICONWARNING);
 			break;
 		}
 		if (mmioRead(hMmio, (HPSTR)mixWave, 16) != 16)
 		{
 			if (ShowDebugDialogs)
-				MessageBoxA(nullptr, "Failed to read format chunk.", "WavMix32", 0x30u);
+				MessageBoxA(nullptr, "Failed to read format chunk.", "WavMix32", MB_ICONWARNING);
 			break;
 		}
 		if (mixWave->pcm.wf.wFormatTag != 1)
 		{
 			if (ShowDebugDialogs)
-				MessageBoxA(nullptr, "The file is not a PCM file.", "WavMix32", 0x30u);
+				MessageBoxA(nullptr, "The file is not a PCM file.", "WavMix32", MB_ICONWARNING);
 			break;
 		}
 
 		mmioAscend(hMmio, &pmmFmt, 0);
 		pmmFmt.ckid = mmioFOURCC('d', 'a', 't', 'a');
-		if (mmioDescend(hMmio, &pmmFmt, &pmmcki, 0x10u))
+		if (mmioDescend(hMmio, &pmmFmt, &pmmcki, MMIO_FINDCHUNK))
 		{
 			if (ShowDebugDialogs)
-				MessageBoxA(nullptr, "WAVE file has no data chunk.", "WavMix32", 0x30u);
+				MessageBoxA(nullptr, "WAVE file has no data chunk.", "WavMix32", MB_ICONWARNING);
 			break;
 		}
 		auto dataSize = pmmFmt.cksize;
 		if (!pmmFmt.cksize)
 		{
 			if (ShowDebugDialogs)
-				MessageBoxA(nullptr, "The data chunk has no data.", "WavMix32", 0x30u);
+				MessageBoxA(nullptr, "The data chunk has no data.", "WavMix32", MB_ICONWARNING);
 			break;
 		}
 
-		auto lpData = static_cast<HPSTR>(GlobalLock(GlobalAlloc(0x2002u, pmmFmt.cksize)));
+		lpData = static_cast<HPSTR>(GlobalLock(GlobalAlloc(GMEM_SHARE | GMEM_MOVEABLE, pmmFmt.cksize)));
 		if (!lpData)
 		{
 			if (ShowDebugDialogs)
@@ -399,7 +399,7 @@ MIXWAVE* WaveMix::OpenWave(HANDLE hMixSession, LPCSTR szWaveFilename, HINSTANCE 
 					nullptr,
 					"Unable to allocate memory for waveform data.  Try making more memory available by closing other applications.",
 					"WavMix32",
-					0x40u);
+					MB_ICONINFORMATION);
 			break;
 		}
 
@@ -407,14 +407,14 @@ MIXWAVE* WaveMix::OpenWave(HANDLE hMixSession, LPCSTR szWaveFilename, HINSTANCE 
 		if (readCount != static_cast<LONG>(dataSize))
 		{
 			if (ShowDebugDialogs)
-				MessageBoxA(nullptr, "Failed to read data chunk.", "WavMix32", 0x30u);
+				MessageBoxA(nullptr, "Failed to read data chunk.", "WavMix32", MB_ICONWARNING);
 			break;
 		}
 		lpData = WaveFormatConvert(&Globals->PCM, &mixWave->pcm, lpData, &dataSize);
 		if (!lpData)
 		{
 			if (ShowDebugDialogs)
-				MessageBoxA(nullptr, "Failed to convert wave format.", "WavMix32", 0x30u);
+				MessageBoxA(nullptr, "Failed to convert wave format.", "WavMix32", MB_ICONWARNING);
 			break;
 		}
 		mmioClose(hMmio, 0);
@@ -426,7 +426,7 @@ MIXWAVE* WaveMix::OpenWave(HANDLE hMixSession, LPCSTR szWaveFilename, HINSTANCE 
 		mixWave->wh.dwLoops = 0;
 		mixWave->wh.dwUser = 0;
 		mixWave->wMagic = 21554;
-		memmove(mixWave, &Globals->PCM, 0x10u);
+		memmove(&mixWave->pcm, &Globals->PCM, sizeof(PCMWAVEFORMAT));
 
 		if (HIWORD(szWaveFilename))
 		{
@@ -446,10 +446,10 @@ MIXWAVE* WaveMix::OpenWave(HANDLE hMixSession, LPCSTR szWaveFilename, HINSTANCE 
 		mmioClose(hMmio, 0);
 	GlobalUnlock(GlobalHandle(mixWave));
 	GlobalFree(GlobalHandle(mixWave));
-	if (wavBuffer3)
+	if (lpData)
 	{
-		GlobalUnlock(GlobalHandle(wavBuffer3));
-		GlobalFree(GlobalHandle(wavBuffer3));
+		GlobalUnlock(GlobalHandle(lpData));
+		GlobalFree(GlobalHandle(lpData));
 	}
 	if (hResData)
 		FreeResource(hResData);
@@ -586,7 +586,7 @@ int WaveMix::Play(MIXPLAYPARAMS* lpMixPlayParams)
 		if (!lpMixPlayParams)
 		{
 			if (ShowDebugDialogs)
-				MessageBoxA(nullptr, "NULL parameters pointer passed to WaveMixPlay!", "WavMix32", 0x30u);
+				MessageBoxA(nullptr, "NULL parameters pointer passed to WaveMixPlay!", "WavMix32", MB_ICONWARNING);
 			result = 5;
 			break;
 		}
@@ -596,7 +596,7 @@ int WaveMix::Play(MIXPLAYPARAMS* lpMixPlayParams)
 		if (!globals)
 		{
 			if (ShowDebugDialogs)
-				MessageBoxA(nullptr, "Invalid session handle passed to WaveMixPlay", "WavMix32", 0x30u);
+				MessageBoxA(nullptr, "Invalid session handle passed to WaveMixPlay", "WavMix32", MB_ICONWARNING);
 			result = 5;
 			break;
 		}
@@ -604,7 +604,7 @@ int WaveMix::Play(MIXPLAYPARAMS* lpMixPlayParams)
 		if (!IsValidLPMIXWAVE(lpMixPlayParams->lpMixWave))
 		{
 			if (ShowDebugDialogs)
-				MessageBoxA(nullptr, "Invalid or NULL wave pointer passed to WaveMixPlay!", "WavMix32", 0x30u);
+				MessageBoxA(nullptr, "Invalid or NULL wave pointer passed to WaveMixPlay!", "WavMix32", MB_ICONWARNING);
 			break;
 		}
 
@@ -615,7 +615,7 @@ int WaveMix::Play(MIXPLAYPARAMS* lpMixPlayParams)
 				"The LPMIXWAVE 0x%lx is not in the current output format, close the wave and reopen it.",
 				lpMixPlayParams->lpMixWave);
 			if (ShowDebugDialogs)
-				MessageBoxA(nullptr, string_buffer, "WavMix32", 0x30u);
+				MessageBoxA(nullptr, string_buffer, "WavMix32", MB_ICONWARNING);
 			result = 8;
 			break;
 		}
@@ -623,14 +623,14 @@ int WaveMix::Play(MIXPLAYPARAMS* lpMixPlayParams)
 		{
 			if (ShowDebugDialogs)
 				MessageBoxA(nullptr, "Wave device not allocated, call WaveMixActivate(hMixSession,TRUE)", "WavMix32",
-				            0x30u);
+				            MB_ICONWARNING);
 			result = 4;
 			break;
 		}
 		if (!globals->iChannels)
 		{
 			if (ShowDebugDialogs)
-				MessageBoxA(nullptr, "You must open a channel before you can play a wave!", "WavMix32", 0x30u);
+				MessageBoxA(nullptr, "You must open a channel before you can play a wave!", "WavMix32", MB_ICONWARNING);
 			result = 5;
 			break;
 		}
@@ -829,7 +829,7 @@ GLOBALS* WaveMix::SessionToGlobalDataPtr(HANDLE hMixSession)
 		return globals;
 	MessageBeep(0xFFFFFFFF);
 	wsprintfA(string_buffer, "Invalid session handle 0x%04X passed to WaveMix API", hMixSession);
-	MessageBoxA(nullptr, string_buffer, "WavMix32", 0x30u);
+	MessageBoxA(nullptr, string_buffer, "WavMix32", MB_ICONWARNING);
 	return nullptr;
 }
 
@@ -915,7 +915,7 @@ void WaveMix::ShowWaveOutDevices()
 	if (deviceCount)
 	{
 		wsprintfA(string_buffer, "%d waveOut Devices have been detected on your system.", deviceCount);
-		MessageBoxA(nullptr, string_buffer, "WavMix32", 0x40u);
+		MessageBoxA(nullptr, string_buffer, "WavMix32", MB_ICONINFORMATION);
 		for (auto uDeviceID = 0u; uDeviceID < deviceCount; ++uDeviceID)
 		{
 			if (!waveOutGetDevCapsA(uDeviceID, &pwoc, 0x34u) && RemoveInvalidIniNameCharacters(pwoc.szPname))
@@ -928,7 +928,7 @@ void WaveMix::ShowWaveOutDevices()
 					LOBYTE(pwoc.vDriverVersion));
 			else
 				wsprintfA(string_buffer, "waveOutGetDevCaps failed (err %u) for device %d", 1, uDeviceID);
-			MessageBoxA(nullptr, string_buffer, "WavMix32", 0x40u);
+			MessageBoxA(nullptr, string_buffer, "WavMix32", MB_ICONINFORMATION);
 		}
 	}
 }
@@ -1000,7 +1000,7 @@ int WaveMix::ReadConfigSettings(MIXCONFIG* lpConfig)
 		wsprintfA(string_buffer,
 		          "%s is a syncronous (blocking) wave output device.  This will not permit audio to play while other applications are running.",
 		          Globals->WaveoutCaps.szPname);
-		MessageBoxA(nullptr, string_buffer, "WavMix32", 0x40u);
+		MessageBoxA(nullptr, string_buffer, "WavMix32", MB_ICONINFORMATION);
 		return 0;
 	}
 	if (GetPrivateProfileIntA("not compatible", Globals->szDevicePName, 0, FileName))
@@ -1008,7 +1008,7 @@ int WaveMix::ReadConfigSettings(MIXCONFIG* lpConfig)
 		if (!ShowDebugDialogs)
 			return 0;
 		wsprintfA(string_buffer, "%s is not compatible with the realtime wavemixer.", Globals->szDevicePName);
-		MessageBoxA(nullptr, string_buffer, "WavMix32", 0x40u);
+		MessageBoxA(nullptr, string_buffer, "WavMix32", MB_ICONINFORMATION);
 		return 0;
 	}
 
@@ -1435,7 +1435,7 @@ int WaveMix::ResetRemix(DWORD dwRemixSamplePos, CHANNELNODE* channel)
 		if (waveOutWrite(Globals->hWaveOut, &xHDR->wh, sizeof(WAVEHDR)))
 		{
 			if (ShowDebugDialogs)
-				MessageBoxA(nullptr, "Failed to write block to device", "WavMix32", 0x30u);
+				MessageBoxA(nullptr, "Failed to write block to device", "WavMix32", MB_ICONWARNING);
 			xHDR->fAvailable = 1;
 			RemoveFromPlayingQueue(xHDR);
 		}
@@ -1650,7 +1650,7 @@ int WaveMix::MixerPlay(XWAVEHDR* lpXWH, int fWriteBlocks)
 		if (waveOutWrite(Globals->hWaveOut, &lpXWH->wh, sizeof(WAVEHDR)))
 		{
 			if (ShowDebugDialogs)
-				MessageBoxA(nullptr, "Failed to write block to device", "WavMix32", 0x30u);
+				MessageBoxA(nullptr, "Failed to write block to device", "WavMix32", MB_ICONWARNING);
 			lpXWH->fAvailable = 1;
 			RemoveFromPlayingQueue(lpXWH);
 		}
@@ -1862,7 +1862,7 @@ int WaveMix::Settings_OnInitDialog(HWND hWnd, WPARAM wParam, MIXCONFIG* lpMixcon
 			if (getResult)
 			{
 				wsprintfA(string_buffer, "waveOutGetDevCaps failed (err %u) for device %d", getResult, uDeviceID);
-				MessageBoxA(nullptr, string_buffer, "WavMix32", 0x40u);
+				MessageBoxA(nullptr, string_buffer, "WavMix32", MB_ICONINFORMATION);
 			}
 			else
 			{
@@ -2051,7 +2051,7 @@ void WaveMix::ShowCurrentSettings()
 		Globals->PCM.wf.nSamplesPerSec,
 		Globals->PCM.wf.nChannels,
 		Globals->PauseBlocks);
-	MessageBoxA(nullptr, string_buffer, "WavMix32", 0x40u);
+	MessageBoxA(nullptr, string_buffer, "WavMix32", MB_ICONINFORMATION);
 }
 
 unsigned WaveMix::GetWaveDevice()
@@ -2060,14 +2060,14 @@ unsigned WaveMix::GetWaveDevice()
 
 	if (Globals->hWaveOut)
 		return 0;
-	HWND window = CreateWindowExA(0, "WavMix32", pinball::WindowName, 0x8000000u, 0, 0, 0, 0, nullptr, nullptr, HModule,
+	HWND window = CreateWindowExA(0, "WavMix32", "", 0x8000000u, 0, 0, 0, 0, nullptr, nullptr, HModule,
 	                              nullptr);
 	GLOBALS* globals = Globals;
 	Globals->hWndApp = window;
 	if (!window)
 	{
 		if (ShowDebugDialogs)
-			MessageBoxA(nullptr, "Failed to create callback window.", "WavMix32", 0x30u);
+			MessageBoxA(nullptr, "Failed to create callback window.", "WavMix32", MB_ICONWARNING);
 		return 1;
 	}
 	pwfx.wFormatTag = globals->PCM.wf.wFormatTag;
@@ -2128,7 +2128,7 @@ int WaveMix::AllocWaveBlocks(HWAVEOUT hwo, XWAVEHDR** waveBlocks)
 					nullptr,
 					"Unable to allocate memory for waveform data.  Try making more memory available by closing other applications.",
 					"WavMix32",
-					0x30u);
+					MB_ICONWARNING);
 			for (int j = i - 1; j >= 0; --j)
 			{
 				GlobalUnlock(GlobalHandle(waveBlocks[j]));
@@ -2152,7 +2152,7 @@ int WaveMix::AllocWaveBlocks(HWAVEOUT hwo, XWAVEHDR** waveBlocks)
 			return 1;
 	}
 	if (ShowDebugDialogs)
-		MessageBoxA(nullptr, "Unable to prepare wave header.", "WavMix32", 0x30u);
+		MessageBoxA(nullptr, "Unable to prepare wave header.", "WavMix32", MB_ICONWARNING);
 	FreeWaveBlocks(hwo, waveBlocks);
 	return 0;
 }
@@ -2207,7 +2207,7 @@ HPSTR WaveMix::BitsPerSampleAlign(HPSTR lpInData, WORD nInBPS, WORD nOutBPS, DWO
 		DWORD dwNumSamples = *dwDataSize / (nInBPS / 8u);
 		*dwDataSize = dwNumSamples * (nOutBPS / 8u);
 
-		dataBuf = GlobalLock(GlobalAlloc(0x2002u, *dwDataSize));
+		dataBuf = GlobalLock(GlobalAlloc(GMEM_SHARE | GMEM_MOVEABLE, *dwDataSize));
 		if (dataBuf)
 		{
 			if (nInBPS / 8u <= nOutBPS / 8u)
@@ -2232,7 +2232,7 @@ HPSTR WaveMix::BitsPerSampleAlign(HPSTR lpInData, WORD nInBPS, WORD nOutBPS, DWO
 					nullptr,
 					"Unable to allocate memory for waveform data.  Try making more memory available by closing other applications.",
 					"WavMix32",
-					0x40u);
+					MB_ICONINFORMATION);
 		}
 	}
 
@@ -2248,7 +2248,7 @@ HPSTR WaveMix::ChannelAlign(HPSTR lpInData, WORD nInChannels, WORD nOutChannels,
 		return lpInData;
 	DWORD dwNumSamples = *dwDataSize / nBytesPerSample / nInChannels;
 	*dwDataSize = dwNumSamples * nBytesPerSample * nOutChannels;
-	char* dataBuf = static_cast<char*>(GlobalLock(GlobalAlloc(0x2002u, *dwDataSize)));
+	char* dataBuf = static_cast<char*>(GlobalLock(GlobalAlloc(GMEM_SHARE | GMEM_MOVEABLE, *dwDataSize)));
 	if (dataBuf)
 	{
 		if (nInChannels < nOutChannels)
@@ -2303,7 +2303,7 @@ HPSTR WaveMix::ChannelAlign(HPSTR lpInData, WORD nInChannels, WORD nOutChannels,
 				nullptr,
 				"Unable to allocate memory for waveform data.  Try making more memory available by closing other applications.",
 				"WavMix32",
-				0x40u);
+				MB_ICONINFORMATION);
 		dataBuf = nullptr;
 	}
 
@@ -2334,7 +2334,7 @@ HPSTR WaveMix::SamplesPerSecAlign(HPSTR lpInData, DWORD nInSamplesPerSec, DWORD 
 	}
 	*dwDataSize = sampleSize * dwNumSamples2;
 
-	auto dataBuf = static_cast<char*>(GlobalLock(GlobalAlloc(0x2002u, sampleSize * dwNumSamples2)));
+	auto dataBuf = static_cast<char*>(GlobalLock(GlobalAlloc(GMEM_SHARE | GMEM_MOVEABLE, sampleSize * dwNumSamples2)));
 	if (!dataBuf)
 	{
 		if (ShowDebugDialogs)
@@ -2342,7 +2342,7 @@ HPSTR WaveMix::SamplesPerSecAlign(HPSTR lpInData, DWORD nInSamplesPerSec, DWORD 
 				nullptr,
 				"Unable to allocate memory for waveform data.  Try making more memory available by closing other applications.",
 				"WavMix32",
-				0x40u);
+				MB_ICONINFORMATION);
 		GlobalUnlock(GlobalHandle(lpInData));
 		GlobalFree(GlobalHandle(lpInData));
 		return nullptr;
@@ -2503,7 +2503,7 @@ void WaveMix::FreePlayedBlocks()
 
 int WaveMix::HasCurrentOutputFormat(MIXWAVE* lpMixWave)
 {
-	return memcmp(lpMixWave, &Globals->PCM, 0x10u) == 0;
+	return memcmp(&lpMixWave->pcm, &Globals->PCM, sizeof(PCMWAVEFORMAT)) == 0;
 }
 
 CHANNELNODE* WaveMix::GetChannelNode()

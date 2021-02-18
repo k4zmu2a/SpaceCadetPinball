@@ -47,7 +47,7 @@ void proj::xform_to_2d(vector_type* vec, int* dst)
 	vector_type dstVec2{};
 
 	matrix_vector_multiply(&matrix, vec, &dstVec2);
-	if (0.0 == dstVec2.Z)
+	if (dstVec2.Z == 0.0f)
 		projCoef = 999999.88f;
 	else
 		projCoef = d_ / dstVec2.Z;

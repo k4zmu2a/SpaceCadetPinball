@@ -75,10 +75,10 @@ int winmain::WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLi
 				for (int i = 0; i < 32700; ++i)
 				{
 					sprintf_s(Buffer, "Table%d", i);
-					options::get_string(nullptr, Buffer, tmpBuf, pinball::WindowName, 500);
+					options::get_string(nullptr, Buffer, tmpBuf, "", 500);
 					if (!*tmpBuf)
 						break;
-					options::get_string(tmpBuf, "Table Name", tmpBuf2, pinball::WindowName, 500);
+					options::get_string(tmpBuf, "Table Name", tmpBuf2, "", 500);
 					if (!lstrcmpA(tmpBuf2, pinball::get_rc_string(169, 0)))
 					{
 						setOption = false;
@@ -102,7 +102,7 @@ int winmain::WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLi
 			options::path_uninit();
 			return 0;
 		}
-		options::get_string(regSpaceCadet, "Shell Exe", tmpBuf, pinball::WindowName, 500);
+		options::get_string(regSpaceCadet, "Shell Exe", tmpBuf, "", 500);
 		auto execRes = WinExec(tmpBuf, 5u);
 		memory::free(tmpBuf);
 		if (execRes >= 32)
@@ -578,7 +578,7 @@ LRESULT CALLBACK winmain::message_handler(HWND hWnd, UINT Msg, WPARAM wParam, LP
 				if (tmpBuf)
 				{
 					char cmdLine[0x1F4u];
-					options::get_string(nullptr, "Shell Exe", tmpBuf, pinball::WindowName, 500);
+					options::get_string(nullptr, "Shell Exe", tmpBuf, "", 500);
 					auto iHwnd = reinterpret_cast<size_t>(hwnd_frame);
 					sprintf_s(
 						cmdLine,

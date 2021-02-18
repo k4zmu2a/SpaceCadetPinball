@@ -34,7 +34,7 @@ int TSink::Message(int code, float value)
 	switch (code)
 	{
 	case 56:
-		if (value < 0.0)
+		if (value < 0.0f)
 			value = TimerTime;
 		Timer = timer::set(value, this, TimerExpired);
 		break;

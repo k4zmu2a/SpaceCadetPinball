@@ -28,7 +28,7 @@ THole::THole(TPinballTable* table, int groupIndex) : TCollisionComponent(table, 
 	Circle.Center.X = visual.FloatArr[0];
 	Circle.Center.Y = visual.FloatArr[1];
 	Circle.RadiusSq = *loader::query_float_attribute(groupIndex, 0, 306) * visual.FloatArr[2];
-	if (Circle.RadiusSq == 0.0)
+	if (Circle.RadiusSq == 0.0f)
 		Circle.RadiusSq = 0.001f;
 
 	auto tCircle = new TCircle(this, &ActiveFlag, visual.CollisionGroup,

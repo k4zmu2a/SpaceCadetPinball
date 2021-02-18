@@ -49,7 +49,7 @@ int Sound::Init(HINSTANCE hInstance, int voices, void (* someFuncPtr)(int, MIXWA
 	{
 		/*FT does not have the file, defaults work OK*/
 		if (!pb::FullTiltMode)
-			MessageBoxA(winmain::hwnd_frame, pinball::get_rc_string(42, 0), pinball::WindowName, 0x2000u);
+			MessageBoxA(winmain::hwnd_frame, pinball::get_rc_string(42, 0), "", 0x2000u);
 	}
 
 	WndClass.style = 0;

@@ -45,7 +45,7 @@ int TComponentGroup::Message(int code, float value)
 			timer::kill(this->Timer);
 			this->Timer = 0;
 		}
-		if (value > 0.0)
+		if (value > 0.0f)
 			this->Timer = timer::set(value, this, NotifyTimerExpired);
 	}
 	else if (code <= 1007 || code > 1011 && code != 1020 && code != 1022)

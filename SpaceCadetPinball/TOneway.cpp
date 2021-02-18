@@ -67,7 +67,7 @@ void TOneway::Collision(TBall* ball, vector_type* nextPosition, vector_type* dir
 		Elasticity,
 		Smoothness,
 		Threshold,
-		Boost) > 0.2)
+		Boost) > 0.2f)
 	{
 		if (SoftHitSoundId)
 			loader::play_sound(SoftHitSoundId);

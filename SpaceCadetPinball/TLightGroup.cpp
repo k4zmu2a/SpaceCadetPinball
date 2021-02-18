@@ -354,7 +354,7 @@ int TLightGroup::Message(int code, float value)
 		if (NotifyTimer)
 			timer::kill(NotifyTimer);
 		NotifyTimer = 0;
-		if (value > 0.0)
+		if (value > 0.0f)
 			NotifyTimer = timer::set(value, this, NotifyTimerExpired);
 		break;
 	case 44:
@@ -447,7 +447,7 @@ void TLightGroup::reschedule_animation(float time)
 		return;
 	}
 
-	Timer1Time = time > 0.0 ? time : Timer1TimeDefault;
+	Timer1Time = time > 0.0f ? time : Timer1TimeDefault;
 	Timer = timer::set(Timer1Time, this, TimerExpired);
 }
 

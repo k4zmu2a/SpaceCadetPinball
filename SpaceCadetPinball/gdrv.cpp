@@ -42,12 +42,11 @@ void gdrv::get_focus()
 
 BITMAPINFO* gdrv::DibCreate(int16_t bpp, int width, int height)
 {
-	auto sizeBytes = height * (width * bpp / 8 + 3 & 0xFFFFFFFC);
-	auto buf = GlobalAlloc(GHND, sizeBytes + sizeof(BITMAPINFOHEADER) + 256 * sizeof(RGBQUAD));
-	auto dib = static_cast<BITMAPINFO*>(GlobalLock(buf));
-
+	auto sizeBytes = height * (width * bpp / 8 + 3 & (~3));
+	auto dib = memory::allocate<BITMAPINFO>(1, (256 - 1) * sizeof(RGBQUAD) + sizeBytes);
 	if (!dib)
 		return nullptr;
+
 	dib->bmiHeader.biSizeImage = sizeBytes;
 	dib->bmiHeader.biWidth = width;
 	dib->bmiHeader.biSize = sizeof(BITMAPINFOHEADER);
@@ -247,8 +246,7 @@ int gdrv::destroy_bitmap(gdrv_bitmap8* bmp)
 	}
 	else if (bmp->BitmapType == BitmapType::DibBitmap)
 	{
-		GlobalUnlock(GlobalHandle(bmp->Dib));
-		GlobalFree(GlobalHandle(bmp->Dib));
+		memory::free(bmp->Dib);
 	}
 	memset(bmp, 0, sizeof(gdrv_bitmap8));
 	return 0;
@@ -433,7 +431,7 @@ int gdrv::StretchDIBitsScaled(HDC hdc, int xDest, int yDest, int DestWidth, int 
 	{
 		xSrc -= pad;
 		xDest -= pad;
-		SrcWidth += padX2;		
+		SrcWidth += padX2;
 		DestWidth += padX2;
 	}
 
@@ -441,7 +439,7 @@ int gdrv::StretchDIBitsScaled(HDC hdc, int xDest, int yDest, int DestWidth, int 
 	{
 		ySrc -= pad;
 		yDest -= pad;
-		SrcHeight += padX2;		
+		SrcHeight += padX2;
 		DestHeight += padX2;
 	}
 

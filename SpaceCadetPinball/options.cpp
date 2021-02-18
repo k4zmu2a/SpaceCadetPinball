@@ -120,7 +120,7 @@ void options::init(HMENU menuHandle)
 	auto tmpBuf = memory::allocate(0x1F4u);
 	if (tmpBuf)
 	{
-		get_string(nullptr, "Shell Exe", tmpBuf, pinball::WindowName, 500);
+		get_string(nullptr, "Shell Exe", tmpBuf, "", 500);
 		if (!*tmpBuf)
 		{
 			if (MenuHandle)

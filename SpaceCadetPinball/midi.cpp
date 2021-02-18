@@ -167,7 +167,7 @@ int midi::load_file(midi_struct** midi_res, void* filePtrOrPath, int fileSizeP, 
 			returnCode = 1;
 			break;
 		}
-		midi->Magic = 'ISDM';
+		midi->Magic = mmioFOURCC('M', 'D', 'S', 'I');
 		midi->StreamHandle = nullptr;
 		midi->PreparedBlocksCount = 0;
 
@@ -240,12 +240,12 @@ int midi::read_file(midi_struct* midi, riff_header* filePtr, unsigned fileSize)
 			returnCode = 3;
 			break;
 		}
-		if (filePtr->Riff != 'FFIR')
+		if (filePtr->Riff != mmioFOURCC('R', 'I', 'F', 'F'))
 		{
 			returnCode = 3;
 			break;
 		}
-		if (filePtr->Mids != 'SDIM')
+		if (filePtr->Mids != mmioFOURCC('M', 'I', 'D', 'S'))
 		{
 			returnCode = 3;
 			break;
@@ -260,7 +260,7 @@ int midi::read_file(midi_struct* midi, riff_header* filePtr, unsigned fileSize)
 			returnCode = 3;
 			break;
 		}
-		if (filePtr->Fmt != ' tmf')
+		if (filePtr->Fmt != mmioFOURCC('f', 'm', 't', ' '))
 		{
 			returnCode = 3;
 			break;
@@ -288,7 +288,7 @@ int midi::read_file(midi_struct* midi, riff_header* filePtr, unsigned fileSize)
 
 		auto dataChunk = reinterpret_cast<riff_data*>(reinterpret_cast<char*>(&filePtr->dwTimeFormat) + filePtr->FmtSize
 		);
-		if (dataChunk->Data != 'atad')
+		if (dataChunk->Data != mmioFOURCC('d','a','t','a'))
 		{
 			returnCode = 3;
 			break;
@@ -300,8 +300,8 @@ int midi::read_file(midi_struct* midi, riff_header* filePtr, unsigned fileSize)
 		}
 
 		midi->BlockCount = dataChunk->BlocksPerChunk;
-		midi->DataPtr1 = static_cast<midihdr_tag*>(GlobalLock(GlobalAlloc(
-			GMEM_DDESHARE | GMEM_MOVEABLE, dataChunk->BlocksPerChunk * (midi->CbMaxBuffer + sizeof(midihdr_tag)))));
+		midi->DataPtr1 = reinterpret_cast<midihdr_tag*>(memory::allocate(
+			dataChunk->BlocksPerChunk * (midi->CbMaxBuffer + sizeof(midihdr_tag))));
 		if (!midi->DataPtr1)
 		{
 			returnCode = 1;
@@ -363,8 +363,7 @@ int midi::read_file(midi_struct* midi, riff_header* filePtr, unsigned fileSize)
 
 	if (returnCode && midi->DataPtr1)
 	{
-		GlobalUnlock(GlobalHandle(midi->DataPtr1));
-		GlobalFree(GlobalHandle(midi->DataPtr1));
+		memory::free(midi->DataPtr1);
 	}
 	return returnCode;
 }
@@ -405,16 +404,15 @@ int midi::stop_ft()
 
 int midi::unload_track(midi_struct* midi)
 {
-	if (midi->Magic != 'ISDM')
+	if (midi->Magic != mmioFOURCC('M', 'D', 'S', 'I'))
 		return 6;
 	if (midi->StreamHandle)
 		stream_close(midi);
 	if (midi->DataPtr1)
 	{
-		GlobalUnlock(GlobalHandle(midi->DataPtr1));
-		GlobalFree(GlobalHandle(midi->DataPtr1));
+		memory::free(midi->DataPtr1);
 	}
-	midi->Magic = 'atad';
+	midi->Magic = mmioFOURCC('d','a','t','a');
 	LocalFree(midi);
 	return 0;
 }
@@ -422,7 +420,7 @@ int midi::unload_track(midi_struct* midi)
 int midi::stream_open(midi_struct* midi, char flags)
 {
 	auto returnCode = 0;
-	if (midi->Magic != 'ISDM')
+	if (midi->Magic != mmioFOURCC('M', 'D', 'S', 'I'))
 		return 6;
 
 	UINT puDeviceID = -1;
@@ -473,7 +471,7 @@ int midi::stream_close(midi_struct* midi)
 {
 	int returnCode;
 
-	if (midi->Magic != 'ISDM')
+	if (midi->Magic != mmioFOURCC('M', 'D', 'S', 'I'))
 		return 6;
 	if (!midi->StreamHandle)
 		return 7;

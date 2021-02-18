@@ -239,7 +239,7 @@ int pb::frame(int time)
 		else
 		{
 			auto nudgeDec = nudge::nudge_count - timeMul;
-			if (nudgeDec <= 0.0)
+			if (nudgeDec <= 0.0f)
 				nudgeDec = 0.0;
 			nudge::nudge_count = nudgeDec;
 		}
@@ -248,11 +248,11 @@ int pb::frame(int time)
 		score::update(MainTable->CurScoreStruct);
 		if (!MainTable->TiltLockFlag)
 		{
-			if (nudge::nudge_count > 0.5)
+			if (nudge::nudge_count > 0.5f)
 			{
 				pinball::InfoTextBox->Display(pinball::get_rc_string(25, 0), 2.0);
 			}
-			if (nudge::nudge_count > 1.0)
+			if (nudge::nudge_count > 1.0f)
 				MainTable->tilt(time_now);
 		}
 	}
@@ -288,13 +288,13 @@ void pb::timed_frame(float timeNow, float timeDelta, bool drawBalls)
 					ball->Acceleration.Y = ball->Speed * ball->Acceleration.Y;
 					maths::vector_add(&ball->Acceleration, &vec2);
 					ball->Speed = maths::normalize_2d(&ball->Acceleration);
-					ball->InvAcceleration.X = ball->Acceleration.X == 0.0 ? 1000000000.0f : 1.0f / ball->Acceleration.X;
-					ball->InvAcceleration.Y = ball->Acceleration.Y == 0.0 ? 1000000000.0f : 1.0f / ball->Acceleration.Y;
+					ball->InvAcceleration.X = ball->Acceleration.X == 0.0f ? 1000000000.0f : 1.0f / ball->Acceleration.X;
+					ball->InvAcceleration.Y = ball->Acceleration.Y == 0.0f ? 1000000000.0f : 1.0f / ball->Acceleration.Y;
 				}
 
 				auto timeDelta2 = timeDelta;
 				auto timeNow2 = timeNow;
-				for (auto index = 10; timeDelta2 > 0.000001 && index; --index)
+				for (auto index = 10; timeDelta2 > 0.000001f && index; --index)
 				{
 					auto time = collide(timeNow2, timeDelta2, ball);
 					timeDelta2 -= time;
@@ -632,7 +632,7 @@ float pb::collide(float timeNow, float timeDelta, TBall* ball)
 		TEdgeSegment* edge = nullptr;
 		auto distance = TTableLayer::edge_manager->FindCollisionDistance(&ray, ball, &edge);
 		ball->EdgeCollisionCount = 0;
-		if (distance >= 1000000000.0)
+		if (distance >= 1000000000.0f)
 		{
 			maxDistance = timeDelta * ball->Speed;
 			ball->RayMaxDistance = maxDistance;
@@ -644,7 +644,7 @@ float pb::collide(float timeNow, float timeDelta, TBall* ball)
 		else
 		{
 			edge->EdgeCollision(ball, distance);
-			if (ball->Speed > 0.000000001)
+			if (ball->Speed > 0.000000001f)
 				return fabs(distance / ball->Speed);
 		}
 	}

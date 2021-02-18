@@ -54,12 +54,12 @@ int high_score::read(high_score_struct* table, int* ptrToSmth)
 		auto tablePtr = &table[position];
 		_itoa_s(position, Buffer, 10);
 		lstrcatA(Buffer, ".Name");
-		options::get_string(optPath, Buffer, buf1, pinball::WindowName, 32);
+		options::get_string(optPath, Buffer, buf1, "", 32);
 		buf1[32] = 0;
 		lstrcpyA(tablePtr->Name, buf1);
 		_itoa_s(position, Buffer, 10);
 		lstrcatA(Buffer, ".Score");
-		options::get_string(optPath, Buffer, buf1, pinball::WindowName, 300);
+		options::get_string(optPath, Buffer, buf1, "", 300);
 		tablePtr->Score = atol(buf1);
 		for (int i = lstrlenA(tablePtr->Name); --i >= 0; scoreSum += tablePtr->Name[i])
 		{
@@ -68,7 +68,7 @@ int high_score::read(high_score_struct* table, int* ptrToSmth)
 	}
 
 	scramble_number_string(scoreSum, buf1);
-	options::get_string(optPath, "Verification", buf2, pinball::WindowName, 300);
+	options::get_string(optPath, "Verification", buf2, "", 300);
 	if (lstrcmpA(buf1, buf2))
 		clear_table(table);
 	memory::free(buf1);

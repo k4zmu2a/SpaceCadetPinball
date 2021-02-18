@@ -469,11 +469,11 @@ int loader::query_visual(int groupIndex, int groupIndexOffset, visualStruct* vis
 	auto floatArr = reinterpret_cast<float*>(partman::field(loader_table, stateId, datFieldTypes::FloatArray));
 	if (!floatArr)
 		return 0;
-	if (*floatArr != 600.0)
+	if (*floatArr != 600.0f)
 		return 0;
 
 	visual->FloatArrCount = partman::field_size(loader_table, stateId, datFieldTypes::FloatArray) / 4 / 2 - 2;
-	auto floatVal = static_cast<int>(floor(floatArr[1]) - 1.0);
+	auto floatVal = static_cast<int>(floor(floatArr[1]) - 1.0f);
 	switch (floatVal)
 	{
 	case 0:

@@ -87,15 +87,15 @@ TEdgeSegment* TEdgeSegment::install_wall(float* floatArr, TCollisionComponent* c
 
 				center.X = centerX1;
 				center.Y = centerY1;
-				if (offset != 0.0)
+				if (offset != 0.0f)
 				{
 					vec1.X = centerX1 - prevCenter.X;
 					vec1.Y = center.Y - prevCenter.Y;
 					vec2.X = centerX2 - centerX1;
 					vec2.Y = centerY2 - center.Y;
 					maths::cross(&vec1, &vec2, &dstVec);
-					if (dstVec.Z > 0.0 && offset > 0.0 ||
-						dstVec.Z < 0.0 && offset < 0.0)
+					if (dstVec.Z > 0.0f && offset > 0.0f ||
+						dstVec.Z < 0.0f && offset < 0.0f)
 					{
 						float radius = offset * 1.001f;
 						auto circle = new TCircle(collComp, activeFlagPtr, collisionGroup, &center, radius);

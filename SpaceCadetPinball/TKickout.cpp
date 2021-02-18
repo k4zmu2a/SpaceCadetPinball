@@ -33,7 +33,7 @@ TKickout::TKickout(TPinballTable* table, int groupIndex, bool someFlag): TCollis
 	Circle.Center.X = visual.FloatArr[0];
 	Circle.Center.Y = visual.FloatArr[1];
 	Circle.RadiusSq = *loader::query_float_attribute(groupIndex, 0, 306) * visual.FloatArr[2];
-	if (Circle.RadiusSq == 0.0)
+	if (Circle.RadiusSq == 0.0f)
 		Circle.RadiusSq = 0.001f;
 	auto tCircle = new TCircle(this, &ActiveFlag, visual.CollisionGroup,
 	                           reinterpret_cast<vector_type*>(visual.FloatArr), Circle.RadiusSq);
@@ -67,7 +67,7 @@ int TKickout::Message(int code, float value)
 	case 55:
 		if (KickFlag1)
 		{
-			if (value < 0.0)
+			if (value < 0.0f)
 				value = TimerTime1;
 			Timer = timer::set(value, this, TimerExpired);
 		}

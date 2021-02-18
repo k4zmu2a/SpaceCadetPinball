@@ -70,7 +70,7 @@ int TCollisionComponent::DefaultCollision(TBall* ball, vector_type* nextPosition
 	auto projSpeed = maths::basic_collision(ball, nextPosition, direction, Elasticity, Smoothness, Threshold, Boost);
 	if (projSpeed <= Threshold)
 	{
-		if (projSpeed > 0.2)
+		if (projSpeed > 0.2f)
 		{
 			if (SoftHitSoundId)
 				loader::play_sound(SoftHitSoundId);
@@ -92,7 +92,7 @@ void TCollisionComponent::Collision(TBall* ball, vector_type* nextPosition, vect
 		maths::basic_collision(ball, nextPosition, direction, Elasticity, Smoothness, 1000000000.0, 0.0);
 		return;
 	}
-	double projSpeed = maths::basic_collision(
+	auto projSpeed = maths::basic_collision(
 		ball,
 		nextPosition,
 		direction,
@@ -102,7 +102,7 @@ void TCollisionComponent::Collision(TBall* ball, vector_type* nextPosition, vect
 		Boost);
 	if (projSpeed <= Threshold)
 	{
-		if (projSpeed <= 0.2)
+		if (projSpeed <= 0.2f)
 			return;
 		soundIndex = SoftHitSoundId;
 	}

@@ -9,7 +9,6 @@ TTextBox* pinball::InfoTextBox;
 TTextBox* pinball::MissTextBox;
 char pinball::getRcBuffer[6 * 256];
 int pinball::rc_string_slot = 0;
-char pinball::WindowName[2]{};
 int pinball::LeftShift = -1;
 int pinball::RightShift = -1;
 

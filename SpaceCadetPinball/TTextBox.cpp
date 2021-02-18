@@ -121,7 +121,7 @@ void TTextBox::Display(char* text, float time)
 		{
 			if (Timer && Timer != -1)
 				timer::kill(Timer);
-			if (time == -1.0)
+			if (time == -1.0f)
 				Timer = -1;
 			else
 				Timer = timer::set(time, this, TimerExpired);
@@ -172,7 +172,7 @@ void TTextBox::Draw()
 	bool display = false;
 	while (Message1)
 	{
-		if (Message1->Time == -1.0)
+		if (Message1->Time == -1.0f)
 		{
 			if (!Message1->NextMessage)
 			{

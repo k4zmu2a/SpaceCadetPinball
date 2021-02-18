@@ -30,12 +30,12 @@ splash_struct* splash::splash_screen(HINSTANCE hInstance, LPCSTR bmpName1, LPCST
 		WndClass.hIcon = nullptr;
 		WndClass.hCursor = LoadCursorA(nullptr, IDC_ARROW);
 		WndClass.hbrBackground = nullptr;
-		WndClass.lpszMenuName = pinball::WindowName;
+		WndClass.lpszMenuName = "";
 		WndClass.lpszClassName = "3DPB_SPLASH_CLASS";
 		RegisterClassA(&WndClass);
 	}
 	splashStruct->Bitmap = nullptr;
-	HWND windowHandle = CreateWindowExA(0, "3DPB_SPLASH_CLASS", pinball::WindowName, 0x80000000, -10, -10, 1, 1,
+	HWND windowHandle = CreateWindowExA(0, "3DPB_SPLASH_CLASS", "", 0x80000000, -10, -10, 1, 1,
 	                                    nullptr, nullptr, HInstance, nullptr);
 	splashStruct->WindowHandle = windowHandle;
 	if (!windowHandle)
@@ -284,12 +284,15 @@ LRESULT splash::splash_message_handler(HWND hWnd, UINT Msg, WPARAM wParam, LPARA
 			BeginPaint(hWnd, &Paint);
 			EndPaint(hWnd, &Paint);
 			auto dc = GetDC(hWnd);
-			if (dc && splashStruct)
+			if (dc)
 			{
-				BitBlt(dc, 0, 0, 10000, 10000, dc, 0, 0, BLACKNESS);
-				splash_paint(splashStruct, dc);
+				if (splashStruct)
+				{
+					BitBlt(dc, 0, 0, 10000, 10000, dc, 0, 0, BLACKNESS);
+					splash_paint(splashStruct, dc);
+				}
+				ReleaseDC(hWnd, dc);
 			}
-			ReleaseDC(hWnd, dc);
 			break;
 		}
 	case WM_ERASEBKGND:

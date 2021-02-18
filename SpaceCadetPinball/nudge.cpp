@@ -80,12 +80,12 @@ void nudge::_nudge(float xDiff, float yDiff)
 			ball->Acceleration.Y = ball->Acceleration.Y * ball->Speed;
 			maths::vector_add(&ball->Acceleration, &accelMod);
 			ball->Speed = maths::normalize_2d(&ball->Acceleration);
-			if (0.0 == ball->Acceleration.X)
+			if (ball->Acceleration.X == 0.0f)
 				invAccelX = 1000000000.0;
 			else
 				invAccelX = 1.0f / ball->Acceleration.X;
 			ball->InvAcceleration.X = invAccelX;
-			if (0.0 == ball->Acceleration.Y)
+			if (ball->Acceleration.Y == 0.0f)
 				invAccelY = 1000000000.0;
 			else
 				invAccelY = 1.0f / ball->Acceleration.Y;
@@ -94,6 +94,6 @@ void nudge::_nudge(float xDiff, float yDiff)
 		}
 	}
 
-	render::shift(static_cast<int>(floor(xDiff + 0.5)), static_cast<int>(floor(0.5 - yDiff)), 0, 0, table->Width,
+	render::shift(static_cast<int>(floor(xDiff + 0.5f)), static_cast<int>(floor(0.5f - yDiff)), 0, 0, table->Width,
 	              table->Height);
 }

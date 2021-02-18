@@ -82,7 +82,7 @@ void TFlagSpinner::Collision(TBall* ball, vector_type* nextPosition, vector_type
 	ball->not_again(edge);
 
 	SpinDirection = 2 * (PrevCollider != edge) - 1;
-	if (ball->Speed == 0.0)
+	if (ball->Speed == 0.0f)
 		Speed = MinSpeed;
 	else
 		Speed = ball->Speed * 20.0f;

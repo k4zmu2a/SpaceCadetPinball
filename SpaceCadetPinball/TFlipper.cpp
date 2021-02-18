@@ -97,7 +97,7 @@ int TFlipper::Message(int code, float value)
 		{
 			auto v10 = value - FlipperEdge->InputTime;
 			timerTime = v10 - floor(v10 / TimerTime) * TimerTime;
-			if (timerTime < 0.0)
+			if (timerTime < 0.0f)
 				timerTime = 0.0;
 		}
 		else
