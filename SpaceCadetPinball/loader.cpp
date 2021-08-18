@@ -135,6 +135,8 @@ int loader::get_sound_id(int groupIndex)
 
 	if (!sound_list[soundIndex].Loaded && !sound_list[soundIndex].WavePtr)
 	{
+		WaveHeader wavHeader{};
+		
 		int soundGroupId = sound_list[soundIndex].GroupIndex;
 		sound_list[soundIndex].Duration = 0.0;
 		if (soundGroupId > 0 && !pinball::quickFlag)
@@ -150,9 +152,10 @@ int loader::get_sound_id(int groupIndex)
 				pinball::make_path_name(filePath, fileName2);
 
 				HFILE hFile = _lopen(filePath, 0);
-				sound_list[soundIndex].Duration = static_cast<float>(static_cast<double>(_llseek(hFile, 0, SEEK_END)) *
-					0.0000909090909090909);
+				_lread(hFile, &wavHeader, sizeof wavHeader);
 				_lclose(hFile);
+				auto sampleCount = wavHeader.data_size / (wavHeader.channels * (wavHeader.bits_per_sample / 8.0));
+				sound_list[soundIndex].Duration = static_cast<float>(sampleCount / wavHeader.sample_rate);
 				sound_list[soundIndex].WavePtr = Sound::LoadWaveFile(filePath);
 			}
 		}

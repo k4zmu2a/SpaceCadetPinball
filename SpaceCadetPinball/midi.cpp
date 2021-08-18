@@ -6,7 +6,7 @@
 #include "pinball.h"
 
 tagMCI_OPEN_PARMSA midi::mci_open_info;
-char midi::midi_device_type[28];
+char midi::midi_file_name[28];
 HWND midi::midi_notify_hwnd;
 int midi::midi_seq1_open, midi::midi_seq1_playing;
 
@@ -53,8 +53,8 @@ int midi::music_init(HWND hwnd)
 
 	mci_open_info.wDeviceID = 0;
 	midi_notify_hwnd = hwnd;
-	lstrcpyA(midi_device_type, pinball::get_rc_string(156, 0));
-	mci_open_info.lpstrElementName = midi_device_type;
+	lstrcpyA(midi_file_name, pinball::get_rc_string(156, 0));
+	mci_open_info.lpstrElementName = midi_file_name;
 	mci_open_info.lpstrDeviceType = nullptr;
 	auto result = mciSendCommandA(0, MCI_OPEN, MCI_OPEN_ELEMENT | MCI_NOTIFY_SUPERSEDED, (DWORD_PTR)&mci_open_info);
 	midi_seq1_open = result == 0;
