@@ -54,9 +54,9 @@ int midi::music_init(HWND hwnd)
 	mci_open_info.wDeviceID = 0;
 	midi_notify_hwnd = hwnd;
 	lstrcpyA(midi_device_type, pinball::get_rc_string(156, 0));
-	mci_open_info.lpstrElementName = nullptr;
-	mci_open_info.lpstrDeviceType = midi_device_type;
-	auto result = mciSendCommandA(0, MCI_OPEN, MCI_OPEN_TYPE | MCI_NOTIFY_SUPERSEDED, (DWORD_PTR)&mci_open_info);
+	mci_open_info.lpstrElementName = midi_device_type;
+	mci_open_info.lpstrDeviceType = nullptr;
+	auto result = mciSendCommandA(0, MCI_OPEN, MCI_OPEN_ELEMENT | MCI_NOTIFY_SUPERSEDED, (DWORD_PTR)&mci_open_info);
 	midi_seq1_open = result == 0;
 	return midi_seq1_open;
 }
