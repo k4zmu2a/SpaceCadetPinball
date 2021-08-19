@@ -2377,6 +2377,12 @@ HPSTR WaveMix::SamplesPerSecAlign(HPSTR lpInData, DWORD nInSamplesPerSec, DWORD 
 		}
 	}
 
+	// Dump raw PCM for analysis.
+	/*FILE* file;	
+	fopen_s(&file,"wav1_dump.raw", "w");
+	fwrite(dataBufBup, 1, sampleSize * dwNumSamples2, file);
+	fclose(file);*/
+
 	GlobalUnlock(GlobalHandle(lpInDataBup));
 	GlobalFree(GlobalHandle(lpInDataBup));
 	return dataBufBup;
@@ -2427,7 +2433,7 @@ void WaveMix::RepSample(HPSTR lpOutData, HPSTR lpInData, unsigned nRep, int nByt
 		{
 			auto sample = *src;
 			auto dst2 = &dst[nChannels];
-			auto delta = (src[nChannels] - src[0]) / nRep;
+			auto delta = (src[nChannels] - src[0]) / static_cast<int>(nRep);
 			*dst = *src;
 			dst++;
 			for (auto repeatIndex = nRep - 1; repeatIndex; repeatIndex--)
@@ -2447,7 +2453,7 @@ void WaveMix::RepSample(HPSTR lpOutData, HPSTR lpInData, unsigned nRep, int nByt
 		{
 			auto sample = *src;
 			auto dst2 = &dst[nChannels];
-			auto delta = (src[nChannels] - src[0]) / nRep; /*Was dst[nChannels] - */
+			auto delta = (src[nChannels] - src[0]) / static_cast<int>(nRep); /*Was dst[nChannels] - */
 			*dst = *src;
 			++dst;
 			for (auto repeatIndex2 = nRep - 1; repeatIndex2; --repeatIndex2)
