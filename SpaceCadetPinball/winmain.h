@@ -13,6 +13,7 @@ public:
 
 	static int WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nShowCmd);
 	static LRESULT CALLBACK message_handler(HWND hWnd, UINT Msg, WPARAM wParam, LPARAM lParam);
+	static int event_handler(const SDL_Event* event);
 	static void memalloc_failure();
 	static int ProcessWindowMessages();
 	static int check_expiration_date();
@@ -31,6 +32,7 @@ private:
 	static gdrv_bitmap8 gfr_display;
 	static HCURSOR mouse_hsave;
 	static bool restart;
+	static SDL_Window* MainWindow;
 
 	static HDC _BeginPaint(HWND hWnd, LPPAINTSTRUCT lpPaint);
 };

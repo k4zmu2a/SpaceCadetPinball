@@ -443,25 +443,20 @@ int TPinballTable::Message(int code, float value)
 			}
 
 			BallCount = MaxBallCount;
-			Sound::Idle();
 			ChangeBallCount(BallCount);
 			score::set(ScorePlayerNumber1, CurrentPlayer + 1);
 			score::update(ScorePlayerNumber1);
-			Sound::Idle();
 
 			for (auto scoreIndex = 4 - PlayerCount; scoreIndex > 0; scoreIndex--)
 			{
 				score::set(PlayerScores[scoreIndex].ScoreStruct, -1);
 			}
-
-			Sound::Idle();
+			
 			ScoreSpecial3Flag = 0;
 			ScoreSpecial2Flag = 0;
 			UnknownP71 = 0;
 			pinball::InfoTextBox->Clear();
-			Sound::Idle();
 			pinball::MissTextBox->Clear();
-			Sound::Idle();
 			LightGroup->Message(28, 0.2f);
 			auto time = loader::play_sound(SoundIndex1);
 			LightShowTimer = timer::set(time, this, LightShow_timeout);

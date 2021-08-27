@@ -57,11 +57,8 @@ public:
 	static int music_init(HWND hwnd);
 	static MCIERROR restart_midi_seq(LPARAM param);
 	static void music_shutdown();
-private:
-	static tagMCI_OPEN_PARMSA mci_open_info;
-	static char midi_file_name[28];
-	static HWND midi_notify_hwnd;
-	static int midi_seq1_open, midi_seq1_playing;
+private:	
+	static Mix_Music* currentMidi;
 
 	static objlist_class<midi_struct>* TrackList;
 	static midi_struct *track1, *track2, *track3, *active_track, *active_track2;

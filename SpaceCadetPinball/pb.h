@@ -16,7 +16,7 @@ public:
 	static high_score_struct highscore_table[5];
 	static bool FullTiltMode;
 
-	static int init();
+	static int init(SDL_Renderer* render);
 	static int uninit();
 	static void reset_table();
 	static void firsttime_setup();

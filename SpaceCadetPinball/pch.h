@@ -18,7 +18,14 @@
 #include <htmlhelp.h>
 #include <cstdint>
 #include <type_traits> /*For control template*/
+#include <chrono>
+#include <iostream>
+#include <iomanip>
 //#include <cstdlib>
+
+#define SDL_MAIN_HANDLED
+#include "SDL.h"
+#include <SDL_mixer.h>
 
 /*Use (void) to silent unused warnings.*/
 #define assertm(exp, msg) assert(((void)msg, exp))

@@ -42,7 +42,7 @@ public:
 	static HDC sequence_hdc;
 	static int use_wing;
 
-	static int init(HINSTANCE hInst, HWND hWnd);
+	static int init(SDL_Renderer* renderer, int width, int height);
 	static int uninit();
 	static void get_focus();
 	static BITMAPINFO* DibCreate(int16_t bpp, int width, int height);
@@ -68,8 +68,7 @@ public:
 private:
 	/*COLORONCOLOR or HALFTONE*/
 	static const int stretchMode = COLORONCOLOR;
-	static HWND hwnd;
-	static HINSTANCE hinst;
+	static SDL_Renderer* renderer;
 	static int grtext_blue;
 	static int grtext_green;
 	static int grtext_red;

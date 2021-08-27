@@ -263,3 +263,9 @@ __pycache__/
 /Export
 /DrMem
 /Doc private
+# Windows local libraries
+/Libs
+
+#CMake generated
+out/
+/cmake-build-debug

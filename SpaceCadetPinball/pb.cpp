@@ -17,6 +17,7 @@
 #include "timer.h"
 #include "winmain.h"
 #include "resource.h"
+#include "Sound.h"
 #include "TBall.h"
 #include "TDemo.h"
 #include "TEdgeSegment.h"
@@ -32,7 +33,7 @@ high_score_struct pb::highscore_table[5];
 bool pb::FullTiltMode = false;
 
 
-int pb::init()
+int pb::init(SDL_Renderer* render)
 {
 	float projMat[12], zMin = 0, zScaler = 0;
 	CHAR datFileName[300];
@@ -74,6 +75,7 @@ int pb::init()
 		zScaler = cameraInfo[2];
 	}
 
+	gdrv::init(render, resInfo->TableWidth, resInfo->TableHeight);
 	render::init(nullptr, zMin, zScaler, resInfo->TableWidth, resInfo->TableHeight);
 	gdrv::copy_bitmap(
 		&render::vscreen,
@@ -332,6 +334,7 @@ void pb::pause_continue()
 			MainTable->Message(1008, time_now);
 		pinball::InfoTextBox->Display(pinball::get_rc_string(22, 0), -1.0);
 		midi::music_stop();
+		Sound::Deactivate();
 	}
 	else
 	{
@@ -355,6 +358,7 @@ void pb::pause_continue()
 		}
 		if (options::Options.Music && !winmain::single_step)
 			midi::play_pb_theme(0);
+		Sound::Activate();
 	}
 }
 

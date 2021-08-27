@@ -11,9 +11,12 @@
 #include "resource.h"
 #include "splash.h"
 
+const double TargetFps = 60, TargetFrameTime = 1000 / TargetFps;
+
 HINSTANCE winmain::hinst = nullptr;
 HWND winmain::hwnd_frame = nullptr;
 HCURSOR winmain::mouse_hsave;
+SDL_Window* winmain::MainWindow = nullptr;
 
 int winmain::return_value = 0;
 int winmain::bQuit = 0;
@@ -36,6 +39,15 @@ gdrv_bitmap8 winmain::gfr_display{};
 char winmain::DatFileName[300]{};
 
 
+uint32_t timeGetTimeAlt()
+{
+	auto now = std::chrono::high_resolution_clock::now();
+	auto duration = now.time_since_epoch();
+	auto millis = std::chrono::duration_cast<std::chrono::milliseconds>(duration).count();	
+	return static_cast<uint32_t>(millis);
+}
+
+
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nShowCmd)
 {
 	return winmain::WinMain(hInstance, hPrevInstance, lpCmdLine, nShowCmd);
@@ -46,75 +58,20 @@ int winmain::WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLi
 	memory::init(memalloc_failure);
 	++memory::critical_allocation;
 	auto optionsRegPath = pinball::get_rc_string(165, 0);
-	options::path_init(optionsRegPath);
-	auto regSpaceCadet = pinball::get_rc_string(166, 0);
-
-	if (options::get_int(regSpaceCadet, "Table Version", 1) <= 1)
-	{
-		auto tmpBuf = memory::allocate(0x1F4u);
-		if (!tmpBuf)
-		{
-			options::path_uninit();
-			return 0;
-		}
-
-		options::set_int(regSpaceCadet, "Table Version", 1u);
-		GetModuleFileNameA(hinst, tmpBuf, 0x1F4u);
-		options::set_string(regSpaceCadet, "Table Exe", tmpBuf);
-		options::set_string(regSpaceCadet, "Table Name", pinball::get_rc_string(169, 0));
-		options::set_string(nullptr, "Last Table Played", regSpaceCadet);
-		memory::free(static_cast<void*>(tmpBuf));
-		tmpBuf = memory::allocate(0x1F4u);
-		if (tmpBuf)
-		{
-			auto tmpBuf2 = memory::allocate(0x1F4u);
-			if (tmpBuf2)
-			{
-				char Buffer[40];
-				bool setOption = false;
-				for (int i = 0; i < 32700; ++i)
-				{
-					sprintf_s(Buffer, "Table%d", i);
-					options::get_string(nullptr, Buffer, tmpBuf, "", 500);
-					if (!*tmpBuf)
-						break;
-					options::get_string(tmpBuf, "Table Name", tmpBuf2, "", 500);
-					if (!lstrcmpA(tmpBuf2, pinball::get_rc_string(169, 0)))
-					{
-						setOption = false;
-						break;
-					}
-					if (!*tmpBuf2)
-						break;
-				}
-				if (setOption)
-					options::set_string(nullptr, Buffer, regSpaceCadet);
-				memory::free(tmpBuf2);
-			}
-			memory::free(tmpBuf);
-		}
-	}
-	else
-	{
-		auto tmpBuf = memory::allocate(0x1F4u);
-		if (!tmpBuf)
-		{
-			options::path_uninit();
-			return 0;
-		}
-		options::get_string(regSpaceCadet, "Shell Exe", tmpBuf, "", 500);
-		auto execRes = WinExec(tmpBuf, 5u);
-		memory::free(tmpBuf);
-		if (execRes >= 32)
-		{
-			options::path_uninit();
-			return 0;
-		}
-	}
+	options::path_init(optionsRegPath);	
 	--memory::critical_allocation;
+
+	// SDL init
+	SDL_SetMainReady();
+	if (SDL_Init(SDL_INIT_EVERYTHING) < 0)
+	{
+		SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, "Could not initialize SDL2", SDL_GetError(), nullptr);
+		return 1;
+	}	
 
 	pinball::quickFlag = strstr(lpCmdLine, "-quick") != nullptr;
 	hinst = hInstance;
+	auto regSpaceCadet = pinball::get_rc_string(166, 0);
 	options::get_string(regSpaceCadet, "Pinball Data", DatFileName, pinball::get_rc_string(168, 0), 300);
 
 	/*Check for full tilt .dat file and switch to it automatically*/
@@ -141,38 +98,66 @@ int winmain::WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLi
 	if (check_expiration_date())
 		return 0;
 
-	INITCOMMONCONTROLSEX picce;
-	picce.dwSize = 8;
-	picce.dwICC = 5885;
-	InitCommonControlsEx(&picce);
-
-	WNDCLASSEXA wndClass{};
-	wndClass.cbSize = sizeof wndClass;
-	wndClass.style = CS_DBLCLKS | CS_BYTEALIGNCLIENT;
-	wndClass.lpfnWndProc = message_handler;
-	wndClass.cbClsExtra = 0;
-	wndClass.cbWndExtra = 0;
-	wndClass.hInstance = hInstance;
-	wndClass.hIcon = LoadIconA(hInstance, "ICON_1");
-	wndClass.hCursor = LoadCursorA(nullptr, IDC_ARROW);
-	wndClass.hbrBackground = (HBRUSH)16;
-	wndClass.lpszMenuName = "MENU_1";
-	wndClass.lpszClassName = windowClass;
 	auto splash = splash::splash_screen(hInstance, "splash_bitmap", "splash_bitmap");
-	RegisterClassExA(&wndClass);
-
 	pinball::FindShiftKeys();
 	options::init_resolution();
 
-	char windowName[40];
-	lstrcpyA(windowName, pinball::get_rc_string(38, 0));
-	windowHandle = CreateWindowExA(0, windowClass, windowName, WndStyle, 0, 0, 640, 480, nullptr, nullptr, hInstance,
-	                               nullptr);
-	hwnd_frame = windowHandle;
-	if (!windowHandle)
+	// SDL window
+	SDL_Window* window = SDL_CreateWindow
+	(
+		pinball::get_rc_string(38, 0),
+		SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED,
+		800, 600,
+		SDL_WINDOW_HIDDEN | SDL_WINDOW_RESIZABLE
+	);
+	MainWindow = window;
+	if (!window)
 	{
-		PostQuitMessage(0);
-		return 0;
+		SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, "Could not create window", SDL_GetError(), nullptr);
+		return 1;
+	}
+
+	SDL_Renderer* renderer = SDL_CreateRenderer
+	(
+		window,
+		-1,
+		SDL_RENDERER_ACCELERATED
+	);
+	if (!renderer)
+	{
+		SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, "Could not create renderer", SDL_GetError(), window);
+		return 1;
+	}
+
+	// PB init from message handler
+	{
+		RECT rect{};
+		++memory::critical_allocation;
+
+		auto prevCursor = SetCursor(LoadCursorA(nullptr, IDC_WAIT));
+
+		auto voiceCount = options::get_int(nullptr, "Voices", 8);
+		if (!Sound::Init(voiceCount))
+			options::menu_set(Menu1_Sounds, 0);
+		Sound::Activate();
+
+		if (!pinball::quickFlag && !midi::music_init((HWND)window))
+			options::menu_set(Menu1_Music, 0);
+
+		if (pb::init(renderer))
+			_exit(0);
+		SetCursor(prevCursor);
+		auto changeDisplayFg = options::get_int(nullptr, "Change Display", 1);
+		auto menuHandle = GetMenu((HWND)window);
+
+		GetWindowRect(GetDesktopWindow(), &rect);
+		int width = rect.right - rect.left;
+		int height = rect.bottom - rect.top;
+		pb::window_size(&width, &height);
+		fullscrn::init(width, height, options::Options.FullScreen, (HWND)window, menuHandle,
+		               changeDisplayFg);
+
+		--memory::critical_allocation;
 	}
 
 	auto menuHandle = GetMenu(windowHandle);
@@ -186,9 +171,8 @@ int winmain::WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLi
 		options::menu_check(Menu1_Full_Screen, 1);
 	}
 
-	ShowWindow(hwnd_frame, nShowCmd);
+	SDL_ShowWindow(window);
 	fullscrn::set_screen_mode(options::Options.FullScreen);
-	UpdateWindow(hwnd_frame);
 
 	if (splash)
 	{
@@ -197,9 +181,9 @@ int winmain::WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLi
 	}
 
 	pinball::adjust_priority(options::Options.PriorityAdj);
-	const auto startTime = timeGetTime();
+	const auto startTime = timeGetTimeAlt();
 	MSG wndMessage{};
-	while (timeGetTime() >= startTime && timeGetTime() - startTime < 0) // Don't wait for now, was 2000
+	while (timeGetTimeAlt() >= startTime && timeGetTimeAlt() - startTime < 0) // Don't wait for now, was 2000
 		PeekMessageA(&wndMessage, hwnd_frame, 0, 0, 1u);
 
 	if (strstr(lpCmdLine, "-demo"))
@@ -207,21 +191,27 @@ int winmain::WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLi
 	else
 		pb::replay_level(0);
 
-	DWORD someTimeCounter = 300u, prevTime = 0u;
-	then = timeGetTime();
+	DWORD updateCounter = 300u, frameCounter = 0, prevTime = 0u;
+	then = timeGetTimeAlt();
+
+	double sdlTimerResMs = 1000.0 / static_cast<double>(SDL_GetPerformanceFrequency());	
+	auto frameStart = static_cast<double>(SDL_GetPerformanceCounter());
 	while (true)
-	{
-		if (!someTimeCounter)
+	{		
+		if (!updateCounter)
 		{
-			someTimeCounter = 300;
+			updateCounter = 300;
 			if (DispFrameRate)
 			{
-				auto curTime = timeGetTime();
+				auto curTime = timeGetTimeAlt();
 				if (prevTime)
 				{
 					char buf[60];
-					sprintf_s(buf, "Frames/sec = %02.02f", 300.0f / (static_cast<float>(curTime - prevTime) * 0.001f));
-					SetWindowTextA(hwnd_frame, buf);
+					auto elapsedSec = static_cast<float>(curTime - prevTime) * 0.001f;
+					sprintf_s(buf, "Updates/sec = %02.02f Frames/sec = %02.02f ",
+						300.0f / elapsedSec, frameCounter / elapsedSec);
+					SDL_SetWindowTitle(window, buf);
+					frameCounter = 0;
 
 					if (DispGRhistory)
 					{
@@ -256,8 +246,7 @@ int winmain::WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLi
 				prevTime = 0;
 			}
 		}
-
-		Sound::Idle();
+		
 		if (!ProcessWindowMessages() || bQuit)
 			break;
 
@@ -265,22 +254,18 @@ int winmain::WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLi
 		{
 			if (mouse_down)
 			{
-				now = timeGetTime();
+				now = timeGetTimeAlt();
 				if (now - then >= 2)
 				{
-					/*last_mouse_n is in client coordinates*/
-					POINT Point;
-					GetCursorPos(&Point);
-					ScreenToClient(hwnd_frame, &Point);
-					pb::ballset(last_mouse_x - Point.x, Point.y - last_mouse_y);
-					Point = POINT{last_mouse_x, last_mouse_y};
-					ClientToScreen(hwnd_frame, &Point);
-					SetCursorPos(Point.x, Point.y);
+					int x, y;
+					SDL_GetMouseState(&x, &y);
+					pb::ballset(last_mouse_x - x, y - last_mouse_y);
+					SDL_WarpMouseInWindow(window, last_mouse_x, last_mouse_y);
 				}
 			}
 			if (!single_step)
 			{
-				auto curTime = timeGetTime();
+				auto curTime = timeGetTimeAlt();
 				now = curTime;
 				if (no_time_loss)
 				{
@@ -302,10 +287,20 @@ int winmain::WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLi
 						{
 							fillChar = -7;
 						}
-						gdrv::fill_bitmap(&gfr_display, 1, 10, 299 - someTimeCounter, 0, fillChar);
+						gdrv::fill_bitmap(&gfr_display, 1, 10, 299 - updateCounter, 0, fillChar);
 					}
-					--someTimeCounter;
+					--updateCounter;
 					then = now;
+
+					auto frameEnd =  static_cast<double>(SDL_GetPerformanceCounter());
+					auto elapsedMs = (frameEnd - frameStart) * sdlTimerResMs;
+					if (elapsedMs >= TargetFrameTime)
+					{
+						// Keep track of remainder, limited to one frame time.
+						frameStart = frameEnd - min(elapsedMs - TargetFrameTime, TargetFrameTime) / sdlTimerResMs;
+						SDL_RenderPresent(renderer);
+						frameCounter++;												
+					}
 				}
 			}
 		}
@@ -390,17 +385,17 @@ LRESULT CALLBACK winmain::message_handler(HWND hWnd, UINT Msg, WPARAM wParam, LP
 				++memory::critical_allocation;
 
 				auto prevCursor = SetCursor(LoadCursorA(nullptr, IDC_WAIT));
-				gdrv::init(hinst, hWnd);
+				gdrv::init(nullptr,0,0);
 
 				auto voiceCount = options::get_int(nullptr, "Voices", 8);
-				if (!Sound::Init(hinst, voiceCount, nullptr))
+				if (!Sound::Init(voiceCount))
 					options::menu_set(Menu1_Sounds, 0);
 				Sound::Activate();
 
 				if (!pinball::quickFlag && !midi::music_init(hWnd))
 					options::menu_set(Menu1_Music, 0);
 
-				if (pb::init())
+				if (pb::init(nullptr))
 					_exit(0);
 				SetCursor(prevCursor);
 				auto changeDisplayFg = options::get_int(nullptr, "Change Display", 1);
@@ -725,33 +720,187 @@ LRESULT CALLBACK winmain::message_handler(HWND hWnd, UINT Msg, WPARAM wParam, LP
 	return DefWindowProcA(hWnd, Msg, wParam, lParam);
 }
 
+int winmain::event_handler(const SDL_Event* event)
+{
+	switch (event->type)
+	{
+	case SDL_QUIT:
+		end_pause();
+		bQuit = 1;
+		PostQuitMessage(0);
+		fullscrn::shutdown();
+		return_value = 0;
+		return 0;
+	case SDL_KEYUP:
+		pb::keyup(event->key.keysym.sym);
+		break;
+	case SDL_KEYDOWN:
+		if (!event->key.repeat)
+			pb::keydown(event->key.keysym.sym);
+		switch (event->key.keysym.sym)
+		{
+		case SDLK_ESCAPE:
+			if (options::Options.FullScreen)
+				options::toggle(Menu1_Full_Screen);
+			SDL_MinimizeWindow(MainWindow);
+			break;
+		case SDLK_F1:
+			help_introduction(hinst, (HWND)MainWindow);
+			break;
+		case SDLK_F2:
+			new_game();
+			break;
+		case SDLK_F3:
+			pause();
+			break;
+		case SDLK_F4:
+			options::toggle(Menu1_Full_Screen);
+			break;
+		case SDLK_F5:
+			options::toggle(Menu1_Sounds);
+			break;
+		case SDLK_F6:
+			options::toggle(Menu1_Music);
+			break;
+		case SDLK_F8:
+			if (!single_step)
+				pause();
+			options::keyboard();
+			break;
+		default:
+			break;
+		}
+
+		if (!pb::cheat_mode)
+			break;
+
+		switch (event->key.keysym.sym)
+		{
+		case SDLK_h:
+			DispGRhistory = 1;
+			break;
+		case SDLK_y:
+			SDL_SetWindowTitle(MainWindow, "Pinball");
+			DispFrameRate = DispFrameRate == 0;
+			break;
+		case SDLK_F1:
+			pb::frame(10);
+			break;
+		case SDLK_F10:
+			single_step = single_step == 0;
+			if (single_step == 0)
+				no_time_loss = 1;
+			break;
+		default:
+			break;
+		}
+		break;
+	case SDL_MOUSEBUTTONDOWN:
+		switch (event->button.button)
+		{
+		case SDL_BUTTON_LEFT:
+			if (pb::cheat_mode)
+			{
+				mouse_down = 1;
+				last_mouse_x = event->button.x;
+				last_mouse_y = event->button.y;
+				SDL_ShowCursor(SDL_DISABLE);
+				SDL_SetWindowGrab(MainWindow, SDL_TRUE);
+			}
+			else
+				pb::keydown(options::Options.LeftFlipperKey);
+			break;
+		case SDL_BUTTON_RIGHT:
+			if (!pb::cheat_mode)
+				pb::keydown(options::Options.RightFlipperKey);
+			break;
+		case SDL_BUTTON_MIDDLE:
+			pb::keydown(options::Options.PlungerKey);
+			break;
+		default:
+			break;
+		}
+		break;
+	case SDL_MOUSEBUTTONUP:
+		switch (event->button.button)
+		{
+		case SDL_BUTTON_LEFT:
+			if (mouse_down)
+			{
+				mouse_down = 0;				
+				SDL_ShowCursor(SDL_ENABLE);
+				SDL_SetWindowGrab(MainWindow, SDL_FALSE);
+			}
+			if (!pb::cheat_mode)
+				pb::keyup(options::Options.LeftFlipperKey);
+			break;
+		case SDL_BUTTON_RIGHT:
+			if (!pb::cheat_mode)
+				pb::keyup(options::Options.RightFlipperKey);
+			break;
+		case SDL_BUTTON_MIDDLE:
+			pb::keyup(options::Options.PlungerKey);
+			break;
+		default:
+			break;
+		}
+		break;
+	case SDL_WINDOWEVENT:
+		switch (event->window.event)
+		{
+		case SDL_WINDOWEVENT_FOCUS_GAINED:
+		case SDL_WINDOWEVENT_TAKE_FOCUS:
+		case SDL_WINDOWEVENT_EXPOSED:
+		case SDL_WINDOWEVENT_SHOWN:
+			activated = 1;
+			Sound::Activate();
+			if (options::Options.Music && !single_step)
+				midi::play_pb_theme(0);
+			no_time_loss = 1;
+			pinball::adjust_priority(options::Options.PriorityAdj);
+			has_focus = 1;
+			gdrv::get_focus();
+			fullscrn::force_redraw();
+			pb::paint();
+			break;
+		case SDL_WINDOWEVENT_FOCUS_LOST:
+		case SDL_WINDOWEVENT_HIDDEN:
+			activated = 0;
+			fullscrn::activate(0);
+			options::menu_check(Menu1_Full_Screen, 0);
+			options::Options.FullScreen = 0;
+			SetThreadPriority(GetCurrentThread(), 0);
+			Sound::Deactivate();
+			midi::music_stop();
+			has_focus = 0;
+			gdrv::get_focus();
+			pb::loose_focus();
+			break;
+		default: ;
+		}
+		break;
+	default: ;
+	}
+
+	return 1;
+}
+
 int winmain::ProcessWindowMessages()
 {
-	MSG Msg{};
-
+	SDL_Event event;
 	if (has_focus && !single_step)
 	{
-		while (PeekMessageA(&Msg, nullptr, 0, 0, 1u))
+		while (SDL_PollEvent(&event))
 		{
-			TranslateMessage(&Msg);
-			DispatchMessageA(&Msg);
-			if (Msg.message == 18)
-			{
-				return_value = static_cast<int>(Msg.wParam);
+			if (!event_handler(&event))
 				return 0;
-			}
 		}
+
 		return 1;
 	}
-	GetMessageA(&Msg, hwnd_frame, 0, 0);
-	TranslateMessage(&Msg);
-	DispatchMessageA(&Msg);
-	if (Msg.message == 18)
-	{
-		return_value = static_cast<int>(Msg.wParam);
-		return 0;
-	}
-	return 1;
+
+	SDL_WaitEvent(&event);
+	return event_handler(&event);
 }
 
 void winmain::memalloc_failure()
@@ -842,7 +991,7 @@ void winmain::help_introduction(HINSTANCE a1, HWND a2)
 			options::get_string(pinball::get_rc_string(166, 0), "HelpFile", buf1, buf1, 500);
 			lstrcpyA(buf2, buf1);
 			memory::free(buf1);
-			HtmlHelpA(GetDesktopWindow(), buf2, 0, 0);
+			//HtmlHelpA(GetDesktopWindow(), buf2, 0, 0);
 			memory::free(buf2);
 		}
 		else

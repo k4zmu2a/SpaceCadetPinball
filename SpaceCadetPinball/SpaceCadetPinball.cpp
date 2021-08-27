@@ -25,7 +25,7 @@ int main()
 	}
 
 	std::cout << "Hello World!\n";
-	gdrv::init(nullptr, nullptr);
+	gdrv::init(nullptr,0,0);
 	auto dib = gdrv::DibCreate(8, 1, 1);
 	gdrv::DibSetUsage(dib, nullptr, 1);
 
@@ -39,7 +39,7 @@ int main()
 	auto xx = sizeof(datFileHeader);
 
 	lstrcpyA(winmain::DatFileName, "PINBALL.DAT");
-	pb::init();
+	pb::init(nullptr);
 	auto datFile = pb::record_table;
 
 	assert(partman::field_size_nth(datFile, 0, datFieldTypes::String, 0) == 43);

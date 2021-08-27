@@ -639,9 +639,9 @@ void control::pbctrl_bdoor_controller(int key)
 
 	if (!control_lite198_tag.Component->MessageField)
 	{
-		if (key <= 'M')
+		if (key <= 'm')
 		{
-			if (key == 'M')
+			if (key == 'm')
 			{
 				v2 = pbctrl_state;
 				if (pbctrl_state == 4 || pbctrl_state == 61 || pbctrl_state == 81 || pbctrl_state == 101)
@@ -650,9 +650,9 @@ void control::pbctrl_bdoor_controller(int key)
 			}
 			else
 			{
-				if (key <= 'D')
+				if (key <= 'd')
 				{
-					if (key != 'D')
+					if (key != 'd')
 					{
 						if (key == ' ')
 						{
@@ -665,11 +665,11 @@ void control::pbctrl_bdoor_controller(int key)
 						}
 						if (key != '1')
 						{
-							if (key != 'A')
+							if (key != 'a')
 							{
-								if (key != 'B')
+								if (key != 'b')
 								{
-									if (key == 'C')
+									if (key == 'c')
 									{
 										if (!pbctrl_state)
 										{
@@ -704,17 +704,17 @@ void control::pbctrl_bdoor_controller(int key)
 					++pbctrl_state;
 					return;
 				}
-				if (key != 'E')
+				if (key != 'e')
 				{
 					switch (key)
 					{
-					case 'G':
+					case 'g':
 						v1 = pbctrl_state != 0 ? 0 : 101;
 						break;
-					case 'H':
+					case 'h':
 						v1 = pbctrl_state != 0 ? 0 : 21;
 						break;
-					case 'I':
+					case 'i':
 						v2 = pbctrl_state;
 						if (pbctrl_state == 1 || pbctrl_state == 10)
 							goto LABEL_87;
@@ -732,9 +732,9 @@ void control::pbctrl_bdoor_controller(int key)
 			}
 			goto LABEL_86;
 		}
-		if (key <= 'S')
+		if (key <= 's')
 		{
-			if (key == 'S')
+			if (key == 's')
 			{
 				v2 = pbctrl_state;
 				if (pbctrl_state == 12 || pbctrl_state == 29)
@@ -743,13 +743,13 @@ void control::pbctrl_bdoor_controller(int key)
 			}
 			else
 			{
-				if (key != 'N')
+				if (key != 'n')
 				{
-					if (key != 'O')
+					if (key != 'o')
 					{
-						if (key != 'Q')
+						if (key != 'q')
 						{
-							if (key == 'R')
+							if (key == 'r')
 							{
 								if (!pbctrl_state)
 								{
@@ -789,7 +789,7 @@ void control::pbctrl_bdoor_controller(int key)
 		}
 		switch (key)
 		{
-		case 'T':
+		case 't':
 			v2 = pbctrl_state;
 			if (pbctrl_state != 30)
 			{
@@ -800,14 +800,14 @@ void control::pbctrl_bdoor_controller(int key)
 			}
 			pb::cheat_mode = 1;
 			break;
-		case 'U':
+		case 'u':
 			if (pbctrl_state == 41)
 			{
 				pbctrl_state = 42;
 				return;
 			}
 			goto LABEL_77;
-		case 'X':
+		case 'x':
 			if (pbctrl_state == 63)
 			{
 				table_add_extra_ball(2.0);

@@ -28,9 +28,9 @@ Compile with Visual Studio; tested with 2017 and 2019.
  * ~~Resizable window, scaled graphics~~
  * ~~Loader for high-res sprites from CADET.DAT~~
  * Misc features of Full Tilt: 3 music tracs, multiball, centered textboxes, etc.
- * Maybe: cross-platform port
-   * Needs UI framework with menu bar and dialog windows, like QT or Avalonia
-   * Needs a way play sounds and midi
+ * Cross-platform port
+   * Using SDL2, SDL2_mixer, ImGui
+   * Maybe: Android port
  * Maybe x2: support for other two tables 
    * Table specific BL (control interactions and missions) is hardcoded, othere parts might be also patched
 

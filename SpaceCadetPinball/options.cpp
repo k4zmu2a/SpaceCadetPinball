@@ -76,18 +76,18 @@ void options::init(HMENU menuHandle)
 	Options.FullScreen = 0;
 	Options.Average = 5;
 	Options.PriorityAdj = 2;
-	Options.LeftFlipperKeyDft = 90;
-	Options.RightFlipperKeyDft = 191;
-	Options.PlungerKeyDft = 32;
-	Options.LeftTableBumpKeyDft = 88;
-	Options.RightTableBumpKeyDft = 190;
-	Options.BottomTableBumpKeyDft = 38;
-	pinball::get_rc_int(159, &Options.LeftFlipperKeyDft);
+	Options.LeftFlipperKeyDft = SDLK_z;
+	Options.RightFlipperKeyDft = SDLK_SLASH;
+	Options.PlungerKeyDft = SDLK_SPACE;
+	Options.LeftTableBumpKeyDft = SDLK_x;
+	Options.RightTableBumpKeyDft = SDLK_GREATER;
+	Options.BottomTableBumpKeyDft = SDLK_UP;
+	/*pinball::get_rc_int(159, &Options.LeftFlipperKeyDft);
 	pinball::get_rc_int(160, &Options.RightFlipperKeyDft);
 	pinball::get_rc_int(161, &Options.PlungerKeyDft);
 	pinball::get_rc_int(162, &Options.LeftTableBumpKeyDft);
 	pinball::get_rc_int(163, &Options.RightTableBumpKeyDft);
-	pinball::get_rc_int(164, &Options.BottomTableBumpKeyDft);
+	pinball::get_rc_int(164, &Options.BottomTableBumpKeyDft);*/
 	Options.LeftFlipperKey = Options.LeftFlipperKeyDft;
 	Options.RightFlipperKey = Options.RightFlipperKeyDft;
 	Options.PlungerKey = Options.PlungerKeyDft;
@@ -95,7 +95,7 @@ void options::init(HMENU menuHandle)
 	Options.RightTableBumpKey = Options.RightTableBumpKeyDft;
 	Options.Players = 1;
 	Options.BottomTableBumpKey = Options.BottomTableBumpKeyDft;
-	Options.Sounds = get_int(nullptr, "Sounds", Options.Sounds);
+	/*Options.Sounds = get_int(nullptr, "Sounds", Options.Sounds);
 	Options.Music = get_int(nullptr, "Music", Options.Music);
 	Options.Average = get_int(nullptr, "Average", Options.Average);
 	Options.FullScreen = get_int(nullptr, "FullScreen", Options.FullScreen);
@@ -107,7 +107,7 @@ void options::init(HMENU menuHandle)
 	Options.LeftTableBumpKey = get_int(nullptr, "Left Table Bump key", Options.LeftTableBumpKey);
 	Options.RightTableBumpKey = get_int(nullptr, "Right Table Bump key", Options.RightTableBumpKey);
 	Options.BottomTableBumpKey = get_int(nullptr, "Bottom Table Bump key", Options.BottomTableBumpKey);
-	Options.UniformScaling = get_int(nullptr, "Uniform scaling", true);
+	Options.UniformScaling = get_int(nullptr, "Uniform scaling", true);*/
 	menu_check(Menu1_Sounds, Options.Sounds);
 	Sound::Enable(0, 7, Options.Sounds);
 	menu_check(Menu1_Music, Options.Music);
@@ -137,7 +137,7 @@ void options::init(HMENU menuHandle)
 
 void options::uninit()
 {
-	set_int(nullptr, "Sounds", Options.Sounds);
+	/*set_int(nullptr, "Sounds", Options.Sounds);
 	set_int(nullptr, "Music", Options.Music);
 	set_int(nullptr, "FullScreen", Options.FullScreen);
 	set_int(nullptr, "Players", Options.Players);
@@ -148,7 +148,7 @@ void options::uninit()
 	set_int(nullptr, "Right Table Bump key", Options.RightTableBumpKey);
 	set_int(nullptr, "Bottom Table Bump key", Options.BottomTableBumpKey);
 	set_int(nullptr, "Screen Resolution", Options.Resolution);
-	set_int(nullptr, "Uniform scaling", Options.UniformScaling);
+	set_int(nullptr, "Uniform scaling", Options.UniformScaling);*/
 }
 
 void options::path_init(LPCSTR regPath)

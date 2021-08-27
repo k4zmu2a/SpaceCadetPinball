@@ -7,8 +7,7 @@
 #include "winmain.h"
 
 HPALETTE gdrv::palette_handle = nullptr;
-HINSTANCE gdrv::hinst;
-HWND gdrv::hwnd;
+SDL_Renderer* gdrv::renderer;
 int gdrv::sequence_handle;
 HDC gdrv::sequence_hdc;
 int gdrv::use_wing = 0;
@@ -16,13 +15,26 @@ int gdrv::grtext_blue = 0;
 int gdrv::grtext_green = 0;
 int gdrv::grtext_red = -1;
 
+HWND hwnd = 0;
+SDL_Texture* vScreenTex = nullptr;
+char* pixels = nullptr;
+int Width, Height;
+LOGPALETTEx256 current_palette{};
 
-int gdrv::init(HINSTANCE hInst, HWND hWnd)
+int gdrv::init(SDL_Renderer* render, int width, int height)
 {
-	LOGPALETTEx256 current_palette{};
-
-	hinst = hInst;
-	hwnd = hWnd;
+	renderer = render;
+	vScreenTex = SDL_CreateTexture
+	(
+		renderer,
+		SDL_PIXELFORMAT_ARGB8888,
+		SDL_TEXTUREACCESS_STREAMING,
+		width, height
+	);
+	pixels = memory::allocate(width * height * 4);
+	Width = width;
+	Height = height;
+	
 	if (!palette_handle)
 		palette_handle = CreatePalette(&current_palette);
 	return 0;
@@ -32,6 +44,7 @@ int gdrv::uninit()
 {
 	if (palette_handle)
 		DeleteObject(palette_handle);
+	memory::free(pixels);
 	return 0;
 }
 
@@ -185,11 +198,8 @@ int gdrv::create_spliced_bitmap(gdrv_bitmap8* bmp, int width, int height, int si
 	return 0;
 }
 
-
 int gdrv::display_palette(PALETTEENTRY* plt)
 {
-	LOGPALETTEx256 current_palette{};
-
 	if (palette_handle)
 		DeleteObject(palette_handle);
 	palette_handle = CreatePalette(&current_palette);
@@ -212,9 +222,9 @@ int gdrv::display_palette(PALETTEENTRY* plt)
 	{
 		if (plt)
 		{
-			pltDst->peRed = pltSrc->peBlue;
+			pltDst->peRed = pltSrc->peRed;
 			pltDst->peGreen = pltSrc->peGreen;
-			pltDst->peBlue = pltSrc->peRed;
+			pltDst->peBlue = pltSrc->peBlue;
 		}
 		pltDst->peFlags = 4;
 		pltSrc++;
@@ -426,7 +436,7 @@ int gdrv::StretchDIBitsScaled(HDC hdc, int xDest, int yDest, int DestWidth, int 
 {
 	/*Scaled partial updates may leave 1px border artifacts around update area.
 	 * Pad update area to compensate.*/
-	const int pad = 1, padX2 = pad * 2;
+	/*const int pad = 1, padX2 = pad * 2;
 	if (fullscrn::ScaleX > 1 && xSrc > pad && xSrc + pad < bmp->Width)
 	{
 		xSrc -= pad;
@@ -443,7 +453,7 @@ int gdrv::StretchDIBitsScaled(HDC hdc, int xDest, int yDest, int DestWidth, int 
 		DestHeight += padX2;
 	}
 
-	return StretchDIBits(
+	StretchDIBits(
 		hdc,
 		static_cast<int>(round(xDest * fullscrn::ScaleX + fullscrn::OffsetX)),
 		static_cast<int>(round(yDest * fullscrn::ScaleY + fullscrn::OffsetY)),
@@ -456,5 +466,60 @@ int gdrv::StretchDIBitsScaled(HDC hdc, int xDest, int yDest, int DestWidth, int 
 		bmp->BmpBufPtr1,
 		bmp->Dib,
 		iUsage,
-		rop);
+		rop);*/
+
+	//auto srcPtr = reinterpret_cast<uint8_t*>(bmp->BmpBufPtr1);
+	//auto dstPtr = reinterpret_cast<uint32_t*>(pixels);
+	//for (int y = Height; y > 0; --y)
+	//{
+	//	for (int x = Width; x > 0; --x)
+	//		*dstPtr++ = *(uint32_t*)&current_palette.palPalEntry[*srcPtr++];
+
+	//	//srcPtr += srcBmp->Stride - width;
+	//	//dstPtr += dstBmp->Stride - width;
+	//}
+
+	// Clamp out of bounds rectangles
+	ySrc = max(0, min(ySrc, bmp->Height));
+	xSrc = max(0, min(xSrc, bmp->Height));
+	if (ySrc + SrcHeight > Height)
+		SrcHeight = Height - ySrc;
+	if (xSrc + SrcWidth > Width)
+		SrcWidth = Width - xSrc;
+
+	auto srcPtr = reinterpret_cast<uint8_t*>(&bmp->BmpBufPtr1[bmp->Stride * (ySrc)+xSrc]);
+	auto dstPtr = &reinterpret_cast<uint32_t*>(pixels)[Width * (ySrc)+xSrc];
+	for (int y = SrcHeight; y > 0; --y)
+	{
+		for (int x = SrcWidth; x > 0; --x)
+		{
+			if ((char*)dstPtr >= (pixels + Width * Height * 4) || (char*)srcPtr >= (bmp->BmpBufPtr1 + bmp->Stride * bmp->Width))
+			{
+				dstPtr = dstPtr;
+			}
+
+			*dstPtr++ = *(uint32_t*)&current_palette.palPalEntry[*srcPtr++];
+		}
+
+		srcPtr += bmp->Stride - SrcWidth;
+		dstPtr += Width - SrcWidth;
+	}
+
+	unsigned char* lockedPixels = nullptr;
+	int pitch = 0;
+	SDL_LockTexture
+	(
+		vScreenTex,
+		nullptr,
+		reinterpret_cast<void**>(&lockedPixels),
+		&pitch
+	);
+	std::memcpy(lockedPixels, pixels, Width * Height * 4);
+	SDL_UnlockTexture(vScreenTex);
+
+	SDL_Rect dstRect
+	{ xDest,yDest,Width,Height };
+	SDL_RenderCopyEx(renderer, vScreenTex, nullptr, nullptr, 0, 0, SDL_FLIP_VERTICAL);
+
+	return 0;
 }

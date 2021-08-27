@@ -66,7 +66,7 @@ void fullscrn::init(int width, int height, int isFullscreen, HWND winHandle, HME
 	fullscrn_flag1 = 0;
 
 	window_size_changed();
-	assertm(ScaleX == 1 && ScaleY == 1, "Wrong default client size");
+	//assertm(ScaleX == 1 && ScaleY == 1, "Wrong default client size");
 }
 
 void fullscrn::shutdown()

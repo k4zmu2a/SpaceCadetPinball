@@ -5,10 +5,7 @@
 #include "pb.h"
 #include "pinball.h"
 
-tagMCI_OPEN_PARMSA midi::mci_open_info;
-char midi::midi_file_name[28];
-HWND midi::midi_notify_hwnd;
-int midi::midi_seq1_open, midi::midi_seq1_playing;
+Mix_Music* midi::currentMidi;
 
 MCIERROR midi::play_pb_theme(int flag)
 {
@@ -17,17 +14,11 @@ MCIERROR midi::play_pb_theme(int flag)
 		return play_ft(track1);
 	}
 
-	MCI_PLAY_PARMS playParams;
 	MCIERROR result = 0;
-
 	music_stop();
-	playParams.dwFrom = 0;
-	playParams.dwCallback = (DWORD_PTR)midi_notify_hwnd;
-	if (!flag && midi_seq1_open)
-	{
-		result = mciSendCommandA(mci_open_info.wDeviceID, MCI_PLAY, MCI_FROM | MCI_NOTIFY, (DWORD_PTR)&playParams);
-		midi_seq1_playing = result == 0;
-	}
+	if (currentMidi)
+		result = Mix_PlayMusic(currentMidi, -1);
+
 	return result;
 }
 
@@ -37,11 +28,8 @@ MCIERROR midi::music_stop()
 	{
 		return stop_ft();
 	}
-
-	MCIERROR result = 0;
-	if (midi_seq1_playing)
-		result = mciSendCommandA(mci_open_info.wDeviceID, MCI_STOP, 0, 0);
-	return result;
+	
+	return Mix_HaltMusic();
 }
 
 int midi::music_init(HWND hwnd)
@@ -50,15 +38,9 @@ int midi::music_init(HWND hwnd)
 	{
 		return music_init_ft(hwnd);
 	}
-
-	mci_open_info.wDeviceID = 0;
-	midi_notify_hwnd = hwnd;
-	lstrcpyA(midi_file_name, pinball::get_rc_string(156, 0));
-	mci_open_info.lpstrElementName = midi_file_name;
-	mci_open_info.lpstrDeviceType = nullptr;
-	auto result = mciSendCommandA(0, MCI_OPEN, MCI_OPEN_ELEMENT | MCI_NOTIFY_SUPERSEDED, (DWORD_PTR)&mci_open_info);
-	midi_seq1_open = result == 0;
-	return midi_seq1_open;
+	
+	currentMidi = Mix_LoadMUS(pinball::get_rc_string(156, 0));
+	return currentMidi != nullptr;
 }
 
 MCIERROR midi::restart_midi_seq(LPARAM param)
@@ -68,13 +50,11 @@ MCIERROR midi::restart_midi_seq(LPARAM param)
 		return play_ft(active_track);
 	}
 
-	MCI_PLAY_PARMS playParams;
 	MCIERROR result = 0;
+	music_stop();
+	if (currentMidi)
+		result = Mix_PlayMusic(currentMidi, -1);
 
-	playParams.dwFrom = 0;
-	playParams.dwCallback = (DWORD_PTR)midi_notify_hwnd;
-	if (midi_seq1_playing)
-		result = mciSendCommandA(mci_open_info.wDeviceID, MCI_PLAY, MCI_FROM | MCI_NOTIFY, (DWORD_PTR)&playParams);
 	return result;
 }
 
@@ -86,9 +66,7 @@ void midi::music_shutdown()
 		return;
 	}
 
-	if (midi_seq1_open)
-		mciSendCommandA(mci_open_info.wDeviceID, MCI_CLOSE, 0, 0);
-	midi_seq1_open = 0;
+	Mix_FreeMusic(currentMidi);
 }
 
 
@@ -98,7 +76,6 @@ int midi::some_flag1;
 
 int midi::music_init_ft(HWND hwnd)
 {
-	midi_notify_hwnd = hwnd;
 	active_track = nullptr;
 	TrackList = new objlist_class<midi_struct>(0, 1);
 
@@ -423,7 +400,7 @@ int midi::stream_open(midi_struct* midi, char flags)
 	if (midi->Magic != mmioFOURCC('M', 'D', 'S', 'I'))
 		return 6;
 
-	UINT puDeviceID = -1;
+	/*UINT puDeviceID = -1;
 	auto steamOpenedFg = !midi->StreamHandle;
 	MIDIPROPTIMEDIV propdata{8, midi->DwTimeFormat};
 	if (steamOpenedFg &&
@@ -463,15 +440,15 @@ int midi::stream_open(midi_struct* midi, char flags)
 	{
 		if (midi->StreamHandle)
 			stream_close(midi);
-	}
+	}*/
 	return returnCode;
 }
 
 int midi::stream_close(midi_struct* midi)
 {
-	int returnCode;
+	int returnCode = 0;
 
-	if (midi->Magic != mmioFOURCC('M', 'D', 'S', 'I'))
+	/*if (midi->Magic != mmioFOURCC('M', 'D', 'S', 'I'))
 		return 6;
 	if (!midi->StreamHandle)
 		return 7;
@@ -493,7 +470,7 @@ int midi::stream_close(midi_struct* midi)
 		returnCode = 0;
 		midi->StreamHandle = nullptr;
 		midi->SomeFlag2 = 0;
-	}
+	}*/
 	return returnCode;
 }
 
@@ -503,8 +480,8 @@ void midi::midi_callback(HMIDIOUT hmo, UINT wMsg, DWORD_PTR dwInstance, DWORD_PT
 	{
 		auto mhdr = reinterpret_cast<LPMIDIHDR>(dwParam1);
 		auto midi = reinterpret_cast<midi_struct*>(mhdr->dwUser);
-		if ((midi->SomeFlag2 & 2) == 0 || (midi->SomeFlag2 & 1) != 0 || midiStreamOut(
+		/*if ((midi->SomeFlag2 & 2) == 0 || (midi->SomeFlag2 & 1) != 0 || midiStreamOut(
 			midi->StreamHandle, mhdr, sizeof(MIDIHDR)))
-			--midi->PreparedBlocksCount;
+			--midi->PreparedBlocksCount;*/
 	}
 }
