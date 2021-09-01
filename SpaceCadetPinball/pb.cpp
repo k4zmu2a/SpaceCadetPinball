@@ -33,7 +33,7 @@ high_score_struct pb::highscore_table[5];
 bool pb::FullTiltMode = false;
 
 
-int pb::init(SDL_Renderer* render)
+int pb::init()
 {
 	float projMat[12], zMin = 0, zScaler = 0;
 	CHAR datFileName[300];
@@ -52,7 +52,7 @@ int pb::init(SDL_Renderer* render)
 	if (!record_table)
 		return 1;
 
-	auto plt = (PALETTEENTRY*)partman::field_labeled(record_table, "background", datFieldTypes::Palette);
+	auto plt = (ColorRgba*)partman::field_labeled(record_table, "background", datFieldTypes::Palette);
 	gdrv::display_palette(plt);
 
 	auto backgroundBmp = (gdrv_bitmap8*)partman::field_labeled(record_table, "background", datFieldTypes::Bitmap8bit);
@@ -75,7 +75,7 @@ int pb::init(SDL_Renderer* render)
 		zScaler = cameraInfo[2];
 	}
 
-	gdrv::init(render, resInfo->TableWidth, resInfo->TableHeight);
+	gdrv::init(resInfo->TableWidth, resInfo->TableHeight);
 	render::init(nullptr, zMin, zScaler, resInfo->TableWidth, resInfo->TableHeight);
 	gdrv::copy_bitmap(
 		&render::vscreen,
@@ -448,7 +448,7 @@ void pb::keydown(int key)
 	{
 		switch (key)
 		{
-		case 'B':
+		case 'b':
 			TBall* ball;
 			if (MainTable->BallList->GetCount() <= 0)
 			{
@@ -477,17 +477,17 @@ void pb::keydown(int key)
 			ball->Acceleration.Y = 0.0;
 			ball->Acceleration.X = 0.0;
 			break;
-		case 'H':
+		case 'h':
 			char String1[200];
 			lstrcpyA(String1, pinball::get_rc_string(26, 0));
 			high_score::show_and_set_high_score_dialog(highscore_table, 1000000000, 1, String1);
 			break;
-		case 'M':
+		case 'm':
 			char buffer[20];
 			sprintf_s(buffer, "%zu", memory::use_total);
-			MessageBoxA(winmain::hwnd_frame, buffer, "Mem:", 0x2000u);
+			SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_INFORMATION, "Mem:", buffer, winmain::MainWindow);
 			break;
-		case 'R':
+		case 'r':
 			control::cheat_bump_rank();
 			break;
 		case VK_F11:

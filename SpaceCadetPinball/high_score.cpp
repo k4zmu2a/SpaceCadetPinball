@@ -167,7 +167,7 @@ void high_score::show_high_score_dialog(high_score_struct* table)
 	dlg_enter_name = 0;
 	dlg_score = 0;
 	dlg_hst = table;
-	DialogBoxParamA(winmain::hinst, "dlg_highscores", winmain::hwnd_frame, HighScore, 0);
+	DialogBoxParamA(nullptr, "dlg_highscores", nullptr, HighScore, 0);
 }
 
 void high_score::show_and_set_high_score_dialog(high_score_struct* table, int score, int pos, LPCSTR defaultName)

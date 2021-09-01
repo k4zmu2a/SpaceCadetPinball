@@ -32,11 +32,11 @@ MCIERROR midi::music_stop()
 	return Mix_HaltMusic();
 }
 
-int midi::music_init(HWND hwnd)
+int midi::music_init()
 {
 	if (pb::FullTiltMode)
 	{
-		return music_init_ft(hwnd);
+		return music_init_ft();
 	}
 	
 	currentMidi = Mix_LoadMUS(pinball::get_rc_string(156, 0));
@@ -74,7 +74,7 @@ objlist_class<midi_struct>* midi::TrackList;
 midi_struct *midi::track1, *midi::track2, *midi::track3, *midi::active_track, *midi::active_track2;
 int midi::some_flag1;
 
-int midi::music_init_ft(HWND hwnd)
+int midi::music_init_ft()
 {
 	active_track = nullptr;
 	TrackList = new objlist_class<midi_struct>(0, 1);

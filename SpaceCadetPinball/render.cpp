@@ -138,7 +138,7 @@ void render::update()
 			auto dirtyRect = &(*dirtyPtr)->DirtyRect;
 			auto width2 = (*dirtyPtr)->DirtyRect.Width;
 			if (width2 > 0)
-				gdrv::blit_sequence(
+				gdrv::blit(
 					&vscreen,
 					dirtyRect->XPosition,
 					dirtyRect->YPosition,
@@ -165,7 +165,7 @@ void render::update()
 			if (maths::overlapping_box(dirtyRect, rectCopy, &overlapRect) && dirtyRect->Width > 0)
 			{
 				if (overlapRect.Width > 0)
-					gdrv::blit_sequence(
+					gdrv::blit(
 						&vscreen,
 						overlapRect.XPosition,
 						overlapRect.YPosition,
@@ -177,7 +177,7 @@ void render::update()
 			else
 			{
 				if (dirtyRect->Width > 0)
-					gdrv::blit_sequence(
+					gdrv::blit(
 						&vscreen,
 						dirtyRect->XPosition,
 						dirtyRect->YPosition,
@@ -186,7 +186,7 @@ void render::update()
 						dirtyRect->Width,
 						dirtyRect->Height);
 				if (rectCopy->Width > 0)
-					gdrv::blit_sequence(
+					gdrv::blit(
 						&vscreen,
 						rectCopy->XPosition,
 						rectCopy->YPosition,

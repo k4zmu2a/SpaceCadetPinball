@@ -127,9 +127,9 @@ void zdrv::paint_spliced_bmp(int xPos, int yPos, gdrv_bitmap8* dstBmp, zmap_head
 	if (yOffset < 0)
 		return;
 
-	auto bmpDstPtr = &dstBmp->BmpBufPtr2[xOffset + yOffset * dstBmp->Stride];
+	auto bmpDstPtr = &dstBmp->BmpBufPtr1[xOffset + yOffset * dstBmp->Stride];
 	auto zMapDstPtr = &dstZmap->ZPtr2[xOffset + yOffset * dstZmap->Stride];
-	auto bmpSrcPtr = reinterpret_cast<unsigned short*>(srcBmp->BmpBufPtr2);
+	auto bmpSrcPtr = reinterpret_cast<unsigned short*>(srcBmp->BmpBufPtr1);
 
 	while (true)
 	{

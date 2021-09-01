@@ -119,6 +119,6 @@ public:
 	static char* field_labeled(datFileStruct* datFile, LPCSTR lpString, datFieldTypes fieldType);
 private:
 	static short _field_size[];
-	static char _lread_char(HFILE hFile);
-	static int _lread_long(HFILE hFile);
+	static char _lread_char(FILE* file);
+	static int _lread_long(FILE* file);
 };

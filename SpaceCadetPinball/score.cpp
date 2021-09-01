@@ -250,7 +250,7 @@ void score::update(scoreStruct* score)
 			{
 				unsigned char curChar = scoreBuf[index];
 				curChar -= '0';
-				gdrv_bitmap8* bmp = score->CharBmp[curChar % 10];
+				gdrv_bitmap8* bmp = score->CharBmp[curChar % 10u];
 				x -= bmp->Width;
 				int height = bmp->Height;
 				int width = bmp->Width;

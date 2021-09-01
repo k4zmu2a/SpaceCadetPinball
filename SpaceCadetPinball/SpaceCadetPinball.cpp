@@ -15,19 +15,19 @@
 #include "TTextBox.h"
 #include "winmain.h"
 
-int main()
+int main(int argc, char* argv[])
 {
 	{
 		// Testing with UI
-		char cmdLine[1]{};
-		WinMain(GetModuleHandleA(nullptr), nullptr, cmdLine, 10);
+		std::string cmdLine;
+		for (int i = 0; i < argc; i++)
+			cmdLine += argv[i];
+		winmain::WinMain(cmdLine.c_str());
 		return 0;
 	}
 
 	std::cout << "Hello World!\n";
-	gdrv::init(nullptr,0,0);
-	auto dib = gdrv::DibCreate(8, 1, 1);
-	gdrv::DibSetUsage(dib, nullptr, 1);
+	gdrv::init(0,0);
 
 	auto d = objlist_class<void>(2, 4);
 	for (size_t i = 0; i < 100; i++)
@@ -39,7 +39,7 @@ int main()
 	auto xx = sizeof(datFileHeader);
 
 	lstrcpyA(winmain::DatFileName, "PINBALL.DAT");
-	pb::init(nullptr);
+	pb::init();
 	auto datFile = pb::record_table;
 
 	assert(partman::field_size_nth(datFile, 0, datFieldTypes::String, 0) == 43);

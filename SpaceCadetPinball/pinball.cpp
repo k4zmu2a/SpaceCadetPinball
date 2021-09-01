@@ -206,7 +206,7 @@ std::map<uint32_t, LPCSTR> rc_strings
 	{2032, "Use &Maximum Resolution (1024 x 768)"}
 };
 
-int LoadStringL(HINSTANCE hInstance, UINT uID, LPSTR lpBuffer, int cchBufferMax)
+int LoadStringAlt(UINT uID, LPSTR lpBuffer, int cchBufferMax)
 {
 	auto str = rc_strings.find(uID);
 	if (str == rc_strings.end())
@@ -214,7 +214,7 @@ int LoadStringL(HINSTANCE hInstance, UINT uID, LPSTR lpBuffer, int cchBufferMax)
 		return 0;
 	}
 
-	lstrcpyA(lpBuffer, str->second);
+	strncpy_s(lpBuffer, cchBufferMax, str->second, cchBufferMax);
 	return 1;
 }
 
@@ -229,7 +229,7 @@ int pinball::RightShift = -1;
 char* pinball::get_rc_string(int uID, int a2)
 {
 	char* result = &getRcBuffer[256 * rc_string_slot];
-	if (!LoadStringL(winmain::hinst, uID, &getRcBuffer[256 * rc_string_slot], 255))
+	if (!LoadStringAlt(uID, &getRcBuffer[256 * rc_string_slot], 255))
 		*result = 0;
 	if (++rc_string_slot >= 6)
 		rc_string_slot = 0;
@@ -239,7 +239,7 @@ char* pinball::get_rc_string(int uID, int a2)
 int pinball::get_rc_int(int uID, int* dst)
 {
 	char buffer[255];
-	int result = LoadStringL(winmain::hinst, uID, buffer, 255);
+	int result = LoadStringAlt(uID, buffer, 255);
 	if (!result)
 		return result;
 	*dst = atoi(buffer);

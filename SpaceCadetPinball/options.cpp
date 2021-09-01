@@ -80,7 +80,7 @@ void options::init(HMENU menuHandle)
 	Options.RightFlipperKeyDft = SDLK_SLASH;
 	Options.PlungerKeyDft = SDLK_SPACE;
 	Options.LeftTableBumpKeyDft = SDLK_x;
-	Options.RightTableBumpKeyDft = SDLK_GREATER;
+	Options.RightTableBumpKeyDft = SDLK_PERIOD;
 	Options.BottomTableBumpKeyDft = SDLK_UP;
 	/*pinball::get_rc_int(159, &Options.LeftFlipperKeyDft);
 	pinball::get_rc_int(160, &Options.RightFlipperKeyDft);
@@ -126,7 +126,7 @@ void options::init(HMENU menuHandle)
 			if (MenuHandle)
 			{
 				DeleteMenu(MenuHandle, Menu1_Select_Table, 0);
-				DrawMenuBar(winmain::hwnd_frame);
+				DrawMenuBar(nullptr);
 			}
 		}
 		memory::free(tmpBuf);
@@ -387,7 +387,7 @@ void options::init_resolution()
 
 void options::keyboard()
 {
-	DialogBoxParamA(winmain::hinst, "KEYMAPPER", winmain::hwnd_frame, KeyMapDlgProc, 0);
+	DialogBoxParamA(nullptr, "KEYMAPPER", nullptr, KeyMapDlgProc, 0);
 }
 
 INT_PTR _stdcall options::KeyMapDlgProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)

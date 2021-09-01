@@ -440,22 +440,22 @@ void fullscrn::window_size_changed()
 		return;
 	}
 
-	RECT client{};
-	GetClientRect(hWnd, &client);
+	int width, height;
+	SDL_GetWindowSize(winmain::MainWindow, &width, &height);
 	auto res = &resolution_array[resolution];
-	ScaleX = static_cast<float>(client.right) / res->TableWidth;
-	ScaleY = static_cast<float>(client.bottom) / res->TableHeight;
+	ScaleX = static_cast<float>(width) / res->TableWidth;
+	ScaleY = static_cast<float>(height) / res->TableHeight;
 	OffsetX = OffsetY = 0;
 
 	if (options::Options.UniformScaling)
 	{
 		ScaleY = ScaleX = min(ScaleX, ScaleY);
-		OffsetX = floor((client.right - res->TableWidth * ScaleX) / 2);
-		OffsetY = floor((client.bottom - res->TableHeight * ScaleY) / 2);
+		OffsetX = floor((width - res->TableWidth * ScaleX) / 2);
+		OffsetY = floor((height - res->TableHeight * ScaleY) / 2);
 		auto dc = GetDC(hWnd);
 		if (dc)
 		{
-			BitBlt(dc, 0, 0, client.right, client.bottom, dc, 0, 0, BLACKNESS);
+			BitBlt(dc, 0, 0, width, height, dc, 0, 0, BLACKNESS);
 			ReleaseDC(hWnd, dc);
 		}
 	}

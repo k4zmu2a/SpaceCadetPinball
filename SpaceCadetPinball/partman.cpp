@@ -11,24 +11,24 @@ short partman::_field_size[] =
 
 datFileStruct* partman::load_records(LPCSTR lpFileName, int resolution, bool fullTiltMode)
 {
-	_OFSTRUCT ReOpenBuff{};
 	datFileHeader header{};
 	dat8BitBmpHeader bmpHeader{};
 	dat16BitBmpHeader zMapHeader{};
 
-	const HFILE fileHandle = OpenFile(lpFileName, &ReOpenBuff, 0);
-	if (fileHandle == -1)
+	FILE* fileHandle;
+	fopen_s(&fileHandle, lpFileName, "rb");
+	if (fileHandle == nullptr)
 		return nullptr;
-	_lread(fileHandle, &header, 183u);
+	fread(&header, 1, sizeof datFileHeader, fileHandle);
 	if (lstrcmpA("PARTOUT(4.0)RESOURCE", header.FileSignature))
 	{
-		_lclose(fileHandle);
+		fclose(fileHandle);
 		return nullptr;
 	}
 	auto datFile = memory::allocate<datFileStruct>();
 	if (!datFile)
 	{
-		_lclose(fileHandle);
+		fclose(fileHandle);
 		return nullptr;
 	}
 	if (lstrlenA(header.Description) <= 0)
@@ -42,7 +42,7 @@ datFileStruct* partman::load_records(LPCSTR lpFileName, int resolution, bool ful
 		datFile->Description = descriptionBuf;
 		if (!descriptionBuf)
 		{
-			_lclose(fileHandle);
+			fclose(fileHandle);
 			memory::free(datFile);
 			return nullptr;
 		}
@@ -54,13 +54,13 @@ datFileStruct* partman::load_records(LPCSTR lpFileName, int resolution, bool ful
 		auto unknownBuf = memory::allocate(header.Unknown);
 		if (!unknownBuf)
 		{
-			_lclose(fileHandle);
+			fclose(fileHandle);
 			if (datFile->Description)
 				memory::free(datFile->Description);
 			memory::free(datFile);
 			return nullptr;
 		}
-		_lread(fileHandle, static_cast<void*>(unknownBuf), header.Unknown);
+		fread(unknownBuf, 1, header.Unknown, fileHandle);
 		memory::free(unknownBuf);
 	}
 
@@ -97,10 +97,10 @@ datFileStruct* partman::load_records(LPCSTR lpFileName, int resolution, bool ful
 
 			if (entryType == datFieldTypes::Bitmap8bit)
 			{
-				_hread(fileHandle, &bmpHeader, sizeof(dat8BitBmpHeader));
+				fread(&bmpHeader, 1, sizeof(dat8BitBmpHeader), fileHandle);
 				if (bmpHeader.Resolution != resolution && bmpHeader.Resolution != -1)
 				{
-					_llseek(fileHandle, bmpHeader.Size, 1);
+					fseek(fileHandle, bmpHeader.Size, SEEK_CUR);
 					continue;
 				}
 
@@ -124,7 +124,7 @@ datFileStruct* partman::load_records(LPCSTR lpFileName, int resolution, bool ful
 					abort = true;
 					break;
 				}
-				_hread(fileHandle, bmp->BmpBufPtr1, bmpHeader.Size);
+				fread(bmp->BmpBufPtr1, 1, bmpHeader.Size, fileHandle);
 				bmp->XPosition = bmpHeader.XPosition;
 				bmp->YPosition = bmpHeader.YPosition;
 			}
@@ -137,19 +137,19 @@ datFileStruct* partman::load_records(LPCSTR lpFileName, int resolution, bool ful
 					fieldSize--;
 					if (zMapResolution != resolution && zMapResolution != -1)
 					{
-						_llseek(fileHandle, fieldSize, 1);
+						fseek(fileHandle, fieldSize, SEEK_CUR);
 						continue;
 					}
 				}
 
-				_hread(fileHandle, &zMapHeader, sizeof(dat16BitBmpHeader));
+				fread(&zMapHeader, 1, sizeof(dat16BitBmpHeader), fileHandle);
 				int length = fieldSize - sizeof(dat16BitBmpHeader);
 
 				auto zmap = memory::allocate<zmap_header_type>(1, length);
 				zmap->Width = zMapHeader.Width;
 				zmap->Height = zMapHeader.Height;
 				zmap->Stride = zMapHeader.Stride;
-				_hread(fileHandle, zmap->ZBuffer, length);
+				fread(zmap->ZBuffer, 1, length, fileHandle);
 				entryData->Buffer = reinterpret_cast<char*>(zmap);
 			}
 			else
@@ -161,7 +161,7 @@ datFileStruct* partman::load_records(LPCSTR lpFileName, int resolution, bool ful
 					abort = true;
 					break;
 				}
-				_hread(fileHandle, entryBuffer, fieldSize);
+				fread(entryBuffer, 1, fieldSize, fileHandle);
 			}
 
 			entryData->FieldSize = fieldSize;
@@ -170,7 +170,7 @@ datFileStruct* partman::load_records(LPCSTR lpFileName, int resolution, bool ful
 		datFile->NumberOfGroups = groupIndex + 1;
 	}
 
-	_lclose(fileHandle);
+	fclose(fileHandle);
 	if (datFile->NumberOfGroups == header.NumberOfGroups)
 		return datFile;
 	unload_records(datFile);
@@ -280,16 +280,16 @@ char* partman::field_labeled(datFileStruct* datFile, LPCSTR lpString, datFieldTy
 	return groupIndex < 0 ? nullptr : field(datFile, groupIndex, fieldType);
 }
 
-char partman::_lread_char(HFILE hFile)
+char partman::_lread_char(FILE* file)
 {
 	char Buffer = 0;
-	_lread(hFile, &Buffer, 1u);
+	fread(&Buffer, 1, 1, file);
 	return Buffer;
 }
 
-int partman::_lread_long(HFILE hFile)
+int partman::_lread_long(FILE* file)
 {
 	int Buffer = 0;
-	_lread(hFile, &Buffer, 4u);
+	fread(&Buffer, 1, 4, file);
 	return Buffer;
 }

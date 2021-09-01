@@ -4,19 +4,16 @@
 class winmain
 {
 public:
-	static const DWORD WndStyle = WS_GROUP | WS_SYSMENU | WS_DLGFRAME | WS_BORDER | WS_MAXIMIZE | WS_CLIPCHILDREN |
-		WS_THICKFRAME | WS_MAXIMIZEBOX;
 	static char DatFileName[300];
 	static int single_step;
-	static HINSTANCE hinst;
-	static HWND hwnd_frame;
+	static SDL_Window* MainWindow;
+	static SDL_Renderer* Renderer;
 
-	static int WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nShowCmd);
+	static int WinMain(LPCSTR lpCmdLine);
 	static LRESULT CALLBACK message_handler(HWND hWnd, UINT Msg, WPARAM wParam, LPARAM lParam);
 	static int event_handler(const SDL_Event* event);
 	static void memalloc_failure();
 	static int ProcessWindowMessages();
-	static int check_expiration_date();
 	static HDC _GetDC(HWND hWnd);
 	static int a_dialog(HINSTANCE hInstance, HWND hWnd);
 	static void end_pause();
@@ -32,7 +29,6 @@ private:
 	static gdrv_bitmap8 gfr_display;
 	static HCURSOR mouse_hsave;
 	static bool restart;
-	static SDL_Window* MainWindow;
 
 	static HDC _BeginPaint(HWND hWnd, LPPAINTSTRUCT lpPaint);
 };

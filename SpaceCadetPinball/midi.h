@@ -54,7 +54,7 @@ class midi
 public:
 	static MCIERROR play_pb_theme(int flag);
 	static MCIERROR music_stop();
-	static int music_init(HWND hwnd);
+	static int music_init();
 	static MCIERROR restart_midi_seq(LPARAM param);
 	static void music_shutdown();
 private:	
@@ -63,7 +63,7 @@ private:
 	static objlist_class<midi_struct>* TrackList;
 	static midi_struct *track1, *track2, *track3, *active_track, *active_track2;
 	static int some_flag1;
-	static int music_init_ft(HWND hwnd);
+	static int music_init_ft();
 	static void music_shutdown_ft();
 	static midi_struct* load_track(LPCSTR fileName);
 	static int load_file(midi_struct** midi_res, void* filePtrOrPath, int fileSizeP, int flags);

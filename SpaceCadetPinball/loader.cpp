@@ -151,9 +151,13 @@ int loader::get_sound_id(int groupIndex)
 				sprintf_s(fileName2, pb::FullTiltMode ? "SOUND\\%s" : "%s", fileName);
 				pinball::make_path_name(filePath, fileName2);
 
-				HFILE hFile = _lopen(filePath, 0);
-				_lread(hFile, &wavHeader, sizeof wavHeader);
-				_lclose(hFile);
+				FILE* file;
+				if (!fopen_s(&file, filePath, "rb"))
+				{
+					fread(&wavHeader, 1, sizeof wavHeader, file);
+					fclose(file);
+				}
+				
 				auto sampleCount = wavHeader.data_size / (wavHeader.channels * (wavHeader.bits_per_sample / 8.0));
 				sound_list[soundIndex].Duration = static_cast<float>(sampleCount / wavHeader.sample_rate);
 				sound_list[soundIndex].WavePtr = Sound::LoadWaveFile(filePath);
