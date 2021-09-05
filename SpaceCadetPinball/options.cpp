@@ -95,6 +95,7 @@ void options::init(HMENU menuHandle)
 	Options.RightTableBumpKey = Options.RightTableBumpKeyDft;
 	Options.Players = 1;
 	Options.BottomTableBumpKey = Options.BottomTableBumpKeyDft;
+	Options.UniformScaling = true;
 	/*Options.Sounds = get_int(nullptr, "Sounds", Options.Sounds);
 	Options.Music = get_int(nullptr, "Music", Options.Music);
 	Options.Average = get_int(nullptr, "Average", Options.Average);
@@ -341,7 +342,7 @@ void options::toggle(UINT uIDCheckItem)
 		Options.UniformScaling ^= true;
 		menu_check(Menu1_WindowUniformScale, Options.UniformScaling);
 		fullscrn::window_size_changed();
-		fullscrn::paint();
+		pb::paint();
 		break;
 	default:
 		break;
@@ -387,7 +388,7 @@ void options::init_resolution()
 
 void options::keyboard()
 {
-	DialogBoxParamA(nullptr, "KEYMAPPER", nullptr, KeyMapDlgProc, 0);
+	//DialogBoxParamA(nullptr, "KEYMAPPER", nullptr, KeyMapDlgProc, 0);
 }
 
 INT_PTR _stdcall options::KeyMapDlgProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)

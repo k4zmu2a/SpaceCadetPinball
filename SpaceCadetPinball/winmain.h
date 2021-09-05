@@ -8,14 +8,13 @@ public:
 	static int single_step;
 	static SDL_Window* MainWindow;
 	static SDL_Renderer* Renderer;
+	static ImGuiIO* ImIO;
 
 	static int WinMain(LPCSTR lpCmdLine);
-	static LRESULT CALLBACK message_handler(HWND hWnd, UINT Msg, WPARAM wParam, LPARAM lParam);
 	static int event_handler(const SDL_Event* event);
 	static void memalloc_failure();
 	static int ProcessWindowMessages();
-	static HDC _GetDC(HWND hWnd);
-	static int a_dialog(HINSTANCE hInstance, HWND hWnd);
+	static void a_dialog();
 	static void end_pause();
 	static void new_game();
 	static void pause();
@@ -29,6 +28,8 @@ private:
 	static gdrv_bitmap8 gfr_display;
 	static HCURSOR mouse_hsave;
 	static bool restart;
-
-	static HDC _BeginPaint(HWND hWnd, LPPAINTSTRUCT lpPaint);
+	static bool ShowAboutDialog;
+	static bool ShowImGuiDemo;
+	
+	static void RenderUi();
 };

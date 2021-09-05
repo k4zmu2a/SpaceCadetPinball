@@ -1,6 +1,7 @@
 #include "pch.h"
 #include "gdrv.h"
 
+#include "fullscrn.h"
 #include "memory.h"
 #include "render.h"
 #include "winmain.h"
@@ -9,6 +10,7 @@ SDL_Texture* gdrv::vScreenTex = nullptr;
 char* gdrv::vScreenPixels = nullptr;
 int gdrv::vScreenWidth, gdrv::vScreenHeight;
 ColorRgba gdrv::current_palette[256]{};
+SDL_Rect gdrv::DestinationRect{};
 
 int gdrv::init(int width, int height)
 {
@@ -297,6 +299,6 @@ void gdrv::BlitScreen()
 		&pitch
 	);
 	std::memcpy(lockedPixels, vScreenPixels, vScreenWidth * vScreenHeight * 4);
-	SDL_UnlockTexture(vScreenTex);	
-	SDL_RenderCopyEx(winmain::Renderer, vScreenTex, nullptr, nullptr, 0, nullptr, SDL_FLIP_VERTICAL);
+	SDL_UnlockTexture(vScreenTex);
+	SDL_RenderCopyEx(winmain::Renderer, vScreenTex, nullptr, &DestinationRect, 0, nullptr, SDL_FLIP_VERTICAL);
 }

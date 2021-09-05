@@ -10,8 +10,9 @@
 int high_score::dlg_enter_name;
 int high_score::dlg_score;
 int high_score::dlg_position;
-LPCSTR high_score::default_name;
+char high_score::default_name[32]{};
 high_score_struct* high_score::dlg_hst;
+bool high_score::ShowDialog = false;
 
 winhelp_entry high_score::help[21]
 {
@@ -167,7 +168,7 @@ void high_score::show_high_score_dialog(high_score_struct* table)
 	dlg_enter_name = 0;
 	dlg_score = 0;
 	dlg_hst = table;
-	DialogBoxParamA(nullptr, "dlg_highscores", nullptr, HighScore, 0);
+	ShowDialog = true;
 }
 
 void high_score::show_and_set_high_score_dialog(high_score_struct* table, int score, int pos, LPCSTR defaultName)
@@ -176,126 +177,99 @@ void high_score::show_and_set_high_score_dialog(high_score_struct* table, int sc
 	dlg_score = score;
 	dlg_hst = table;
 	dlg_enter_name = 1;
-	default_name = defaultName;
-	/*while (DialogBoxParamA(winmain::hinst, "dlg_highscores", winmain::hwnd_frame, HighScore, 0))
-	{
-	}*/
+	strncpy_s(default_name, defaultName, 32);
+	ShowDialog = true;
 }
 
-INT_PTR high_score::HighScore(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
+void high_score::RenderHighScoreDialog()
 {
-	HWND parent;
-	int nIDDlgItem;
-	CHAR String1[256];
-	CHAR name[32];
-
-	switch (msg)
+	if (ShowDialog == true)
 	{
-	case WM_CLOSE:
-		SendMessageA(hWnd, WM_COMMAND, WM_DESTROY, 0);
-		break;
-	case WM_HELP:
-		WinHelpA(static_cast<HWND>(reinterpret_cast<HELPINFO*>(lParam)->hItemHandle), "pinball.hlp", HELP_WM_HELP,
-		         (ULONG_PTR)help);
-		break;
-	case WM_CONTEXTMENU:
-		WinHelpA((HWND)wParam, "pinball.hlp", HELP_CONTEXTMENU, (ULONG_PTR)help);
-		break;
-	case WM_INITDIALOG:
-		show_high_scores(hWnd, dlg_hst);
-		for (nIDDlgItem = DLG_HIGHSCORES_EditName1; nIDDlgItem < 611; ++nIDDlgItem)
+		ShowDialog = false;
+		if (dlg_position == -1) 
 		{
-			ShowWindow(GetDlgItem(hWnd, nIDDlgItem), 0);
+			dlg_enter_name = 0;
+			return;
 		}
-		if (dlg_enter_name == 1)
+		ImGui::OpenPopup("High Scores");
+	}
+
+	bool unused_open = true;
+	if (ImGui::BeginPopupModal("High Scores", &unused_open, ImGuiWindowFlags_AlwaysAutoResize))
+	{
+		if (ImGui::BeginTable("table1", 3, 0))
 		{
-			if (dlg_position == -1)
+			char buf[36];
+			ImGui::TableSetupColumn("Rank");
+			ImGui::TableSetupColumn("Name");
+			ImGui::TableSetupColumn("Score");
+			ImGui::TableHeadersRow();
+
+			high_score_struct* tablePtr = dlg_hst;
+			for (int row = 0; row < 5; row++)
 			{
-				dlg_enter_name = 0;
-				return 1;
+				ImGui::TableNextRow();
+				ImGui::TableNextColumn();
+				_itoa_s(row, buf, 10);
+				ImGui::TextUnformatted(buf);
+
+				auto score = tablePtr->Score;
+				ImGui::TableNextColumn();				
+				if (dlg_enter_name == 1 && dlg_position == row)
+				{
+					score = dlg_score;
+					ImGui::PushItemWidth(200);
+					ImGui::InputText("", default_name, IM_ARRAYSIZE(default_name));
+				}
+				else
+				{
+					ImGui::TextUnformatted(tablePtr->Name);
+				}
+
+				ImGui::TableNextColumn();
+				score::string_format(score, buf);
+				ImGui::TextUnformatted(buf);
+
+				tablePtr++;
 			}
-			HWND nameTextBox = GetDlgItem(hWnd, dlg_position + DLG_HIGHSCORES_EditName1);
-			ShowWindow(nameTextBox, 5);
-			EnableWindow(nameTextBox, 1);
-			SetFocus(nameTextBox);
-			if (default_name)
-			{
-				SetWindowTextA(nameTextBox, default_name);
-				SendMessageA(nameTextBox, EM_SETSEL, 0, -1);
-			}
-			SendMessageA(nameTextBox, EM_SETLIMITTEXT, 31u, 0);
+			ImGui::EndTable();
 		}
-		else
+		ImGui::Separator();
+
+		if (ImGui::Button("Ok"))
 		{
-			SetFocus(hWnd);
-		}
-		parent = GetParent(hWnd);
-		if (parent)
-			fullscrn::center_in(parent, hWnd);
-		return 0;
-	case WM_COMMAND:
-		switch (wParam)
-		{
-		case DLG_HIGHSCORES_Ok:
-			if (dlg_enter_name != 1)
-			{
-				break;
+			if (dlg_enter_name)
+			{				
+				default_name[31] = 0;
+				place_new_score_into(dlg_hst, dlg_score, default_name, dlg_position);				
 			}
-			GetDlgItemTextA(hWnd, dlg_position + DLG_HIGHSCORES_EditName1, name, 32);
-			name[31] = 0;
-			place_new_score_into(dlg_hst, dlg_score, name, dlg_position);
-			break;
-		case DLG_HIGHSCORES_Cancel:
-			break;
-		case DLG_HIGHSCORES_Clear:
-			lstrcpyA(String1, pinball::get_rc_string(41, 0));
-			if (MessageBoxA(hWnd, pinball::get_rc_string(40, 0), String1, MB_DEFBUTTON2 | MB_OKCANCEL) == 1)
+			ImGui::CloseCurrentPopup();
+		}
+
+		ImGui::SameLine();
+		if (ImGui::Button("Cancel"))
+			ImGui::CloseCurrentPopup();
+
+		ImGui::SameLine();
+		if (ImGui::Button("Clear"))
+			ImGui::OpenPopup("Confirm");
+		if (ImGui::BeginPopupModal("Confirm", nullptr, ImGuiWindowFlags_MenuBar))
+		{
+			ImGui::TextUnformatted(pinball::get_rc_string(40, 0));
+			if (ImGui::Button("OK", ImVec2(120, 0)))
 			{
 				clear_table(dlg_hst);
-				if (dlg_enter_name)
-					EndDialog(hWnd, 1);
-				else
-					EndDialog(hWnd, 0);
+				ImGui::CloseCurrentPopup();
 			}
-			return 0;
-		default:
-			return 0;
+			ImGui::SetItemDefaultFocus();
+			ImGui::SameLine();
+			if (ImGui::Button("Cancel", ImVec2(120, 0)))
+			{
+				ImGui::CloseCurrentPopup();
+			}
+			ImGui::EndPopup();
 		}
 
-		dlg_enter_name = 0;
-		EndDialog(hWnd, 0);
-		return 1;
-	}
-	return 0;
-}
-
-
-void high_score::show_high_scores(HWND hDlg, high_score_struct* table)
-{
-	high_score_struct* tablePtr = table;
-	int nextPosition = 0;
-	for (int i = 0; i < 5; ++i)
-	{
-		if (dlg_enter_name == 1 && dlg_position == i)
-		{
-			hsdlg_show_score(hDlg, " ", dlg_score, i);
-			nextPosition = 1;
-		}
-		hsdlg_show_score(hDlg, tablePtr->Name, tablePtr->Score, i + nextPosition);
-		++tablePtr;
-	}
-}
-
-void high_score::hsdlg_show_score(HWND hDlg, LPCSTR name, int score, int position)
-{
-	CHAR scoreStr[36];
-	if (position < 5)
-	{
-		score::string_format(score, scoreStr);
-		if (scoreStr[0])
-		{
-			SetWindowTextA(GetDlgItem(hDlg, position + DLG_HIGHSCORES_StaticName1), name);
-			SetWindowTextA(GetDlgItem(hDlg, position + DLG_HIGHSCORES_Score1), scoreStr);
-		}
+		ImGui::EndPopup();
 	}
 }

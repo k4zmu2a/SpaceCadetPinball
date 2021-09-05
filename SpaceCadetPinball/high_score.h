@@ -20,14 +20,13 @@ public:
 
 	static void show_high_score_dialog(high_score_struct* table);
 	static void show_and_set_high_score_dialog(high_score_struct* table, int score, int pos, LPCSTR defaultName);
-	static INT_PTR __stdcall HighScore(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
-	static void show_high_scores(HWND hDlg, high_score_struct* table);
-	static void hsdlg_show_score(HWND hDlg, LPCSTR name, int score, int position);
+	static void RenderHighScoreDialog();
 private :
 	static int dlg_enter_name;
 	static int dlg_score;
 	static int dlg_position;
-	static LPCSTR default_name;
+	static char default_name[32];
 	static high_score_struct* dlg_hst;
 	static winhelp_entry help[21];
+	static bool ShowDialog;
 };

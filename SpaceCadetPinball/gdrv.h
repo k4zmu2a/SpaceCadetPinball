@@ -15,7 +15,6 @@ struct gdrv_bitmap8
 	int Height;
 	int Stride;
 	BitmapType BitmapType;
-	int Color6;
 	int XPosition;
 	int YPosition;
 };
@@ -49,6 +48,8 @@ struct LOGPALETTEx256 : LOGPALETTE
 class gdrv
 {
 public:
+	static SDL_Rect DestinationRect;
+
 	static int init(int width, int height);
 	static int uninit();
 	static void get_focus();
