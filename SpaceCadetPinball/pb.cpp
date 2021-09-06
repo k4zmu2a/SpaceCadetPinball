@@ -36,11 +36,11 @@ bool pb::FullTiltMode = false;
 int pb::init()
 {
 	float projMat[12], zMin = 0, zScaler = 0;
-	CHAR datFileName[300];
-	CHAR dataFilePath[300];
+	char datFileName[300];
+	char dataFilePath[300];
 
 	++memory::critical_allocation;
-	lstrcpyA(datFileName, winmain::DatFileName);
+	strcpy_s(datFileName, winmain::DatFileName);
 	pinball::make_path_name(dataFilePath, datFileName, 300);
 	record_table = partman::load_records(dataFilePath, fullscrn::GetResolution(), FullTiltMode);
 
@@ -148,9 +148,9 @@ void pb::mode_change(int mode)
 	case 1:
 		if (demo_mode)
 		{
-			options::menu_set(Menu1_Launch_Ball, 0);
-			options::menu_set(Menu1_High_Scores, 0);
-			options::menu_check(Menu1_Demo, 1);
+			winmain::LaunchBallEnabled = false;
+			winmain::HighScoresEnabled = false;
+			winmain::DemoActive = true;
 			if (MainTable)
 			{
 				if (MainTable->Demo)
@@ -159,9 +159,9 @@ void pb::mode_change(int mode)
 		}
 		else
 		{
-			options::menu_set(Menu1_High_Scores, 1);
-			options::menu_set(Menu1_Launch_Ball, 1);
-			options::menu_check(Menu1_Demo, 0);
+			winmain::LaunchBallEnabled = true;
+			winmain::HighScoresEnabled = true;
+			winmain::DemoActive = false;
 			if (MainTable)
 			{
 				if (MainTable->Demo)
@@ -170,19 +170,19 @@ void pb::mode_change(int mode)
 		}
 		break;
 	case 2:
-		options::menu_set(Menu1_Launch_Ball, 0);
+		winmain::LaunchBallEnabled = false;
 		if (!demo_mode)
 		{
-			options::menu_set(Menu1_High_Scores, 1);
-			options::menu_check(Menu1_Demo, 0);
+			winmain::HighScoresEnabled = true;
+			winmain::DemoActive = false;
 		}
 		if (MainTable && MainTable->LightGroup)
 			MainTable->LightGroup->Message(29, 1.4f);
 		break;
 	case 3:
 	case 4:
-		options::menu_set(Menu1_Launch_Ball, 0);
-		options::menu_set(Menu1_High_Scores, 0);
+		winmain::LaunchBallEnabled = false;
+		winmain::HighScoresEnabled = false;
 		mode_countdown_ = 5000;
 		break;
 	}
@@ -479,7 +479,7 @@ void pb::keydown(int key)
 			break;
 		case 'h':
 			char String1[200];
-			lstrcpyA(String1, pinball::get_rc_string(26, 0));
+			strcpy_s(String1, pinball::get_rc_string(26, 0));
 			high_score::show_and_set_high_score_dialog(highscore_table, 1000000000, 1, String1);
 			break;
 		case 'm':
@@ -490,10 +490,10 @@ void pb::keydown(int key)
 		case 'r':
 			control::cheat_bump_rank();
 			break;
-		case VK_F11:
+		case SDLK_F11:
 			gdrv::get_focus();
 			break;
-		case VK_F12:
+		case SDLK_F12:
 			MainTable->port_draw();
 			break;
 		}
@@ -569,7 +569,7 @@ void pb::end_game()
 			int position = high_score::get_score_position(highscore_table, scores[i]);
 			if (position >= 0)
 			{
-				lstrcpyA(String1, pinball::get_rc_string(scoreIndex[i] + 26, 0));
+				strcpy_s(String1, pinball::get_rc_string(scoreIndex[i] + 26, 0));
 				high_score::show_and_set_high_score_dialog(highscore_table, scores[i], position, String1);
 			}
 		}

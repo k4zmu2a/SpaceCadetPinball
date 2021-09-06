@@ -20,7 +20,7 @@ datFileStruct* partman::load_records(LPCSTR lpFileName, int resolution, bool ful
 	if (fileHandle == nullptr)
 		return nullptr;
 	fread(&header, 1, sizeof datFileHeader, fileHandle);
-	if (lstrcmpA("PARTOUT(4.0)RESOURCE", header.FileSignature))
+	if (strcmp("PARTOUT(4.0)RESOURCE", header.FileSignature) != 0)
 	{
 		fclose(fileHandle);
 		return nullptr;
@@ -31,13 +31,13 @@ datFileStruct* partman::load_records(LPCSTR lpFileName, int resolution, bool ful
 		fclose(fileHandle);
 		return nullptr;
 	}
-	if (lstrlenA(header.Description) <= 0)
+	if (strlen(header.Description) <= 0)
 	{
 		datFile->Description = nullptr;
 	}
 	else
 	{
-		int lenOfStr = lstrlenA(header.Description);
+		auto lenOfStr = strlen(header.Description);
 		auto descriptionBuf = memory::allocate(lenOfStr + 1);
 		datFile->Description = descriptionBuf;
 		if (!descriptionBuf)
@@ -46,7 +46,7 @@ datFileStruct* partman::load_records(LPCSTR lpFileName, int resolution, bool ful
 			memory::free(datFile);
 			return nullptr;
 		}
-		lstrcpyA(descriptionBuf, header.Description);
+		strcpy_s(descriptionBuf, lenOfStr + 1, header.Description);
 	}
 
 	if (header.Unknown)
@@ -256,7 +256,7 @@ int partman::field_size(datFileStruct* datFile, int groupIndex, datFieldTypes ta
 
 int partman::record_labeled(datFileStruct* datFile, LPCSTR targetGroupName)
 {
-	auto targetLength = lstrlenA(targetGroupName);
+	auto targetLength = strlen(targetGroupName);
 	for (int groupIndex = datFile->NumberOfGroups - 1; groupIndex >= 0; --groupIndex)
 	{
 		auto groupName = field(datFile, groupIndex, datFieldTypes::GroupName);

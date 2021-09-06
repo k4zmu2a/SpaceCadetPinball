@@ -12,7 +12,6 @@
 
 const double TargetFps = 60, TargetFrameTime = 1000 / TargetFps;
 
-HCURSOR winmain::mouse_hsave;
 SDL_Window* winmain::MainWindow = nullptr;
 SDL_Renderer* winmain::Renderer = nullptr;
 ImGuiIO* winmain::ImIO = nullptr;
@@ -31,13 +30,15 @@ int winmain::no_time_loss;
 
 DWORD winmain::then;
 DWORD winmain::now;
-UINT winmain::iFrostUniqueMsg;
 bool winmain::restart = false;
 
 gdrv_bitmap8 winmain::gfr_display{};
 char winmain::DatFileName[300]{};
 bool winmain::ShowAboutDialog = false;
 bool winmain::ShowImGuiDemo = false;
+bool winmain::LaunchBallEnabled = true;
+bool winmain::HighScoresEnabled = true;
+bool winmain::DemoActive = false;
 
 
 uint32_t timeGetTimeAlt()
@@ -79,8 +80,7 @@ int winmain::WinMain(LPCSTR lpCmdLine)
 		strcpy_s(DatFileName, "CADET.DAT");
 		pb::FullTiltMode = true;
 	}
-	
-	pinball::FindShiftKeys();
+
 	options::init_resolution();
 
 	// SDL window
@@ -125,21 +125,22 @@ int winmain::WinMain(LPCSTR lpCmdLine)
 	{
 		++memory::critical_allocation;
 
-		options::init(nullptr);
+		options::init();
 		auto voiceCount = options::get_int(nullptr, "Voices", 8);
-		if (!Sound::Init(voiceCount))
-			options::menu_set(Menu1_Sounds, 0);
+		if (Sound::Init(voiceCount))
+			options::Options.Sounds = 0;
 		Sound::Activate();
 
 		if (!pinball::quickFlag && !midi::music_init())
-			options::menu_set(Menu1_Music, 0);
+			options::Options.Music = 0;
 
-		if (pb::init()) 
+		if (pb::init())
 		{
-			SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, "Could not load game data", "The .dat file is missing", window);
+			SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, "Could not load game data",
+				"The .dat file is missing", window);
 			return 1;
 		}
-		
+
 		fullscrn::init();
 
 		--memory::critical_allocation;
@@ -151,13 +152,10 @@ int winmain::WinMain(LPCSTR lpCmdLine)
 	if (strstr(lpCmdLine, "-fullscreen"))
 	{
 		options::Options.FullScreen = 1;
-		options::menu_check(Menu1_Full_Screen, 1);
 	}
 
 	SDL_ShowWindow(window);
-	fullscrn::set_screen_mode(options::Options.FullScreen);	
-
-	pinball::adjust_priority(options::Options.PriorityAdj);
+	fullscrn::set_screen_mode(options::Options.FullScreen);
 
 	if (strstr(lpCmdLine, "-demo"))
 		pb::toggle_demo();
@@ -249,7 +247,7 @@ int winmain::WinMain(LPCSTR lpCmdLine)
 
 				if (curTime == then)
 				{
-					Sleep(8u);
+					SDL_Delay(8);
 				}
 				else if (pb::frame(curTime - then))
 				{
@@ -308,7 +306,8 @@ int winmain::WinMain(LPCSTR lpCmdLine)
 
 	if (restart)
 	{
-		char restartPath[300]{};
+		// Todo: get rid of restart to change resolution.
+		/*char restartPath[300]{};
 		if (GetModuleFileNameA(nullptr, restartPath, 300))
 		{
 			STARTUPINFO si{};
@@ -320,7 +319,7 @@ int winmain::WinMain(LPCSTR lpCmdLine)
 				CloseHandle(pi.hProcess);
 				CloseHandle(pi.hThread);
 			}
-		}
+		}*/
 	}
 
 	return return_value;
@@ -342,7 +341,7 @@ void winmain::RenderUi()
 			{
 				new_game();
 			}
-			if (ImGui::MenuItem("Launch Ball"))
+			if (ImGui::MenuItem("Launch Ball", nullptr, false, LaunchBallEnabled))
 			{
 				end_pause();
 				pb::launch_ball();
@@ -353,13 +352,13 @@ void winmain::RenderUi()
 			}
 			ImGui::Separator();
 
-			if (ImGui::MenuItem("High Scores..."))
+			if (ImGui::MenuItem("High Scores...", nullptr, false, HighScoresEnabled))
 			{
 				if (!single_step)
 					pause();
 				pb::high_scores();
 			}
-			if (ImGui::MenuItem("Demo"))
+			if (ImGui::MenuItem("Demo", nullptr, DemoActive))
 			{
 				end_pause();
 				pb::toggle_demo();
@@ -450,7 +449,7 @@ void winmain::RenderUi()
 			{
 				if (!single_step)
 					pause();
-				help_introduction(nullptr, (HWND)MainWindow);
+				help_introduction();
 			}
 			ImGui::Separator();
 
@@ -507,7 +506,6 @@ int winmain::event_handler(const SDL_Event* event)
 	case SDL_QUIT:
 		end_pause();
 		bQuit = 1;
-		PostQuitMessage(0);
 		fullscrn::shutdown();
 		return_value = 0;
 		return 0;
@@ -525,7 +523,7 @@ int winmain::event_handler(const SDL_Event* event)
 			SDL_MinimizeWindow(MainWindow);
 			break;
 		case SDLK_F1:
-			help_introduction(nullptr, (HWND)MainWindow);
+			help_introduction();
 			break;
 		case SDLK_F2:
 			new_game();
@@ -637,7 +635,6 @@ int winmain::event_handler(const SDL_Event* event)
 			if (options::Options.Music && !single_step)
 				midi::play_pb_theme(0);
 			no_time_loss = 1;
-			pinball::adjust_priority(options::Options.PriorityAdj);
 			has_focus = 1;
 			gdrv::get_focus();
 			pb::paint();
@@ -646,9 +643,7 @@ int winmain::event_handler(const SDL_Event* event)
 		case SDL_WINDOWEVENT_HIDDEN:
 			activated = 0;
 			fullscrn::activate(0);
-			options::menu_check(Menu1_Full_Screen, 0);
 			options::Options.FullScreen = 0;
-			SetThreadPriority(GetCurrentThread(), 0);
 			Sound::Deactivate();
 			midi::music_stop();
 			has_focus = 0;
@@ -693,7 +688,7 @@ void winmain::memalloc_failure()
 	gdrv::uninit();
 	char* caption = pinball::get_rc_string(170, 0);
 	char* text = pinball::get_rc_string(179, 0);
-	MessageBoxA(nullptr, text, caption, 0x2030u);
+	SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, caption, text, MainWindow);
 	_exit(1);
 }
 
@@ -732,9 +727,7 @@ void winmain::end_pause()
 void winmain::new_game()
 {
 	end_pause();
-	HCURSOR prevCursor = SetCursor(LoadCursorA(nullptr, IDC_WAIT));
 	pb::replay_level(0);
-	SetCursor(prevCursor);
 }
 
 void winmain::pause()
@@ -743,26 +736,8 @@ void winmain::pause()
 	no_time_loss = 1;
 }
 
-void winmain::help_introduction(HINSTANCE a1, HWND a2)
+void winmain::help_introduction()
 {
-	char* buf1 = memory::allocate(0x1F4u);
-	if (buf1)
-	{
-		char* buf2 = memory::allocate(0x1F4u);
-		if (buf2)
-		{
-			options::get_string(nullptr, "HelpFile", buf1, pinball::get_rc_string(178, 0), 500);
-			options::get_string(pinball::get_rc_string(166, 0), "HelpFile", buf1, buf1, 500);
-			lstrcpyA(buf2, buf1);
-			memory::free(buf1);
-			//HtmlHelpA(GetDesktopWindow(), buf2, 0, 0);
-			memory::free(buf2);
-		}
-		else
-		{
-			memory::free(buf1);
-		}
-	}
 }
 
 void winmain::Restart()

@@ -54,15 +54,15 @@ int high_score::read(high_score_struct* table, int* ptrToSmth)
 	{
 		auto tablePtr = &table[position];
 		_itoa_s(position, Buffer, 10);
-		lstrcatA(Buffer, ".Name");
+		strcat_s(Buffer, ".Name");
 		options::get_string(optPath, Buffer, buf1, "", 32);
 		buf1[32] = 0;
-		lstrcpyA(tablePtr->Name, buf1);
+		strcpy_s(tablePtr->Name, buf1);
 		_itoa_s(position, Buffer, 10);
-		lstrcatA(Buffer, ".Score");
+		strcat_s(Buffer, ".Score");
 		options::get_string(optPath, Buffer, buf1, "", 300);
 		tablePtr->Score = atol(buf1);
-		for (int i = lstrlenA(tablePtr->Name); --i >= 0; scoreSum += tablePtr->Name[i])
+		for (int i = (int)strlen(tablePtr->Name); --i >= 0; scoreSum += tablePtr->Name[i])
 		{
 		}
 		scoreSum += tablePtr->Score;
@@ -70,7 +70,7 @@ int high_score::read(high_score_struct* table, int* ptrToSmth)
 
 	scramble_number_string(scoreSum, buf1);
 	options::get_string(optPath, "Verification", buf2, "", 300);
-	if (lstrcmpA(buf1, buf2))
+	if (strcmp(buf1, buf2) != 0)
 		clear_table(table);
 	memory::free(buf1);
 	memory::free(buf2);
@@ -83,20 +83,20 @@ int high_score::write(high_score_struct* table, int* ptrToSmth)
 
 	high_score_struct* tablePtr = table;
 	int scoreSum = 0;
-	CHAR* buf = memory::allocate(300u);
+	char* buf = memory::allocate(300u);
 	if (!buf)
 		return 1;
-	const CHAR* optPath = pinball::get_rc_string(166, 0);
+	const char* optPath = pinball::get_rc_string(166, 0);
 	for (auto position = 0; position < 5; ++position)
 	{
 		_itoa_s(position, Buffer, 10);
-		lstrcatA(Buffer, ".Name");
+		strcat_s(Buffer, ".Name");
 		options::set_string(optPath, Buffer, tablePtr->Name);
 		_itoa_s(position, Buffer, 10);
-		lstrcatA(Buffer, ".Score");
+		strcat_s(Buffer, ".Score");
 		_ltoa_s(tablePtr->Score, buf, 300, 10);
 		options::set_string(optPath, Buffer, buf);
-		for (int i = lstrlenA(tablePtr->Name); --i >= 0; scoreSum += tablePtr->Name[i])
+		for (int i = (int)strlen(tablePtr->Name); --i >= 0; scoreSum += tablePtr->Name[i])
 		{
 		}
 		scoreSum += tablePtr->Score;
@@ -150,9 +150,9 @@ int high_score::place_new_score_into(high_score_struct* table, int score, LPSTR 
 		}
 		high_score_struct* posTable = &table[position];
 		posTable->Score = score;
-		if (lstrlenA(scoreStr) >= 31)
+		if (strlen(scoreStr) >= 31)
 			scoreStr[31] = 0;
-		lstrcpyA(posTable->Name, scoreStr);
+		strcpy_s(posTable->Name, scoreStr);
 		posTable->Name[31] = 0;
 	}
 	return position;

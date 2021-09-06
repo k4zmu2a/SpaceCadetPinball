@@ -229,14 +229,14 @@ TPinballComponent* TPinballTable::find_component(LPCSTR componentName)
 		for (int index = 0; index < objCount; ++index)
 		{
 			TPinballComponent* obj = ComponentList->Get(index);
-			const CHAR* groupName = obj->GroupName;
-			if (groupName && !lstrcmpA(groupName, componentName))
+			const char* groupName = obj->GroupName;
+			if (groupName && !strcmp(groupName, componentName))
 			{
 				return obj;
 			}
 		}
 	}
-	MessageBoxA(nullptr, "Table cant find:", componentName, 0x2000u);
+	SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_WARNING, "Table cant find:", componentName, nullptr);
 	return nullptr;
 }
 
@@ -254,7 +254,7 @@ TPinballComponent* TPinballTable::find_component(int groupIndex)
 		}
 	}
 	_itoa_s(groupIndex, Buffer, 10);
-	MessageBoxA(nullptr, "Table cant find (lh):", Buffer, 0x2000u);
+	SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_WARNING, "Table cant find (lh):", Buffer, nullptr);
 	return nullptr;
 }
 

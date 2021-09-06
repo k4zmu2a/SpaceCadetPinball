@@ -1,18 +1,18 @@
 #pragma once
 #include "objlist_class.h"
 
-struct midi_struct
+constexpr uint32_t SwapByteOrderInt(uint32_t val)
 {
-	DWORD Magic;
-	DWORD DwTimeFormat;
-	DWORD CbMaxBuffer;
-	DWORD DwFlagsFormat;
-	midihdr_tag* DataPtr1;
-	HMIDISTRM StreamHandle;
-	int SomeFlag2;
-	int BlockCount;
-	int PreparedBlocksCount;
-};
+	return (val >> 24) |
+		((val << 8) & 0x00FF0000) |
+		((val >> 8) & 0x0000FF00) |
+		(val << 24);
+}
+
+constexpr uint16_t SwapByteOrderShort(uint16_t val)
+{
+	return static_cast<uint16_t>((val >> 8) | (val << 8));
+}
 
 #pragma pack(push)
 #pragma pack(1)
@@ -44,35 +44,71 @@ struct riff_header
 	riff_data Data;
 };
 
+struct midi_event_x2
+{
+	DWORD iTicks;
+	DWORD iEvent;
+};
+
+struct midi_event_x3
+{
+	DWORD iTicks;
+	DWORD iStreamID;
+	DWORD iEvent;
+};
+
+struct midi_header
+{
+	explicit midi_header(uint16_t tickdiv)
+		: tickdiv(tickdiv)
+	{
+	}
+
+	const char MThd[4]{ 'M','T','h','d' };
+	const uint32_t chunklen = SwapByteOrderInt(6);
+	const int16_t format = SwapByteOrderShort(0);
+	const uint16_t ntracks = SwapByteOrderShort(1);
+	uint16_t tickdiv;
+};
+
+struct midi_track
+{
+	explicit midi_track(uint32_t chunklen)
+		: chunklen(chunklen)
+	{
+	}
+
+	const char MTrk[4]{ 'M','T','r','k' };
+	uint32_t chunklen;
+};
+
 static_assert(sizeof(riff_block) == 0xC, "Wrong size of riff_block");
 static_assert(sizeof(riff_data) == 0x18, "Wrong size of riff_data");
 static_assert(sizeof(riff_header) == 0x38, "Wrong size of riff_header");
+static_assert(sizeof(midi_event_x3) == 12, "Wrong size of midi_event3");
+static_assert(sizeof(midi_event_x2) == 8, "Wrong size of midi_event2");
+static_assert(sizeof(midi_header) == 14, "Wrong size of midi_header");
+static_assert(sizeof(midi_track) == 8, "Wrong size of midi_track");
+
 #pragma pack(pop)
 
 class midi
 {
 public:
-	static MCIERROR play_pb_theme(int flag);
-	static MCIERROR music_stop();
+	static int play_pb_theme(int flag);
+	static int music_stop();
 	static int music_init();
-	static MCIERROR restart_midi_seq(LPARAM param);
 	static void music_shutdown();
-private:	
+private:
 	static Mix_Music* currentMidi;
 
-	static objlist_class<midi_struct>* TrackList;
-	static midi_struct *track1, *track2, *track3, *active_track, *active_track2;
+	static objlist_class<Mix_Music>* TrackList;
+	static Mix_Music *track1, *track2, *track3, *active_track, *active_track2;
 	static int some_flag1;
 	static int music_init_ft();
 	static void music_shutdown_ft();
-	static midi_struct* load_track(LPCSTR fileName);
-	static int load_file(midi_struct** midi_res, void* filePtrOrPath, int fileSizeP, int flags);
-	static int read_file(midi_struct* midi, riff_header* filePtr, unsigned int fileSize);
-	static int play_ft(midi_struct* midi);
+	static Mix_Music* load_track(LPCSTR fileName);
+	static int play_ft(Mix_Music* midi);
 	static int stop_ft();
-	static int unload_track(midi_struct* midi);
-	static int stream_open(midi_struct* midi, char flags);
-	static int stream_close(midi_struct* midi);
-	static void CALLBACK midi_callback(HMIDIOUT hmo, UINT wMsg, DWORD_PTR dwInstance, DWORD_PTR dwParam1,
-	                                 DWORD_PTR dwParam2);
+	static std::vector<uint8_t>* MdsToMidi(char* file);
 };

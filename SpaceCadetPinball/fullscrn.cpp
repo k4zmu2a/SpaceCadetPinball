@@ -117,9 +117,8 @@ int fullscrn::get_max_supported_resolution()
 	if (!pb::FullTiltMode)
 		return 0;
 
-	auto resolutionWH = get_screen_resolution();
-	auto width = LOWORD(resolutionWH);
-	auto height = HIWORD(resolutionWH);
+	int width = 0, height = 0;
+	get_screen_resolution(&width, &height);
 	auto result = 0;
 
 	for (auto index = 1; index < 3; ++index)
@@ -131,10 +130,16 @@ int fullscrn::get_max_supported_resolution()
 	return result;
 }
 
-int fullscrn::get_screen_resolution()
+int fullscrn::get_screen_resolution(int* width, int* height)
 {
-	auto height = static_cast<uint16_t>(GetSystemMetrics(SM_CYSCREEN));
-	return static_cast<uint16_t>(GetSystemMetrics(SM_CXSCREEN)) | (height << 16);
+	SDL_DisplayMode dm;
+	if (SDL_GetDesktopDisplayMode(0, &dm) == 0)
+	{
+		*width = dm.w;
+		*height = dm.h;
+		return 0;
+	}
+	return 1;
 }
 
 void fullscrn::window_size_changed()

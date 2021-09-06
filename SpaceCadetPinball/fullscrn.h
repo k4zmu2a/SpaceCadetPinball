@@ -29,7 +29,7 @@ public:
 	static int GetMaxResolution();
 	static void SetMaxResolution(int resolution);
 	static int get_max_supported_resolution();
-	static int get_screen_resolution();
+	static int get_screen_resolution(int* width, int* height);
 	static void window_size_changed();
 private :
 	static int resolution;

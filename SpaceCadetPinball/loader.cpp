@@ -12,8 +12,7 @@ errorMsg loader::loader_errors[] =
 {
 	errorMsg{0, "Bad Handle"},
 	errorMsg{1, "No Type Field"},
-	errorMsg{2, "No Attributes Field"},
-	errorMsg{0x0B, "No float Attributes Field"},
+	errorMsg{2, "No Attributes Field"},	
 	errorMsg{3, "Wrong Type: MATERIAL Expected"},
 	errorMsg{4, "Wrong Type: KICKER Expected"},
 	errorMsg{5, "Wrong Type: AN_OBJECT Expected"},
@@ -21,6 +20,7 @@ errorMsg loader::loader_errors[] =
 	errorMsg{7, "STATES (re)defined in a state"},
 	errorMsg{9, "Unrecognized Attribute"},
 	errorMsg{0x0A, "Unrecognized float Attribute"},
+	errorMsg{0x0B, "No float Attributes Field"},
 	errorMsg{0x0D, "float Attribute not found"},
 	errorMsg{0x0C, "state_index out of range"},
 	errorMsg{0x0F, "loader_material() reports failure"},
@@ -63,7 +63,7 @@ int loader::error(int errorCode, int captionCode)
 
 	if (!errorText)
 		errorText = loader_errors[index].Message;
-	MessageBoxA(nullptr, errorText, errorCaption, 0x2000u);
+	SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, errorCaption, errorText, nullptr);
 	return -1;
 }
 

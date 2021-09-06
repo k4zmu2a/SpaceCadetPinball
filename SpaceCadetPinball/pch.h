@@ -10,18 +10,17 @@
 #define PCH_H
 
 // TODO: add headers that you want to pre-compile here
-#include <Windows.h>
 #include <cstdio>
 #include <cassert>
 #include <cmath>
-#include <CommCtrl.h>
-#include <htmlhelp.h>
 #include <cstdint>
 #include <type_traits> /*For control template*/
 #include <chrono>
 //#include <iostream>
-#include <iomanip>
+//#include <iomanip>
 //#include <cstdlib>
+#include <vector>
+#include <algorithm>
 
 #define SDL_MAIN_HANDLED
 #include "SDL.h"
@@ -33,9 +32,12 @@
 //https://github.com/Tyyppi77/imgui_sdl 01deb04b102b6a1c15c7fdec1977a2c96a885e6f
 #include "imgui_sdl.h"
 
-//typedef const char* LPCSTR;
-//typedef int HINSTANCE;
-//typedef int HWND;
+typedef unsigned long  DWORD;
+typedef char* LPSTR;
+typedef const char* LPCSTR;
+
+#define min(a,b) ((a)<(b)?(a):(b))
+#define max(a,b) ((a)>(b)?(a):(b))
 
 /*Use (void) to silent unused warnings.*/
 #define assertm(exp, msg) assert(((void)msg, exp))

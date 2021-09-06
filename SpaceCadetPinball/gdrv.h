@@ -33,17 +33,6 @@ union ColorRgba
 };
 static_assert(sizeof(ColorRgba) == 4, "Wrong size of RGBA color");
 
-struct LOGPALETTEx256 : LOGPALETTE
-{
-	PALETTEENTRY palPalEntry2[256 - 1];
-
-	LOGPALETTEx256() : palPalEntry2{}
-	{
-		palVersion = 0x300;
-		palNumEntries = 256;
-	}
-};
-
 
 class gdrv
 {

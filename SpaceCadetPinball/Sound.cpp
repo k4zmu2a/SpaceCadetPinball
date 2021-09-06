@@ -15,7 +15,7 @@ int Sound::Init(int voices)
 	num_channels = channelCount;
 	enabled_flag = -1;
 
-	return Mix_OpenAudio(MIX_DEFAULT_FREQUENCY, MIX_DEFAULT_FORMAT, 2, 1024) == -1;
+	return Mix_OpenAudio(MIX_DEFAULT_FREQUENCY, MIX_DEFAULT_FORMAT, 2, 1024);
 }
 
 void Sound::Enable(int channelFrom, int channelTo, int enableFlag)

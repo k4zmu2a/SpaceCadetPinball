@@ -273,7 +273,7 @@ void score::update(scoreStruct* score)
 
 void score::string_format(int score, char* str)
 {
-	CHAR separator[12];
+	char separator[12];
 
 	if (score == -999)
 	{
@@ -281,25 +281,7 @@ void score::string_format(int score, char* str)
 	}
 	else
 	{
-		lstrcpyA(separator, ",");
-
-		HKEY phkResult;
-		DWORD dwDisposition;
-		if (!RegCreateKeyExA(
-			HKEY_CURRENT_USER,
-			"Control Panel\\International",
-			0,
-			nullptr,
-			0,
-			KEY_ALL_ACCESS,
-			nullptr,
-			&phkResult,
-			&dwDisposition))
-		{
-			DWORD cbData = 10;
-			RegQueryValueExA(phkResult, "sThousand", nullptr, nullptr, (LPBYTE)separator, &cbData);
-			RegCloseKey(phkResult);
-		}
+		strcpy_s(separator, ",");
 		int scoreMillions = score % 1000000000 / 1000000;
 		if (score / 1000000000 <= 0)
 		{

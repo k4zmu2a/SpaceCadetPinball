@@ -206,7 +206,7 @@ std::map<uint32_t, LPCSTR> rc_strings
 	{2032, "Use &Maximum Resolution (1024 x 768)"}
 };
 
-int LoadStringAlt(UINT uID, LPSTR lpBuffer, int cchBufferMax)
+int LoadStringAlt(uint32_t uID, LPSTR lpBuffer, int cchBufferMax)
 {
 	auto str = rc_strings.find(uID);
 	if (str == rc_strings.end())
@@ -246,100 +246,15 @@ int pinball::get_rc_int(int uID, int* dst)
 	return 1;
 }
 
-
-void pinball::FindShiftKeys()
-{
-	signed int i;
-	int rightShift;
-	CHAR stringBuf[20];
-
-	RightShift = -1;
-	LeftShift = -1;
-	for (i = 0; i < 256; ++i)
-	{
-		if (MapVirtualKeyA(i, 1u) == 16)
-		{
-			LeftShift = i;
-			break;
-		}
-	}
-	while (++i < 256)
-	{
-		if (MapVirtualKeyA(i, 1u) == 16)
-		{
-			RightShift = i;
-			break;
-		}
-	}
-	if (!GetKeyNameTextA(LeftShift << 16, stringBuf, 19) || !_strnicmp(stringBuf, "right", 5u))
-	{
-		rightShift = RightShift;
-	}
-	else
-	{
-		rightShift = LeftShift;
-		LeftShift = RightShift;
-		RightShift = rightShift;
-	}
-	if (GetKeyNameTextA(rightShift << 16, stringBuf, 19))
-	{
-		if (_strnicmp(stringBuf, "left", 4u) != 0)
-		{
-			auto tmp = LeftShift;
-			LeftShift = RightShift;
-			RightShift = tmp;
-		}
-	}
-}
-
-
-void pinball::adjust_priority(int priority)
-{
-	auto thread = GetCurrentThread();
-	switch (priority)
-	{
-	case -2:
-		SetThreadPriority(thread, -2);
-		break;
-	case -1:
-		SetThreadPriority(thread, -1);
-		break;
-	case 0:
-		SetThreadPriority(thread, 0);
-		break;
-	case 1:
-		SetThreadPriority(thread, 1);
-		break;
-	case 2:
-		SetThreadPriority(thread, 2);
-		break;
-	case 3:
-		SetThreadPriority(thread, 15);
-		break;
-	default:
-		break;
-	}
-}
-
 int pinball::make_path_name(LPSTR lpFilename, LPCSTR lpString2, int nSize)
 {
-	int nameSize = GetModuleFileNameA(nullptr, lpFilename, nSize);
-	if (!nameSize || nameSize == nSize)
+	auto base_path = SDL_GetBasePath();
+	if (!base_path)
+	{
+		strcat_s(lpFilename, nSize, "?");
 		return 1;
-	for (CHAR* i = &lpFilename[nameSize]; i > lpFilename; --i)
-	{
-		if (*i == '\\' || *i == ':')
-		{
-			i[1] = 0;
-			break;
-		}
-		--nameSize;
 	}
-	if (nameSize + 13 < nSize)
-	{
-		lstrcatA(lpFilename, lpString2);
-		return 0;
-	}
-	lstrcatA(lpFilename, "?");
-	return 1;
+	strcpy_s(lpFilename, nSize, base_path);
+	strcat_s(lpFilename, nSize, lpString2);
+	return 0;
 }
