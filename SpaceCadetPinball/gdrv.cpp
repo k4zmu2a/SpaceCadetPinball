@@ -317,6 +317,25 @@ void gdrv::blit(gdrv_bitmap8* bmp, int xSrc, int ySrcOff, int xDest, int yDest, 
 void gdrv::blat(gdrv_bitmap8* bmp, int xDest, int yDest)
 {
 	HDC dc = winmain::_GetDC(hwnd);
+
+	// Black background for uniform scaling
+	if (fullscrn::OffsetX > 0 || fullscrn::OffsetY > 0)
+	{
+		const auto rop = BLACKNESS;
+		RECT client{};
+		GetClientRect(hwnd, &client);
+		if (fullscrn::OffsetX > 0)
+		{
+			BitBlt(dc, 0, 0, fullscrn::OffsetX, client.bottom, dc, 0, 0, rop);
+			BitBlt(dc, client.right - fullscrn::OffsetX, 0, client.right, client.bottom, dc, 0, 0, rop);
+		}
+		else
+		{
+			BitBlt(dc, 0, 0, client.right, fullscrn::OffsetY, dc, 0, 0, rop);
+			BitBlt(dc, 0, client.bottom - fullscrn::OffsetY, client.right, client.bottom, dc, 0, 0, rop);
+		}
+	}
+
 	SelectPalette(dc, palette_handle, 0);
 	RealizePalette(dc);
 	SetStretchBltMode(dc, stretchMode);

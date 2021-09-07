@@ -28,8 +28,8 @@ const resolution_info fullscrn::resolution_array[3] =
 };
 float fullscrn::ScaleX = 1;
 float fullscrn::ScaleY = 1;
-float fullscrn::OffsetX = 0;
-float fullscrn::OffsetY = 0;
+int fullscrn::OffsetX = 0;
+int fullscrn::OffsetY = 0;
 
 void fullscrn::init(int width, int height, int isFullscreen, HWND winHandle, HMENU menuHandle, int changeDisplay)
 {
@@ -450,13 +450,7 @@ void fullscrn::window_size_changed()
 	if (options::Options.UniformScaling)
 	{
 		ScaleY = ScaleX = min(ScaleX, ScaleY);
-		OffsetX = floor((client.right - res->TableWidth * ScaleX) / 2);
-		OffsetY = floor((client.bottom - res->TableHeight * ScaleY) / 2);
-		auto dc = GetDC(hWnd);
-		if (dc)
-		{
-			BitBlt(dc, 0, 0, client.right, client.bottom, dc, 0, 0, BLACKNESS);
-			ReleaseDC(hWnd, dc);
-		}
+		OffsetX = static_cast<int>(floor((client.right - res->TableWidth * ScaleX) / 2));
+		OffsetY = static_cast<int>(floor((client.bottom - res->TableHeight * ScaleY) / 2));
 	}
 }

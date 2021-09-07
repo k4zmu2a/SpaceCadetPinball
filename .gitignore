@@ -263,3 +263,11 @@ __pycache__/
 /Export
 /DrMem
 /Doc private
+
+# Cmake stuff
+/Libs
+/out
+
+# WinXp stuff
+DebugWinXp/
+ReleaseWinXp/

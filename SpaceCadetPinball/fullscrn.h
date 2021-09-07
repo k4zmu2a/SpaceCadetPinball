@@ -30,8 +30,8 @@ public:
 	static const resolution_info resolution_array[3];
 	static float ScaleX;
 	static float ScaleY;
-	static float OffsetX;
-	static float OffsetY;
+	static int OffsetX;
+	static int OffsetY;
 
 	static void init(int width, int height, int isFullscreen, HWND winHandle, HMENU menuHandle, int changeDisplay);
 	static void shutdown();
