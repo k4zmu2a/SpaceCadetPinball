@@ -326,13 +326,13 @@ void gdrv::blat(gdrv_bitmap8* bmp, int xDest, int yDest)
 		GetClientRect(hwnd, &client);
 		if (fullscrn::OffsetX > 0)
 		{
-			BitBlt(dc, 0, 0, fullscrn::OffsetX, client.bottom, dc, 0, 0, rop);
-			BitBlt(dc, client.right - fullscrn::OffsetX, 0, client.right, client.bottom, dc, 0, 0, rop);
+			BitBlt(dc, 0, 0, min(fullscrn::OffsetX + 2, client.right), client.bottom, dc, 0, 0, rop);
+			BitBlt(dc, max(client.right - fullscrn::OffsetX - 2, 0), 0, client.right, client.bottom, dc, 0, 0, rop);
 		}
 		else
 		{
-			BitBlt(dc, 0, 0, client.right, fullscrn::OffsetY, dc, 0, 0, rop);
-			BitBlt(dc, 0, client.bottom - fullscrn::OffsetY, client.right, client.bottom, dc, 0, 0, rop);
+			BitBlt(dc, 0, 0, client.right, min(fullscrn::OffsetY + 2, client.bottom), dc, 0, 0, rop);
+			BitBlt(dc, 0, max(client.bottom - fullscrn::OffsetY - 2, 0), client.right, client.bottom, dc, 0, 0, rop);
 		}
 	}
 
