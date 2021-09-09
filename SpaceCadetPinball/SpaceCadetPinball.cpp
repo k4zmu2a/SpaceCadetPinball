@@ -3,7 +3,6 @@
 
 #include "pch.h"
 
-#include <iostream>
 #include "objlist_class.h"
 #include "partman.h"
 #include "gdrv.h"
@@ -38,7 +37,7 @@ int main(int argc, char* argv[])
 
 	auto xx = sizeof(datFileHeader);
 
-	strcpy_s(winmain::DatFileName, "PINBALL.DAT");
+	strncpy(winmain::DatFileName, "PINBALL.DAT", sizeof winmain::DatFileName);
 	pb::init();
 	auto datFile = pb::record_table;
 
@@ -71,7 +70,7 @@ int main(int argc, char* argv[])
 	{
 		auto rsc = pinball::get_rc_string(i, 0);
 		if (rsc)
-			printf_s("%d:\t%s\n", i, rsc);
+			printf("%d:\t%s\n", i, rsc);
 	}
 	
 	//DatParser::Parse(dataFileName);

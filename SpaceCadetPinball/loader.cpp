@@ -145,14 +145,22 @@ int loader::get_sound_id(int groupIndex)
 			                                                       datFieldTypes::ShortValue));
 			if (value && *value == 202)
 			{
-				/*FT sounds are in SOUND subfolder*/
-				char filePath[300]{}, fileName2[100]{};
-				auto fileName = partman::field(loader_table, soundGroupId, datFieldTypes::String);
-				sprintf_s(fileName2, pb::FullTiltMode ? "SOUND\\%s" : "%s", fileName);
-				pinball::make_path_name(filePath, fileName2);
+				char filePath[300]{};
+				std::string fileName = partman::field(loader_table, soundGroupId, datFieldTypes::String);
 
-				FILE* file;
-				if (!fopen_s(&file, filePath, "rb"))
+				// File name is in lower case, while game data is in upper case.				
+				std::transform(fileName.begin(), fileName.end(), fileName.begin(), [](unsigned char c) { return std::toupper(c); });				
+				if (pb::FullTiltMode)
+				{
+					// FT sounds are in SOUND subfolder
+					fileName.insert(0, 1, PathSeparator);
+					fileName.insert(0, "SOUND");
+				}
+				
+				pinball::make_path_name(filePath, fileName.c_str());
+
+				FILE* file = fopen(filePath, "rb");
+				if (file)
 				{
 					fread(&wavHeader, 1, sizeof wavHeader, file);
 					fclose(file);

@@ -17,6 +17,13 @@
 
 namespace
 {
+	// make_unique is C++14
+	template<typename T, typename... Args>
+	std::unique_ptr<T> make_unique(Args&&... args)
+	{
+		return std::unique_ptr<T>(new T(std::forward<Args>(args)...));
+	}
+
 	struct Device* CurrentDevice = nullptr;
 
 	namespace TupleHash
@@ -417,7 +424,7 @@ namespace
 
 		const InterpolatedFactorEquation<Color> shadeColor(Color(v1.col), Color(v2.col), Color(v3.col), v1.pos, v2.pos, v3.pos);
 
-		auto cached = std::make_unique<Device::TriangleCacheItem>();
+		auto cached = make_unique<Device::TriangleCacheItem>();
 		DrawTriangleWithColorFunction(renderInfo, [&](float x, float y) {
 			const float u = textureU.Evaluate(x, y);
 			const float v = textureV.Evaluate(x, y);
@@ -454,7 +461,7 @@ namespace
 			return;
 		}
 
-		auto cached = std::make_unique<Device::TriangleCacheItem>();
+		auto cached = make_unique<Device::TriangleCacheItem>();
 		DrawTriangleWithColorFunction(renderInfo, [&color](float, float) { return color; }, cached.get());
 
 		if (!cached->Texture) return;

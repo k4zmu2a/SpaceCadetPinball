@@ -1,7 +1,7 @@
 # SpaceCadetPinball
 **Summary:** Reverse engineering of `3D Pinball for Windows – Space Cadet`, a game bundled with Windows.
 
-**How to play:** Place compiled exe into a folder containing original game resources (not included).\
+**How to play:** Place compiled executable into a folder containing original game resources (not included).\
 Supports data files from Windows and Full Tilt versions of the game.
 \
 \
@@ -20,8 +20,15 @@ Supports data files from Windows and Full Tilt versions of the game.
  * All subs were decompiled, C pseudo code was converted to compilable C++. Loose (namespace?) subs were assigned to classes.
 
 **Compiling:**\
-Project uses `C++11` features and depends on Windows libs.\
-Compile with Visual Studio; tested with 2017 and 2019. 
+Project uses `C++11` and depends on `SDL2` libs.\
+On Windows:\
+Download and unpack devel packages for `SDL2` and `SDL2_mixer`.\
+Set paths to them in CMakeLists.txt, see suggested placement in /Libs.\
+Compile with Visual Studio; tested with 2019. 
+
+On Linux:\
+Install devel packages for `SDL2` and `SDL2_mixer`.\
+Compile with CMake; tested with GCC 10. 
 
 **Plans:**
  * ~~Decompile original game~~

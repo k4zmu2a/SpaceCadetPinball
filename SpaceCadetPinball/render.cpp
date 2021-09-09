@@ -68,9 +68,9 @@ void render::update()
 	for (int index = 0; index < many_dirty; ++dirtyPtr, ++index)
 	{
 		auto curSprite = *dirtyPtr;
-		if ((*dirtyPtr)->VisualType != VisualType::None)
+		if ((*dirtyPtr)->VisualType != VisualTypes::None)
 		{
-			if ((*dirtyPtr)->VisualType == VisualType::Sprite)
+			if ((*dirtyPtr)->VisualType == VisualTypes::Sprite)
 			{
 				if (curSprite->BmpRectCopy.Width > 0)
 					maths::enclosing_box(&curSprite->BmpRectCopy, &curSprite->BmpRect, &curSprite->DirtyRect);
@@ -118,8 +118,8 @@ void render::update()
 	for (int index = 0; index < many_dirty; ++index)
 	{
 		auto sprite = *dirtyPtr;
-		if ((*dirtyPtr)->DirtyRect.Width > 0 && (sprite->VisualType == VisualType::None || sprite->VisualType ==
-			VisualType::Sprite))
+		if ((*dirtyPtr)->DirtyRect.Width > 0 && (sprite->VisualType == VisualTypes::None || sprite->VisualType ==
+			VisualTypes::Sprite))
 			repaint(*dirtyPtr);
 		++dirtyPtr;
 	}
@@ -214,11 +214,11 @@ void render::paint()
 
 void render::sprite_modified(render_sprite_type_struct* sprite)
 {
-	if (sprite->VisualType != VisualType::Ball && many_dirty < 999)
+	if (sprite->VisualType != VisualTypes::Ball && many_dirty < 999)
 		dirty_list[many_dirty++] = sprite;
 }
 
-render_sprite_type_struct* render::create_sprite(VisualType visualType, gdrv_bitmap8* bmp, zmap_header_type* zMap,
+render_sprite_type_struct* render::create_sprite(VisualTypes visualType, gdrv_bitmap8* bmp, zmap_header_type* zMap,
                                                  int xPosition, int yPosition, rectangle_type* rect)
 {
 	auto sprite = memory::allocate<render_sprite_type_struct>();
@@ -256,14 +256,14 @@ render_sprite_type_struct* render::create_sprite(VisualType visualType, gdrv_bit
 	sprite->ZMap = zMap;
 	sprite->ZMapOffestX = 0;
 	sprite->ZMapOffestY = 0;
-	if (!zMap && visualType != VisualType::Ball)
+	if (!zMap && visualType != VisualTypes::Ball)
 	{
 		sprite->ZMap = background_zmap;
 		sprite->ZMapOffestY = xPosition - zmap_offset;
 		sprite->ZMapOffestX = yPosition - zmap_offsetY;
 	}
 	sprite->BmpRectCopy = sprite->BmpRect;
-	if (visualType == VisualType::Ball)
+	if (visualType == VisualTypes::Ball)
 	{
 		ball_list[many_balls++] = sprite;
 	}

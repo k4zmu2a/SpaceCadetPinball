@@ -38,7 +38,7 @@ void TPlunger::Collision(TBall* ball, vector_type* nextPosition, vector_type* di
 {
 	if (PinballTable->TiltLockFlag)
 		Message(1017, 0.0);
-	coef = static_cast<float>(rand()) * 0.00003051850947599719f * Boost * 0.1f + Boost;
+	coef = RandFloat() * Boost * 0.1f + Boost;
 	maths::basic_collision(ball, nextPosition, direction, Elasticity, Smoothness, Threshold, coef);
 }
 

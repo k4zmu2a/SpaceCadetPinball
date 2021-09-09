@@ -33,7 +33,7 @@ TTableLayer::TTableLayer(TPinballTable* table): TCollisionComponent(table, -1, f
 	rect.YPosition = 0;
 	rect.Width = bmp->Width;
 	rect.Height = bmp->Height;
-	render::create_sprite(VisualType::None, bmp, visual.ZMap, 0, 0, &rect);
+	render::create_sprite(VisualTypes::None, bmp, visual.ZMap, 0, 0, &rect);
 
 	PinballTable->SoundIndex1 = visual.SoundIndex4;
 	PinballTable->SoundIndex2 = visual.SoundIndex3;
@@ -112,7 +112,7 @@ TTableLayer::~TTableLayer()
 
 int TTableLayer::FieldEffect(TBall* ball, vector_type* vecDst)
 {
-	vecDst->X = GraityDirX - (0.5f - static_cast<float>(rand()) * 0.00003051850947599719f + ball->Acceleration.X) *
+	vecDst->X = GraityDirX - (0.5f - RandFloat() + ball->Acceleration.X) *
 		ball->Speed * GraityMult;
 	vecDst->Y = GraityDirY - ball->Acceleration.Y * ball->Speed * GraityMult;
 	return 1;

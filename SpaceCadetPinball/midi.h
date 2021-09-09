@@ -44,16 +44,9 @@ struct riff_header
 	riff_data Data;
 };
 
-struct midi_event_x2
+struct midi_event
 {
 	DWORD iTicks;
-	DWORD iEvent;
-};
-
-struct midi_event_x3
-{
-	DWORD iTicks;
-	DWORD iStreamID;
 	DWORD iEvent;
 };
 
@@ -85,8 +78,7 @@ struct midi_track
 static_assert(sizeof(riff_block) == 0xC, "Wrong size of riff_block");
 static_assert(sizeof(riff_data) == 0x18, "Wrong size of riff_data");
 static_assert(sizeof(riff_header) == 0x38, "Wrong size of riff_header");
-static_assert(sizeof(midi_event_x3) == 12, "Wrong size of midi_event3");
-static_assert(sizeof(midi_event_x2) == 8, "Wrong size of midi_event2");
+static_assert(sizeof(midi_event) == 8, "Wrong size of midi_event2");
 static_assert(sizeof(midi_header) == 14, "Wrong size of midi_header");
 static_assert(sizeof(midi_track) == 8, "Wrong size of midi_track");
 
@@ -107,7 +99,7 @@ private:
 	static int some_flag1;
 	static int music_init_ft();
 	static void music_shutdown_ft();
-	static Mix_Music* load_track(LPCSTR fileName);
+	static Mix_Music* load_track(std::string fileName);
 	static int play_ft(Mix_Music* midi);
 	static int stop_ft();
 	static std::vector<uint8_t>* MdsToMidi(char* file);

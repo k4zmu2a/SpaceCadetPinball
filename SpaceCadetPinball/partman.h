@@ -92,7 +92,7 @@ static_assert(sizeof(dat8BitBmpHeader) == 14, "Wrong size of dat8BitBmpHeader");
 
 
 #pragma pack(push, 1)
-struct __declspec(align(1)) dat16BitBmpHeader
+struct dat16BitBmpHeader
 {
 	int16_t Width;
 	int16_t Height;

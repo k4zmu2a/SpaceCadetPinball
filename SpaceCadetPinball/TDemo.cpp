@@ -105,8 +105,7 @@ void TDemo::Collision(TBall* ball, vector_type* nextPosition, vector_type* direc
 	case 1400:
 		if (!FlipLeftTimer && !FlipLeftFlag)
 		{
-			float time = FlipTimerTime1 + FlipTimerTime2 - static_cast<float>(rand()) *
-				0.00003051850947599719f * (FlipTimerTime2 + FlipTimerTime2);
+			float time = FlipTimerTime1 + FlipTimerTime2 - RandFloat() * (FlipTimerTime2 + FlipTimerTime2);
 			FlipLeftTimer = timer::set(time, this, FlipLeft);
 		}
 		break;
@@ -116,8 +115,7 @@ void TDemo::Collision(TBall* ball, vector_type* nextPosition, vector_type* direc
 	case 1402:
 		if (!FlipRightTimer && !FlipRightFlag)
 		{
-			float time = FlipTimerTime1 + FlipTimerTime2 - static_cast<float>(rand()) *
-				0.00003051850947599719f * (FlipTimerTime2 + FlipTimerTime2);
+			float time = FlipTimerTime1 + FlipTimerTime2 - RandFloat() * (FlipTimerTime2 + FlipTimerTime2);
 			FlipRightTimer = timer::set(time, this, FlipRight);
 		}
 		break;
@@ -128,7 +126,7 @@ void TDemo::Collision(TBall* ball, vector_type* nextPosition, vector_type* direc
 		if (!PlungerFlag)
 		{
 			PinballTable->Message(1004, ball->TimeNow);
-			float time = static_cast<float>(rand()) * 0.00003051850947599719f + 2.0f;
+			float time = RandFloat() + 2.0f;
 			PlungerFlag = timer::set(time, this, PlungerRelease);
 		}
 		break;
@@ -172,8 +170,8 @@ void TDemo::FlipRight(int timerId, void* caller)
 		}
 		demo->PinballTable->Message(1002, pb::time_next);
 		demo->FlipRightFlag = 1;
-		float time = demo->UnFlipTimerTime1 + demo->UnFlipTimerTime2 - static_cast<float>(rand()) *
-			0.00003051850947599719f * (demo->UnFlipTimerTime2 + demo->UnFlipTimerTime2);
+		float time = demo->UnFlipTimerTime1 + demo->UnFlipTimerTime2 - RandFloat() *
+			(demo->UnFlipTimerTime2 + demo->UnFlipTimerTime2);
 		timer::set(time, demo, UnFlipRight);
 	}
 }
@@ -190,8 +188,8 @@ void TDemo::FlipLeft(int timerId, void* caller)
 		}
 		demo->PinballTable->Message(1000, pb::time_next);
 		demo->FlipLeftFlag = 1;
-		float time = demo->UnFlipTimerTime1 + demo->UnFlipTimerTime2 - static_cast<float>(rand()) *
-			0.00003051850947599719f * (demo->UnFlipTimerTime2 + demo->UnFlipTimerTime2);
+		float time = demo->UnFlipTimerTime1 + demo->UnFlipTimerTime2 - RandFloat() *
+			(demo->UnFlipTimerTime2 + demo->UnFlipTimerTime2);
 		timer::set(time, demo, UnFlipLeft);
 	}
 }

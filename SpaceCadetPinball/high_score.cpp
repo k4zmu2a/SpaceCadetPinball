@@ -53,13 +53,13 @@ int high_score::read(high_score_struct* table, int* ptrToSmth)
 	for (auto position = 0; position < 5; ++position)
 	{
 		auto tablePtr = &table[position];
-		_itoa_s(position, Buffer, 10);
-		strcat_s(Buffer, ".Name");
+		snprintf(Buffer, sizeof Buffer, "%d", position);
+		strcat(Buffer, ".Name");
 		options::get_string(optPath, Buffer, buf1, "", 32);
 		buf1[32] = 0;
-		strcpy_s(tablePtr->Name, buf1);
-		_itoa_s(position, Buffer, 10);
-		strcat_s(Buffer, ".Score");
+		strncpy(tablePtr->Name, buf1, sizeof tablePtr->Name);
+		snprintf(Buffer, sizeof Buffer, "%d", position);
+		strcat(Buffer, ".Score");
 		options::get_string(optPath, Buffer, buf1, "", 300);
 		tablePtr->Score = atol(buf1);
 		for (int i = (int)strlen(tablePtr->Name); --i >= 0; scoreSum += tablePtr->Name[i])
@@ -89,12 +89,12 @@ int high_score::write(high_score_struct* table, int* ptrToSmth)
 	const char* optPath = pinball::get_rc_string(166, 0);
 	for (auto position = 0; position < 5; ++position)
 	{
-		_itoa_s(position, Buffer, 10);
-		strcat_s(Buffer, ".Name");
+		snprintf(Buffer, sizeof Buffer, "%d", position);
+		strcat(Buffer, ".Name");
 		options::set_string(optPath, Buffer, tablePtr->Name);
-		_itoa_s(position, Buffer, 10);
-		strcat_s(Buffer, ".Score");
-		_ltoa_s(tablePtr->Score, buf, 300, 10);
+		snprintf(Buffer, sizeof Buffer, "%d", position);
+		strcat(Buffer, ".Score");
+		snprintf(buf, 300, "%d", tablePtr->Score);		
 		options::set_string(optPath, Buffer, buf);
 		for (int i = (int)strlen(tablePtr->Name); --i >= 0; scoreSum += tablePtr->Name[i])
 		{
@@ -152,7 +152,7 @@ int high_score::place_new_score_into(high_score_struct* table, int score, LPSTR 
 		posTable->Score = score;
 		if (strlen(scoreStr) >= 31)
 			scoreStr[31] = 0;
-		strcpy_s(posTable->Name, scoreStr);
+		strncpy(posTable->Name, scoreStr, sizeof posTable->Name);
 		posTable->Name[31] = 0;
 	}
 	return position;
@@ -160,7 +160,7 @@ int high_score::place_new_score_into(high_score_struct* table, int score, LPSTR 
 
 void high_score::scramble_number_string(int Value, char* Buffer)
 {
-	_ltoa_s(Value, Buffer, 300, 10);
+	snprintf(Buffer, 300, "%d", Value);
 }
 
 void high_score::show_high_score_dialog(high_score_struct* table)
@@ -177,7 +177,7 @@ void high_score::show_and_set_high_score_dialog(high_score_struct* table, int sc
 	dlg_score = score;
 	dlg_hst = table;
 	dlg_enter_name = 1;
-	strncpy_s(default_name, defaultName, 32);
+	strncpy(default_name, defaultName, sizeof default_name);
 	ShowDialog = true;
 }
 
@@ -210,11 +210,11 @@ void high_score::RenderHighScoreDialog()
 			{
 				ImGui::TableNextRow();
 				ImGui::TableNextColumn();
-				_itoa_s(row, buf, 10);
+				snprintf(buf, sizeof buf, "%d", row);
 				ImGui::TextUnformatted(buf);
 
 				auto score = tablePtr->Score;
-				ImGui::TableNextColumn();				
+				ImGui::TableNextColumn();
 				if (dlg_enter_name == 1 && dlg_position == row)
 				{
 					score = dlg_score;
@@ -239,9 +239,9 @@ void high_score::RenderHighScoreDialog()
 		if (ImGui::Button("Ok"))
 		{
 			if (dlg_enter_name)
-			{				
+			{
 				default_name[31] = 0;
-				place_new_score_into(dlg_hst, dlg_score, default_name, dlg_position);				
+				place_new_score_into(dlg_hst, dlg_score, default_name, dlg_position);
 			}
 			ImGui::CloseCurrentPopup();
 		}

@@ -54,7 +54,7 @@ void zdrv::paint(int width, int height, gdrv_bitmap8* dstBmp, int dstBmpXOff, in
                  int dstZMapXOff, int dstZMapYOff, gdrv_bitmap8* srcBmp, int srcBmpXOff, int srcBmpYOff,
                  zmap_header_type* srcZMap, int srcZMapXOff, int srcZMapYOff)
 {
-	if (srcBmp->BitmapType == BitmapType::Spliced)
+	if (srcBmp->BitmapType == BitmapTypes::Spliced)
 	{
 		/*Spliced bitmap is also a zMap, how convenient*/
 		paint_spliced_bmp(srcBmp->XPosition, srcBmp->YPosition, dstBmp, dstZMap, srcBmp);
@@ -121,7 +121,7 @@ void zdrv::paint_flat(int width, int height, gdrv_bitmap8* dstBmp, int dstBmpXOf
 
 void zdrv::paint_spliced_bmp(int xPos, int yPos, gdrv_bitmap8* dstBmp, zmap_header_type* dstZmap, gdrv_bitmap8* srcBmp)
 {
-	assertm(srcBmp->BitmapType == BitmapType::Spliced, "Wrong bmp type");
+	assertm(srcBmp->BitmapType == BitmapTypes::Spliced, "Wrong bmp type");
 	int xOffset = xPos - pb::MainTable->XOffset;
 	int yOffset = dstBmp->Height - srcBmp->Height - (yPos - pb::MainTable->YOffset);
 	if (yOffset < 0)

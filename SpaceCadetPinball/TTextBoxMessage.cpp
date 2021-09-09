@@ -13,7 +13,7 @@ TTextBoxMessage::TTextBoxMessage(char* text, float time)
 		const auto textLen = strlen(text) + 1;
 		Text = memory::allocate(textLen);
 		if (Text)
-			strcpy_s(Text, textLen, text);
+			strncpy(Text, text, textLen);
 	}
 	else
 		Text = nullptr;

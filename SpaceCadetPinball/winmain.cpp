@@ -72,12 +72,11 @@ int winmain::WinMain(LPCSTR lpCmdLine)
 	/*Check for full tilt .dat file and switch to it automatically*/
 	char cadetFilePath[300]{};
 	pinball::make_path_name(cadetFilePath, "CADET.DAT", 300);
-	FILE* cadetDat;
-	fopen_s(&cadetDat, cadetFilePath, "r");
+	FILE* cadetDat = fopen(cadetFilePath, "r");
 	if (cadetDat)
 	{
 		fclose(cadetDat);
-		strcpy_s(DatFileName, "CADET.DAT");
+		strncpy(DatFileName, "CADET.DAT", sizeof DatFileName);
 		pb::FullTiltMode = true;
 	}
 
@@ -179,7 +178,7 @@ int winmain::WinMain(LPCSTR lpCmdLine)
 				{
 					char buf[60];
 					auto elapsedSec = static_cast<float>(curTime - prevTime) * 0.001f;
-					sprintf_s(buf, "Updates/sec = %02.02f Frames/sec = %02.02f ",
+					snprintf(buf, sizeof buf, "Updates/sec = %02.02f Frames/sec = %02.02f ",
 					          300.0f / elapsedSec, frameCounter / elapsedSec);
 					SDL_SetWindowTitle(window, buf);
 					frameCounter = 0;
@@ -440,7 +439,7 @@ void winmain::RenderUi()
 		if (ImGui::BeginMenu("Help"))
 		{
 #ifndef NDEBUG
-			if (ImGui::MenuItem("ImGui Demo"))
+			if (ImGui::MenuItem("ImGui Demo", nullptr, ShowImGuiDemo))
 			{
 				ShowImGuiDemo ^= true;
 			}
@@ -689,7 +688,7 @@ void winmain::memalloc_failure()
 	char* caption = pinball::get_rc_string(170, 0);
 	char* text = pinball::get_rc_string(179, 0);
 	SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, caption, text, MainWindow);
-	_exit(1);
+	std::exit(1);
 }
 
 void winmain::a_dialog()

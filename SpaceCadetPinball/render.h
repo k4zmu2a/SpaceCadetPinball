@@ -3,7 +3,7 @@
 #include "maths.h"
 #include "zdrv.h"
 
-enum class VisualType : char
+enum class VisualTypes : char
 {
 	None = 0,
 	Sprite = 1,
@@ -16,7 +16,7 @@ struct render_sprite_type_struct
 	gdrv_bitmap8* Bmp;
 	zmap_header_type* ZMap;
 	char UnknownFlag;
-	VisualType VisualType;
+	VisualTypes VisualType;
 	int16_t Depth;
 	rectangle_type BmpRectCopy;
 	int ZMapOffestY;
@@ -46,7 +46,7 @@ public:
 	static void update();
 	static void paint();
 	static void sprite_modified(render_sprite_type_struct* sprite);
-	static render_sprite_type_struct* create_sprite(VisualType visualType, gdrv_bitmap8* bmp,
+	static render_sprite_type_struct* create_sprite(VisualTypes visualType, gdrv_bitmap8* bmp,
 	                                                zmap_header_type* zMap,
 	                                                int xPosition, int yPosition, rectangle_type* rect);
 	static void remove_sprite(render_sprite_type_struct* sprite);

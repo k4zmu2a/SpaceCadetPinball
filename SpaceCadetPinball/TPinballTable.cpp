@@ -253,7 +253,7 @@ TPinballComponent* TPinballTable::find_component(int groupIndex)
 				return obj;
 		}
 	}
-	_itoa_s(groupIndex, Buffer, 10);
+	snprintf(Buffer, sizeof Buffer, "%d", groupIndex);
 	SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_WARNING, "Table cant find (lh):", Buffer, nullptr);
 	return nullptr;
 }

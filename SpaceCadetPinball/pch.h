@@ -9,6 +9,10 @@
 #ifndef PCH_H
 #define PCH_H
 
+
+// GCC does not have *_s functions
+#define _CRT_SECURE_NO_WARNINGS
+
 // TODO: add headers that you want to pre-compile here
 #include <cstdio>
 #include <cassert>
@@ -16,11 +20,13 @@
 #include <cstdint>
 #include <type_traits> /*For control template*/
 #include <chrono>
-//#include <iostream>
+#include <iostream>
 //#include <iomanip>
 //#include <cstdlib>
 #include <vector>
 #include <algorithm>
+#include <cstring>
+#include <string>
 
 #define SDL_MAIN_HANDLED
 #include "SDL.h"
@@ -32,18 +38,26 @@
 //https://github.com/Tyyppi77/imgui_sdl 01deb04b102b6a1c15c7fdec1977a2c96a885e6f
 #include "imgui_sdl.h"
 
-typedef unsigned long  DWORD;
+typedef uint32_t  DWORD;
 typedef char* LPSTR;
 typedef const char* LPCSTR;
 
 #define min(a,b) ((a)<(b)?(a):(b))
 #define max(a,b) ((a)>(b)?(a):(b))
+//
+//#define min(a,b) (((a)<(b))?(a):(b))
+//#define max(a,b) (((a)>(b))?(a):(b))
+
+constexpr char PathSeparator =
+#ifdef _WIN32
+'\\';
+#else
+'/';
+#endif
+
 
 /*Use (void) to silent unused warnings.*/
 #define assertm(exp, msg) assert(((void)msg, exp))
-
-/*Sound uses PlaySound*/
-#undef PlaySound
 
 
 inline size_t pgm_save(int width, int height, char* data, FILE* outfile)
@@ -52,6 +66,11 @@ inline size_t pgm_save(int width, int height, char* data, FILE* outfile)
 	n += fprintf(outfile, "P5\n%d %d\n%d\n", width, height, 0xFF);
 	n += fwrite(data, 1, width * height, outfile);
 	return n;
+}
+
+inline float RandFloat()
+{
+	return static_cast<float>(std::rand()) / (RAND_MAX);
 }
 
 #endif //PCH_H

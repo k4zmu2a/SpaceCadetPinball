@@ -1,6 +1,6 @@
 #pragma once
 
-enum class BitmapType : char
+enum class BitmapTypes : char
 {
 	None = 0,
 	RawBitmap = 1,
@@ -14,7 +14,7 @@ struct gdrv_bitmap8
 	int Width;
 	int Height;
 	int Stride;
-	BitmapType BitmapType;
+	BitmapTypes BitmapType;
 	int XPosition;
 	int YPosition;
 };

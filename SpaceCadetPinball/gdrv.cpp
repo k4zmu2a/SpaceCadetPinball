@@ -48,7 +48,7 @@ int gdrv::create_bitmap(gdrv_bitmap8* bmp, int width, int height)
 		bmp->Stride = 4 - width % 4 + width;
 
 	bmp->Height = height;
-	bmp->BitmapType = BitmapType::DibBitmap;
+	bmp->BitmapType = BitmapTypes::DibBitmap;
 	bmp->BmpBufPtr1 = memory::allocate(bmp->Height * bmp->Stride);
 	return 0;
 }
@@ -61,7 +61,7 @@ int gdrv::create_raw_bitmap(gdrv_bitmap8* bmp, int width, int height, int flag)
 		bmp->Stride = width - width % 4 + 4;
 	unsigned int sizeInBytes = height * bmp->Stride;
 	bmp->Height = height;
-	bmp->BitmapType = BitmapType::RawBitmap;
+	bmp->BitmapType = BitmapTypes::RawBitmap;
 	char* buf = memory::allocate(sizeInBytes);
 	bmp->BmpBufPtr1 = buf;
 	if (!buf)
@@ -73,7 +73,7 @@ int gdrv::create_spliced_bitmap(gdrv_bitmap8* bmp, int width, int height, int si
 {
 	bmp->Width = width;
 	bmp->Stride = width;
-	bmp->BitmapType = BitmapType::Spliced;
+	bmp->BitmapType = BitmapTypes::Spliced;
 	bmp->Height = height;
 	char* buf = memory::allocate(size);
 	bmp->BmpBufPtr1 = buf;
@@ -133,7 +133,7 @@ int gdrv::destroy_bitmap(gdrv_bitmap8* bmp)
 	if (!bmp)
 		return -1;
 
-	if (bmp->BitmapType != BitmapType::None)
+	if (bmp->BitmapType != BitmapTypes::None)
 	{
 		memory::free(bmp->BmpBufPtr1);
 	}

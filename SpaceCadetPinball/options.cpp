@@ -132,7 +132,7 @@ void options::path_init(LPCSTR regPath)
 	char* buf = memory::allocate(strlen(regPath) + 1);
 	OptionsRegPath = buf;
 	if (buf)
-		strcpy_s(buf, strlen(regPath) + 1, regPath);
+		strncpy(buf,  regPath, strlen(regPath) + 1);
 }
 
 void options::path_uninit()
@@ -152,11 +152,11 @@ LPCSTR options::path(LPCSTR regPath)
 		if (!buf)
 			return OptionsRegPath;
 	}
-	strcpy_s(buf, 2000, OptionsRegPath);
+	strncpy(buf, OptionsRegPath, 2000);
 	if (!regPath)
 		return OptionsRegPathCur;
-	strcat_s(OptionsRegPathCur, 2000, "\\");
-	strcat_s(OptionsRegPathCur, 2000, regPath);
+	strcat(OptionsRegPathCur, "\\");
+	strcat(OptionsRegPathCur, regPath);
 	return OptionsRegPathCur;
 }
 
@@ -190,7 +190,7 @@ void options::set_int(LPCSTR optPath, LPCSTR lpValueName, int data)
 
 void options::get_string(LPCSTR optPath, LPCSTR lpValueName, LPSTR dst, LPCSTR defaultValue, int iMaxLength)
 {
-	strncpy_s(dst, iMaxLength, defaultValue, iMaxLength);
+	strncpy(dst, defaultValue, iMaxLength);
 	if (!OptionsRegPath)
 		return;
 

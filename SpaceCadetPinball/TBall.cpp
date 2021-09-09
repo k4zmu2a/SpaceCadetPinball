@@ -58,7 +58,7 @@ TBall::TBall(TPinballTable* table) : TPinballComponent(table, -1, false)
 		}
 		while (index < visualCount);
 	}
-	RenderSprite = render::create_sprite(VisualType::Ball, nullptr, nullptr, 0, 0, nullptr);
+	RenderSprite = render::create_sprite(VisualTypes::Ball, nullptr, nullptr, 0, 0, nullptr);
 	PinballTable->CollisionCompOffset = Offset;
 	Position.Z = Offset;
 }
@@ -138,10 +138,9 @@ void TBall::throw_ball(TBall* ball, vector_type* acceleration, float angleMult, 
 {
 	ball->CollisionComp = nullptr;
 	ball->Acceleration = *acceleration;
-	float rnd = static_cast<float>(rand());
-	float angle = (1.0f - (rnd * 0.00003051850947599719f + rnd * 0.00003051850947599719f)) * angleMult;
+	float rnd = RandFloat();
+	float angle = (1.0f - (rnd + rnd)) * angleMult;
 	maths::RotateVector(&ball->Acceleration, angle);
-	rnd = static_cast<float>(rand());
-	ball->Speed = (1.0f - (rnd * 0.00003051850947599719f + rnd * 0.00003051850947599719f)) * (speedMult1 *
-		speedMult2) + speedMult1;
+	rnd = RandFloat();
+	ball->Speed = (1.0f - (rnd + rnd)) * (speedMult1 * speedMult2) + speedMult1;
 }

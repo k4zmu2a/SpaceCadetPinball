@@ -105,15 +105,21 @@ void midi::music_shutdown_ft()
 	delete TrackList;
 }
 
-Mix_Music* midi::load_track(LPCSTR fileName)
+Mix_Music* midi::load_track(std::string fileName)
 {
 	char filePath[256];
-	char fileName2[256];
 
-	strcpy_s(fileName2, "sound\\");
-	strcat_s(fileName2, fileName);
-	pinball::make_path_name(filePath, fileName2, 254u);
-	strcat_s(filePath, ".MDS");
+	// File name is in lower case, while game data is in upper case.				
+	std::transform(fileName.begin(), fileName.end(), fileName.begin(), [](unsigned char c) { return std::toupper(c); });
+	if (pb::FullTiltMode)
+	{
+		// FT sounds are in SOUND subfolder
+		fileName.insert(0, 1, PathSeparator);
+		fileName.insert(0, "SOUND");
+	}
+	fileName += ".MDS";
+	
+	pinball::make_path_name(filePath, fileName.c_str(), 254u);	
 	auto midi = MdsToMidi(filePath);
 	if (!midi)
 		return nullptr;
@@ -125,11 +131,10 @@ Mix_Music* midi::load_track(LPCSTR fileName)
 	if (!audio)
 		return nullptr;
 
-	// Dump converted MIDI file
-	/*FILE* fileHandle;
-	strcpy_s(fileName2, fileName);
-	strcat_s(fileName2, ".midi");
-	fopen_s(&fileHandle, fileName2, "wb");
+	// Dump converted MIDI file	
+	/*strncpy(fileName2, fileName, sizeof fileName2);
+	strcat(fileName2, ".midi");
+	FILE* fileHandle = fopen(fileName2, "wb");
 	fwrite(midi->data(), 1, midi->size(), fileHandle);
 	fclose(fileHandle);*/
 	
@@ -178,8 +183,8 @@ int midi::stop_ft()
 /// <returns>Vector that contains MIDI file</returns>
 std::vector<uint8_t>* midi::MdsToMidi(char* file)
 {
-	FILE* fileHandle;
-	if (fopen_s(&fileHandle, file, "rb"))
+	FILE* fileHandle = fopen(file, "rb");
+	if (!fileHandle)
 		return nullptr;
 
 	fseek(fileHandle, 0, SEEK_END);
@@ -236,7 +241,7 @@ std::vector<uint8_t>* midi::MdsToMidi(char* file)
 		}
 
 		auto srcPtr = dataChunk->Blocks;
-		std::vector<midi_event_x2> midiEvents{};
+		std::vector<midi_event> midiEvents{};
 		for (auto blockIndex = dataChunk->BlocksPerChunk; blockIndex; blockIndex--)
 		{
 			auto eventSizeInt = streamIdUsed ? 3 : 2;
@@ -256,7 +261,7 @@ std::vector<uint8_t>* midi::MdsToMidi(char* file)
 		}
 
 		// MIDS events can be out of order in the file
-		std::sort(midiEvents.begin(), midiEvents.end(), [](const auto& lhs, const auto& rhs)
+		std::sort(midiEvents.begin(), midiEvents.end(), [](const midi_event& lhs, const midi_event& rhs)
 		{
 			return lhs.iTicks < rhs.iTicks;
 		});

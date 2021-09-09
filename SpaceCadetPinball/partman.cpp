@@ -15,11 +15,10 @@ datFileStruct* partman::load_records(LPCSTR lpFileName, int resolution, bool ful
 	dat8BitBmpHeader bmpHeader{};
 	dat16BitBmpHeader zMapHeader{};
 
-	FILE* fileHandle;
-	fopen_s(&fileHandle, lpFileName, "rb");
+	FILE* fileHandle = fopen(lpFileName, "rb");
 	if (fileHandle == nullptr)
 		return nullptr;
-	fread(&header, 1, sizeof datFileHeader, fileHandle);
+	fread(&header, 1, sizeof header, fileHandle);
 	if (strcmp("PARTOUT(4.0)RESOURCE", header.FileSignature) != 0)
 	{
 		fclose(fileHandle);
@@ -46,7 +45,7 @@ datFileStruct* partman::load_records(LPCSTR lpFileName, int resolution, bool ful
 			memory::free(datFile);
 			return nullptr;
 		}
-		strcpy_s(descriptionBuf, lenOfStr + 1, header.Description);
+		strncpy(descriptionBuf, header.Description, lenOfStr + 1);
 	}
 
 	if (header.Unknown)

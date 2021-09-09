@@ -245,7 +245,7 @@ void score::update(scoreStruct* score)
 		erase(score, 0);
 		if (score->Score >= 0)
 		{
-			_ltoa_s(score->Score, scoreBuf, 10);
+			snprintf(scoreBuf, sizeof scoreBuf, "%d", score->Score);
 			for (ptrdiff_t index = strlen(scoreBuf) - 1; index >= 0; index--)
 			{
 				unsigned char curChar = scoreBuf[index];
@@ -281,26 +281,26 @@ void score::string_format(int score, char* str)
 	}
 	else
 	{
-		strcpy_s(separator, ",");
+		strncpy(separator, ",", sizeof separator);
 		int scoreMillions = score % 1000000000 / 1000000;
 		if (score / 1000000000 <= 0)
 		{
 			if (static_cast<int>(scoreMillions) <= 0)
 			{
 				if (score % 1000000 / 1000 <= 0)
-					sprintf_s(str, 36, "%ld", score);
+					snprintf(str, 36, "%ld", score);
 				else
-					sprintf_s(str, 36, "%ld%s%03ld", score % 1000000 / 1000, separator, score % 1000);
+					snprintf(str, 36, "%ld%s%03ld", score % 1000000 / 1000, separator, score % 1000);
 			}
 			else
 			{
-				sprintf_s(str, 36, "%ld%s%03ld%s%03ld", scoreMillions, separator, score % 1000000 / 1000, separator,
+				snprintf(str, 36, "%ld%s%03ld%s%03ld", scoreMillions, separator, score % 1000000 / 1000, separator,
 				          score % 1000);
 			}
 		}
 		else
 		{
-			sprintf_s(
+			snprintf(
 				str,
 				36,
 				"%ld%s%03ld%s%03ld%s%03ld",

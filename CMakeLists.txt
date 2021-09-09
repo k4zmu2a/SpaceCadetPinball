@@ -1,17 +1,29 @@
 cmake_minimum_required(VERSION 3.16)
 project(SpaceCadetPinball)
 
-set(CMAKE_CXX_STANDARD 14)
+set(CMAKE_CXX_STANDARD 11)
 
-set(SDL2_DIR "${CMAKE_CURRENT_LIST_DIR}/Libs/SDL2-2.0.16")
-set(SDL2_mixer_DIR "${CMAKE_CURRENT_LIST_DIR}/Libs/SDL2_mixer-2.0.4") 
 
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_LIST_DIR}/bin)
+
+list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_LIST_DIR}/CMakeModules")
+
+# On Windows, set paths to SDL-devel packages here
+if(WIN32)
+   set(SDL2_PATH "${CMAKE_CURRENT_LIST_DIR}/Libs/SDL2")
+   set(SDL2_MIXER_PATH "${CMAKE_CURRENT_LIST_DIR}/Libs/SDL2_mixer")
+endif()
 
 find_package(SDL2 REQUIRED)
 FIND_PACKAGE(SDL2_mixer REQUIRED)
 
+include_directories(${SDL2_INCLUDE_DIR} ${SDL2_MIXER_INCLUDE_DIR})
+get_property(dirs DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} PROPERTY INCLUDE_DIRECTORIES)
+foreach(dir ${dirs})
+  message(STATUS "Include dir='${dir}'")
+endforeach()
 
-include_directories(${SDL2_INCLUDE_DIRS} ${SDL2_MIXER_INCLUDE_DIRS})
+
 
 set(SOURCE_FILES
         SpaceCadetPinball/control.cpp
@@ -156,4 +168,16 @@ set(SOURCE_FILES
 
 add_executable(SpaceCadetPinball ${SOURCE_FILES})
 
-target_link_libraries(SpaceCadetPinball ${SDL2_LIBRARIES} ${SDL2_MIXER_LIBRARIES})
+target_link_libraries(SpaceCadetPinball ${SDL2_LIBRARY} ${SDL2_MIXER_LIBRARY})
+
+# On Windows, copy DLL to output
+if(WIN32)
+    list(GET SDL2_LIBRARY 1 SDL2_LIB_PATH)
+    get_filename_component(SDL2_DLL_PATH ${SDL2_LIB_PATH} DIRECTORY)
+    get_filename_component(SDL2_MIXER_DLL_PATH ${SDL2_MIXER_LIBRARY} DIRECTORY)
+    message(STATUS "copy paths='${SDL2_DLL_PATH}' '${SDL2_MIXER_DLL_PATH}'") 
+    add_custom_command(TARGET SpaceCadetPinball POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E copy_if_different "${SDL2_DLL_PATH}/SDL2.dll" $<TARGET_FILE_DIR:SpaceCadetPinball>
+        COMMAND ${CMAKE_COMMAND} -E copy_if_different "${SDL2_MIXER_DLL_PATH}/SDL2_mixer.dll" $<TARGET_FILE_DIR:SpaceCadetPinball>
+        )
+endif()

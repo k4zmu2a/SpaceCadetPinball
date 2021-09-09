@@ -175,7 +175,7 @@ int TLightGroup::Message(int code, float value)
 				if (rand() % 100 > 70)
 				{
 					auto light = List->Get(i);
-					auto randVal = static_cast<float>(rand()) * 0.00003051850947599719f * value * 3.0f + 0.1f;
+					auto randVal = RandFloat() * value * 3.0f + 0.1f;
 					light->Message(9, randVal);
 				}
 			}

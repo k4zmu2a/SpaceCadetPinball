@@ -56,7 +56,7 @@ TPinballComponent::TPinballComponent(TPinballTable* table, int groupIndex, bool 
 				ListZMap = new objlist_class<zmap_header_type>(0, 4);
 				for (int index = 0; index < ListBitmap->GetCount(); index++)
 				{
-					assertm(ListBitmap->Get(index)->BitmapType == BitmapType::Spliced, "Wrong zMap padding");
+					assertm(ListBitmap->Get(index)->BitmapType == BitmapTypes::Spliced, "Wrong zMap padding");
 					ListZMap->Add(visual.ZMap);
 				}
 			}
@@ -78,7 +78,7 @@ TPinballComponent::TPinballComponent(TPinballTable* table, int groupIndex, bool 
 			}
 
 			RenderSprite = render::create_sprite(
-				visualCount > 0 ? VisualType::Sprite : VisualType::None,
+				visualCount > 0 ? VisualTypes::Sprite : VisualTypes::None,
 				rootBmp,
 				zMap,
 				rootBmp->XPosition - table->XOffset,

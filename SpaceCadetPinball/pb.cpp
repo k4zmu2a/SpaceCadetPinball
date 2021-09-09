@@ -40,7 +40,7 @@ int pb::init()
 	char dataFilePath[300];
 
 	++memory::critical_allocation;
-	strcpy_s(datFileName, winmain::DatFileName);
+	strncpy(datFileName, winmain::DatFileName, sizeof datFileName);
 	pinball::make_path_name(dataFilePath, datFileName, 300);
 	record_table = partman::load_records(dataFilePath, fullscrn::GetResolution(), FullTiltMode);
 
@@ -479,12 +479,12 @@ void pb::keydown(int key)
 			break;
 		case 'h':
 			char String1[200];
-			strcpy_s(String1, pinball::get_rc_string(26, 0));
+			strncpy(String1, pinball::get_rc_string(26, 0), sizeof String1);
 			high_score::show_and_set_high_score_dialog(highscore_table, 1000000000, 1, String1);
 			break;
 		case 'm':
 			char buffer[20];
-			sprintf_s(buffer, "%zu", memory::use_total);
+			snprintf(buffer, sizeof buffer, "%zu", memory::use_total);
 			SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_INFORMATION, "Mem:", buffer, winmain::MainWindow);
 			break;
 		case 'r':
@@ -569,7 +569,7 @@ void pb::end_game()
 			int position = high_score::get_score_position(highscore_table, scores[i]);
 			if (position >= 0)
 			{
-				strcpy_s(String1, pinball::get_rc_string(scoreIndex[i] + 26, 0));
+				strncpy(String1, pinball::get_rc_string(scoreIndex[i] + 26, 0), sizeof String1);
 				high_score::show_and_set_high_score_dialog(highscore_table, scores[i], position, String1);
 			}
 		}

@@ -214,7 +214,7 @@ int LoadStringAlt(uint32_t uID, LPSTR lpBuffer, int cchBufferMax)
 		return 0;
 	}
 
-	strncpy_s(lpBuffer, cchBufferMax, str->second, cchBufferMax);
+	strncpy(lpBuffer, str->second, cchBufferMax);
 	return 1;
 }
 
@@ -251,10 +251,10 @@ int pinball::make_path_name(LPSTR lpFilename, LPCSTR lpString2, int nSize)
 	auto base_path = SDL_GetBasePath();
 	if (!base_path)
 	{
-		strcat_s(lpFilename, nSize, "?");
+		strcat(lpFilename,"?");
 		return 1;
 	}
-	strcpy_s(lpFilename, nSize, base_path);
-	strcat_s(lpFilename, nSize, lpString2);
+	strncpy(lpFilename, base_path, nSize);
+	strcat(lpFilename, lpString2);
 	return 0;
 }
