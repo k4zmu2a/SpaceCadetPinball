@@ -12,6 +12,7 @@ public:
 	static bool LaunchBallEnabled;
 	static bool HighScoresEnabled;
 	static bool DemoActive;
+	static char* BasePath;
 
 	static int WinMain(LPCSTR lpCmdLine);
 	static int event_handler(const SDL_Event* event);

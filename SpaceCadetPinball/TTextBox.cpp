@@ -183,7 +183,7 @@ void TTextBox::Draw()
 		}
 		else if (Message1->TimeLeft() >= -2.0f)
 		{
-			Timer = timer::set(max(Message1->TimeLeft(), 0.25f), this, TimerExpired);
+			Timer = timer::set(std::max(Message1->TimeLeft(), 0.25f), this, TimerExpired);
 			display = true;
 			break;
 		}

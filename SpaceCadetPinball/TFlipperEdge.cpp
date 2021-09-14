@@ -78,7 +78,7 @@ TFlipperEdge::TFlipperEdge(TCollisionComponent* collComp, char* activeFlag, unsi
 	auto distance1 = sqrt(dy * dy + dx * dx) + table->CollisionCompOffset + vecT1->Z;
 	DistanceDivSq = distance1 * distance1;
 
-	float bmpCoef = min(BmpCoef1, BmpCoef2);
+	float bmpCoef = std::min(BmpCoef1, BmpCoef2);
 	auto distance = maths::Distance(vecT1, vecT2);
 	CollisionTimeAdvance = bmpCoef / (distance / CircleT1Radius + distance / CircleT1Radius);
 
@@ -428,7 +428,7 @@ float TFlipperEdge::flipper_angle(float timeNow)
 	else
 		angle = 1.0;
 
-	angle = min(1, max(angle, 0));
+	angle = std::min(1.0f, std::max(angle, 0.0f));
 	if (FlipperFlag == 2)
 		angle = 1.0f - angle;
 	return angle * AngleMax;

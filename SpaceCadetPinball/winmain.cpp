@@ -39,6 +39,7 @@ bool winmain::ShowImGuiDemo = false;
 bool winmain::LaunchBallEnabled = true;
 bool winmain::HighScoresEnabled = true;
 bool winmain::DemoActive = false;
+char* winmain::BasePath;
 
 
 uint32_t timeGetTimeAlt()
@@ -64,15 +65,15 @@ int winmain::WinMain(LPCSTR lpCmdLine)
 		SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, "Could not initialize SDL2", SDL_GetError(), nullptr);
 		return 1;
 	}
+	BasePath = SDL_GetBasePath();
 
 	pinball::quickFlag = strstr(lpCmdLine, "-quick") != nullptr;
 	auto regSpaceCadet = pinball::get_rc_string(166, 0);
 	options::get_string(regSpaceCadet, "Pinball Data", DatFileName, pinball::get_rc_string(168, 0), 300);
 
 	/*Check for full tilt .dat file and switch to it automatically*/
-	char cadetFilePath[300]{};
-	pinball::make_path_name(cadetFilePath, "CADET.DAT", 300);
-	FILE* cadetDat = fopen(cadetFilePath, "r");
+	auto cadetFilePath = pinball::make_path_name("CADET.DAT");
+	auto cadetDat = fopen(cadetFilePath.c_str(), "r");
 	if (cadetDat)
 	{
 		fclose(cadetDat);
@@ -270,7 +271,7 @@ int winmain::WinMain(LPCSTR lpCmdLine)
 			if (elapsedMs >= TargetFrameTime)
 			{
 				// Keep track of remainder, limited to one frame time.
-				frameStart = frameEnd - min(elapsedMs - TargetFrameTime, TargetFrameTime) / sdlTimerResMs;
+				frameStart = frameEnd - std::min(elapsedMs - TargetFrameTime, TargetFrameTime) / sdlTimerResMs;
 
 				ImGui_ImplSDL2_NewFrame();
 				ImGui::NewFrame();

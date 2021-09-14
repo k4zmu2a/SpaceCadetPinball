@@ -102,5 +102,5 @@ private:
 	static Mix_Music* load_track(std::string fileName);
 	static int play_ft(Mix_Music* midi);
 	static int stop_ft();
-	static std::vector<uint8_t>* MdsToMidi(char* file);
+	static std::vector<uint8_t>* MdsToMidi(std::string file);
 };

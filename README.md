@@ -28,7 +28,7 @@ Compile with Visual Studio; tested with 2019.
 
 On Linux:\
 Install devel packages for `SDL2` and `SDL2_mixer`.\
-Compile with CMake; tested with GCC 10. 
+Compile with CMake; tested with GCC 10, Clang 11. 
 
 **Plans:**
  * ~~Decompile original game~~

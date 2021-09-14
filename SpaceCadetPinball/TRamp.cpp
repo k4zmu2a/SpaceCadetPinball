@@ -90,10 +90,10 @@ TRamp::TRamp(TPinballTable* table, int groupIndex) : TCollisionComponent(table, 
 		auto pVec2 = reinterpret_cast<vector_type*>(&plane->V2);
 		auto pVec3 = reinterpret_cast<vector_type*>(&plane->V3);
 
-		xMin = min(min(min(plane->V3.X, plane->V1.X), plane->V2.X), xMin);
-		yMin = min(min(min(plane->V3.Y, plane->V1.Y), plane->V2.Y), xMin); // Sic
-		xMax = max(max(max(plane->V3.X, plane->V1.X), plane->V2.X), xMin);
-		yMax = max(max(max(plane->V3.Y, plane->V1.Y), plane->V2.Y), xMin);
+		xMin = std::min(std::min(std::min(plane->V3.X, plane->V1.X), plane->V2.X), xMin);
+		yMin = std::min(std::min(std::min(plane->V3.Y, plane->V1.Y), plane->V2.Y), xMin); // Sic
+		xMax = std::max(std::max(std::max(plane->V3.X, plane->V1.X), plane->V2.X), xMin);
+		yMax = std::max(std::max(std::max(plane->V3.Y, plane->V1.Y), plane->V2.Y), xMin);
 
 		vector_type* pointOrder[4] = {pVec1, pVec2, pVec3, pVec1};
 		for (auto pt = 0; pt < 3; pt++)

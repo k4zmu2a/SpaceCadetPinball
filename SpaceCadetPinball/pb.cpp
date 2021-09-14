@@ -36,13 +36,10 @@ bool pb::FullTiltMode = false;
 int pb::init()
 {
 	float projMat[12], zMin = 0, zScaler = 0;
-	char datFileName[300];
-	char dataFilePath[300];
 
 	++memory::critical_allocation;
-	strncpy(datFileName, winmain::DatFileName, sizeof datFileName);
-	pinball::make_path_name(dataFilePath, datFileName, 300);
-	record_table = partman::load_records(dataFilePath, fullscrn::GetResolution(), FullTiltMode);
+	auto dataFilePath = pinball::make_path_name(winmain::DatFileName);
+	record_table = partman::load_records(dataFilePath.c_str(), fullscrn::GetResolution(), FullTiltMode);
 
 	auto useBmpFont = 0;
 	pinball::get_rc_int(158, &useBmpFont);

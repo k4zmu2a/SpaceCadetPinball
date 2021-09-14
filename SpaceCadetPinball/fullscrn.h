@@ -25,9 +25,9 @@ public:
 	static int set_screen_mode(int isFullscreen);
 	static void activate(int flag);
 	static int GetResolution();
-	static void SetResolution(int resolution);
+	static void SetResolution(int value);
 	static int GetMaxResolution();
-	static void SetMaxResolution(int resolution);
+	static void SetMaxResolution(int value);
 	static int get_max_supported_resolution();
 	static int get_screen_resolution(int* width, int* height);
 	static void window_size_changed();

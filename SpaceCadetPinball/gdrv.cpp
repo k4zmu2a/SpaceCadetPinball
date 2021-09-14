@@ -1,9 +1,7 @@
 #include "pch.h"
 #include "gdrv.h"
 
-#include "fullscrn.h"
 #include "memory.h"
-#include "render.h"
 #include "winmain.h"
 
 SDL_Texture* gdrv::vScreenTex = nullptr;
@@ -239,8 +237,8 @@ int gdrv::StretchDIBitsScaled(int xSrc, int ySrc, int xDst, int yDst,
                               int width, int height, gdrv_bitmap8* bmp)
 {
 	// Y is inverted, X normal left to right
-	ySrc = max(0, min(bmp->Height - height, bmp->Height)) - ySrc;
-	yDst = max(0, min(vScreenHeight - height, vScreenHeight)) - yDst;
+	ySrc = std::max(0, std::min(bmp->Height - height, bmp->Height)) - ySrc;
+	yDst = std::max(0, std::min(vScreenHeight - height, vScreenHeight)) - yDst;
 
 	// Negative dst == positive src offset
 	if (xDst < 0)
@@ -255,15 +253,15 @@ int gdrv::StretchDIBitsScaled(int xSrc, int ySrc, int xDst, int yDst,
 	}
 
 	// Clamp out of bounds rectangles
-	xSrc = max(0, min(xSrc, bmp->Width));
-	ySrc = max(0, min(ySrc, bmp->Height));
+	xSrc = std::max(0, std::min(xSrc, bmp->Width));
+	ySrc = std::max(0, std::min(ySrc, bmp->Height));
 	if (xSrc + width > bmp->Width)
 		width = bmp->Width - xSrc;
 	if (ySrc + height > bmp->Height)
 		height = bmp->Height - ySrc;	
 
-	xDst = max(0, min(xDst, vScreenWidth));
-	yDst = max(0, min(yDst, vScreenHeight));
+	xDst = std::max(0, std::min(xDst, vScreenWidth));
+	yDst = std::max(0, std::min(yDst, vScreenHeight));
 	if (xDst + width > vScreenWidth)
 		width = vScreenWidth - xDst;
 	if (yDst + height > vScreenHeight)
@@ -288,7 +286,6 @@ int gdrv::StretchDIBitsScaled(int xSrc, int ySrc, int xDst, int yDst,
 
 void gdrv::BlitScreen()
 {
-	auto bmp = &render::vscreen;
 	unsigned char* lockedPixels = nullptr;
 	int pitch = 0;
 	SDL_LockTexture

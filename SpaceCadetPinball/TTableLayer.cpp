@@ -71,10 +71,10 @@ TTableLayer::TTableLayer(TPinballTable* table): TCollisionComponent(table, -1, f
 	Boost = 15.0f;
 
 	auto visArrPtr = visual.FloatArr;
-	Unknown1F = min(visArrPtr[0], min(visArrPtr[2], visArrPtr[4]));
-	Unknown2F = min(visArrPtr[1], min(visArrPtr[3], visArrPtr[5]));
-	Unknown3F = max(visArrPtr[0], max(visArrPtr[2], visArrPtr[4]));
-	Unknown4F = max(visArrPtr[1], max(visArrPtr[3], visArrPtr[5]));
+	Unknown1F = std::min(visArrPtr[0], std::min(visArrPtr[2], visArrPtr[4]));
+	Unknown2F = std::min(visArrPtr[1], std::min(visArrPtr[3], visArrPtr[5]));
+	Unknown3F = std::max(visArrPtr[0], std::max(visArrPtr[2], visArrPtr[4]));
+	Unknown4F = std::max(visArrPtr[1], std::max(visArrPtr[3], visArrPtr[5]));
 	auto a2 = Unknown4F - Unknown2F;
 	auto a1 = Unknown3F - Unknown1F;
 	edge_manager = new TEdgeManager(Unknown1F, Unknown2F, a1, a2);

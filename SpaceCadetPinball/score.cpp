@@ -288,13 +288,13 @@ void score::string_format(int score, char* str)
 			if (static_cast<int>(scoreMillions) <= 0)
 			{
 				if (score % 1000000 / 1000 <= 0)
-					snprintf(str, 36, "%ld", score);
+					snprintf(str, 36, "%d", score);
 				else
-					snprintf(str, 36, "%ld%s%03ld", score % 1000000 / 1000, separator, score % 1000);
+					snprintf(str, 36, "%d%s%03d", score % 1000000 / 1000, separator, score % 1000);
 			}
 			else
 			{
-				snprintf(str, 36, "%ld%s%03ld%s%03ld", scoreMillions, separator, score % 1000000 / 1000, separator,
+				snprintf(str, 36, "%d%s%03d%s%03d", scoreMillions, separator, score % 1000000 / 1000, separator,
 				          score % 1000);
 			}
 		}
@@ -303,7 +303,7 @@ void score::string_format(int score, char* str)
 			snprintf(
 				str,
 				36,
-				"%ld%s%03ld%s%03ld%s%03ld",
+				"%d%s%03d%s%03d%s%03d",
 				score / 1000000000,
 				separator,
 				scoreMillions,

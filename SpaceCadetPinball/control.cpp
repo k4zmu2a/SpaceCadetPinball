@@ -1929,7 +1929,7 @@ void control::GravityWellKickoutControl(int code, TPinballComponent* caller)
 			}
 			else
 			{
-				snprintf(Buffer, sizeof Buffer, pinball::get_rc_string(45, 0));
+				snprintf(Buffer, sizeof Buffer, "%s", pinball::get_rc_string(45, 0));
 			}
 			control_info_text_box_tag.Component->Display(Buffer, 2.0);
 			control_lite62_tag.Component->Message(4, 0.0);

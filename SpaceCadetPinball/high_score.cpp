@@ -1,11 +1,8 @@
 #include "pch.h"
 #include "high_score.h"
 
-#include "fullscrn.h"
 #include "memory.h"
 #include "options.h"
-#include "resource.h"
-#include "winmain.h"
 
 int high_score::dlg_enter_name;
 int high_score::dlg_score;

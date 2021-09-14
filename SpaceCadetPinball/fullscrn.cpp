@@ -93,12 +93,12 @@ int fullscrn::GetResolution()
 	return resolution;
 }
 
-void fullscrn::SetResolution(int resolution)
+void fullscrn::SetResolution(int value)
 {
 	if (!pb::FullTiltMode)
-		resolution = 0;
-	assertm(resolution >= 0 && resolution <= 2, "Resolution value out of bounds");
-	fullscrn::resolution = resolution;
+		value = 0;
+	assertm(value >= 0 && value <= 2, "Resolution value out of bounds");
+	resolution = value;
 }
 
 int fullscrn::GetMaxResolution()
@@ -106,10 +106,10 @@ int fullscrn::GetMaxResolution()
 	return maxResolution;
 }
 
-void fullscrn::SetMaxResolution(int resolution)
+void fullscrn::SetMaxResolution(int value)
 {
-	assertm(resolution >= 0 && resolution <= 2, "Resolution value out of bounds");
-	maxResolution = resolution;
+	assertm(value >= 0 && value <= 2, "Resolution value out of bounds");
+	maxResolution = value;
 }
 
 int fullscrn::get_max_supported_resolution()
@@ -153,7 +153,7 @@ void fullscrn::window_size_changed()
 
 	if (options::Options.UniformScaling)
 	{
-		ScaleY = ScaleX = min(ScaleX, ScaleY);
+		ScaleY = ScaleX = std::min(ScaleX, ScaleY);
 		OffsetX = static_cast<int>(floor((width - res->TableWidth * ScaleX) / 2));
 		OffsetY = static_cast<int>(floor((height - res->TableHeight * ScaleY) / 2));
 	}

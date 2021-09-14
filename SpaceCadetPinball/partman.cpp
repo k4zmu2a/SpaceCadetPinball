@@ -15,7 +15,7 @@ datFileStruct* partman::load_records(LPCSTR lpFileName, int resolution, bool ful
 	dat8BitBmpHeader bmpHeader{};
 	dat16BitBmpHeader zMapHeader{};
 
-	FILE* fileHandle = fopen(lpFileName, "rb");
+	auto fileHandle = fopen(lpFileName, "rb");
 	if (fileHandle == nullptr)
 		return nullptr;
 	fread(&header, 1, sizeof header, fileHandle);

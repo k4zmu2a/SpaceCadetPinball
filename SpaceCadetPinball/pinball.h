@@ -18,7 +18,7 @@ public:
 
 	static char* get_rc_string(int uID, int a2);
 	static int get_rc_int(int uID, int* dst);
-	static int make_path_name(LPSTR lpFilename, LPCSTR lpString2, int nSize = 0x12Cu);
+	static std::string make_path_name(const std::string& fileName);
 private:
 	static char getRcBuffer[256 * 6];
 	static int rc_string_slot;

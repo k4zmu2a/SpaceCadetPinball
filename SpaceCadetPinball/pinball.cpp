@@ -246,15 +246,7 @@ int pinball::get_rc_int(int uID, int* dst)
 	return 1;
 }
 
-int pinball::make_path_name(LPSTR lpFilename, LPCSTR lpString2, int nSize)
+std::string pinball::make_path_name(const std::string& fileName)
 {
-	auto base_path = SDL_GetBasePath();
-	if (!base_path)
-	{
-		strcat(lpFilename,"?");
-		return 1;
-	}
-	strncpy(lpFilename, base_path, nSize);
-	strcat(lpFilename, lpString2);
-	return 0;
+	return winmain::BasePath + fileName;
 }

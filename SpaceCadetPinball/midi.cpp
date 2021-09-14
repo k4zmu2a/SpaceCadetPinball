@@ -7,7 +7,10 @@
 
 Mix_Music* midi::currentMidi;
 
-#define FOURCC(a,b,c,d) ( (uint32_t) (((d)<<24) | ((c)<<16) | ((b)<<8) | (a)) )
+constexpr uint32_t FOURCC(uint8_t a, uint8_t b, uint8_t c, uint8_t d)
+{
+	return static_cast<uint32_t>((d << 24) | (c << 16) | (b << 8) | a);
+}
 
 int ToVariableLen(uint32_t value, uint32_t& dst)
 {
@@ -107,7 +110,7 @@ void midi::music_shutdown_ft()
 
 Mix_Music* midi::load_track(std::string fileName)
 {
-	char filePath[256];
+	auto origFile = fileName;
 
 	// File name is in lower case, while game data is in upper case.				
 	std::transform(fileName.begin(), fileName.end(), fileName.begin(), [](unsigned char c) { return std::toupper(c); });
@@ -119,24 +122,22 @@ Mix_Music* midi::load_track(std::string fileName)
 	}
 	fileName += ".MDS";
 	
-	pinball::make_path_name(filePath, fileName.c_str(), 254u);	
+	auto filePath = pinball::make_path_name(fileName);
 	auto midi = MdsToMidi(filePath);
 	if (!midi)
 		return nullptr;
 
+	// Dump converted MIDI file
+	/*origFile += ".midi";
+	FILE* fileHandle = fopen(origFile.c_str(), "wb");
+	fwrite(midi->data(), 1, midi->size(), fileHandle);
+	fclose(fileHandle);*/
+
 	auto rw = SDL_RWFromMem(midi->data(), static_cast<int>(midi->size()));
-	auto audio = Mix_LoadMUS_RW(rw, 0);
-	SDL_FreeRW(rw);
+	auto audio = Mix_LoadMUS_RW(rw, 1); // This call seems to leak memory no matter what.
 	delete midi;
 	if (!audio)
 		return nullptr;
-
-	// Dump converted MIDI file	
-	/*strncpy(fileName2, fileName, sizeof fileName2);
-	strcat(fileName2, ".midi");
-	FILE* fileHandle = fopen(fileName2, "wb");
-	fwrite(midi->data(), 1, midi->size(), fileHandle);
-	fclose(fileHandle);*/
 	
 	TrackList->Add(audio);
 	return audio;
@@ -181,9 +182,9 @@ int midi::stop_ft()
 /// </summary>
 /// <param name="file">Path to .MDS file</param>
 /// <returns>Vector that contains MIDI file</returns>
-std::vector<uint8_t>* midi::MdsToMidi(char* file)
+std::vector<uint8_t>* midi::MdsToMidi(std::string file)
 {
-	FILE* fileHandle = fopen(file, "rb");
+	auto fileHandle = fopen(file.c_str(), "rb");
 	if (!fileHandle)
 		return nullptr;
 
@@ -328,7 +329,9 @@ std::vector<uint8_t>* midi::MdsToMidi(char* file)
 		midiBytes.insert(midiBytes.end(), metaEndTrack, metaEndTrack + 4);
 
 		// Set final MTrk size
-		*(uint32_t*)&midiBytes[lengthPos] = SwapByteOrderInt((uint32_t)midiBytes.size() - sizeof header - sizeof track);
+		auto lengthBE = SwapByteOrderInt((uint32_t)midiBytes.size() - sizeof header - sizeof track);
+		auto lengthData = reinterpret_cast<const uint8_t*>(&lengthBE);
+		std::copy_n(lengthData, 4, midiBytes.begin() + lengthPos);
 	}
 	while (false);
 

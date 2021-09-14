@@ -145,7 +145,6 @@ int loader::get_sound_id(int groupIndex)
 			                                                       datFieldTypes::ShortValue));
 			if (value && *value == 202)
 			{
-				char filePath[300]{};
 				std::string fileName = partman::field(loader_table, soundGroupId, datFieldTypes::String);
 
 				// File name is in lower case, while game data is in upper case.				
@@ -157,9 +156,8 @@ int loader::get_sound_id(int groupIndex)
 					fileName.insert(0, "SOUND");
 				}
 				
-				pinball::make_path_name(filePath, fileName.c_str());
-
-				FILE* file = fopen(filePath, "rb");
+				auto filePath = pinball::make_path_name(fileName);
+				auto file = fopen(filePath.c_str(), "rb");
 				if (file)
 				{
 					fread(&wavHeader, 1, sizeof wavHeader, file);

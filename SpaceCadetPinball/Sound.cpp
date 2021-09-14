@@ -44,9 +44,9 @@ void Sound::PlaySound(Mix_Chunk* wavePtr, int minChannel, int maxChannel, unsign
 		Mix_PlayChannel(-1, wavePtr, loops);
 }
 
-Mix_Chunk* Sound::LoadWaveFile(LPCSTR lpName)
+Mix_Chunk* Sound::LoadWaveFile(std::string lpName)
 {
-	return Mix_LoadWAV(lpName);
+	return Mix_LoadWAV(lpName.c_str());
 }
 
 void Sound::FreeSound(Mix_Chunk* wave)

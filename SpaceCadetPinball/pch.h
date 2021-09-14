@@ -42,12 +42,6 @@ typedef uint32_t  DWORD;
 typedef char* LPSTR;
 typedef const char* LPCSTR;
 
-#define min(a,b) ((a)<(b)?(a):(b))
-#define max(a,b) ((a)>(b)?(a):(b))
-//
-//#define min(a,b) (((a)<(b))?(a):(b))
-//#define max(a,b) (((a)>(b))?(a):(b))
-
 constexpr char PathSeparator =
 #ifdef _WIN32
 '\\';
@@ -70,7 +64,7 @@ inline size_t pgm_save(int width, int height, char* data, FILE* outfile)
 
 inline float RandFloat()
 {
-	return static_cast<float>(std::rand()) / (RAND_MAX);
+	return static_cast<float>(std::rand() / static_cast<double>(RAND_MAX));
 }
 
 #endif //PCH_H
