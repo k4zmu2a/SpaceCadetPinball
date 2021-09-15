@@ -51,7 +51,6 @@ set(SOURCE_FILES
         SpaceCadetPinball/partman.h
         SpaceCadetPinball/pb.cpp
         SpaceCadetPinball/pb.h
-        SpaceCadetPinball/pch.cpp
         SpaceCadetPinball/pch.h
         SpaceCadetPinball/pinball.cpp
         SpaceCadetPinball/pinball.h
@@ -167,6 +166,22 @@ set(SOURCE_FILES
         )
 
 add_executable(SpaceCadetPinball ${SOURCE_FILES})
+
+# Skip pch on foreign code
+set_source_files_properties(
+        SpaceCadetPinball/imgui.cpp
+        SpaceCadetPinball/imgui_sdl.cpp
+        SpaceCadetPinball/imgui_draw.cpp
+        SpaceCadetPinball/imgui_widgets.cpp
+        SpaceCadetPinball/imgui_tables.cpp
+        SpaceCadetPinball/imgui_demo.cpp
+        SpaceCadetPinball/imgui_impl_sdl.cpp
+        PROPERTIES SKIP_PRECOMPILE_HEADERS 1
+)
+target_precompile_headers(SpaceCadetPinball
+  PUBLIC
+    SpaceCadetPinball/pch.h
+)
 
 target_link_libraries(SpaceCadetPinball ${SDL2_LIBRARY} ${SDL2_MIXER_LIBRARY})
 
