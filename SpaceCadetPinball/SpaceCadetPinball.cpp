@@ -37,7 +37,7 @@ int main(int argc, char* argv[])
 
 	auto xx = sizeof(datFileHeader);
 
-	strncpy(winmain::DatFileName, "PINBALL.DAT", sizeof winmain::DatFileName);
+	winmain::DatFileName = "PINBALL.DAT";
 	pb::init();
 	auto datFile = pb::record_table;
 

@@ -1,12 +1,6 @@
 #pragma once
 #include "TTextBox.h"
 
-struct winhelp_entry
-{
-	int ControlId;
-	int ContextId;
-};
-
 class pinball
 {
 public:

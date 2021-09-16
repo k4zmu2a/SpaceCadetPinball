@@ -27,7 +27,7 @@
 
 TPinballTable* pb::MainTable = nullptr;
 datFileStruct* pb::record_table = nullptr;
-int pb::time_ticks = 0, pb::demo_mode = 0, pb::cheat_mode = 0, pb::game_mode = 2, pb::mode_countdown_, pb::state;
+int pb::time_ticks = 0, pb::demo_mode = 0, pb::cheat_mode = 0, pb::game_mode = 2, pb::mode_countdown_;
 float pb::time_now, pb::time_next, pb::ball_speed_limit;
 high_score_struct pb::highscore_table[5];
 bool pb::FullTiltMode = false;
@@ -98,7 +98,7 @@ int pb::init()
 
 	MainTable = new TPinballTable();
 
-	high_score::read(highscore_table, &state);
+	high_score::read(highscore_table);
 	ball_speed_limit = MainTable->BallList->Get(0)->Offset * 200.0f;
 	--memory::critical_allocation;
 	return 0;
@@ -109,7 +109,7 @@ int pb::uninit()
 	score::unload_msg_font();
 	loader::unload();
 	partman::unload_records(record_table);
-	high_score::write(highscore_table, &state);
+	high_score::write(highscore_table);
 	if (MainTable)
 		delete MainTable;
 	MainTable = nullptr;

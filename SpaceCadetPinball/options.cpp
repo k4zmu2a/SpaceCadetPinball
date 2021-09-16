@@ -9,31 +9,7 @@
 #include "Sound.h"
 #include "winmain.h"
 
-LPCSTR options::OptionsRegPath;
-LPSTR options::OptionsRegPathCur;
 optionsStruct options::Options{};
-
-winhelp_entry options::keymap_help[18]
-{
-	winhelp_entry{0x1F5, 0x3EA},
-	winhelp_entry{0x191, 0x3EC},
-	winhelp_entry{0x192, 0x3ED},
-	winhelp_entry{0x193, 0x3F1},
-	winhelp_entry{0x194, 0x3EE},
-	winhelp_entry{0x195, 0x3EF},
-	winhelp_entry{0x196, 0x3F0},
-	winhelp_entry{0x385, 0x3EC},
-	winhelp_entry{0x386, 0x3ED},
-	winhelp_entry{0x387, 0x3F1},
-	winhelp_entry{0x388, 0x3EE},
-	winhelp_entry{0x389, 0x3EF},
-	winhelp_entry{0x38A, 0x3F0},
-	winhelp_entry{0x38C, -1},
-	winhelp_entry{0x38D, -1},
-	winhelp_entry{0x321, -1},
-	winhelp_entry{0x322, -1},
-	winhelp_entry{0, 0},
-};
 
 short options::vk_list[28]
 {
@@ -67,12 +43,30 @@ short options::vk_list[28]
 	-1
 };
 
+std::map<std::string, std::string> options::settings{};
+
+
 void options::init()
 {
+	auto imContext = ImGui::GetCurrentContext();
+	ImGuiSettingsHandler ini_handler;
+	ini_handler.TypeName = "Pinball";
+	ini_handler.TypeHash = ImHashStr(ini_handler.TypeName);
+	ini_handler.ReadOpenFn = MyUserData_ReadOpen;
+	ini_handler.ReadLineFn = MyUserData_ReadLine;
+	ini_handler.WriteAllFn = MyUserData_WriteAll;
+	imContext->SettingsHandlers.push_back(ini_handler);
+
+	// Settings are loaded from disk on the first frame
+	if (!imContext->SettingsLoaded)
+	{
+		ImGui::NewFrame();
+		ImGui::EndFrame();
+	}
+
 	Options.Sounds = 1;
 	Options.Music = 0;
 	Options.FullScreen = 0;
-	Options.Average = 5;
 	Options.LeftFlipperKeyDft = SDLK_z;
 	Options.RightFlipperKeyDft = SDLK_SLASH;
 	Options.PlungerKeyDft = SDLK_SPACE;
@@ -93,19 +87,17 @@ void options::init()
 	Options.Players = 1;
 	Options.BottomTableBumpKey = Options.BottomTableBumpKeyDft;
 	Options.UniformScaling = true;
-	/*Options.Sounds = get_int(nullptr, "Sounds", Options.Sounds);
-	Options.Music = get_int(nullptr, "Music", Options.Music);
-	Options.Average = get_int(nullptr, "Average", Options.Average);
-	Options.FullScreen = get_int(nullptr, "FullScreen", Options.FullScreen);
-	Options.PriorityAdj = get_int(nullptr, "Priority_Adjustment", Options.PriorityAdj);
-	Options.Players = get_int(nullptr, "Players", Options.Players);
-	Options.LeftFlipperKey = get_int(nullptr, "Left Flippper key", Options.LeftFlipperKey);
-	Options.RightFlipperKey = get_int(nullptr, "Right Flipper key", Options.RightFlipperKey);
-	Options.PlungerKey = get_int(nullptr, "Plunger key", Options.PlungerKey);
-	Options.LeftTableBumpKey = get_int(nullptr, "Left Table Bump key", Options.LeftTableBumpKey);
-	Options.RightTableBumpKey = get_int(nullptr, "Right Table Bump key", Options.RightTableBumpKey);
-	Options.BottomTableBumpKey = get_int(nullptr, "Bottom Table Bump key", Options.BottomTableBumpKey);
-	Options.UniformScaling = get_int(nullptr, "Uniform scaling", true);*/
+	Options.Sounds = get_int("Sounds", Options.Sounds);
+	Options.Music = get_int("Music", Options.Music);
+	Options.FullScreen = get_int("FullScreen", Options.FullScreen);
+	Options.Players = get_int("Players", Options.Players);
+	Options.LeftFlipperKey = get_int("Left Flipper key", Options.LeftFlipperKey);
+	Options.RightFlipperKey = get_int("Right Flipper key", Options.RightFlipperKey);
+	Options.PlungerKey = get_int("Plunger key", Options.PlungerKey);
+	Options.LeftTableBumpKey = get_int("Left Table Bump key", Options.LeftTableBumpKey);
+	Options.RightTableBumpKey = get_int("Right Table Bump key", Options.RightTableBumpKey);
+	Options.BottomTableBumpKey = get_int("Bottom Table Bump key", Options.BottomTableBumpKey);
+	Options.UniformScaling = get_int("Uniform scaling", Options.UniformScaling);
 	Sound::Enable(0, 7, Options.Sounds);
 
 	update_resolution_menu();
@@ -113,98 +105,40 @@ void options::init()
 
 void options::uninit()
 {
-	/*set_int(nullptr, "Sounds", Options.Sounds);
-	set_int(nullptr, "Music", Options.Music);
-	set_int(nullptr, "FullScreen", Options.FullScreen);
-	set_int(nullptr, "Players", Options.Players);
-	set_int(nullptr, "Left Flippper key", Options.LeftFlipperKey);
-	set_int(nullptr, "Right Flipper key", Options.RightFlipperKey);
-	set_int(nullptr, "Plunger key", Options.PlungerKey);
-	set_int(nullptr, "Left Table Bump key", Options.LeftTableBumpKey);
-	set_int(nullptr, "Right Table Bump key", Options.RightTableBumpKey);
-	set_int(nullptr, "Bottom Table Bump key", Options.BottomTableBumpKey);
-	set_int(nullptr, "Screen Resolution", Options.Resolution);
-	set_int(nullptr, "Uniform scaling", Options.UniformScaling);*/
-}
-
-void options::path_init(LPCSTR regPath)
-{
-	char* buf = memory::allocate(strlen(regPath) + 1);
-	OptionsRegPath = buf;
-	if (buf)
-		strncpy(buf,  regPath, strlen(regPath) + 1);
-}
-
-void options::path_uninit()
-{
-	if (OptionsRegPath)
-		memory::free((void*)OptionsRegPath);
-	OptionsRegPath = nullptr;
-}
-
-LPCSTR options::path(LPCSTR regPath)
-{
-	char* buf = OptionsRegPathCur;
-	if (!OptionsRegPathCur)
-	{
-		buf = memory::allocate(2000);
-		OptionsRegPathCur = buf;
-		if (!buf)
-			return OptionsRegPath;
-	}
-	strncpy(buf, OptionsRegPath, 2000);
-	if (!regPath)
-		return OptionsRegPathCur;
-	strcat(OptionsRegPathCur, "\\");
-	strcat(OptionsRegPathCur, regPath);
-	return OptionsRegPathCur;
-}
-
-void options::path_free()
-{
-	if (OptionsRegPathCur)
-		memory::free(OptionsRegPathCur);
-	OptionsRegPathCur = nullptr;
+	set_int("Sounds", Options.Sounds);
+	set_int("Music", Options.Music);
+	set_int("FullScreen", Options.FullScreen);
+	set_int("Players", Options.Players);
+	set_int("Left Flipper key", Options.LeftFlipperKey);
+	set_int("Right Flipper key", Options.RightFlipperKey);
+	set_int("Plunger key", Options.PlungerKey);
+	set_int("Left Table Bump key", Options.LeftTableBumpKey);
+	set_int("Right Table Bump key", Options.RightTableBumpKey);
+	set_int("Bottom Table Bump key", Options.BottomTableBumpKey);
+	set_int("Screen Resolution", Options.Resolution);
+	set_int("Uniform scaling", Options.UniformScaling);
 }
 
 
-int options::get_int(LPCSTR optPath, LPCSTR lpValueName, int defaultValue)
+int options::get_int(LPCSTR lpValueName, int defaultValue)
 {
-	auto result = defaultValue;
-	if (!OptionsRegPath)
-		return result;
-
-	auto regPath = path(optPath);
-	path_free();
-	return result;
+	auto value = GetSetting(lpValueName, std::to_string(defaultValue));
+	return std::stoi(value);
 }
 
-void options::set_int(LPCSTR optPath, LPCSTR lpValueName, int data)
+void options::set_int(LPCSTR lpValueName, int data)
 {
-	if (!OptionsRegPath)
-		return;
-
-	auto regPath = path(optPath);	
-	path_free();
+	SetSetting(lpValueName, std::to_string(data));
 }
 
-void options::get_string(LPCSTR optPath, LPCSTR lpValueName, LPSTR dst, LPCSTR defaultValue, int iMaxLength)
+std::string options::get_string(LPCSTR lpValueName, LPCSTR defaultValue)
 {
-	strncpy(dst, defaultValue, iMaxLength);
-	if (!OptionsRegPath)
-		return;
-
-	auto regPath = path(optPath);	
-	path_free();
+	return GetSetting(lpValueName, defaultValue);
 }
 
-void options::set_string(LPCSTR optPath, LPCSTR lpValueName, LPCSTR value)
+void options::set_string(LPCSTR lpValueName, LPCSTR value)
 {
-	if (!OptionsRegPath)
-		return;
-
-	auto regPath = path(optPath);	
-	path_free();
+	SetSetting(lpValueName, value);
 }
 
 
@@ -293,7 +227,7 @@ void options::update_resolution_menu()
 
 void options::init_resolution()
 {
-	Options.Resolution = get_int(nullptr, "Screen Resolution", -1);
+	Options.Resolution = get_int("Screen Resolution", -1);
 	int maxRes = fullscrn::get_max_supported_resolution();
 	if (Options.Resolution == -1 || maxRes <= Options.Resolution)
 	{
@@ -309,4 +243,53 @@ void options::init_resolution()
 void options::keyboard()
 {
 	//DialogBoxParamA(nullptr, "KEYMAPPER", nullptr, KeyMapDlgProc, 0);
+}
+
+void options::MyUserData_ReadLine(ImGuiContext* ctx, ImGuiSettingsHandler* handler, void* entry, const char* line)
+{
+	auto& keyValueStore = *static_cast<std::map<std::string, std::string>*>(entry);
+	std::string keyValue = line;
+	auto separatorPos = keyValue.find('=');
+	if (separatorPos != std::string::npos)
+	{
+		auto key = keyValue.substr(0, separatorPos);
+		auto value = keyValue.substr(separatorPos + 1, keyValue.size());
+		keyValueStore[key] = value;
+	}
+}
+
+void* options::MyUserData_ReadOpen(ImGuiContext* ctx, ImGuiSettingsHandler* handler, const char* name)
+{
+	// There is only one custom entry
+	return strcmp(name, "Settings") == 0 ? &settings : nullptr;
+}
+
+void options::MyUserData_WriteAll(ImGuiContext* ctx, ImGuiSettingsHandler* handler, ImGuiTextBuffer* buf)
+{
+	buf->appendf("[%s][%s]\n", handler->TypeName, "Settings");
+	for (const auto& setting : settings)
+	{
+		buf->appendf("%s=%s\n", setting.first.c_str(), setting.second.c_str());
+	}
+	buf->append("\n");
+}
+
+const std::string& options::GetSetting(const std::string& key, const std::string& value)
+{
+	auto setting = settings.find(key);
+	if (setting == settings.end())
+	{
+		settings[key] = value;
+		if (ImGui::GetCurrentContext())
+			ImGui::MarkIniSettingsDirty();
+		return value;
+	}
+	return setting->second;
+}
+
+void options::SetSetting(const std::string& key, const std::string& value)
+{
+	settings[key] = value;
+	if (ImGui::GetCurrentContext())
+		ImGui::MarkIniSettingsDirty();
 }

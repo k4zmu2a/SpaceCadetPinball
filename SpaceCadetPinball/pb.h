@@ -41,5 +41,4 @@ public:
 	static float collide(float timeNow, float timeDelta, TBall* ball);
 private:
 	static int demo_mode, mode_countdown_;
-	static int state;
 };

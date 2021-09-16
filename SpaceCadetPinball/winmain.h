@@ -4,7 +4,7 @@
 class winmain
 {
 public:
-	static char DatFileName[300];
+	static std::string DatFileName;
 	static int single_step;
 	static SDL_Window* MainWindow;
 	static SDL_Renderer* Renderer;

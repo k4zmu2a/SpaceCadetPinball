@@ -33,7 +33,7 @@ DWORD winmain::now;
 bool winmain::restart = false;
 
 gdrv_bitmap8 winmain::gfr_display{};
-char winmain::DatFileName[300]{};
+std::string winmain::DatFileName;
 bool winmain::ShowAboutDialog = false;
 bool winmain::ShowImGuiDemo = false;
 bool winmain::LaunchBallEnabled = true;
@@ -53,10 +53,6 @@ uint32_t timeGetTimeAlt()
 int winmain::WinMain(LPCSTR lpCmdLine)
 {
 	memory::init(memalloc_failure);
-	++memory::critical_allocation;
-	auto optionsRegPath = pinball::get_rc_string(165, 0);
-	options::path_init(optionsRegPath);
-	--memory::critical_allocation;
 
 	// SDL init
 	SDL_SetMainReady();
@@ -68,8 +64,7 @@ int winmain::WinMain(LPCSTR lpCmdLine)
 	BasePath = SDL_GetBasePath();
 
 	pinball::quickFlag = strstr(lpCmdLine, "-quick") != nullptr;
-	auto regSpaceCadet = pinball::get_rc_string(166, 0);
-	options::get_string(regSpaceCadet, "Pinball Data", DatFileName, pinball::get_rc_string(168, 0), 300);
+	DatFileName = options::get_string("Pinball Data", pinball::get_rc_string(168, 0));
 
 	/*Check for full tilt .dat file and switch to it automatically*/
 	auto cadetFilePath = pinball::make_path_name("CADET.DAT");
@@ -77,7 +72,7 @@ int winmain::WinMain(LPCSTR lpCmdLine)
 	if (cadetDat)
 	{
 		fclose(cadetDat);
-		strncpy(DatFileName, "CADET.DAT", sizeof DatFileName);
+		DatFileName = "CADET.DAT";
 		pb::FullTiltMode = true;
 	}
 
@@ -121,12 +116,17 @@ int winmain::WinMain(LPCSTR lpCmdLine)
 	// ImGui_ImplSDL2_Init is private, we are not actually using ImGui OpenGl backend
 	ImGui_ImplSDL2_InitForOpenGL(window, nullptr);
 
+	auto prefPath = SDL_GetPrefPath(nullptr, "SpaceCadetPinball");
+	auto iniPath = std::string(prefPath) + "imgui_pb.ini";
+	io.IniFilename = iniPath.c_str();
+	SDL_free(prefPath);
+
 	// PB init from message handler
 	{
 		++memory::critical_allocation;
 
 		options::init();
-		auto voiceCount = options::get_int(nullptr, "Voices", 8);
+		auto voiceCount = options::get_int("Voices", 8);
 		if (Sound::Init(voiceCount))
 			options::Options.Sounds = 0;
 		Sound::Activate();
@@ -302,7 +302,6 @@ int winmain::WinMain(LPCSTR lpCmdLine)
 	SDL_DestroyWindow(window);
 	ImGui::DestroyContext();
 	SDL_Quit();
-	options::path_uninit();
 
 	if (restart)
 	{

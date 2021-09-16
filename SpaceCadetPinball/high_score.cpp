@@ -11,98 +11,62 @@ char high_score::default_name[32]{};
 high_score_struct* high_score::dlg_hst;
 bool high_score::ShowDialog = false;
 
-winhelp_entry high_score::help[21]
-{
-	winhelp_entry{0x70, 0x3E9},
-	winhelp_entry{0x191, 0x3EB},
-	winhelp_entry{0x1F5, 0x3EB},
-	winhelp_entry{0x259, 0x3EB},
-	winhelp_entry{0x192, 0x3EB},
-	winhelp_entry{0x193, 0x3EB},
-	winhelp_entry{0x194, 0x3EB},
-	winhelp_entry{0x195, 0x3EB},
-	winhelp_entry{0x1F6, 0x3EB},
-	winhelp_entry{0x1F7, 0x3EB},
-	winhelp_entry{0x1F8, 0x3EB},
-	winhelp_entry{0x1F9, 0x3EB},
-	winhelp_entry{0x2BD, 0x3EB},
-	winhelp_entry{0x2BE, 0x3EB},
-	winhelp_entry{0x2BF, 0x3EB},
-	winhelp_entry{0x2C0, 0x3EB},
-	winhelp_entry{0x2C1, 0x3EB},
-	winhelp_entry{0x2C2, 0x3EB},
-	winhelp_entry{0x2C3, 0x3EB},
-	winhelp_entry{0x2C4, 0x3EB},
-	winhelp_entry{0, 0},
-};
 
-int high_score::read(high_score_struct* table, int* ptrToSmth)
+int high_score::read(high_score_struct* table)
 {
 	char Buffer[20];
 
-	int scoreSum = 0;
+	int checkSum = 0;
 	clear_table(table);
-	char* buf1 = memory::allocate(300u);
-	if (!buf1)
-		return 1;
-	char* buf2 = memory::allocate(300u);
-	auto optPath = pinball::get_rc_string(166, 0);
 	for (auto position = 0; position < 5; ++position)
 	{
 		auto tablePtr = &table[position];
+
 		snprintf(Buffer, sizeof Buffer, "%d", position);
 		strcat(Buffer, ".Name");
-		options::get_string(optPath, Buffer, buf1, "", 32);
-		buf1[32] = 0;
-		strncpy(tablePtr->Name, buf1, sizeof tablePtr->Name);
+		auto name = options::get_string(Buffer, "");
+		strncpy(tablePtr->Name, name.c_str(), sizeof tablePtr->Name);
+
 		snprintf(Buffer, sizeof Buffer, "%d", position);
 		strcat(Buffer, ".Score");
-		options::get_string(optPath, Buffer, buf1, "", 300);
-		tablePtr->Score = atol(buf1);
-		for (int i = (int)strlen(tablePtr->Name); --i >= 0; scoreSum += tablePtr->Name[i])
+		tablePtr->Score = options::get_int(Buffer, tablePtr->Score);
+
+		for (int i = static_cast<int>(strlen(tablePtr->Name)); --i >= 0; checkSum += tablePtr->Name[i])
 		{
 		}
-		scoreSum += tablePtr->Score;
+		checkSum += tablePtr->Score;
 	}
 
-	scramble_number_string(scoreSum, buf1);
-	options::get_string(optPath, "Verification", buf2, "", 300);
-	if (strcmp(buf1, buf2) != 0)
+	auto verification = options::get_int("Verification", 7);
+	if (checkSum != verification)
 		clear_table(table);
-	memory::free(buf1);
-	memory::free(buf2);
 	return 0;
 }
 
-int high_score::write(high_score_struct* table, int* ptrToSmth)
+int high_score::write(high_score_struct* table)
 {
 	char Buffer[20];
 
-	high_score_struct* tablePtr = table;
-	int scoreSum = 0;
-	char* buf = memory::allocate(300u);
-	if (!buf)
-		return 1;
-	const char* optPath = pinball::get_rc_string(166, 0);
+	int checkSum = 0;
 	for (auto position = 0; position < 5; ++position)
 	{
+		auto tablePtr = &table[position];
+
 		snprintf(Buffer, sizeof Buffer, "%d", position);
 		strcat(Buffer, ".Name");
-		options::set_string(optPath, Buffer, tablePtr->Name);
+		options::set_string(Buffer, tablePtr->Name);
+
 		snprintf(Buffer, sizeof Buffer, "%d", position);
 		strcat(Buffer, ".Score");
-		snprintf(buf, 300, "%d", tablePtr->Score);		
-		options::set_string(optPath, Buffer, buf);
-		for (int i = (int)strlen(tablePtr->Name); --i >= 0; scoreSum += tablePtr->Name[i])
+		options::set_int(Buffer, tablePtr->Score);
+
+		for (int i = static_cast<int>(strlen(tablePtr->Name)); --i >= 0; checkSum += tablePtr->Name[i])
 		{
 		}
-		scoreSum += tablePtr->Score;
-		++position;
-		++tablePtr;
+		checkSum += tablePtr->Score;
 	}
-	scramble_number_string(scoreSum, buf);
-	options::set_string(optPath, "Verification", buf);
-	memory::free(buf);
+
+	options::set_int("Verification", checkSum);
 	return 0;
 }
 
@@ -155,11 +119,6 @@ int high_score::place_new_score_into(high_score_struct* table, int score, LPSTR 
 	return position;
 }
 
-void high_score::scramble_number_string(int Value, char* Buffer)
-{
-	snprintf(Buffer, 300, "%d", Value);
-}
-
 void high_score::show_high_score_dialog(high_score_struct* table)
 {
 	dlg_enter_name = 0;
@@ -183,7 +142,7 @@ void high_score::RenderHighScoreDialog()
 	if (ShowDialog == true)
 	{
 		ShowDialog = false;
-		if (dlg_position == -1) 
+		if (dlg_position == -1)
 		{
 			dlg_enter_name = 0;
 			return;

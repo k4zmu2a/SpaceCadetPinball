@@ -34,6 +34,7 @@
 
 //https://github.com/ocornut/imgui 7b913db1ce9dd2fd98e5790aa59974dd4496be3b
 #include "imgui.h"
+#include "imgui_internal.h"
 #include "imgui_impl_sdl.h"
 //https://github.com/Tyyppi77/imgui_sdl 01deb04b102b6a1c15c7fdec1977a2c96a885e6f
 #include "imgui_sdl.h"
