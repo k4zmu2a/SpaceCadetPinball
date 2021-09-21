@@ -1,5 +1,4 @@
 #pragma once
-#include "pinball.h"
 
 struct high_score_struct
 {

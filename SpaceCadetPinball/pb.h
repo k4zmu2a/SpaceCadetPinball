@@ -1,8 +1,8 @@
 #pragma once
 #include "high_score.h"
-#include "partman.h"
-#include "TPinballTable.h"
 
+class TPinballTable;
+class DatFile;
 class TBall;
 
 class pb
@@ -11,7 +11,7 @@ public:
 	static int time_ticks;
 	static float ball_speed_limit, time_now, time_next;
 	static int cheat_mode, game_mode;
-	static datFileStruct* record_table;
+	static DatFile* record_table;
 	static TPinballTable* MainTable;
 	static high_score_struct highscore_table[5];
 	static bool FullTiltMode;

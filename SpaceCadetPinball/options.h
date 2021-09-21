@@ -1,5 +1,5 @@
 #pragma once
-#include "pinball.h"
+#include <map>
 
 struct optionsStruct
 {

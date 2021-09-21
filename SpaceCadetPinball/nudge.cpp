@@ -7,6 +7,7 @@
 #include "render.h"
 #include "TBall.h"
 #include "timer.h"
+#include "TPinballTable.h"
 
 int nudge::nudged_left;
 int nudge::nudged_right;

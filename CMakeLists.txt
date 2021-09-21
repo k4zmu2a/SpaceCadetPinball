@@ -32,6 +32,8 @@ set(SOURCE_FILES
         SpaceCadetPinball/fullscrn.h
         SpaceCadetPinball/gdrv.cpp
         SpaceCadetPinball/gdrv.h
+        SpaceCadetPinball/GroupData.cpp
+        SpaceCadetPinball/GroupData.h
         SpaceCadetPinball/high_score.cpp
         SpaceCadetPinball/high_score.h
         SpaceCadetPinball/loader.cpp

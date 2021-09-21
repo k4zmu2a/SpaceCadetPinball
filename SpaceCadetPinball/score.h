@@ -42,6 +42,7 @@ public:
 	static void set(scoreStruct* score, int value);
 	static void update(scoreStruct* score);
 	static void string_format(int score, char* str);
+	static void ApplyPalette();
 private :
 	static void load_msg_font_3DPB(LPCSTR lpName);
 	static void load_msg_font_FT(LPCSTR lpName);

@@ -4,11 +4,9 @@
 #include "fullscrn.h"
 #include "loader.h"
 #include "memory.h"
-#include "partman.h"
+#include "GroupData.h"
 #include "pb.h"
 #include "render.h"
-#include "TDrain.h"
-#include "winmain.h"
 
 // Todo: load font from file
 const uint8_t PB_MSGFT_bin[]
@@ -32,9 +30,9 @@ scoreStruct* score::create(LPCSTR fieldName, gdrv_bitmap8* renderBgBmp)
 	score->BackgroundBmp = renderBgBmp;
 
 	/*Full tilt: score box dimensions index is offset by resolution*/
-	auto dimensionsId = partman::record_labeled(pb::record_table, fieldName) + fullscrn::GetResolution();
-	auto dimensions = reinterpret_cast<int16_t*>(partman::field(loader::loader_table, dimensionsId,
-	                                                            datFieldTypes::ShortArray));
+	auto dimensionsId = pb::record_table->record_labeled(fieldName) + fullscrn::GetResolution();
+	auto dimensions = reinterpret_cast<int16_t*>(loader::loader_table->field( dimensionsId,
+	                                                            FieldTypes::ShortArray));
 	if (!dimensions)
 	{
 		memory::free(score);
@@ -48,8 +46,7 @@ scoreStruct* score::create(LPCSTR fieldName, gdrv_bitmap8* renderBgBmp)
 
 	for (int index = 0; index < 10; index++)
 	{
-		score->CharBmp[index] = reinterpret_cast<gdrv_bitmap8*>(partman::field(
-			loader::loader_table, groupIndex, datFieldTypes::Bitmap8bit));
+		score->CharBmp[index] = loader::loader_table->GetBitmap(groupIndex);
 		++groupIndex;
 	}
 	return score;
@@ -122,7 +119,7 @@ void score::load_msg_font_3DPB(LPCSTR lpName)
 			break;
 		}
 
-		if (gdrv::create_raw_bitmap(bmp, width, height, 0))
+		if (gdrv::create_bitmap(bmp, width, height, width))
 		{
 			memory::free(bmp);
 			msg_fontp->Chars[charInd] = nullptr;
@@ -133,12 +130,12 @@ void score::load_msg_font_3DPB(LPCSTR lpName)
 		memcpy(tmpCharBur + 3, ptrToData, sizeInBytes);
 		ptrToData += sizeInBytes;
 
-		auto srcptr = tmpCharBur + 4;
-		auto dstPtr = &bmp->BmpBufPtr1[bmp->Stride * (bmp->Height - 1)];
+		auto srcPtr = tmpCharBur + 4;
+		auto dstPtr = &bmp->IndexedBmpPtr[bmp->Stride * (bmp->Height - 1)];
 		for (auto y = 0; y < height; ++y)
 		{
-			memcpy(dstPtr, srcptr, width);
-			srcptr += width;
+			memcpy(dstPtr, srcPtr, width);
+			srcPtr += width;
 			dstPtr -= bmp->Stride;
 		}
 	}
@@ -152,7 +149,7 @@ void score::load_msg_font_FT(LPCSTR lpName)
 {
 	if (!pb::record_table)
 		return;
-	int groupIndex = partman::record_labeled(pb::record_table, lpName);
+	int groupIndex = pb::record_table->record_labeled(lpName);
 	if (groupIndex < 0)
 		return;
 	msg_fontp = reinterpret_cast<score_msg_font_type*>(memory::allocate(sizeof(score_msg_font_type)));
@@ -160,15 +157,14 @@ void score::load_msg_font_FT(LPCSTR lpName)
 		return;
 
 	memset(msg_fontp, 0, sizeof(score_msg_font_type));
-	auto gapArray = reinterpret_cast<int16_t*>(partman::field(pb::record_table, groupIndex, datFieldTypes::ShortArray));
+	auto gapArray = reinterpret_cast<int16_t*>(pb::record_table->field(groupIndex, FieldTypes::ShortArray));
 	if (gapArray)
 		msg_fontp->GapWidth = gapArray[fullscrn::GetResolution()];
 	else
 		msg_fontp->GapWidth = 0;
 	for (auto charIndex = 32; charIndex < 128; charIndex++, ++groupIndex)
 	{
-		auto bmp = reinterpret_cast<gdrv_bitmap8*>(partman::field(pb::record_table, groupIndex,
-		                                                          datFieldTypes::Bitmap8bit));
+		auto bmp = pb::record_table->GetBitmap(groupIndex);
 		if (!bmp)
 			break;
 		if (!msg_fontp->Height)
@@ -181,7 +177,7 @@ void score::unload_msg_font()
 {
 	if (msg_fontp)
 	{
-		/*3DB creates bitmaps, FT just references them from partman*/
+		/*3DBP creates bitmaps, FT just references them from partman*/
 		if (!pb::FullTiltMode)
 			for (int i = 0; i < 128; i++)
 			{
@@ -311,6 +307,21 @@ void score::string_format(int score, char* str)
 				score % 1000000 / 1000,
 				separator,
 				score % 1000);
+		}
+	}
+}
+
+void score::ApplyPalette()
+{
+	if (!msg_fontp || pb::FullTiltMode)
+		return;
+
+	// Only 3DPB font needs this, because it is not loaded by partman
+	for (auto& Char : msg_fontp->Chars)
+	{
+		if (Char)
+		{
+			gdrv::ApplyPalette(*Char);
 		}
 	}
 }

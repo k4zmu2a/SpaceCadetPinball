@@ -61,4 +61,5 @@ public:
 	static void unpaint_balls();
 	static void shift(int offsetX, int offsetY, int xSrc, int ySrc, int DestWidth, int DestHeight);
 	static void build_occlude_list();
+	static void SpriteViewer(bool* show);
 };

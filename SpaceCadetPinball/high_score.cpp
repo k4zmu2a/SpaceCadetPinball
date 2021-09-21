@@ -3,6 +3,8 @@
 
 #include "memory.h"
 #include "options.h"
+#include "pinball.h"
+#include "score.h"
 
 int high_score::dlg_enter_name;
 int high_score::dlg_score;

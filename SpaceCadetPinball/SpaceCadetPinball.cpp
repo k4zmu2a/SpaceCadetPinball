@@ -3,15 +3,6 @@
 
 #include "pch.h"
 
-#include "objlist_class.h"
-#include "partman.h"
-#include "gdrv.h"
-#include "loader.h"
-#include "pb.h"
-#include "pinball.h"
-#include "score.h"
-#include "TPinballTable.h"
-#include "TTextBox.h"
 #include "winmain.h"
 
 int main(int argc, char* argv[])
@@ -24,57 +15,6 @@ int main(int argc, char* argv[])
 		winmain::WinMain(cmdLine.c_str());
 		return 0;
 	}
-
-	std::cout << "Hello World!\n";
-	gdrv::init(0,0);
-
-	auto d = objlist_class<void>(2, 4);
-	for (size_t i = 0; i < 100; i++)
-	{
-		d.Add((void*)i);
-	}
-	d.Delete((void*)3);
-
-	auto xx = sizeof(datFileHeader);
-
-	winmain::DatFileName = "PINBALL.DAT";
-	pb::init();
-	auto datFile = pb::record_table;
-
-	assert(partman::field_size_nth(datFile, 0, datFieldTypes::String, 0) == 43);
-	assert(partman::field_size_nth(datFile, 2, datFieldTypes::Palette, 0) == 1024);
-	assert(partman::field_size_nth(datFile, 101, datFieldTypes::FloatArray, 4) == 32);
-
-	assert(strcmp(partman::field(datFile, 0, datFieldTypes::String), "3D-Pinball:  Copyright 1994, Cinematronics") == 0);
-	assert(strcmp(partman::field(datFile, 540, datFieldTypes::GroupName), "table_objects") == 0);
-
-	assert(partman::record_labeled(datFile, "background") == 2);
-	assert(partman::record_labeled(datFile, "a_bump1") == 372);
-
-	assert(memcmp(partman::field_labeled(datFile, "table_size", datFieldTypes::ShortArray), new short[2]{ 600, 416 }, 2 * 2) == 0);
-
-	//loader::error(25, 26);
-	loader::get_sound_id(18);
-	visualStruct visual1{};
-	loader::material(96, &visual1);
-	loader::query_visual(283, 0, &visual1);
-	visualKickerStruct kicker1{};
-	loader::kicker(509, &kicker1);
-
-	auto score1 = score::create("score1", nullptr);
-
-	auto pinballTable = pb::MainTable;
-	//pinballTable->find_component(1);
-
-	for (int i = 0; i < 190; i++)
-	{
-		auto rsc = pinball::get_rc_string(i, 0);
-		if (rsc)
-			printf("%d:\t%s\n", i, rsc);
-	}
-	
-	//DatParser::Parse(dataFileName);
-	std::cout << "Goodby World!\n";
 }
 
 // Run program: Ctrl + F5 or Debug > Start Without Debugging menu

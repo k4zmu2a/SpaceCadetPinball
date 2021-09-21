@@ -3,6 +3,7 @@
 
 #include "objlist_class.h"
 #include "pb.h"
+#include "pinball.h"
 #include "TBlocker.h"
 #include "TBumper.h"
 #include "TComponentGroup.h"
@@ -27,6 +28,7 @@
 #include "TRamp.h"
 #include "TPlunger.h"
 #include "TWall.h"
+#include "TTextBox.h"
 
 int control::pbctrl_state;
 

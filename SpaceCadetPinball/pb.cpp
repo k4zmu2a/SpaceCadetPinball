@@ -24,9 +24,14 @@
 #include "TLightGroup.h"
 #include "TPlunger.h"
 #include "TTableLayer.h"
+#include "GroupData.h"
+#include "partman.h"
+#include "score.h"
+#include "TPinballTable.h"
+#include "TTextBox.h"
 
 TPinballTable* pb::MainTable = nullptr;
-datFileStruct* pb::record_table = nullptr;
+DatFile* pb::record_table = nullptr;
 int pb::time_ticks = 0, pb::demo_mode = 0, pb::cheat_mode = 0, pb::game_mode = 2, pb::mode_countdown_;
 float pb::time_now, pb::time_next, pb::ball_speed_limit;
 high_score_struct pb::highscore_table[5];
@@ -39,7 +44,7 @@ int pb::init()
 
 	++memory::critical_allocation;
 	auto dataFilePath = pinball::make_path_name(winmain::DatFileName);
-	record_table = partman::load_records(dataFilePath.c_str(), fullscrn::GetResolution(), FullTiltMode);
+	record_table = partman::load_records(dataFilePath.c_str(), FullTiltMode);
 
 	auto useBmpFont = 0;
 	pinball::get_rc_int(158, &useBmpFont);
@@ -49,12 +54,12 @@ int pb::init()
 	if (!record_table)
 		return 1;
 
-	auto plt = (ColorRgba*)partman::field_labeled(record_table, "background", datFieldTypes::Palette);
+	auto plt = (ColorRgba*)record_table->field_labeled("background", FieldTypes::Palette);
 	gdrv::display_palette(plt);
 
-	auto backgroundBmp = (gdrv_bitmap8*)partman::field_labeled(record_table, "background", datFieldTypes::Bitmap8bit);
-	auto cameraInfoId = partman::record_labeled(record_table, "camera_info") + fullscrn::GetResolution();
-	auto cameraInfo = (float*)partman::field(record_table, cameraInfoId, datFieldTypes::FloatArray);
+	auto backgroundBmp = record_table->GetBitmap(record_table->record_labeled("background"));
+	auto cameraInfoId = record_table->record_labeled("camera_info") + fullscrn::GetResolution();
+	auto cameraInfo = (float*)record_table->field(cameraInfoId, FieldTypes::FloatArray);
 
 	/*Full tilt: table size depends on resolution*/
 	auto resInfo = &fullscrn::resolution_array[fullscrn::GetResolution()];
@@ -84,7 +89,6 @@ int pb::init()
 		0,
 		0);
 
-	gdrv::destroy_bitmap(backgroundBmp);
 	loader::loadfrom(record_table);
 
 	if (pinball::quickFlag)
@@ -108,7 +112,7 @@ int pb::uninit()
 {
 	score::unload_msg_font();
 	loader::unload();
-	partman::unload_records(record_table);
+	delete record_table;
 	high_score::write(highscore_table);
 	if (MainTable)
 		delete MainTable;
@@ -287,8 +291,8 @@ void pb::timed_frame(float timeNow, float timeDelta, bool drawBalls)
 					ball->Acceleration.Y = ball->Speed * ball->Acceleration.Y;
 					maths::vector_add(&ball->Acceleration, &vec2);
 					ball->Speed = maths::normalize_2d(&ball->Acceleration);
-					ball->InvAcceleration.X = ball->Acceleration.X == 0.0f ? 1000000000.0f : 1.0f / ball->Acceleration.X;
-					ball->InvAcceleration.Y = ball->Acceleration.Y == 0.0f ? 1000000000.0f : 1.0f / ball->Acceleration.Y;
+					ball->InvAcceleration.X = ball->Acceleration.X == 0.0f ? 1.0e9f : 1.0f / ball->Acceleration.X;
+					ball->InvAcceleration.Y = ball->Acceleration.Y == 0.0f ? 1.0e9f : 1.0f / ball->Acceleration.Y;
 				}
 
 				auto timeDelta2 = timeDelta;

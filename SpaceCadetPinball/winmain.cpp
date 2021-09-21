@@ -7,6 +7,7 @@
 #include "pinball.h"
 #include "options.h"
 #include "pb.h"
+#include "render.h"
 #include "Sound.h"
 #include "resource.h"
 
@@ -36,6 +37,7 @@ gdrv_bitmap8 winmain::gfr_display{};
 std::string winmain::DatFileName;
 bool winmain::ShowAboutDialog = false;
 bool winmain::ShowImGuiDemo = false;
+bool winmain::ShowSpriteViewer = false;
 bool winmain::LaunchBallEnabled = true;
 bool winmain::HighScoresEnabled = true;
 bool winmain::DemoActive = false;
@@ -137,7 +139,7 @@ int winmain::WinMain(LPCSTR lpCmdLine)
 		if (pb::init())
 		{
 			SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, "Could not load game data",
-				"The .dat file is missing", window);
+			                         "The .dat file is missing", window);
 			return 1;
 		}
 
@@ -180,7 +182,7 @@ int winmain::WinMain(LPCSTR lpCmdLine)
 					char buf[60];
 					auto elapsedSec = static_cast<float>(curTime - prevTime) * 0.001f;
 					snprintf(buf, sizeof buf, "Updates/sec = %02.02f Frames/sec = %02.02f ",
-					          300.0f / elapsedSec, frameCounter / elapsedSec);
+					         300.0f / elapsedSec, frameCounter / elapsedSec);
 					SDL_SetWindowTitle(window, buf);
 					frameCounter = 0;
 
@@ -199,15 +201,14 @@ int winmain::WinMain(LPCSTR lpCmdLine)
 									redGreen = i1;
 								}
 
-								auto clr = Rgba{redGreen, redGreen, blue, 0};
-								*pltPtr++ = {*reinterpret_cast<uint32_t*>(&clr)};
+								*pltPtr++ = ColorRgba{Rgba{redGreen, redGreen, blue, 0}};
 							}
 							gdrv::display_palette(plt);
 							free(plt);
-							gdrv::create_bitmap(&gfr_display, 400, 15);
+							gdrv::create_bitmap(&gfr_display, 400, 15, 400, false);
 						}
 
-						gdrv::blit(&gfr_display, 0, 0, 0, 0, 300, 10);
+						gdrv::blit(&gfr_display, 0, 0, 0, 30, 300, 10);
 						gdrv::fill_bitmap(&gfr_display, 300, 10, 0, 0, 0);
 					}
 				}
@@ -254,12 +255,12 @@ int winmain::WinMain(LPCSTR lpCmdLine)
 					if (gfr_display.BmpBufPtr1)
 					{
 						auto deltaT = now - then + 10;
-						auto fillChar = static_cast<char>(deltaT);
+						auto fillChar = static_cast<uint8_t>(deltaT);
 						if (deltaT > 236)
 						{
-							fillChar = -7;
+							fillChar = 1;
 						}
-						gdrv::fill_bitmap(&gfr_display, 1, 10, 299 - updateCounter, 0, fillChar);
+						gdrv::fill_bitmap(&gfr_display, 1, 10, 300 - updateCounter, 0, fillChar);
 					}
 					--updateCounter;
 					then = now;
@@ -329,7 +330,7 @@ void winmain::RenderUi()
 	// No demo window in release to save space
 #ifndef NDEBUG
 	if (ShowImGuiDemo)
-		ImGui::ShowDemoWindow();
+		ImGui::ShowDemoWindow(&ShowImGuiDemo);
 #endif
 
 	if (ImGui::BeginMainMenuBar())
@@ -444,6 +445,12 @@ void winmain::RenderUi()
 				ShowImGuiDemo ^= true;
 			}
 #endif
+			if (ImGui::MenuItem("Sprite Viewer", nullptr, ShowSpriteViewer))
+			{
+				if (!ShowSpriteViewer && !single_step)
+					pause();
+				ShowSpriteViewer ^= true;
+			}
 			if (ImGui::MenuItem("Help Topics", "F1"))
 			{
 				if (!single_step)
@@ -465,6 +472,8 @@ void winmain::RenderUi()
 
 	a_dialog();
 	high_score::RenderHighScoreDialog();
+	if (ShowSpriteViewer)
+		render::SpriteViewer(&ShowSpriteViewer);
 }
 
 int winmain::event_handler(const SDL_Event* event)
@@ -553,7 +562,7 @@ int winmain::event_handler(const SDL_Event* event)
 
 		switch (event->key.keysym.sym)
 		{
-		case SDLK_h:
+		case SDLK_g:
 			DispGRhistory = 1;
 			break;
 		case SDLK_y:
@@ -627,7 +636,6 @@ int winmain::event_handler(const SDL_Event* event)
 		{
 		case SDL_WINDOWEVENT_FOCUS_GAINED:
 		case SDL_WINDOWEVENT_TAKE_FOCUS:
-		case SDL_WINDOWEVENT_EXPOSED:
 		case SDL_WINDOWEVENT_SHOWN:
 			activated = 1;
 			Sound::Activate();

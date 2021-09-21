@@ -1,6 +1,9 @@
 #include "pch.h"
 #include "render.h"
+
+#include "GroupData.h"
 #include "memory.h"
+#include "pb.h"
 
 int render::blit = 0;
 int render::many_dirty, render::many_sprites, render::many_balls;
@@ -21,7 +24,7 @@ void render::init(gdrv_bitmap8* bmp, float zMin, float zScaler, int width, int h
 	sprite_list = memory::allocate<render_sprite_type_struct*>(1000);
 	dirty_list = memory::allocate<render_sprite_type_struct*>(1000);
 	ball_list = memory::allocate<render_sprite_type_struct*>(20);
-	gdrv::create_bitmap(&vscreen, width, height);
+	gdrv::create_bitmap(&vscreen, width, height, width, false);
 	zdrv::create_zmap(&zscreen, width, height);
 	zdrv::fill(&zscreen, zscreen.Width, zscreen.Height, 0, 0, 0xFFFF);
 	vscreen_rect.YPosition = 0;
@@ -33,7 +36,7 @@ void render::init(gdrv_bitmap8* bmp, float zMin, float zScaler, int width, int h
 	gdrv_bitmap8* ballBmp = ball_bitmap;
 	while (ballBmp < &ball_bitmap[20])
 	{
-		gdrv::create_raw_bitmap(ballBmp, 64, 64, 1);
+		gdrv::create_bitmap(ballBmp, 64, 64, 64, false);
 		++ballBmp;
 	}
 	background_bitmap = bmp;
@@ -473,7 +476,7 @@ void render::paint_balls()
 
 void render::unpaint_balls()
 {
-	for (int index = many_balls-1; index >= 0; index--)
+	for (int index = many_balls - 1; index >= 0; index--)
 	{
 		auto curBall = ball_list[index];
 		if (curBall->DirtyRect.Width > 0)
@@ -553,4 +556,96 @@ void render::build_occlude_list()
 		memory::free(spriteArr);
 
 	--memory::critical_allocation;
+}
+
+void render::SpriteViewer(bool* show)
+{
+	static const char* BitmapTypes[] =
+	{
+		"None",
+		"RawBitmap",
+		"DibBitmap",
+		"Spliced",
+	};
+	static float scale = 1.0f;
+	auto uv_min = ImVec2(0.0f, 0.0f); // Top-left
+	auto uv_max = ImVec2(1.0f, 1.0f); // Lower-right
+	auto tint_col = ImVec4(1.0f, 1.0f, 1.0f, 1.0f); // No tint
+	auto border_col = ImVec4(1.0f, 1.0f, 1.0f, 0.5f); // 50% opaque white
+
+	if (ImGui::Begin("Sprite viewer", show, ImGuiWindowFlags_HorizontalScrollbar | ImGuiWindowFlags_MenuBar))
+	{
+		if (ImGui::BeginMenuBar())
+		{
+			ImGui::SliderFloat("Sprite scale", &scale, 0.1f, 10.0f, "scale = %.3f");
+			ImGui::EndMenuBar();
+		}
+
+		for (const auto group : pb::record_table->Groups)
+		{
+			bool emptyGroup = true;
+			for (int i = 0; i <= 2; i++)
+			{
+				auto bmp = group->GetBitmap(i);
+				if (bmp)
+				{
+					emptyGroup = false;
+					break;
+				}
+			}
+			if (emptyGroup)
+				continue;
+
+			ImGui::Text("Group: %d, name:%s", group->GroupId, group->GroupName.c_str());
+			for (int i = 0; i <= 2; i++)
+			{
+				auto bmp = group->GetBitmap(i);
+				if (!bmp)
+					continue;
+
+				auto type = BitmapTypes[static_cast<char>(bmp->BitmapType)];
+				ImGui::Text("type:%s, size:%d, resolution: %dx%d, offset:%dx%d", type,
+				            bmp->Resolution,
+				            bmp->Width, bmp->Height, bmp->XPosition, bmp->YPosition);
+			}
+
+			for (int same = 0, i = 0; i <= 2; i++)
+			{
+				auto bmp = group->GetBitmap(i);
+				if (!bmp)
+					continue;
+
+				gdrv::CreatePreview(*bmp);
+				if (bmp->Texture)
+				{
+					if (!same)
+						same = true;
+					else
+						ImGui::SameLine();
+
+					ImGui::Image(bmp->Texture, ImVec2(bmp->Width * scale, bmp->Height * scale),
+					             uv_min, uv_max, tint_col, border_col);
+				}
+			}
+
+			for (int same = 0, i = 0; i <= 2; i++)
+			{
+				auto zMap = group->GetZMap(i);
+				if (!zMap)
+					continue;
+
+				zdrv::CreatePreview(*zMap);
+				if (zMap->Texture)
+				{
+					if (!same)
+						same = true;
+					else
+						ImGui::SameLine();
+					ImGui::Image(zMap->Texture, ImVec2(zMap->Width * scale, zMap->Height * scale),
+					             uv_min, uv_max, tint_col, border_col);
+				}
+			}
+		}
+	}
+	ImGui::End();
 }

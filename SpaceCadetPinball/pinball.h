@@ -1,5 +1,6 @@
 #pragma once
-#include "TTextBox.h"
+
+class TTextBox;
 
 class pinball
 {

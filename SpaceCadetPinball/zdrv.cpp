@@ -2,20 +2,18 @@
 #include "zdrv.h"
 #include "memory.h"
 #include "pb.h"
+#include "winmain.h"
 
 
-int zdrv::create_zmap(zmap_header_type* zmap, int width, int height)
+int zdrv::create_zmap(zmap_header_type* zmap, int width, int height, int stride)
 {
-	int stride = pad(width);
-	zmap->Stride = stride;
-	auto bmpBuf = memory::allocate<unsigned short>(height * stride);
-	zmap->ZPtr1 = bmpBuf;
-	if (!bmpBuf)
-		return -1;
-	zmap->ZPtr2 = bmpBuf;
 	zmap->Width = width;
 	zmap->Height = height;
-	return 0;
+	zmap->Stride = stride >= 0 ? stride : pad(width);
+	zmap->Texture = nullptr;
+
+	zmap->ZPtr1 = memory::allocate<unsigned short>(zmap->Stride * zmap->Height);
+	return zmap->ZPtr1 ? 0 : -1;
 }
 
 int zdrv::pad(int width)
@@ -32,20 +30,22 @@ int zdrv::destroy_zmap(zmap_header_type* zmap)
 		return -1;
 	if (zmap->ZPtr1)
 		memory::free(zmap->ZPtr1);
+	if (zmap->Texture)
+		SDL_DestroyTexture(zmap->Texture);
 	memset(zmap, 0, sizeof(zmap_header_type));
 	return 0;
 }
 
 void zdrv::fill(zmap_header_type* zmap, int width, int height, int xOff, int yOff, uint16_t fillWord)
 {
-	auto dstPtr = &zmap->ZPtr1[zmap->Stride * (zmap->Height - height - yOff) + xOff];
+	auto dstPtr = &zmap->ZPtr1[zmap->Stride * yOff + xOff];
 	for (int y = height; y > 0; --y)
 	{
 		for (int x = width; x > 0; --x)
 		{
 			*dstPtr++ = fillWord;
 		}
-		dstPtr += zmap->Stride - width;		
+		dstPtr += zmap->Stride - width;
 	}
 }
 
@@ -54,19 +54,12 @@ void zdrv::paint(int width, int height, gdrv_bitmap8* dstBmp, int dstBmpXOff, in
                  int dstZMapXOff, int dstZMapYOff, gdrv_bitmap8* srcBmp, int srcBmpXOff, int srcBmpYOff,
                  zmap_header_type* srcZMap, int srcZMapXOff, int srcZMapYOff)
 {
-	if (srcBmp->BitmapType == BitmapTypes::Spliced)
-	{
-		/*Spliced bitmap is also a zMap, how convenient*/
-		paint_spliced_bmp(srcBmp->XPosition, srcBmp->YPosition, dstBmp, dstZMap, srcBmp);
-		return;
-	}
+	assertm(srcBmp->BitmapType != BitmapTypes::Spliced, "Wrong bmp type");
 
-	int dstHeightAbs = abs(dstBmp->Height);
-	int srcHeightAbs = abs(srcBmp->Height);
-	auto srcPtr = &srcBmp->BmpBufPtr1[srcBmp->Stride * (srcHeightAbs - height - srcBmpYOff) + srcBmpXOff];
-	auto dstPtr = &dstBmp->BmpBufPtr1[dstBmp->Stride * (dstHeightAbs - height - dstBmpYOff) + dstBmpXOff];
-	auto srcPtrZ = &srcZMap->ZPtr1[srcZMap->Stride * (srcZMap->Height - height - srcZMapYOff) + srcZMapXOff];
-	auto dstPtrZ = &dstZMap->ZPtr1[dstZMap->Stride * (dstZMap->Height - height - dstZMapYOff) + dstZMapXOff];
+	auto srcPtr = &srcBmp->BmpBufPtr1[srcBmp->Stride * srcBmpYOff + srcBmpXOff];
+	auto dstPtr = &dstBmp->BmpBufPtr1[dstBmp->Stride * dstBmpYOff + dstBmpXOff];
+	auto srcPtrZ = &srcZMap->ZPtr1[srcZMap->Stride * srcZMapYOff + srcZMapXOff];
+	auto dstPtrZ = &dstZMap->ZPtr1[dstZMap->Stride * dstZMapYOff + dstZMapXOff];
 
 	for (int y = height; y > 0; y--)
 	{
@@ -94,17 +87,17 @@ void zdrv::paint_flat(int width, int height, gdrv_bitmap8* dstBmp, int dstBmpXOf
                       zmap_header_type* zMap, int dstZMapXOff, int dstZMapYOff, gdrv_bitmap8* srcBmp, int srcBmpXOff,
                       int srcBmpYOff, uint16_t depth)
 {
-	int dstHeightAbs = abs(dstBmp->Height);
-	int srcHeightAbs = abs(srcBmp->Height);
-	auto dstPtr = &dstBmp->BmpBufPtr1[dstBmp->Stride * (dstHeightAbs - height - dstBmpYOff) + dstBmpXOff];
-	auto srcPtr = &srcBmp->BmpBufPtr1[srcBmp->Stride * (srcHeightAbs - height - srcBmpYOff) + srcBmpXOff];
-	auto zPtr = &zMap->ZPtr1[zMap->Stride * (zMap->Height - height - dstZMapYOff) + dstZMapXOff];
+	assertm(srcBmp->BitmapType != BitmapTypes::Spliced, "Wrong bmp type");
+
+	auto dstPtr = &dstBmp->BmpBufPtr1[dstBmp->Stride * dstBmpYOff + dstBmpXOff];
+	auto srcPtr = &srcBmp->BmpBufPtr1[srcBmp->Stride * srcBmpYOff + srcBmpXOff];
+	auto zPtr = &zMap->ZPtr1[zMap->Stride * dstZMapYOff + dstZMapXOff];
 
 	for (int y = height; y > 0; y--)
 	{
 		for (int x = width; x > 0; --x)
 		{
-			if (*srcPtr && *zPtr > depth)
+			if ((*srcPtr).Color && *zPtr > depth)
 			{
 				*dstPtr = *srcPtr;
 			}
@@ -119,40 +112,58 @@ void zdrv::paint_flat(int width, int height, gdrv_bitmap8* dstBmp, int dstBmpXOf
 	}
 }
 
-void zdrv::paint_spliced_bmp(int xPos, int yPos, gdrv_bitmap8* dstBmp, zmap_header_type* dstZmap, gdrv_bitmap8* srcBmp)
+void zdrv::CreatePreview(zmap_header_type& zMap)
 {
-	assertm(srcBmp->BitmapType == BitmapTypes::Spliced, "Wrong bmp type");
-	int xOffset = xPos - pb::MainTable->XOffset;
-	int yOffset = dstBmp->Height - srcBmp->Height - (yPos - pb::MainTable->YOffset);
-	if (yOffset < 0)
+	if (zMap.Texture)
 		return;
 
-	auto bmpDstPtr = &dstBmp->BmpBufPtr1[xOffset + yOffset * dstBmp->Stride];
-	auto zMapDstPtr = &dstZmap->ZPtr2[xOffset + yOffset * dstZmap->Stride];
-	auto bmpSrcPtr = reinterpret_cast<unsigned short*>(srcBmp->BmpBufPtr1);
+	auto tmpBuff = new ColorRgba[zMap.Width * zMap.Height];
 
-	while (true)
+	ColorRgba color{};
+	auto dst = tmpBuff;
+	auto src = zMap.ZPtr1;
+	for (auto y = 0; y < zMap.Height; y++)
 	{
-		auto stride = static_cast<short>(*bmpSrcPtr++);
-		if (stride < 0)
-			break;
-
-		/*Stride is in terms of dst stride, hardcoded to match vScreen width in current resolution*/
-		zMapDstPtr += stride;
-		bmpDstPtr += stride;
-		for (auto count = *bmpSrcPtr++; count; count--)
+		for (auto x = 0; x < zMap.Width; x++)
 		{
-			auto depth = *bmpSrcPtr++;
-			auto charPtr = reinterpret_cast<char**>(&bmpSrcPtr);
-			if (*zMapDstPtr >= depth)
-			{
-				*bmpDstPtr = **charPtr;
-				*zMapDstPtr = depth;
-			}
+			auto depth = static_cast<uint8_t>((0xffff - *src++) / 0xff);
+			color.rgba.peRed = depth;
+			color.rgba.peGreen = depth;
+			color.rgba.peBlue = depth;
 
-			(*charPtr)++;
-			++zMapDstPtr;
-			++bmpDstPtr;
+			/*auto depth = static_cast<float>(*src++) /0xffff;
+			color.rgba.peRed = (1-depth) * 0xff;
+			color.rgba.peBlue =  (depth) * 0xff;*/
+			*dst++ = color;
 		}
+		src += zMap.Stride - zMap.Width;
+	}
+
+	SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, "nearest");
+	auto texture = SDL_CreateTexture
+	(
+		winmain::Renderer,
+		SDL_PIXELFORMAT_ARGB8888,
+		SDL_TEXTUREACCESS_STATIC,
+		zMap.Width, zMap.Height
+	);
+	SDL_UpdateTexture(texture, nullptr, tmpBuff, zMap.Width * 4);
+	zMap.Texture = texture;
+	delete[] tmpBuff;
+}
+
+void zdrv::FlipZMapHorizontally(const zmap_header_type& zMap)
+{
+	// Flip in-place, iterate over Height/2 lines
+	auto dst = zMap.ZPtr1;
+	auto src = zMap.ZPtr1 + zMap.Stride * (zMap.Height - 1);
+	for (auto y = zMap.Height - 1; y >= zMap.Height / 2; y--)
+	{		
+		for (auto x = 0; x < zMap.Width; x++)
+		{
+			std::swap(*dst++, *src++);
+		}
+		dst += zMap.Stride - zMap.Width;
+		src -= zMap.Stride + zMap.Width;
 	}
 }

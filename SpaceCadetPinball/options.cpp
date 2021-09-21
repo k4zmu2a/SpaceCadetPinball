@@ -5,6 +5,7 @@
 #include "memory.h"
 #include "midi.h"
 #include "pb.h"
+#include "pinball.h"
 #include "resource.h"
 #include "Sound.h"
 #include "winmain.h"

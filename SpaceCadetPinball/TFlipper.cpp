@@ -9,6 +9,7 @@
 #include "render.h"
 #include "TFlipperEdge.h"
 #include "timer.h"
+#include "TPinballTable.h"
 
 TFlipper::TFlipper(TPinballTable* table, int groupIndex) : TCollisionComponent(table, groupIndex, false)
 {

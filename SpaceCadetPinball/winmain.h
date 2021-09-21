@@ -11,7 +11,7 @@ public:
 	static ImGuiIO* ImIO;
 	static bool LaunchBallEnabled;
 	static bool HighScoresEnabled;
-	static bool DemoActive;
+	static bool DemoActive;	
 	static char* BasePath;
 
 	static int WinMain(LPCSTR lpCmdLine);
@@ -32,6 +32,7 @@ private:
 	static bool restart;
 	static bool ShowAboutDialog;
 	static bool ShowImGuiDemo;
+	static bool ShowSpriteViewer;
 	
 	static void RenderUi();
 };

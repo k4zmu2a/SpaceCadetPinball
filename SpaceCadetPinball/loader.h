@@ -4,7 +4,7 @@
 #include "zdrv.h"
 
 
-struct datFileStruct;
+struct DatFile;
 
 struct errorMsg
 {
@@ -89,7 +89,7 @@ public:
 	static void default_vsi(visualStruct* visual);
 	static int get_sound_id(int groupIndex);
 	static void unload();
-	static void loadfrom(datFileStruct* datFile);
+	static void loadfrom(DatFile* datFile);
 	static int query_handle(LPCSTR lpString);
 	static short query_visual_states(int groupIndex);
 	static int material(int groupIndex, visualStruct* visual);
@@ -101,10 +101,10 @@ public:
 	static float query_float_attribute(int groupIndex, int groupIndexOffset, int firstValue, float defVal);
 	static int16_t* query_iattribute(int groupIndex, int firstValue, int* arraySize);
 	static float play_sound(int soundIndex);
-	static datFileStruct* loader_table;
+	static DatFile* loader_table;
 private:
 	static errorMsg loader_errors[];
-	static datFileStruct* sound_record_table;
+	static DatFile* sound_record_table;
 	static int sound_count;
 	static int loader_sound_count;
 	static soundListStruct sound_list[65];
