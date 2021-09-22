@@ -269,29 +269,25 @@ void score::update(scoreStruct* score)
 
 void score::string_format(int score, char* str)
 {
-	char separator[12];
-
 	if (score == -999)
 	{
 		*str = 0;
 	}
 	else
 	{
-		strncpy(separator, ",", sizeof separator);
 		int scoreMillions = score % 1000000000 / 1000000;
 		if (score / 1000000000 <= 0)
 		{
-			if (static_cast<int>(scoreMillions) <= 0)
+			if (scoreMillions <= 0)
 			{
 				if (score % 1000000 / 1000 <= 0)
 					snprintf(str, 36, "%d", score);
 				else
-					snprintf(str, 36, "%d%s%03d", score % 1000000 / 1000, separator, score % 1000);
+					snprintf(str, 36, "%d,%03d", score % 1000000 / 1000, score % 1000);
 			}
 			else
 			{
-				snprintf(str, 36, "%d%s%03d%s%03d", scoreMillions, separator, score % 1000000 / 1000, separator,
-				          score % 1000);
+				snprintf(str, 36, "%d,%03d,%03d", scoreMillions, score % 1000000 / 1000, score % 1000);
 			}
 		}
 		else
@@ -299,13 +295,10 @@ void score::string_format(int score, char* str)
 			snprintf(
 				str,
 				36,
-				"%d%s%03d%s%03d%s%03d",
+				"%d,%03d,%03d,%03d",
 				score / 1000000000,
-				separator,
 				scoreMillions,
-				separator,
 				score % 1000000 / 1000,
-				separator,
 				score % 1000);
 		}
 	}

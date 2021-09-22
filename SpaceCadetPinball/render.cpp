@@ -33,12 +33,9 @@ void render::init(gdrv_bitmap8* bmp, float zMin, float zScaler, int width, int h
 	vscreen_rect.Height = height;
 	vscreen.YPosition = 0;
 	vscreen.XPosition = 0;
-	gdrv_bitmap8* ballBmp = ball_bitmap;
-	while (ballBmp < &ball_bitmap[20])
-	{
-		gdrv::create_bitmap(ballBmp, 64, 64, 64, false);
-		++ballBmp;
-	}
+	for (auto& ballBmp : ball_bitmap)
+		gdrv::create_bitmap(&ballBmp, 64, 64, 64, false);
+
 	background_bitmap = bmp;
 	if (bmp)
 		gdrv::copy_bitmap(&vscreen, width, height, 0, 0, bmp, 0, 0);
@@ -55,6 +52,8 @@ void render::uninit()
 		remove_sprite(sprite_list[i]);
 	for (auto j = many_balls - 1; j >= 0; --j)
 		remove_ball(ball_list[j]);
+	for (auto& ballBmp : ball_bitmap)
+		gdrv::destroy_bitmap(&ballBmp);
 	memory::free(ball_list);
 	memory::free(dirty_list);
 	memory::free(sprite_list);
@@ -130,8 +129,6 @@ void render::update()
 	paint_balls();
 	if (blit)
 	{
-		gdrv::start_blit_sequence();
-
 		auto xPos = vscreen.XPosition + offset_x;
 		auto yPos = vscreen.YPosition + offset_y;
 		dirtyPtr = dirty_list;
@@ -199,8 +196,6 @@ void render::update()
 						rectCopy->Height);
 			}
 		}
-
-		gdrv::end_blit_sequence();
 	}
 
 	many_dirty = 0;

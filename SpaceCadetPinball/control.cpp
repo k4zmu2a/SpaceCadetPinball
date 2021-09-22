@@ -592,6 +592,14 @@ void control::make_links(TPinballTable* table)
 		make_component_link(simple_components[i]);
 }
 
+void control::ClearLinks()
+{
+	TableG = nullptr;
+	for (auto& component : score_components)
+		component.Tag->SetComponent(nullptr);
+	for (auto& component : simple_components)
+		component->SetComponent(nullptr);
+}
 
 TPinballComponent* control::make_component_link(component_tag_base* tag)
 {
@@ -904,9 +912,19 @@ void control::table_set_replay(float value)
 	control_info_text_box_tag.Component->Display(pinball::get_rc_string(0, 0), value);
 }
 
-int control::cheat_bump_rank()
+void control::cheat_bump_rank()
 {
-	return 0;
+	char Buffer[64]{};
+
+	auto rank = control_middle_circle_tag.Component->Message(37, 0.0);
+	if (rank < 9)
+	{
+		control_middle_circle_tag.Component->Message(41, 2.0f);
+		auto rankText = pinball::get_rc_string(RankRcArray[rank], 1);
+		snprintf(Buffer,sizeof Buffer, pinball::get_rc_string(83, 0), rankText);
+		control_mission_text_box_tag.Component->Display(Buffer, 8.0);
+		control_soundwave10_tag.Component->Play();
+	}
 }
 
 bool control::light_on(component_tag<TLight>* tag)

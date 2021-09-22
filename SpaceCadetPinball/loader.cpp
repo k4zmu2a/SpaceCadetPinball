@@ -105,12 +105,13 @@ void loader::loadfrom(DatFile* datFile)
 
 void loader::unload()
 {
-	int index;
-	for (index = 1; index < sound_count; ++index)
+	for (int index = 1; index < sound_count; ++index)
+	{
 		Sound::FreeSound(sound_list[index].WavePtr);
+		sound_list[index].Loaded = 0;
+		sound_list[index].WavePtr = nullptr;
+	}
 
-	if (sound_list[index].PtrToSmth)
-		memory::free(sound_list[index].PtrToSmth);
 	sound_count = 1;
 }
 

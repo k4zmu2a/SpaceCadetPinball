@@ -2,8 +2,6 @@
 #include "Sound.h"
 
 
-#include "pb.h"
-
 int Sound::num_channels;
 unsigned int Sound::enabled_flag = -1;
 
@@ -14,6 +12,7 @@ int Sound::Init(int voices)
 		channelCount = 8;
 	num_channels = channelCount;
 
+	auto init = Mix_Init(MIX_INIT_MID);
 	return Mix_OpenAudio(MIX_DEFAULT_FREQUENCY, MIX_DEFAULT_FORMAT, 2, 1024);
 }
 
@@ -34,17 +33,23 @@ void Sound::Deactivate()
 
 void Sound::Close()
 {
+	Mix_CloseAudio();
 	Mix_Quit();
 }
 
 void Sound::PlaySound(Mix_Chunk* wavePtr, int minChannel, int maxChannel, unsigned int dwFlags, int16_t loops)
 {
-	if (enabled_flag)
+	if (wavePtr && enabled_flag)
 		Mix_PlayChannel(-1, wavePtr, loops);
 }
 
 Mix_Chunk* Sound::LoadWaveFile(std::string lpName)
 {
+	auto wavFile = fopen(lpName.c_str(), "r");
+	if (!wavFile)
+		return nullptr;
+	fclose(wavFile);
+
 	return Mix_LoadWAV(lpName.c_str());
 }
 

@@ -219,6 +219,7 @@ TPinballTable::~TPinballTable()
 	}
 	delete BallList;
 	delete ComponentList;
+	control::ClearLinks();
 }
 
 TPinballComponent* TPinballTable::find_component(LPCSTR componentName)

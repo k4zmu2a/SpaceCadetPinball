@@ -480,7 +480,7 @@ void pb::keydown(int key)
 			break;
 		case 'h':
 			char String1[200];
-			strncpy(String1, pinball::get_rc_string(26, 0), sizeof String1);
+			strncpy(String1, pinball::get_rc_string(26, 0), sizeof String1 - 1);
 			high_score::show_and_set_high_score_dialog(highscore_table, 1000000000, 1, String1);
 			break;
 		case 'm':
@@ -490,6 +490,9 @@ void pb::keydown(int key)
 			break;
 		case 'r':
 			control::cheat_bump_rank();
+			break;
+		case 's':
+			MainTable->AddScore(static_cast<int>(RandFloat() * 1000000.0f));
 			break;
 		case SDLK_F11:
 			gdrv::get_focus();
@@ -570,7 +573,7 @@ void pb::end_game()
 			int position = high_score::get_score_position(highscore_table, scores[i]);
 			if (position >= 0)
 			{
-				strncpy(String1, pinball::get_rc_string(scoreIndex[i] + 26, 0), sizeof String1);
+				strncpy(String1, pinball::get_rc_string(scoreIndex[i] + 26, 0), sizeof String1 - 1);
 				high_score::show_and_set_high_score_dialog(highscore_table, scores[i], position, String1);
 			}
 		}

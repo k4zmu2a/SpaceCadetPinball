@@ -201,9 +201,9 @@ std::map<uint32_t, LPCSTR> rc_strings
 	{187, "High Score 4\n%ld"},
 	{188, "High Score 5\n%ld"},
 	{189, "255 255 255   (R G B default font color)"},
-	{2030, "Use &Maximum Resolution (640 x 480)"},
-	{2031, "Use &Maximum Resolution (800 x 600)"},
-	{2032, "Use &Maximum Resolution (1024 x 768)"}
+	{2030, "Use Maximum Resolution (640 x 480)"},
+	{2031, "Use Maximum Resolution (800 x 600)"},
+	{2032, "Use Maximum Resolution (1024 x 768)"}
 };
 
 int LoadStringAlt(uint32_t uID, LPSTR lpBuffer, int cchBufferMax)

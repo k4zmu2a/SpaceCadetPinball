@@ -24,9 +24,18 @@ int gdrv::init(int width, int height)
 		SDL_TEXTUREACCESS_STREAMING,
 		width, height
 	);
-	vScreenPixels = memory::allocate<ColorRgba>(width * height);
 	vScreenWidth = width;
 	vScreenHeight = height;
+	
+	int pitch = 0;
+	SDL_LockTexture
+	(
+		vScreenTex,
+		nullptr,
+		reinterpret_cast<void**>(&vScreenPixels),
+		&pitch
+	);
+	assertm(pitch = width* sizeof(ColorRgba), "gdrv: wrong pitch of SDL texture");
 
 	return 0;
 }
@@ -34,7 +43,6 @@ int gdrv::init(int width, int height)
 int gdrv::uninit()
 {
 	SDL_DestroyTexture(vScreenTex);
-	memory::free(vScreenPixels);
 	return 0;
 }
 
@@ -191,14 +199,6 @@ int gdrv::destroy_bitmap(gdrv_bitmap8* bmp)
 	return 0;
 }
 
-void gdrv::start_blit_sequence()
-{
-}
-
-void gdrv::end_blit_sequence()
-{
-}
-
 void gdrv::blit(gdrv_bitmap8* bmp, int xSrc, int ySrc, int xDest, int yDest, int width, int height)
 {
 	StretchDIBitsScaled(
@@ -321,22 +321,20 @@ int gdrv::StretchDIBitsScaled(int xSrc, int ySrc, int xDst, int yDst,
 
 void gdrv::BlitScreen()
 {
-	unsigned char* lockedPixels = nullptr;
 	int pitch = 0;
+	SDL_UnlockTexture(vScreenTex);
+	SDL_RenderCopy(winmain::Renderer, vScreenTex, nullptr, &DestinationRect);
 	SDL_LockTexture
 	(
 		vScreenTex,
 		nullptr,
-		reinterpret_cast<void**>(&lockedPixels),
+		reinterpret_cast<void**>(&vScreenPixels),
 		&pitch
 	);
-	std::memcpy(lockedPixels, vScreenPixels, vScreenWidth * vScreenHeight * 4);
-	SDL_UnlockTexture(vScreenTex);
-	SDL_RenderCopyEx(winmain::Renderer, vScreenTex, nullptr, &DestinationRect, 0, nullptr, SDL_FLIP_NONE);
 }
 
 void gdrv::ApplyPalette(gdrv_bitmap8& bmp)
-{	
+{
 	if (bmp.BitmapType == BitmapTypes::None)
 		return;
 	assertm(bmp.BitmapType != BitmapTypes::Spliced, "gdrv: wrong bitmap type");

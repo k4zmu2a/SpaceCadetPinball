@@ -66,8 +66,6 @@ public:
 	static int create_bitmap(gdrv_bitmap8& bmp, const struct dat8BitBmpHeader& header);
 	static int destroy_bitmap(gdrv_bitmap8* bmp);
 	static int display_palette(ColorRgba* plt);
-	static void start_blit_sequence();
-	static void end_blit_sequence();
 	static void blit(gdrv_bitmap8* bmp, int xSrc, int ySrc, int xDest, int yDest, int width, int height);
 	static void blat(gdrv_bitmap8* bmp, int xDest, int yDest);
 	static void fill_bitmap(gdrv_bitmap8* bmp, int width, int height, int xOff, int yOff, uint8_t fillChar);

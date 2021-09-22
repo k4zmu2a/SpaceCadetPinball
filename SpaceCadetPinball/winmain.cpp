@@ -54,6 +54,9 @@ uint32_t timeGetTimeAlt()
 
 int winmain::WinMain(LPCSTR lpCmdLine)
 {
+	restart = false;
+	bQuit = false;
+
 	memory::init(memalloc_failure);
 
 	// SDL init
@@ -77,8 +80,6 @@ int winmain::WinMain(LPCSTR lpCmdLine)
 		DatFileName = "CADET.DAT";
 		pb::FullTiltMode = true;
 	}
-
-	options::init_resolution();
 
 	// SDL window
 	SDL_Window* window = SDL_CreateWindow
@@ -107,6 +108,7 @@ int winmain::WinMain(LPCSTR lpCmdLine)
 		SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, "Could not create renderer", SDL_GetError(), window);
 		return 1;
 	}
+	SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
 
 	// ImGui init
 	IMGUI_CHECKVERSION();
@@ -288,6 +290,13 @@ int winmain::WinMain(LPCSTR lpCmdLine)
 				SDL_RenderPresent(renderer);
 				frameCounter++;
 			}
+
+			auto sdlError = SDL_GetError();
+			if (sdlError[0])
+			{
+				SDL_ClearError();
+				printf("SDL Error: %s\n", sdlError);
+			}
 		}
 	}
 
@@ -303,24 +312,6 @@ int winmain::WinMain(LPCSTR lpCmdLine)
 	SDL_DestroyWindow(window);
 	ImGui::DestroyContext();
 	SDL_Quit();
-
-	if (restart)
-	{
-		// Todo: get rid of restart to change resolution.
-		/*char restartPath[300]{};
-		if (GetModuleFileNameA(nullptr, restartPath, 300))
-		{
-			STARTUPINFO si{};
-			PROCESS_INFORMATION pi{};
-			si.cb = sizeof si;
-			if (CreateProcess(restartPath, nullptr, nullptr, nullptr,
-			                  FALSE, 0, nullptr, nullptr, &si, &pi))
-			{
-				CloseHandle(pi.hProcess);
-				CloseHandle(pi.hThread);
-			}
-		}*/
-	}
 
 	return return_value;
 }
@@ -421,8 +412,20 @@ void winmain::RenderUi()
 			}
 			if (ImGui::BeginMenu("Table Resolution"))
 			{
-				if (ImGui::MenuItem("Not implemented"))
+				char buffer[20]{};
+				auto maxResText = pinball::get_rc_string(fullscrn::GetMaxResolution() + 2030, 0);
+				if (ImGui::MenuItem(maxResText, nullptr, options::Options.Resolution == -1))
 				{
+					options::toggle(Menu1_MaximumResolution);
+				}
+				for (auto i = 0; i <= fullscrn::GetMaxResolution(); i++)
+				{
+					auto& res = fullscrn::resolution_array[i];
+					snprintf(buffer, sizeof buffer - 1, "%d x %d", res.ScreenWidth, res.ScreenHeight);
+					if (ImGui::MenuItem(buffer, nullptr, options::Options.Resolution == i))
+					{
+						options::toggle(Menu1_640x480 + i);
+					}
 				}
 				ImGui::EndMenu();
 			}
@@ -432,6 +435,9 @@ void winmain::RenderUi()
 				{
 					options::toggle(Menu1_WindowUniformScale);
 				}
+				ImGui::DragFloat("", &ImIO->FontGlobalScale, 0.005f, 0.8f, 5,
+				                 "UI Scale %.2f", ImGuiSliderFlags_AlwaysClamp);
+
 				ImGui::EndMenu();
 			}
 			ImGui::EndMenu();

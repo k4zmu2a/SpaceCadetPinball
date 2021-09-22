@@ -12,7 +12,6 @@ int fullscrn::screen_mode;
 int fullscrn::display_changed;
 
 int fullscrn::resolution = 0;
-int fullscrn::maxResolution = 0;
 const resolution_info fullscrn::resolution_array[3] =
 {
 	{640, 480, 600, 416, 501},
@@ -103,43 +102,7 @@ void fullscrn::SetResolution(int value)
 
 int fullscrn::GetMaxResolution()
 {
-	return maxResolution;
-}
-
-void fullscrn::SetMaxResolution(int value)
-{
-	assertm(value >= 0 && value <= 2, "Resolution value out of bounds");
-	maxResolution = value;
-}
-
-int fullscrn::get_max_supported_resolution()
-{
-	if (!pb::FullTiltMode)
-		return 0;
-
-	int width = 0, height = 0;
-	get_screen_resolution(&width, &height);
-	auto result = 0;
-
-	for (auto index = 1; index < 3; ++index)
-	{
-		auto resPtr = &resolution_array[index];
-		if (resPtr->ScreenWidth <= width && resPtr->ScreenHeight <= height)
-			result = index;
-	}
-	return result;
-}
-
-int fullscrn::get_screen_resolution(int* width, int* height)
-{
-	SDL_DisplayMode dm;
-	if (SDL_GetDesktopDisplayMode(0, &dm) == 0)
-	{
-		*width = dm.w;
-		*height = dm.h;
-		return 0;
-	}
-	return 1;
+	return pb::FullTiltMode ? 2 : 0;
 }
 
 void fullscrn::window_size_changed()

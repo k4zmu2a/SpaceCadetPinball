@@ -18,7 +18,6 @@ struct soundListStruct
 	int GroupIndex;
 	int Loaded;
 	float Duration;
-	char* PtrToSmth;
 };
 
 struct visualKickerStruct

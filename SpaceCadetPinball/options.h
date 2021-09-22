@@ -35,9 +35,9 @@ public:
 	static void set_int(LPCSTR lpValueName, int data);
 	static std::string get_string(LPCSTR lpValueName, LPCSTR defaultValue);
 	static void set_string(LPCSTR lpValueName, LPCSTR value);
+	static float get_float(LPCSTR lpValueName, float defaultValue);
+	static void set_float(LPCSTR lpValueName, float data);
 	static void toggle(uint32_t uIDCheckItem);
-	static void update_resolution_menu();
-	static void init_resolution();
 
 	static void keyboard();
 private:

@@ -70,6 +70,7 @@ public:
 	static component_tag_base *wormhole_tag_array1[3], *wormhole_tag_array2[3], *wormhole_tag_array3[3];
 
 	static void make_links(TPinballTable* table);
+	static void ClearLinks();
 	static TPinballComponent* make_component_link(component_tag_base* tag);
 	static void handler(int code, TPinballComponent* cmp);
 	static void pbctrl_bdoor_controller(int key);
@@ -81,7 +82,7 @@ public:
 	static void table_set_multiball();
 	static void table_bump_ball_sink_lock();
 	static void table_set_replay(float value);
-	static int cheat_bump_rank();
+	static void cheat_bump_rank();
 	static bool light_on(component_tag<TLight>* tag);
 	static int SpecialAddScore(int score);
 	static int AddRankProgress(int rank);

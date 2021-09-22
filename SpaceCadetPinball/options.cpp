@@ -99,9 +99,15 @@ void options::init()
 	Options.RightTableBumpKey = get_int("Right Table Bump key", Options.RightTableBumpKey);
 	Options.BottomTableBumpKey = get_int("Bottom Table Bump key", Options.BottomTableBumpKey);
 	Options.UniformScaling = get_int("Uniform scaling", Options.UniformScaling);
+	ImGui::GetIO().FontGlobalScale = get_float("UI Scale", 1.0f);
+	Options.Resolution = get_int("Screen Resolution", -1);
+
 	Sound::Enable(0, 7, Options.Sounds);
 
-	update_resolution_menu();
+	auto maxRes = fullscrn::GetMaxResolution();
+	if (Options.Resolution >= 0 && Options.Resolution > maxRes)
+		Options.Resolution = maxRes;
+	fullscrn::SetResolution(Options.Resolution == -1 ? maxRes : Options.Resolution);
 }
 
 void options::uninit()
@@ -118,6 +124,7 @@ void options::uninit()
 	set_int("Bottom Table Bump key", Options.BottomTableBumpKey);
 	set_int("Screen Resolution", Options.Resolution);
 	set_int("Uniform scaling", Options.UniformScaling);
+	set_float("UI Scale", ImGui::GetIO().FontGlobalScale);
 }
 
 
@@ -140,6 +147,17 @@ std::string options::get_string(LPCSTR lpValueName, LPCSTR defaultValue)
 void options::set_string(LPCSTR lpValueName, LPCSTR value)
 {
 	SetSetting(lpValueName, value);
+}
+
+float options::get_float(LPCSTR lpValueName, float defaultValue)
+{
+	auto value = GetSetting(lpValueName, std::to_string(defaultValue));
+	return std::stof(value);
+}
+
+void options::set_float(LPCSTR lpValueName, float data)
+{
+	SetSetting(lpValueName, std::to_string(data));
 }
 
 
@@ -177,21 +195,23 @@ void options::toggle(uint32_t uIDCheckItem)
 	case Menu1_800x600:
 	case Menu1_1024x768:
 		{
-			/*for (unsigned i = Menu1_MaximumResolution; i <= Menu1_1024x768; ++i)
-				menu_check(i, i == uIDCheckItem);*/
-
+			auto restart = false;
 			int newResolution = uIDCheckItem - Menu1_640x480;
 			if (uIDCheckItem == Menu1_MaximumResolution)
 			{
+				restart = fullscrn::GetResolution() != fullscrn::GetMaxResolution();
 				Options.Resolution = -1;
-				if (fullscrn::GetMaxResolution() != fullscrn::GetResolution())
-					winmain::Restart();
 			}
-			else if (newResolution != fullscrn::GetResolution() && newResolution <= fullscrn::GetMaxResolution())
+			else if (newResolution <= fullscrn::GetMaxResolution())
 			{
+				restart = newResolution != (Options.Resolution == -1
+					                            ? fullscrn::GetMaxResolution()
+					                            : fullscrn::GetResolution());
 				Options.Resolution = newResolution;
-				winmain::Restart();
 			}
+
+			if (restart)
+				winmain::Restart();
 			break;
 		}
 	case Menu1_WindowUniformScale:
@@ -201,43 +221,6 @@ void options::toggle(uint32_t uIDCheckItem)
 		break;
 	default:
 		break;
-	}
-}
-
-void options::update_resolution_menu()
-{
-	auto maxResolution = fullscrn::get_max_supported_resolution();
-	fullscrn::SetMaxResolution(maxResolution);
-	const char* maxResText = pinball::get_rc_string(maxResolution + 2030, 0);
-	/*if (MenuHandle)
-		ModifyMenuA(MenuHandle, Menu1_MaximumResolution, 0, Menu1_MaximumResolution, maxResText);
-
-	for (auto resIndex = 0; resIndex < 3; resIndex++)
-	{
-		menu_set(fullscrn::resolution_array[resIndex].ResolutionMenuId, fullscrn::GetMaxResolution() >= resIndex);
-	}
-	for (auto i = Menu1_MaximumResolution; i <= Menu1_1024x768; ++i)
-	{
-		menu_check(i, 0);
-	}
-	if (Options.Resolution >= 0)
-		menu_check(fullscrn::resolution_array[fullscrn::GetResolution()].ResolutionMenuId, 1);
-	else
-		menu_check(Menu1_MaximumResolution, 1);*/
-}
-
-void options::init_resolution()
-{
-	Options.Resolution = get_int("Screen Resolution", -1);
-	int maxRes = fullscrn::get_max_supported_resolution();
-	if (Options.Resolution == -1 || maxRes <= Options.Resolution)
-	{
-		fullscrn::SetMaxResolution(maxRes);
-		fullscrn::SetResolution(maxRes);
-	}
-	else
-	{
-		fullscrn::SetResolution(Options.Resolution);
 	}
 }
 

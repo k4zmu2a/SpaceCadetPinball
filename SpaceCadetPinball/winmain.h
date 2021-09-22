@@ -11,7 +11,7 @@ public:
 	static ImGuiIO* ImIO;
 	static bool LaunchBallEnabled;
 	static bool HighScoresEnabled;
-	static bool DemoActive;	
+	static bool DemoActive;
 	static char* BasePath;
 
 	static int WinMain(LPCSTR lpCmdLine);
@@ -24,6 +24,7 @@ public:
 	static void pause();
 	static void help_introduction();
 	static void Restart();
+	static bool RestartRequested() { return restart; }
 private:
 	static int return_value, bQuit, DispFrameRate, DispGRhistory, activated;
 	static int has_focus, mouse_down, last_mouse_x, last_mouse_y, no_time_loss;
@@ -33,6 +34,6 @@ private:
 	static bool ShowAboutDialog;
 	static bool ShowImGuiDemo;
 	static bool ShowSpriteViewer;
-	
+
 	static void RenderUi();
 };

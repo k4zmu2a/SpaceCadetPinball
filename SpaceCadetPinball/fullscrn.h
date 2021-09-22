@@ -27,13 +27,9 @@ public:
 	static int GetResolution();
 	static void SetResolution(int value);
 	static int GetMaxResolution();
-	static void SetMaxResolution(int value);
-	static int get_max_supported_resolution();
-	static int get_screen_resolution(int* width, int* height);
 	static void window_size_changed();
 private :
 	static int resolution;
-	static int maxResolution;
 
 	static int enableFullscreen();
 	static int disableFullscreen();

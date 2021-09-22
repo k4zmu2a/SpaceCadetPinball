@@ -12,8 +12,15 @@ int main(int argc, char* argv[])
 		std::string cmdLine;
 		for (int i = 0; i < argc; i++)
 			cmdLine += argv[i];
-		winmain::WinMain(cmdLine.c_str());
-		return 0;
+
+		// Todo: get rid of restart to change resolution.
+		int returnCode;
+		do
+		{
+			returnCode = winmain::WinMain(cmdLine.c_str());
+		}
+		while (winmain::RestartRequested());
+		return returnCode;
 	}
 }
 
