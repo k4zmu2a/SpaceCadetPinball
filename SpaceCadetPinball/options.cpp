@@ -5,8 +5,6 @@
 #include "memory.h"
 #include "midi.h"
 #include "pb.h"
-#include "pinball.h"
-#include "resource.h"
 #include "Sound.h"
 #include "winmain.h"
 
@@ -101,6 +99,7 @@ void options::init()
 	Options.UniformScaling = get_int("Uniform scaling", Options.UniformScaling);
 	ImGui::GetIO().FontGlobalScale = get_float("UI Scale", 1.0f);
 	Options.Resolution = get_int("Screen Resolution", -1);
+	Options.LinearFiltering = get_int("Linear Filtering", true);
 
 	Sound::Enable(0, 7, Options.Sounds);
 
@@ -125,6 +124,7 @@ void options::uninit()
 	set_int("Screen Resolution", Options.Resolution);
 	set_int("Uniform scaling", Options.UniformScaling);
 	set_float("UI Scale", ImGui::GetIO().FontGlobalScale);
+	set_int("Linear Filtering", Options.LinearFiltering);
 }
 
 
@@ -161,17 +161,17 @@ void options::set_float(LPCSTR lpValueName, float data)
 }
 
 
-void options::toggle(uint32_t uIDCheckItem)
+void options::toggle(Menu1 uIDCheckItem)
 {
 	int newValue;
 	switch (uIDCheckItem)
 	{
-	case Menu1_Sounds:
+	case Menu1::Sounds:
 		newValue = Options.Sounds == 0;
 		Options.Sounds = Options.Sounds == 0;
 		Sound::Enable(0, 7, newValue);
 		return;
-	case Menu1_Music:
+	case Menu1::Music:
 		newValue = Options.Music == 0;
 		Options.Music = Options.Music == 0;
 		if (!newValue)
@@ -179,25 +179,25 @@ void options::toggle(uint32_t uIDCheckItem)
 		else
 			midi::play_pb_theme(0);
 		return;
-	case Menu1_Full_Screen:
+	case Menu1::Full_Screen:
 		newValue = Options.FullScreen == 0;
 		Options.FullScreen = Options.FullScreen == 0;
 		fullscrn::set_screen_mode(newValue);
 		return;
-	case Menu1_1Player:
-	case Menu1_2Players:
-	case Menu1_3Players:
-	case Menu1_4Players:
-		Options.Players = uIDCheckItem - Menu1_1Player + 1;
+	case Menu1::OnePlayer:
+	case Menu1::TwoPlayers:
+	case Menu1::ThreePlayers:
+	case Menu1::FourPlayers:
+		Options.Players = static_cast<int>(uIDCheckItem) - static_cast<int>(Menu1::OnePlayer) + 1;
 		break;
-	case Menu1_MaximumResolution:
-	case Menu1_640x480:
-	case Menu1_800x600:
-	case Menu1_1024x768:
+	case Menu1::MaximumResolution:
+	case Menu1::R640x480:
+	case Menu1::R800x600:
+	case Menu1::R1024x768:
 		{
 			auto restart = false;
-			int newResolution = uIDCheckItem - Menu1_640x480;
-			if (uIDCheckItem == Menu1_MaximumResolution)
+			int newResolution = static_cast<int>(uIDCheckItem) - static_cast<int>(Menu1::R640x480);
+			if (uIDCheckItem == Menu1::MaximumResolution)
 			{
 				restart = fullscrn::GetResolution() != fullscrn::GetMaxResolution();
 				Options.Resolution = -1;
@@ -214,10 +214,14 @@ void options::toggle(uint32_t uIDCheckItem)
 				winmain::Restart();
 			break;
 		}
-	case Menu1_WindowUniformScale:
+	case Menu1::WindowUniformScale:
 		Options.UniformScaling ^= true;
 		fullscrn::window_size_changed();
 		pb::paint();
+		break;
+	case Menu1::WindowLinearFilter:
+		Options.LinearFiltering ^= true;
+		winmain::Restart();
 		break;
 	default:
 		break;

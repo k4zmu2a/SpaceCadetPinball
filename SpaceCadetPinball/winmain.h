@@ -22,7 +22,6 @@ public:
 	static void end_pause();
 	static void new_game();
 	static void pause();
-	static void help_introduction();
 	static void Restart();
 	static bool RestartRequested() { return restart; }
 private:
@@ -30,6 +29,7 @@ private:
 	static int has_focus, mouse_down, last_mouse_x, last_mouse_y, no_time_loss;
 	static DWORD then, now;
 	static gdrv_bitmap8 gfr_display;
+	static std::string FpsDetails;
 	static bool restart;
 	static bool ShowAboutDialog;
 	static bool ShowImGuiDemo;

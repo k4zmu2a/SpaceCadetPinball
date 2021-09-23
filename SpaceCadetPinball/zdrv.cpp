@@ -130,16 +130,11 @@ void zdrv::CreatePreview(zmap_header_type& zMap)
 			color.rgba.peRed = depth;
 			color.rgba.peGreen = depth;
 			color.rgba.peBlue = depth;
-
-			/*auto depth = static_cast<float>(*src++) /0xffff;
-			color.rgba.peRed = (1-depth) * 0xff;
-			color.rgba.peBlue =  (depth) * 0xff;*/
 			*dst++ = color;
 		}
 		src += zMap.Stride - zMap.Width;
 	}
 
-	SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, "nearest");
 	auto texture = SDL_CreateTexture
 	(
 		winmain::Renderer,
@@ -158,7 +153,7 @@ void zdrv::FlipZMapHorizontally(const zmap_header_type& zMap)
 	auto dst = zMap.ZPtr1;
 	auto src = zMap.ZPtr1 + zMap.Stride * (zMap.Height - 1);
 	for (auto y = zMap.Height - 1; y >= zMap.Height / 2; y--)
-	{		
+	{
 		for (auto x = 0; x < zMap.Width; x++)
 		{
 			std::swap(*dst++, *src++);

@@ -3,6 +3,12 @@
 
 **How to play:** Place compiled executable into a folder containing original game resources (not included).\
 Supports data files from Windows and Full Tilt versions of the game.
+
+**Known source ports:**
+| Platform | Author | URL |
+| --- | --- | --- |
+| PS Vita | Axiom | <https://github.com/suicvne/SpaceCadetPinball_Vita> |
+Platforms covered by this project: desktop Windows and Linux.
 \
 \
 \

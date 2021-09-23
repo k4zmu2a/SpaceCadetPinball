@@ -16,7 +16,6 @@
 #include "options.h"
 #include "timer.h"
 #include "winmain.h"
-#include "resource.h"
 #include "Sound.h"
 #include "TBall.h"
 #include "TDemo.h"

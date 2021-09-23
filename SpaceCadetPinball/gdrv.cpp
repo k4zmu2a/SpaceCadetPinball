@@ -3,6 +3,7 @@
 
 #include "GroupData.h"
 #include "memory.h"
+#include "options.h"
 #include "partman.h"
 #include "pb.h"
 #include "score.h"
@@ -16,26 +17,19 @@ SDL_Rect gdrv::DestinationRect{};
 
 int gdrv::init(int width, int height)
 {
-	SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, "linear");
-	vScreenTex = SDL_CreateTexture
-	(
-		winmain::Renderer,
-		SDL_PIXELFORMAT_ARGB8888,
-		SDL_TEXTUREACCESS_STREAMING,
-		width, height
-	);
+	{
+		UsingSdlHint hint{SDL_HINT_RENDER_SCALE_QUALITY, options::Options.LinearFiltering ? "linear" : "nearest"};
+		vScreenTex = SDL_CreateTexture
+		(
+			winmain::Renderer,
+			SDL_PIXELFORMAT_ARGB8888,
+			SDL_TEXTUREACCESS_STREAMING,
+			width, height
+		);
+	}
 	vScreenWidth = width;
 	vScreenHeight = height;
-	
-	int pitch = 0;
-	SDL_LockTexture
-	(
-		vScreenTex,
-		nullptr,
-		reinterpret_cast<void**>(&vScreenPixels),
-		&pitch
-	);
-	assertm(pitch = width* sizeof(ColorRgba), "gdrv: wrong pitch of SDL texture");
+	vScreenPixels = new ColorRgba[width * height];
 
 	return 0;
 }
@@ -43,6 +37,7 @@ int gdrv::init(int width, int height)
 int gdrv::uninit()
 {
 	SDL_DestroyTexture(vScreenTex);
+	delete[] vScreenPixels;
 	return 0;
 }
 
@@ -322,15 +317,17 @@ int gdrv::StretchDIBitsScaled(int xSrc, int ySrc, int xDst, int yDst,
 void gdrv::BlitScreen()
 {
 	int pitch = 0;
-	SDL_UnlockTexture(vScreenTex);
-	SDL_RenderCopy(winmain::Renderer, vScreenTex, nullptr, &DestinationRect);
+	void* lockedPixels;
 	SDL_LockTexture
 	(
 		vScreenTex,
 		nullptr,
-		reinterpret_cast<void**>(&vScreenPixels),
+		&lockedPixels,
 		&pitch
 	);
+	std::memcpy(lockedPixels, vScreenPixels, vScreenWidth * vScreenHeight * sizeof(ColorRgba));
+	SDL_UnlockTexture(vScreenTex);
+	SDL_RenderCopy(winmain::Renderer, vScreenTex, nullptr, &DestinationRect);
 }
 
 void gdrv::ApplyPalette(gdrv_bitmap8& bmp)
@@ -357,7 +354,6 @@ void gdrv::CreatePreview(gdrv_bitmap8& bmp)
 	if (bmp.Texture)
 		return;
 
-	SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, "nearest");
 	auto texture = SDL_CreateTexture
 	(
 		winmain::Renderer,

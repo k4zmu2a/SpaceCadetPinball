@@ -60,7 +60,6 @@ set(SOURCE_FILES
         SpaceCadetPinball/proj.h
         SpaceCadetPinball/render.cpp
         SpaceCadetPinball/render.h
-        SpaceCadetPinball/resource.h
         SpaceCadetPinball/score.cpp
         SpaceCadetPinball/score.h
         SpaceCadetPinball/Sound.cpp

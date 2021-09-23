@@ -9,7 +9,6 @@
 #include "pb.h"
 #include "render.h"
 #include "Sound.h"
-#include "resource.h"
 
 const double TargetFps = 60, TargetFrameTime = 1000 / TargetFps;
 
@@ -42,6 +41,7 @@ bool winmain::LaunchBallEnabled = true;
 bool winmain::HighScoresEnabled = true;
 bool winmain::DemoActive = false;
 char* winmain::BasePath;
+std::string winmain::FpsDetails;
 
 
 uint32_t timeGetTimeAlt()
@@ -109,6 +109,7 @@ int winmain::WinMain(LPCSTR lpCmdLine)
 		return 1;
 	}
 	SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
+	SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, "nearest");
 
 	// ImGui init
 	IMGUI_CHECKVERSION();
@@ -186,6 +187,7 @@ int winmain::WinMain(LPCSTR lpCmdLine)
 					snprintf(buf, sizeof buf, "Updates/sec = %02.02f Frames/sec = %02.02f ",
 					         300.0f / elapsedSec, frameCounter / elapsedSec);
 					SDL_SetWindowTitle(window, buf);
+					FpsDetails = buf;
 					frameCounter = 0;
 
 					if (DispGRhistory)
@@ -366,28 +368,28 @@ void winmain::RenderUi()
 		{
 			if (ImGui::MenuItem("Full Screen", "F4", options::Options.FullScreen))
 			{
-				options::toggle(Menu1_Full_Screen);
+				options::toggle(Menu1::Full_Screen);
 			}
 			if (ImGui::BeginMenu("Select Players"))
 			{
 				if (ImGui::MenuItem("1 Player", nullptr, options::Options.Players == 1))
 				{
-					options::toggle(Menu1_1Player);
+					options::toggle(Menu1::OnePlayer);
 					new_game();
 				}
 				if (ImGui::MenuItem("2 Players", nullptr, options::Options.Players == 2))
 				{
-					options::toggle(Menu1_2Players);
+					options::toggle(Menu1::TwoPlayers);
 					new_game();
 				}
 				if (ImGui::MenuItem("3 Players", nullptr, options::Options.Players == 3))
 				{
-					options::toggle(Menu1_3Players);
+					options::toggle(Menu1::ThreePlayers);
 					new_game();
 				}
 				if (ImGui::MenuItem("4 Players", nullptr, options::Options.Players == 4))
 				{
-					options::toggle(Menu1_4Players);
+					options::toggle(Menu1::FourPlayers);
 					new_game();
 				}
 				ImGui::EndMenu();
@@ -396,11 +398,11 @@ void winmain::RenderUi()
 
 			if (ImGui::MenuItem("Sound", nullptr, options::Options.Sounds))
 			{
-				options::toggle(Menu1_Sounds);
+				options::toggle(Menu1::Sounds);
 			}
 			if (ImGui::MenuItem("Music", nullptr, options::Options.Music))
 			{
-				options::toggle(Menu1_Music);
+				options::toggle(Menu1::Music);
 			}
 			ImGui::Separator();
 
@@ -416,7 +418,7 @@ void winmain::RenderUi()
 				auto maxResText = pinball::get_rc_string(fullscrn::GetMaxResolution() + 2030, 0);
 				if (ImGui::MenuItem(maxResText, nullptr, options::Options.Resolution == -1))
 				{
-					options::toggle(Menu1_MaximumResolution);
+					options::toggle(Menu1::MaximumResolution);
 				}
 				for (auto i = 0; i <= fullscrn::GetMaxResolution(); i++)
 				{
@@ -424,7 +426,7 @@ void winmain::RenderUi()
 					snprintf(buffer, sizeof buffer - 1, "%d x %d", res.ScreenWidth, res.ScreenHeight);
 					if (ImGui::MenuItem(buffer, nullptr, options::Options.Resolution == i))
 					{
-						options::toggle(Menu1_640x480 + i);
+						options::toggle(static_cast<Menu1>(static_cast<int>(Menu1::R640x480) + i));
 					}
 				}
 				ImGui::EndMenu();
@@ -433,7 +435,11 @@ void winmain::RenderUi()
 			{
 				if (ImGui::MenuItem("Uniform Scaling", nullptr, options::Options.UniformScaling))
 				{
-					options::toggle(Menu1_WindowUniformScale);
+					options::toggle(Menu1::WindowUniformScale);
+				}
+				if (ImGui::MenuItem("Linear Filtering", nullptr, options::Options.LinearFiltering))
+				{
+					options::toggle(Menu1::WindowLinearFilter);
 				}
 				ImGui::DragFloat("", &ImIO->FontGlobalScale, 0.005f, 0.8f, 5,
 				                 "UI Scale %.2f", ImGuiSliderFlags_AlwaysClamp);
@@ -457,12 +463,6 @@ void winmain::RenderUi()
 					pause();
 				ShowSpriteViewer ^= true;
 			}
-			if (ImGui::MenuItem("Help Topics", "F1"))
-			{
-				if (!single_step)
-					pause();
-				help_introduction();
-			}
 			ImGui::Separator();
 
 			if (ImGui::MenuItem("About Pinball"))
@@ -473,6 +473,9 @@ void winmain::RenderUi()
 			}
 			ImGui::EndMenu();
 		}
+		if (DispFrameRate && !FpsDetails.empty())
+			if (ImGui::BeginMenu(FpsDetails.c_str()))
+				ImGui::EndMenu();
 		ImGui::EndMainMenuBar();
 	}
 
@@ -533,11 +536,8 @@ int winmain::event_handler(const SDL_Event* event)
 		{
 		case SDLK_ESCAPE:
 			if (options::Options.FullScreen)
-				options::toggle(Menu1_Full_Screen);
+				options::toggle(Menu1::Full_Screen);
 			SDL_MinimizeWindow(MainWindow);
-			break;
-		case SDLK_F1:
-			help_introduction();
 			break;
 		case SDLK_F2:
 			new_game();
@@ -546,13 +546,13 @@ int winmain::event_handler(const SDL_Event* event)
 			pause();
 			break;
 		case SDLK_F4:
-			options::toggle(Menu1_Full_Screen);
+			options::toggle(Menu1::Full_Screen);
 			break;
 		case SDLK_F5:
-			options::toggle(Menu1_Sounds);
+			options::toggle(Menu1::Sounds);
 			break;
 		case SDLK_F6:
-			options::toggle(Menu1_Music);
+			options::toggle(Menu1::Music);
 			break;
 		case SDLK_F8:
 			if (!single_step)
@@ -717,7 +717,14 @@ void winmain::a_dialog()
 	if (ImGui::BeginPopupModal("About", &unused_open, ImGuiWindowFlags_AlwaysAutoResize))
 	{
 		ImGui::TextUnformatted("3D Pinball for Windows - Space Cadet");
+		ImGui::TextUnformatted("Original game by Cinematronics, Microsoft");
+		ImGui::Separator();
+
 		ImGui::TextUnformatted("Decompiled -> Ported to SDL");
+		if (ImGui::SmallButton("Project home: https://github.com/k4zmu2a/SpaceCadetPinball"))
+		{
+			SDL_OpenURL("https://github.com/k4zmu2a/SpaceCadetPinball");
+		}
 		ImGui::Separator();
 
 		if (ImGui::Button("Ok"))
@@ -747,10 +754,6 @@ void winmain::pause()
 {
 	pb::pause_continue();
 	no_time_loss = 1;
-}
-
-void winmain::help_introduction()
-{
 }
 
 void winmain::Restart()

@@ -5,6 +5,30 @@ class TPinballTable;
 class DatFile;
 class TBall;
 
+class UsingSdlHint
+{
+public:
+	explicit UsingSdlHint(const char* name, const char* value)
+		: HintName(name)
+	{
+		auto originalValue = SDL_GetHint(name);
+		if (originalValue)
+			strncpy(OriginalValue, originalValue, sizeof OriginalValue - 1);
+
+		SDL_SetHint(name, value);
+	}
+
+	~UsingSdlHint()
+	{
+		if (OriginalValue[0])
+			SDL_SetHint(HintName, OriginalValue);
+	}
+
+private:
+	char OriginalValue[40]{};
+	const char* HintName;
+};
+
 class pb
 {
 public:

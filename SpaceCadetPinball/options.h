@@ -1,6 +1,33 @@
 #pragma once
 #include <map>
 
+enum class Menu1:int
+{
+	New_Game = 101,
+	About_Pinball = 102,
+	High_Scores = 103,
+	Exit = 105,
+	Sounds = 201,
+	Music = 202,
+	Help_Topics = 301,
+	Launch_Ball = 401,
+	Pause_Resume_Game = 402,
+	Full_Screen = 403,
+	Demo = 404,
+	Select_Table = 405,
+	Player_Controls = 406,
+	OnePlayer = 408,
+	TwoPlayers = 409,
+	ThreePlayers = 410,
+	FourPlayers = 411,
+	MaximumResolution = 500,
+	R640x480 = 501,
+	R800x600 = 502,
+	R1024x768 = 503,
+	WindowUniformScale = 600,
+	WindowLinearFilter = 601,
+};
+
 struct optionsStruct
 {
 	int Sounds;
@@ -21,6 +48,7 @@ struct optionsStruct
 	int BottomTableBumpKeyDft;
 	int Resolution;
 	bool UniformScaling;
+	bool LinearFiltering;
 };
 
 
@@ -37,7 +65,7 @@ public:
 	static void set_string(LPCSTR lpValueName, LPCSTR value);
 	static float get_float(LPCSTR lpValueName, float defaultValue);
 	static void set_float(LPCSTR lpValueName, float data);
-	static void toggle(uint32_t uIDCheckItem);
+	static void toggle(Menu1 uIDCheckItem);
 
 	static void keyboard();
 private:
