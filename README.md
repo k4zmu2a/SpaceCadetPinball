@@ -8,6 +8,7 @@ Supports data files from Windows and Full Tilt versions of the game.
 | Platform | Author | URL |
 | --- | --- | --- |
 | PS Vita | Axiom | <https://github.com/suicvne/SpaceCadetPinball_Vita> |
+
 Platforms covered by this project: desktop Windows and Linux.
 \
 \
