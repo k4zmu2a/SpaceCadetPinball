@@ -121,7 +121,7 @@ void fullscrn::window_size_changed()
 		OffsetY = static_cast<int>(floor((height - res->TableHeight * ScaleY) / 2));
 	}
 
-	gdrv::DestinationRect = SDL_Rect
+	render::DestinationRect = SDL_Rect
 	{
 		OffsetX, OffsetY,
 		width - OffsetX * 2, height - OffsetY * 2

@@ -207,16 +207,7 @@ void score::erase(scoreStruct* score, int blitFlag)
 				score->OffsetX,
 				score->OffsetY);
 		else
-			gdrv::fill_bitmap(&render::vscreen, score->Width, score->Height, score->OffsetX, score->OffsetY, 0);
-		if (blitFlag)
-			gdrv::blit(
-				&render::vscreen,
-				score->OffsetX,
-				score->OffsetY,
-				score->OffsetX + render::vscreen.XPosition,
-				score->OffsetY + render::vscreen.YPosition,
-				score->Width,
-				score->Height);
+			gdrv::fill_bitmap(&render::vscreen, score->Width, score->Height, score->OffsetX, score->OffsetY, 0);		
 	}
 }
 
@@ -255,15 +246,7 @@ void score::update(scoreStruct* score)
 				else
 					gdrv::copy_bitmap(&render::vscreen, width, height, x, y, bmp, 0, 0);
 			}
-		}
-		gdrv::blit(
-			&render::vscreen,
-			score->OffsetX,
-			score->OffsetY,
-			score->OffsetX + render::vscreen.XPosition,
-			score->OffsetY + render::vscreen.YPosition,
-			score->Width,
-			score->Height);
+		}		
 	}
 }
 

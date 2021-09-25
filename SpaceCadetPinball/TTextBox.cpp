@@ -85,15 +85,7 @@ void TTextBox::Clear()
 			OffsetX,
 			OffsetY);
 	else
-		gdrv::fill_bitmap(&render::vscreen, Width, Height, OffsetX, OffsetY, 0);
-	gdrv::blit(
-		&render::vscreen,
-		OffsetX,
-		OffsetY,
-		OffsetX + render::vscreen.XPosition,
-		OffsetY + render::vscreen.YPosition,
-		Width,
-		Height);
+		gdrv::fill_bitmap(&render::vscreen, Width, Height, OffsetX, OffsetY, 0);	
 	if (Timer)
 	{
 		if (Timer != -1)
@@ -198,14 +190,6 @@ void TTextBox::Draw()
 		auto font = Font;
 		if (!font)
 		{
-			gdrv::blit(
-				&render::vscreen,
-				OffsetX,
-				OffsetY,
-				OffsetX + render::vscreen.XPosition,
-				OffsetY + render::vscreen.YPosition,
-				Width,
-				Height);
 			gdrv::grtext_draw_ttext_in_box(
 				Message1->Text,
 				render::vscreen.XPosition + OffsetX,
@@ -275,14 +259,5 @@ void TTextBox::Draw()
 			if ((*text & 0x7F) == '\n')
 				++text;
 		}
-	}
-
-	gdrv::blit(
-		&render::vscreen,
-		OffsetX,
-		OffsetY,
-		OffsetX + render::vscreen.XPosition,
-		OffsetY + render::vscreen.YPosition,
-		Width,
-		Height);
+	}	
 }

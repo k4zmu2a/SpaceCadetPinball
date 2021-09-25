@@ -43,12 +43,16 @@ enum class FieldTypes : int16_t
 
 struct EntryData
 {
+	EntryData() = default;
+
+	EntryData(FieldTypes entryType, char* buffer): EntryType(entryType), FieldSize(-1), Buffer(buffer)
+	{
+	}
+
 	~EntryData();
 	FieldTypes EntryType{};
 	int FieldSize{};
 	char* Buffer{};
-	gdrv_bitmap8* DerivedBmp{};
-	zmap_header_type* DerivedZMap{};
 };
 
 class GroupData
@@ -59,6 +63,7 @@ public:
 
 	GroupData(int groupId);
 	void AddEntry(EntryData* entry);
+	void FinalizeGroup();
 	const std::vector<EntryData*>& GetEntries() const { return Entries; }
 	const EntryData* GetEntry(size_t index) const { return Entries[index]; }
 	size_t EntryCount() const { return Entries.size(); }
@@ -70,6 +75,7 @@ private:
 	std::vector<EntryData*> Entries;
 	gdrv_bitmap8* Bitmaps[3]{};
 	zmap_header_type* ZMaps[3]{};
+	bool NeedsSort = false;
 
 	static void SplitSplicedBitmap(const gdrv_bitmap8& srcBmp, gdrv_bitmap8& bmp, zmap_header_type& zMap);
 

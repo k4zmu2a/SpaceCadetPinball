@@ -68,7 +68,6 @@ void nudge::_nudge(float xDiff, float yDiff)
 	vector_type accelMod;
 	float invAccelX, invAccelY;
 
-	auto table = pb::MainTable;
 	auto ballList = pb::MainTable->BallList;
 	accelMod.X = xDiff * 0.5f;
 	accelMod.Y = yDiff * 0.5f;
@@ -91,10 +90,8 @@ void nudge::_nudge(float xDiff, float yDiff)
 			else
 				invAccelY = 1.0f / ball->Acceleration.Y;
 			ball->InvAcceleration.Y = invAccelY;
-			table = pb::MainTable;
 		}
 	}
 
-	render::shift(static_cast<int>(floor(xDiff + 0.5f)), static_cast<int>(floor(0.5f - yDiff)), 0, 0, table->Width,
-	              table->Height);
+	render::shift(static_cast<int>(floor(xDiff + 0.5f)), static_cast<int>(floor(0.5f - yDiff)));
 }

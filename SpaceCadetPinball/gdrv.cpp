@@ -9,41 +9,7 @@
 #include "score.h"
 #include "winmain.h"
 
-SDL_Texture* gdrv::vScreenTex = nullptr;
-ColorRgba* gdrv::vScreenPixels = nullptr;
-int gdrv::vScreenWidth, gdrv::vScreenHeight;
 ColorRgba gdrv::current_palette[256]{};
-SDL_Rect gdrv::DestinationRect{};
-
-int gdrv::init(int width, int height)
-{
-	{
-		UsingSdlHint hint{SDL_HINT_RENDER_SCALE_QUALITY, options::Options.LinearFiltering ? "linear" : "nearest"};
-		vScreenTex = SDL_CreateTexture
-		(
-			winmain::Renderer,
-			SDL_PIXELFORMAT_ARGB8888,
-			SDL_TEXTUREACCESS_STREAMING,
-			width, height
-		);
-	}
-	vScreenWidth = width;
-	vScreenHeight = height;
-	vScreenPixels = new ColorRgba[width * height];
-
-	return 0;
-}
-
-int gdrv::uninit()
-{
-	SDL_DestroyTexture(vScreenTex);
-	delete[] vScreenPixels;
-	return 0;
-}
-
-void gdrv::get_focus()
-{
-}
 
 int gdrv::create_bitmap(gdrv_bitmap8* bmp, int width, int height, int stride, bool indexed)
 {
@@ -122,23 +88,23 @@ int gdrv::display_palette(ColorRgba* plt)
 {
 	const uint32_t sysPaletteColors[]
 	{
-		0x00000000, // Color 0: transparent
-		0x00000080,
-		0x00008000,
-		0x00008080,
-		0x00800000,
-		0x00800080,
-		0x00808000,
-		0x00C0C0C0,
-		0x00C0DCC0,
-		0x00F0CAA6
+		0xff000000, // Color 0: transparent
+		0xff000080,
+		0xff008000,
+		0xff008080,
+		0xff800000,
+		0xff800080,
+		0xff808000,
+		0xffC0C0C0,
+		0xffC0DCC0,
+		0xffF0CAA6
 	};
 
 	memcpy(current_palette, sysPaletteColors, sizeof sysPaletteColors);
 
 	for (int i = 0; i < 256; i++)
 	{
-		current_palette[i].rgba.peFlags = 0;
+		current_palette[i].rgba.Alpha = 0;
 	}
 
 	auto pltSrc = &plt[10];
@@ -147,18 +113,16 @@ int gdrv::display_palette(ColorRgba* plt)
 	{
 		if (plt)
 		{
-			pltDst->rgba.peRed = pltSrc->rgba.peRed;
-			pltDst->rgba.peGreen = pltSrc->rgba.peGreen;
-			pltDst->rgba.peBlue = pltSrc->rgba.peBlue;
+			pltDst->rgba.Blue = pltSrc->rgba.Blue;
+			pltDst->rgba.Green = pltSrc->rgba.Green;
+			pltDst->rgba.Red = pltSrc->rgba.Red;
 		}
-		pltDst->rgba.peFlags = 4;
+		pltDst->rgba.Alpha = 0xFF;
 		pltSrc++;
 		pltDst++;
 	}
 
-	current_palette[255].rgba.peBlue = -1;
-	current_palette[255].rgba.peGreen = -1;
-	current_palette[255].rgba.peRed = -1;
+	current_palette[255].Color = 0xffFFFFFF;
 
 	score::ApplyPalette();
 	for (const auto group : pb::record_table->Groups)
@@ -192,32 +156,6 @@ int gdrv::destroy_bitmap(gdrv_bitmap8* bmp)
 	}
 	memset(bmp, 0, sizeof(gdrv_bitmap8));
 	return 0;
-}
-
-void gdrv::blit(gdrv_bitmap8* bmp, int xSrc, int ySrc, int xDest, int yDest, int width, int height)
-{
-	StretchDIBitsScaled(
-		xSrc,
-		ySrc,
-		xDest,
-		yDest,
-		width,
-		height,
-		bmp
-	);
-}
-
-void gdrv::blat(gdrv_bitmap8* bmp, int xDest, int yDest)
-{
-	StretchDIBitsScaled(
-		0,
-		0,
-		xDest,
-		yDest,
-		bmp->Width,
-		bmp->Height,
-		bmp
-	);
 }
 
 void gdrv::fill_bitmap(gdrv_bitmap8* bmp, int width, int height, int xOff, int yOff, uint8_t fillChar)
@@ -270,64 +208,6 @@ void gdrv::copy_bitmap_w_transparency(gdrv_bitmap8* dstBmp, int width, int heigh
 
 void gdrv::grtext_draw_ttext_in_box(LPCSTR text, int xOff, int yOff, int width, int height, int a6)
 {
-}
-
-int gdrv::StretchDIBitsScaled(int xSrc, int ySrc, int xDst, int yDst,
-                              int width, int height, gdrv_bitmap8* bmp)
-{
-	// Negative dst == positive src offset
-	if (xDst < 0)
-	{
-		xSrc -= xDst;
-		xDst = 0;
-	}
-	if (yDst < 0)
-	{
-		ySrc -= yDst;
-		yDst = 0;
-	}
-
-	// Clamp out of bounds rectangles
-	xSrc = std::max(0, std::min(xSrc, bmp->Width));
-	ySrc = std::max(0, std::min(ySrc, bmp->Height));
-	if (xSrc + width > bmp->Width)
-		width = bmp->Width - xSrc;
-	if (ySrc + height > bmp->Height)
-		height = bmp->Height - ySrc;
-
-	xDst = std::max(0, std::min(xDst, vScreenWidth));
-	yDst = std::max(0, std::min(yDst, vScreenHeight));
-	if (xDst + width > vScreenWidth)
-		width = vScreenWidth - xDst;
-	if (yDst + height > vScreenHeight)
-		height = vScreenHeight - yDst;
-
-	auto srcPtr = &bmp->BmpBufPtr1[bmp->Stride * ySrc + xSrc];
-	auto dstPtr = &vScreenPixels[vScreenWidth * yDst + xDst];
-	for (int y = height; y > 0; --y)
-	{
-		std::memcpy(dstPtr, srcPtr, width * sizeof(ColorRgba));
-		srcPtr += bmp->Stride;
-		dstPtr += vScreenWidth;
-	}
-
-	return 0;
-}
-
-void gdrv::BlitScreen()
-{
-	int pitch = 0;
-	void* lockedPixels;
-	SDL_LockTexture
-	(
-		vScreenTex,
-		nullptr,
-		&lockedPixels,
-		&pitch
-	);
-	std::memcpy(lockedPixels, vScreenPixels, vScreenWidth * vScreenHeight * sizeof(ColorRgba));
-	SDL_UnlockTexture(vScreenTex);
-	SDL_RenderCopy(winmain::Renderer, vScreenTex, nullptr, &DestinationRect);
 }
 
 void gdrv::ApplyPalette(gdrv_bitmap8& bmp)

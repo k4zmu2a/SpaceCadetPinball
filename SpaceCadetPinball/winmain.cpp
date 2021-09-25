@@ -212,7 +212,7 @@ int winmain::WinMain(LPCSTR lpCmdLine)
 							gdrv::create_bitmap(&gfr_display, 400, 15, 400, false);
 						}
 
-						gdrv::blit(&gfr_display, 0, 0, 0, 30, 300, 10);
+						gdrv::copy_bitmap(&render::vscreen, 300, 10, 0, 30, &gfr_display, 0, 0);
 						gdrv::fill_bitmap(&gfr_display, 300, 10, 0, 0, 0);
 					}
 				}
@@ -284,7 +284,7 @@ int winmain::WinMain(LPCSTR lpCmdLine)
 				RenderUi();
 
 				SDL_RenderClear(renderer);
-				gdrv::BlitScreen();
+				render::PresentVScreen();
 
 				ImGui::Render();
 				ImGuiSDL::Render(ImGui::GetDrawData());
@@ -307,7 +307,6 @@ int winmain::WinMain(LPCSTR lpCmdLine)
 	midi::music_shutdown();
 	pb::uninit();
 	Sound::Close();
-	gdrv::uninit();
 	ImGuiSDL::Deinitialize();
 	ImGui_ImplSDL2_Shutdown();
 	SDL_DestroyRenderer(renderer);
@@ -649,8 +648,6 @@ int winmain::event_handler(const SDL_Event* event)
 				midi::play_pb_theme(0);
 			no_time_loss = 1;
 			has_focus = 1;
-			gdrv::get_focus();
-			pb::paint();
 			break;
 		case SDL_WINDOWEVENT_FOCUS_LOST:
 		case SDL_WINDOWEVENT_HIDDEN:
@@ -660,7 +657,6 @@ int winmain::event_handler(const SDL_Event* event)
 			Sound::Deactivate();
 			midi::music_stop();
 			has_focus = 0;
-			gdrv::get_focus();
 			pb::loose_focus();
 			break;
 		case SDL_WINDOWEVENT_SIZE_CHANGED:
@@ -698,7 +694,6 @@ void winmain::memalloc_failure()
 {
 	midi::music_stop();
 	Sound::Close();
-	gdrv::uninit();
 	char* caption = pinball::get_rc_string(170, 0);
 	char* text = pinball::get_rc_string(179, 0);
 	SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, caption, text, MainWindow);
@@ -723,7 +718,10 @@ void winmain::a_dialog()
 		ImGui::TextUnformatted("Decompiled -> Ported to SDL");
 		if (ImGui::SmallButton("Project home: https://github.com/k4zmu2a/SpaceCadetPinball"))
 		{
+#if SDL_VERSION_ATLEAST(2, 0, 14)
+			// Relatively new feature, skip with older SDL
 			SDL_OpenURL("https://github.com/k4zmu2a/SpaceCadetPinball");
+#endif
 		}
 		ImGui::Separator();
 

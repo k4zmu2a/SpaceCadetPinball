@@ -18,16 +18,6 @@ EntryData::~EntryData()
 			zdrv::destroy_zmap(reinterpret_cast<zmap_header_type*>(Buffer));
 		memory::free(Buffer);
 	}
-	if (DerivedBmp)
-	{
-		gdrv::destroy_bitmap(DerivedBmp);
-		memory::free(DerivedBmp);
-	}
-	if (DerivedZMap)
-	{
-		zdrv::destroy_zmap(DerivedZMap);
-		memory::free(DerivedZMap);
-	}
 }
 
 
@@ -38,8 +28,7 @@ GroupData::GroupData(int groupId)
 
 void GroupData::AddEntry(EntryData* entry)
 {
-	Entries.push_back(entry);
-
+	auto addEntry = true;
 	switch (entry->EntryType)
 	{
 	case FieldTypes::GroupName:
@@ -47,21 +36,23 @@ void GroupData::AddEntry(EntryData* entry)
 		break;
 	case FieldTypes::Bitmap8bit:
 		{
-			auto bmp = reinterpret_cast<gdrv_bitmap8*>(entry->Buffer);
-			if (bmp->BitmapType == BitmapTypes::Spliced)
+			auto srcBmp = reinterpret_cast<gdrv_bitmap8*>(entry->Buffer);
+			if (srcBmp->BitmapType == BitmapTypes::Spliced)
 			{
 				// Get rid of spliced bitmap early on, to simplify render pipeline
-				auto splitBmp = memory::allocate<gdrv_bitmap8>();
-				auto splitZMap = memory::allocate<zmap_header_type>();
-				SplitSplicedBitmap(*bmp, *splitBmp, *splitZMap);
-				entry->DerivedBmp = splitBmp;
-				entry->DerivedZMap = splitZMap;
-				SetBitmap(splitBmp);
-				SetZMap(splitZMap);
+				auto bmp = memory::allocate<gdrv_bitmap8>();
+				auto zMap = memory::allocate<zmap_header_type>();
+				SplitSplicedBitmap(*srcBmp, *bmp, *zMap);
+
+				NeedsSort = true;
+				addEntry = false;
+				AddEntry(new EntryData(FieldTypes::Bitmap8bit, reinterpret_cast<char*>(bmp)));
+				AddEntry(new EntryData(FieldTypes::Bitmap16bit, reinterpret_cast<char*>(zMap)));
+				delete entry;
 			}
 			else
 			{
-				SetBitmap(bmp);
+				SetBitmap(srcBmp);
 			}
 			break;
 		}
@@ -71,6 +62,24 @@ void GroupData::AddEntry(EntryData* entry)
 			break;
 		}
 	default: break;
+	}
+
+	if (addEntry)
+		Entries.push_back(entry);
+}
+
+void GroupData::FinalizeGroup()
+{
+	if (NeedsSort)
+	{
+		// Entries within a group are sorted by EntryType, in ascending order.
+		// Dat files follow this rule, zMaps inserted in the middle break it.
+		NeedsSort = false;
+		std::sort(Entries.begin(), Entries.end(), [](const EntryData* lhs, const EntryData* rhs)
+		{
+			return lhs->EntryType < rhs->EntryType;
+		});
+		Entries.shrink_to_fit();
 	}
 }
 

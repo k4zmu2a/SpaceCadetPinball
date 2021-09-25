@@ -44,7 +44,6 @@ public:
 	static int uninit();
 	static void reset_table();
 	static void firsttime_setup();
-	static void paint();
 	static void mode_change(int mode);
 	static void toggle_demo();
 	static void replay_level(int demoMode);

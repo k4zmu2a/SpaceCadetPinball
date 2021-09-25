@@ -3,9 +3,11 @@
 
 #include "GroupData.h"
 #include "memory.h"
+#include "options.h"
 #include "pb.h"
+#include "TPinballTable.h"
+#include "winmain.h"
 
-int render::blit = 0;
 int render::many_dirty, render::many_sprites, render::many_balls;
 render_sprite_type_struct **render::dirty_list, **render::sprite_list, **render::ball_list;
 zmap_header_type* render::background_zmap;
@@ -14,6 +16,8 @@ float render::zscaler, render::zmin, render::zmax;
 rectangle_type render::vscreen_rect;
 gdrv_bitmap8 render::vscreen, *render::background_bitmap, render::ball_bitmap[20];
 zmap_header_type render::zscreen;
+SDL_Texture* render::vScreenTex = nullptr;
+SDL_Rect render::DestinationRect{};
 
 void render::init(gdrv_bitmap8* bmp, float zMin, float zScaler, int width, int height)
 {
@@ -41,6 +45,18 @@ void render::init(gdrv_bitmap8* bmp, float zMin, float zScaler, int width, int h
 		gdrv::copy_bitmap(&vscreen, width, height, 0, 0, bmp, 0, 0);
 	else
 		gdrv::fill_bitmap(&vscreen, vscreen.Width, vscreen.Height, 0, 0, 0);
+
+	{
+		UsingSdlHint hint{SDL_HINT_RENDER_SCALE_QUALITY, options::Options.LinearFiltering ? "linear" : "nearest"};
+		vScreenTex = SDL_CreateTexture
+		(
+			winmain::Renderer,
+			SDL_PIXELFORMAT_ARGB8888,
+			SDL_TEXTUREACCESS_STREAMING,
+			width, height
+		);
+		SDL_SetTextureBlendMode(vScreenTex, SDL_BLENDMODE_NONE);
+	}
 	--memory::critical_allocation;
 }
 
@@ -60,154 +76,73 @@ void render::uninit()
 	many_sprites = 0;
 	many_dirty = 0;
 	many_balls = 0;
+	SDL_DestroyTexture(vScreenTex);
 }
 
 void render::update()
 {
-	rectangle_type overlapRect{};
+	unpaint_balls();
 
-	auto dirtyPtr = dirty_list;
-	for (int index = 0; index < many_dirty; ++dirtyPtr, ++index)
+	// Clip dirty sprites with vScreen, clear clipping (dirty) rectangles 
+	for (int index = 0; index < many_dirty; ++index)
 	{
-		auto curSprite = *dirtyPtr;
-		if ((*dirtyPtr)->VisualType != VisualTypes::None)
+		bool clearSprite = false;
+		auto curSprite = dirty_list[index];
+		switch (curSprite->VisualType)
 		{
-			if ((*dirtyPtr)->VisualType == VisualTypes::Sprite)
-			{
-				if (curSprite->BmpRectCopy.Width > 0)
-					maths::enclosing_box(&curSprite->BmpRectCopy, &curSprite->BmpRect, &curSprite->DirtyRect);
+		case VisualTypes::Sprite:
+			if (curSprite->DirtyRectPrev.Width > 0)
+				maths::enclosing_box(&curSprite->DirtyRectPrev, &curSprite->BmpRect, &curSprite->DirtyRect);
 
-				if (!maths::rectangle_clip(&curSprite->DirtyRect, &vscreen_rect, &curSprite->DirtyRect))
-				{
-					curSprite->DirtyRect.Width = -1;
-					continue;
-				}
-
-				auto yPos = curSprite->DirtyRect.YPosition;
-				auto width = curSprite->DirtyRect.Width;
-				auto xPos = curSprite->DirtyRect.XPosition;
-				auto height = curSprite->DirtyRect.Height;
-				zdrv::fill(&zscreen, width, height, xPos, yPos, 0xFFFF);
-				if (background_bitmap)
-					gdrv::copy_bitmap(&vscreen, width, height, xPos, yPos, background_bitmap, xPos, yPos);
-				else
-					gdrv::fill_bitmap(&vscreen, width, height, xPos, yPos, 0);
-			}
-		}
-		else
-		{
-			if (!maths::rectangle_clip(&curSprite->BmpRect, &vscreen_rect, &curSprite->DirtyRect))
-			{
+			if (maths::rectangle_clip(&curSprite->DirtyRect, &vscreen_rect, &curSprite->DirtyRect))
+				clearSprite = true;
+			else
 				curSprite->DirtyRect.Width = -1;
-				continue;
-			}
-			if (!curSprite->Bmp)
-			{
-				auto yPos = curSprite->DirtyRect.YPosition;
-				auto width = curSprite->DirtyRect.Width;
-				auto xPos = curSprite->DirtyRect.XPosition;
-				auto height = curSprite->DirtyRect.Height;
-				zdrv::fill(&zscreen, width, height, xPos, yPos, 0xFFFF);
-				if (background_bitmap)
-					gdrv::copy_bitmap(&vscreen, width, height, xPos, yPos, background_bitmap, xPos, yPos);
-				else
-					gdrv::fill_bitmap(&vscreen, width, height, xPos, yPos, 0);
-			}
+			break;
+		case VisualTypes::None:
+			if (maths::rectangle_clip(&curSprite->BmpRect, &vscreen_rect, &curSprite->DirtyRect))
+				clearSprite = !curSprite->Bmp;
+			else
+				curSprite->DirtyRect.Width = -1;
+			break;
+		default: break;
+		}
+
+		if (clearSprite)
+		{
+			auto yPos = curSprite->DirtyRect.YPosition;
+			auto width = curSprite->DirtyRect.Width;
+			auto xPos = curSprite->DirtyRect.XPosition;
+			auto height = curSprite->DirtyRect.Height;
+			zdrv::fill(&zscreen, width, height, xPos, yPos, 0xFFFF);
+			if (background_bitmap)
+				gdrv::copy_bitmap(&vscreen, width, height, xPos, yPos, background_bitmap, xPos, yPos);
+			else
+				gdrv::fill_bitmap(&vscreen, width, height, xPos, yPos, 0);
 		}
 	}
 
-	dirtyPtr = dirty_list;
+	// Paint dirty rectangles of dirty sprites
 	for (int index = 0; index < many_dirty; ++index)
 	{
-		auto sprite = *dirtyPtr;
-		if ((*dirtyPtr)->DirtyRect.Width > 0 && (sprite->VisualType == VisualTypes::None || sprite->VisualType ==
+		auto sprite = dirty_list[index];
+		if (sprite->DirtyRect.Width > 0 && (sprite->VisualType == VisualTypes::None || sprite->VisualType ==
 			VisualTypes::Sprite))
-			repaint(*dirtyPtr);
-		++dirtyPtr;
+			repaint(sprite);
 	}
 
 	paint_balls();
-	if (blit)
+
+	// In the original, this used to blit dirty sprites and balls
+	for (int index = 0; index < many_dirty; ++index)
 	{
-		auto xPos = vscreen.XPosition + offset_x;
-		auto yPos = vscreen.YPosition + offset_y;
-		dirtyPtr = dirty_list;
-		for (int index = 0; index < many_dirty; ++dirtyPtr, ++index)
-		{
-			auto sprite = *dirtyPtr;
-			auto dirtyRect = &(*dirtyPtr)->DirtyRect;
-			auto width2 = (*dirtyPtr)->DirtyRect.Width;
-			if (width2 > 0)
-				gdrv::blit(
-					&vscreen,
-					dirtyRect->XPosition,
-					dirtyRect->YPosition,
-					dirtyRect->XPosition + xPos,
-					dirtyRect->YPosition + yPos,
-					width2,
-					dirtyRect->Height);
-
-			auto rect = &sprite->BmpRectCopy;
-			rect->XPosition = dirtyRect->XPosition;
-			rect->YPosition = dirtyRect->YPosition;
-			rect->Width = dirtyRect->Width;
-			rect->Height = dirtyRect->Height;
-
-			if (sprite->UnknownFlag != 0)
-				remove_sprite(sprite);
-		}
-
-		dirtyPtr = ball_list;
-		for (int index = 0; index < many_balls; ++dirtyPtr, ++index)
-		{
-			auto rectCopy = &(*dirtyPtr)->BmpRectCopy;
-			auto dirtyRect = &(*dirtyPtr)->DirtyRect;
-			if (maths::overlapping_box(dirtyRect, rectCopy, &overlapRect) && dirtyRect->Width > 0)
-			{
-				if (overlapRect.Width > 0)
-					gdrv::blit(
-						&vscreen,
-						overlapRect.XPosition,
-						overlapRect.YPosition,
-						overlapRect.XPosition + xPos,
-						overlapRect.YPosition + yPos,
-						overlapRect.Width,
-						overlapRect.Height);
-			}
-			else
-			{
-				if (dirtyRect->Width > 0)
-					gdrv::blit(
-						&vscreen,
-						dirtyRect->XPosition,
-						dirtyRect->YPosition,
-						dirtyRect->XPosition + xPos,
-						dirtyRect->YPosition + yPos,
-						dirtyRect->Width,
-						dirtyRect->Height);
-				if (rectCopy->Width > 0)
-					gdrv::blit(
-						&vscreen,
-						rectCopy->XPosition,
-						rectCopy->YPosition,
-						rectCopy->XPosition + xPos,
-						rectCopy->YPosition + yPos,
-						rectCopy->Width,
-						rectCopy->Height);
-			}
-		}
+		auto sprite = dirty_list[index];
+		sprite->DirtyRectPrev = sprite->DirtyRect;
+		if (sprite->UnknownFlag != 0)
+			remove_sprite(sprite);
 	}
 
 	many_dirty = 0;
-	unpaint_balls();
-}
-
-
-void render::paint()
-{
-	paint_balls();
-	gdrv::blat(&vscreen, vscreen.XPosition, vscreen.YPosition);
-	unpaint_balls();
 }
 
 void render::sprite_modified(render_sprite_type_struct* sprite)
@@ -260,7 +195,7 @@ render_sprite_type_struct* render::create_sprite(VisualTypes visualType, gdrv_bi
 		sprite->ZMapOffestY = xPosition - zmap_offset;
 		sprite->ZMapOffestX = yPosition - zmap_offsetY;
 	}
-	sprite->BmpRectCopy = sprite->BmpRect;
+	sprite->DirtyRectPrev = sprite->BmpRect;
 	if (visualType == VisualTypes::Ball)
 	{
 		ball_list[many_balls++] = sprite;
@@ -389,10 +324,10 @@ void render::repaint(struct render_sprite_type_struct* sprite)
 		return;
 	for (int index = 0; index < sprite->SpriteCount; index++)
 	{
-		render_sprite_type_struct* curSprite = sprite->SpriteArray[index];
-		if (!curSprite->UnknownFlag && curSprite->Bmp)
+		auto refSprite = sprite->SpriteArray[index];
+		if (!refSprite->UnknownFlag && refSprite->Bmp)
 		{
-			if (maths::rectangle_clip(&curSprite->BmpRect, &sprite->DirtyRect, &clipRect))
+			if (maths::rectangle_clip(&refSprite->BmpRect, &sprite->DirtyRect, &clipRect))
 				zdrv::paint(
 					clipRect.Width,
 					clipRect.Height,
@@ -402,12 +337,12 @@ void render::repaint(struct render_sprite_type_struct* sprite)
 					&zscreen,
 					clipRect.XPosition,
 					clipRect.YPosition,
-					curSprite->Bmp,
-					clipRect.XPosition - curSprite->BmpRect.XPosition,
-					clipRect.YPosition - curSprite->BmpRect.YPosition,
-					curSprite->ZMap,
-					clipRect.XPosition + curSprite->ZMapOffestY - curSprite->BmpRect.XPosition,
-					clipRect.YPosition + curSprite->ZMapOffestX - curSprite->BmpRect.YPosition);
+					refSprite->Bmp,
+					clipRect.XPosition - refSprite->BmpRect.XPosition,
+					clipRect.YPosition - refSprite->BmpRect.YPosition,
+					refSprite->ZMap,
+					clipRect.XPosition + refSprite->ZMapOffestY - refSprite->BmpRect.XPosition,
+					clipRect.YPosition + refSprite->ZMapOffestX - refSprite->BmpRect.YPosition);
 		}
 	}
 }
@@ -415,62 +350,55 @@ void render::repaint(struct render_sprite_type_struct* sprite)
 
 void render::paint_balls()
 {
-	int ballCount = many_balls;
-	if (many_balls > 1)
+	// Sort ball sprites by depth
+	for (auto i = 0; i < many_balls; i++)
 	{
-		for (int index = 0; index < ballCount; index++)
+		for (auto j = i; j < many_balls / 2; ++j)
 		{
-			for (int i = index; i < ballCount / 2; ++i)
+			auto ballA = ball_list[j];
+			auto ballB = ball_list[i];
+			if (ballB->Depth > ballA->Depth)
 			{
-				auto curBall = ball_list[i];
-				auto firstBallPtr = &ball_list[index];
-				if ((*firstBallPtr)->Depth > curBall->Depth)
-				{
-					auto firstBall = *firstBallPtr;
-					*firstBallPtr = curBall;
-					ball_list[i] = firstBall;
-				}
+				ball_list[i] = ballA;
+				ball_list[j] = ballB;
 			}
 		}
 	}
 
-	auto ballPtr = ball_list;
-	auto ballBmpPtr = ball_bitmap;
-	for (int index2 = 0; index2 < many_balls; ++index2)
+	// For balls that clip vScreen: save original vScreen contents and paint ball bitmap.
+	for (auto index = 0; index < many_balls; ++index)
 	{
-		struct render_sprite_type_struct* sprite = *ballPtr;
-		rectangle_type* rect2 = &(*ballPtr)->DirtyRect;
-		if ((*ballPtr)->Bmp && maths::rectangle_clip(&sprite->BmpRect, &vscreen_rect, &(*ballPtr)->DirtyRect))
+		auto ball = ball_list[index];
+		auto dirty = &ball->DirtyRect;
+		if (ball->Bmp && maths::rectangle_clip(&ball->BmpRect, &vscreen_rect, &ball->DirtyRect))
 		{
-			int xPos = rect2->XPosition;
-			int yPos = rect2->YPosition;
-			gdrv::copy_bitmap(ballBmpPtr, rect2->Width, rect2->Height, 0, 0, &vscreen, xPos, yPos);
+			int xPos = dirty->XPosition;
+			int yPos = dirty->YPosition;
+			gdrv::copy_bitmap(&ball_bitmap[index], dirty->Width, dirty->Height, 0, 0, &vscreen, xPos, yPos);
 			zdrv::paint_flat(
-				rect2->Width,
-				rect2->Height,
+				dirty->Width,
+				dirty->Height,
 				&vscreen,
 				xPos,
 				yPos,
 				&zscreen,
 				xPos,
 				yPos,
-				sprite->Bmp,
-				xPos - sprite->BmpRect.XPosition,
-				yPos - sprite->BmpRect.YPosition,
-				sprite->Depth);
+				ball->Bmp,
+				xPos - ball->BmpRect.XPosition,
+				yPos - ball->BmpRect.YPosition,
+				ball->Depth);
 		}
 		else
 		{
-			rect2->Width = -1;
+			dirty->Width = -1;
 		}
-
-		++ballBmpPtr;
-		++ballPtr;
 	}
 }
 
 void render::unpaint_balls()
 {
+	// Restore portions of vScreen saved during previous paint_balls call.
 	for (int index = many_balls - 1; index >= 0; index--)
 	{
 		auto curBall = ball_list[index];
@@ -485,63 +413,54 @@ void render::unpaint_balls()
 				0,
 				0);
 
-		curBall->BmpRectCopy = curBall->DirtyRect;
+		curBall->DirtyRectPrev = curBall->DirtyRect;
 	}
 }
 
-void render::shift(int offsetX, int offsetY, int xSrc, int ySrc, int DestWidth, int DestHeight)
+void render::shift(int offsetX, int offsetY)
 {
 	offset_x += offsetX;
 	offset_y += offsetY;
-	paint_balls();
-	gdrv::blit(
-		&vscreen,
-		xSrc,
-		ySrc,
-		xSrc + offset_x + vscreen.XPosition,
-		ySrc + offset_y + vscreen.YPosition,
-		DestWidth,
-		DestHeight);
-	unpaint_balls();
 }
 
 void render::build_occlude_list()
 {
 	++memory::critical_allocation;
 	render_sprite_type_struct** spriteArr = nullptr;
-	auto spritePtr1 = sprite_list;
-	for (int index = 0; index < many_sprites; ++index, ++spritePtr1)
+	for (int index = 0; index < many_sprites; ++index)
 	{
-		auto curSprite = *spritePtr1;
-		if ((*spritePtr1)->SpriteArray)
+		auto mainSprite = sprite_list[index];
+		if (mainSprite->SpriteArray)
 		{
-			memory::free((*spritePtr1)->SpriteArray);
-			curSprite->SpriteArray = nullptr;
-			curSprite->SpriteCount = 0;
+			memory::free(mainSprite->SpriteArray);
+			mainSprite->SpriteArray = nullptr;
+			mainSprite->SpriteCount = 0;
 		}
-		if (!curSprite->UnknownFlag && curSprite->BoundingRect.Width != -1)
+
+		if (!mainSprite->UnknownFlag && mainSprite->BoundingRect.Width != -1)
 		{
 			if (!spriteArr)
 				spriteArr = memory::allocate<render_sprite_type_struct*>(1000);
+
 			int occludeCount = 0;
-			auto spritePtr2 = sprite_list;
-			for (int i = 0; i < many_sprites; ++i, ++spritePtr2)
+			for (int i = 0; i < many_sprites; ++i)
 			{
-				auto sprite = *spritePtr2;
-				if (!sprite->UnknownFlag
-					&& sprite->BoundingRect.Width != -1
-					&& maths::rectangle_clip(&curSprite->BoundingRect, &sprite->BoundingRect, nullptr)
+				auto refSprite = sprite_list[i];
+				if (!refSprite->UnknownFlag
+					&& refSprite->BoundingRect.Width != -1
+					&& maths::rectangle_clip(&mainSprite->BoundingRect, &refSprite->BoundingRect, nullptr)
 					&& spriteArr)
 				{
-					spriteArr[occludeCount++] = sprite;
+					spriteArr[occludeCount++] = refSprite;
 				}
 			}
-			if (!curSprite->UnknownFlag && curSprite->Bmp && occludeCount < 2)
+
+			if (!mainSprite->UnknownFlag && mainSprite->Bmp && occludeCount < 2)
 				occludeCount = 0;
 			if (occludeCount)
 			{
-				curSprite->SpriteArray = memory::realloc(spriteArr, sizeof(void*) * occludeCount);
-				curSprite->SpriteCount = occludeCount;
+				mainSprite->SpriteArray = memory::realloc(spriteArr, sizeof(void*) * occludeCount);
+				mainSprite->SpriteCount = occludeCount;
 				spriteArr = nullptr;
 			}
 		}
@@ -643,4 +562,82 @@ void render::SpriteViewer(bool* show)
 		}
 	}
 	ImGui::End();
+}
+
+void render::BlitVScreen()
+{
+	int pitch = 0;
+	ColorRgba* lockedPixels;
+	SDL_LockTexture
+	(
+		vScreenTex,
+		nullptr,
+		reinterpret_cast<void**>(&lockedPixels),
+		&pitch
+	);
+	assertm(pitch == vscreen.Width * sizeof(ColorRgba), "Padding on vScreen texture");
+
+	if (offset_x == 0 && offset_y == 0)
+	{
+		// No offset - direct copy
+		std::memcpy(lockedPixels, vscreen.BmpBufPtr1, vscreen.Width * vscreen.Height * sizeof(ColorRgba));
+	}
+	else
+	{
+		// Copy offset table and fixed side bar
+		auto tableWidth = pb::MainTable->Width;
+		auto scoreWidth = vscreen.Width - pb::MainTable->Width;
+		auto tableStride = tableWidth * sizeof(ColorRgba);
+		auto scoreStride = scoreWidth * sizeof(ColorRgba);
+		auto srcScorePtr = &vscreen.BmpBufPtr1[tableWidth];
+
+		auto xSrc = 0, ySrc = 0, xDst = offset_x, yDst = offset_y, height = vscreen.Height;
+
+		// Negative dst == positive src offset
+		if (xDst < 0)
+		{
+			xSrc -= xDst;
+			xDst = 0;
+		}
+		if (yDst < 0)
+		{
+			ySrc -= yDst;
+			yDst = 0;
+		}
+
+		if (xSrc)
+		{
+			tableStride -= xSrc * sizeof(ColorRgba);
+		}
+		if (xDst)
+		{
+			tableStride -= xDst * sizeof(ColorRgba);
+			tableWidth -= xDst;
+			scoreWidth += xDst;
+		}
+		if (ySrc)
+			height -= ySrc;
+
+		auto srcBmpPtr = &vscreen.BmpBufPtr1[vscreen.Width * ySrc + xSrc];
+		auto dstPtr = &lockedPixels[vscreen.Width * yDst + xDst];
+		for (int y = height; y > 0; --y)
+		{
+			std::memcpy(dstPtr, srcBmpPtr, tableStride);
+			dstPtr += tableWidth;
+			std::memcpy(dstPtr, srcScorePtr, scoreStride);
+			dstPtr += scoreWidth;
+
+			srcBmpPtr += vscreen.Stride;
+			srcScorePtr += vscreen.Stride;
+		}
+	}
+
+
+	SDL_UnlockTexture(vScreenTex);
+}
+
+void render::PresentVScreen()
+{
+	BlitVScreen();
+	SDL_RenderCopy(winmain::Renderer, vScreenTex, nullptr, &DestinationRect);
 }

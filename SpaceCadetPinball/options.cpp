@@ -217,7 +217,6 @@ void options::toggle(Menu1 uIDCheckItem)
 	case Menu1::WindowUniformScale:
 		Options.UniformScaling ^= true;
 		fullscrn::window_size_changed();
-		pb::paint();
 		break;
 	case Menu1::WindowLinearFilter:
 		Options.LinearFiltering ^= true;

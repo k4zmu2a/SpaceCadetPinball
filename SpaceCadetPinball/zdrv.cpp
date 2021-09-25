@@ -127,9 +127,9 @@ void zdrv::CreatePreview(zmap_header_type& zMap)
 		for (auto x = 0; x < zMap.Width; x++)
 		{
 			auto depth = static_cast<uint8_t>((0xffff - *src++) / 0xff);
-			color.rgba.peRed = depth;
-			color.rgba.peGreen = depth;
-			color.rgba.peBlue = depth;
+			color.rgba.Blue = depth;
+			color.rgba.Green = depth;
+			color.rgba.Red = depth;
 			*dst++ = color;
 		}
 		src += zMap.Stride - zMap.Width;

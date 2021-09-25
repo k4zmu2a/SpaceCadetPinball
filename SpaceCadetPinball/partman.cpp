@@ -130,6 +130,7 @@ DatFile* partman::load_records(LPCSTR lpFileName, bool fullTiltMode)
 			groupData->AddEntry(entryData);
 		}
 
+		groupData->FinalizeGroup();
 		datFile->Groups.push_back(groupData);
 	}
 

@@ -75,8 +75,7 @@ int pb::init()
 		zMin = cameraInfo[1];
 		zScaler = cameraInfo[2];
 	}
-
-	gdrv::init(resInfo->TableWidth, resInfo->TableHeight);
+	
 	render::init(nullptr, zMin, zScaler, resInfo->TableWidth, resInfo->TableHeight);
 	gdrv::copy_bitmap(
 		&render::vscreen,
@@ -116,7 +115,6 @@ int pb::uninit()
 	if (MainTable)
 		delete MainTable;
 	MainTable = nullptr;
-	gdrv::get_focus();
 	timer::uninit();
 	render::uninit();
 	return 0;
@@ -131,14 +129,7 @@ void pb::reset_table()
 
 void pb::firsttime_setup()
 {
-	render::blit = 0;
 	render::update();
-	render::blit = 1;
-}
-
-void pb::paint()
-{
-	render::paint();
 }
 
 void pb::mode_change(int mode)
@@ -492,9 +483,6 @@ void pb::keydown(int key)
 			break;
 		case 's':
 			MainTable->AddScore(static_cast<int>(RandFloat() * 1000000.0f));
-			break;
-		case SDLK_F11:
-			gdrv::get_focus();
 			break;
 		case SDLK_F12:
 			MainTable->port_draw();
