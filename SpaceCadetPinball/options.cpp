@@ -44,6 +44,7 @@ short options::vk_list[28]
 
 std::map<std::string, std::string> options::settings{};
 
+constexpr int options::MaxUps, options::MaxFps, options::MinUps, options::MinFps, options::DefUps, options::DefFps;
 
 void options::init()
 {
@@ -100,6 +101,11 @@ void options::init()
 	ImGui::GetIO().FontGlobalScale = get_float("UI Scale", 1.0f);
 	Options.Resolution = get_int("Screen Resolution", -1);
 	Options.LinearFiltering = get_int("Linear Filtering", true);
+	Options.FramesPerSecond = std::min(MaxFps, std::max(MinUps, get_int("Frames Per Second", DefFps)));
+	Options.UpdatesPerSecond = std::min(MaxUps, std::max(MinUps, get_int("Updates Per Second", DefUps)));
+	Options.UpdatesPerSecond = std::max(Options.UpdatesPerSecond, Options.FramesPerSecond);
+
+	winmain::UpdateFrameRate();
 
 	Sound::Enable(0, 7, Options.Sounds);
 
@@ -125,6 +131,8 @@ void options::uninit()
 	set_int("Uniform scaling", Options.UniformScaling);
 	set_float("UI Scale", ImGui::GetIO().FontGlobalScale);
 	set_int("Linear Filtering", Options.LinearFiltering);
+	set_int("Frames Per Second", Options.FramesPerSecond);
+	set_int("Updates Per Second", Options.UpdatesPerSecond);
 }
 
 

@@ -17,8 +17,6 @@
 #include <unistd.h>
 #endif
 
-const double TargetFps = 60, TargetFrameTime = 1000 / TargetFps;
-
 SDL_Window *winmain::MainWindow = nullptr;
 SDL_Renderer *winmain::Renderer = nullptr;
 ImGuiIO *winmain::ImIO = nullptr;
@@ -35,8 +33,6 @@ int winmain::last_mouse_y;
 int winmain::mouse_down;
 int winmain::no_time_loss;
 
-DWORD winmain::then;
-DWORD winmain::now;
 bool winmain::restart = false;
 
 gdrv_bitmap8 winmain::gfr_display{};
@@ -49,14 +45,8 @@ bool winmain::HighScoresEnabled = true;
 bool winmain::DemoActive = false;
 char *winmain::BasePath;
 std::string winmain::FpsDetails;
-
-uint32_t timeGetTimeAlt()
-{
-	auto now = std::chrono::high_resolution_clock::now();
-	auto duration = now.time_since_epoch();
-	auto millis = std::chrono::duration_cast<std::chrono::milliseconds>(duration).count();
-	return static_cast<uint32_t>(millis);
-}
+double winmain::UpdateToFrameRatio;
+winmain::DurationMs winmain::TargetFrameTime;
 
 static bool loop_stop = false;
 
@@ -201,144 +191,140 @@ int winmain::WinMain(LPCSTR lpCmdLine)
 	else
 		pb::replay_level(0);
 
-	DWORD updateCounter = 300u, frameCounter = 0, prevTime = 0u;
-	then = timeGetTimeAlt();
+	DWORD dtHistoryCounter = 300u, updateCounter = 0, frameCounter = 0;
 
-	double sdlTimerResMs = 1000.0 / static_cast<double>(SDL_GetPerformanceFrequency());
-	auto frameStart = static_cast<double>(SDL_GetPerformanceCounter());
+	auto frameStart = Clock::now();
+	double frameDuration = TargetFrameTime.count(), UpdateToFrameCounter = 0;
+	DurationMs sleepRemainder(0);
+	auto prevTime = frameStart;
+	run_loop([&]() {
+		if (DispFrameRate)
+		{
+			auto curTime = Clock::now();
+			if (curTime - prevTime > DurationMs(1000))
+			{
+				char buf[60];
+				auto elapsedSec = DurationMs(curTime - prevTime).count() * 0.001;
+				snprintf(buf, sizeof buf, "Updates/sec = %02.02f Frames/sec = %02.02f ",
+				         updateCounter / elapsedSec, frameCounter / elapsedSec);
+				SDL_SetWindowTitle(window, buf);
+				FpsDetails = buf;
+				frameCounter = updateCounter = 0;
+				prevTime = curTime;
+			}
+		}
 
-	run_loop([&]
-			 {
-				 if (!updateCounter)
-				 {
-					 updateCounter = 300;
-					 if (DispFrameRate)
-					 {
-						 auto curTime = timeGetTimeAlt();
-						 if (prevTime)
-						 {
-							 char buf[60];
-							 auto elapsedSec = static_cast<float>(curTime - prevTime) * 0.001f;
-							 snprintf(buf, sizeof buf, "Updates/sec = %02.02f Frames/sec = %02.02f ",
-									  300.0f / elapsedSec, frameCounter / elapsedSec);
-							 SDL_SetWindowTitle(window, buf);
-							 FpsDetails = buf;
-							 frameCounter = 0;
+		if (DispGRhistory)
+		{
+			if (!gfr_display.BmpBufPtr1)
+			{
+				auto plt = static_cast<ColorRgba*>(malloc(1024u));
+				auto pltPtr = &plt[10];
+				for (int i1 = 0, i2 = 0; i1 < 256 - 10; ++i1, i2 += 8)
+				{
+					unsigned char blue = i2, redGreen = i2;
+					if (i2 > 255)
+					{
+						blue = 255;
+						redGreen = i1;
+					}
 
-							 if (DispGRhistory)
-							 {
-								 if (!gfr_display.BmpBufPtr1)
-								 {
-									 auto plt = static_cast<ColorRgba *>(malloc(1024u));
-									 auto pltPtr = &plt[10];
-									 for (int i1 = 0, i2 = 0; i1 < 256 - 10; ++i1, i2 += 8)
-									 {
-										 unsigned char blue = i2, redGreen = i2;
-										 if (i2 > 255)
-										 {
-											 blue = 255;
-											 redGreen = i1;
-										 }
+					*pltPtr++ = ColorRgba{Rgba{redGreen, redGreen, blue, 0}};
+				}
+				gdrv::display_palette(plt);
+				free(plt);
+				gdrv::create_bitmap(&gfr_display, 400, 15, 400, false);
+			}
 
-										 *pltPtr++ = ColorRgba{Rgba{redGreen, redGreen, blue, 0}};
-									 }
-									 gdrv::display_palette(plt);
-									 free(plt);
-									 gdrv::create_bitmap(&gfr_display, 400, 15, 400, false);
-								 }
+			if (!dtHistoryCounter)
+			{
+				dtHistoryCounter = 300;
+				gdrv::copy_bitmap(&render::vscreen, 300, 10, 0, 30, &gfr_display, 0, 0);
+				gdrv::fill_bitmap(&gfr_display, 300, 10, 0, 0, 0);
+			}
+		}
 
-								 gdrv::copy_bitmap(&render::vscreen, 300, 10, 0, 30, &gfr_display, 0, 0);
-								 gdrv::fill_bitmap(&gfr_display, 300, 10, 0, 0, 0);
-							 }
-						 }
-						 prevTime = curTime;
-					 }
-					 else
-					 {
-						 prevTime = 0;
-					 }
-				 }
+		if (!ProcessWindowMessages() || bQuit) {
+			loop_stop = true;
+			return;
+		}
 
-				 if (!ProcessWindowMessages() || bQuit)
-				 {
-					 loop_stop = true;
-					 return;
-				 }
+		if (has_focus)
+		{
+			if (mouse_down)
+			{
+				int x, y;
+				SDL_GetMouseState(&x, &y);
+				pb::ballset(last_mouse_x - x, y - last_mouse_y);
+				SDL_WarpMouseInWindow(window, last_mouse_x, last_mouse_y);
+			}
+			if (!single_step)
+			{
+				auto deltaT = static_cast<int>(frameDuration);
+				frameDuration -= deltaT;
+				pb::frame(deltaT);
+				if (gfr_display.BmpBufPtr1)
+				{
+					auto deltaTPal = deltaT + 10;
+					auto fillChar = static_cast<uint8_t>(deltaTPal);
+					if (deltaTPal > 236)
+					{
+						fillChar = 1;
+					}
+					gdrv::fill_bitmap(&gfr_display, 1, 10, 300 - dtHistoryCounter, 0, fillChar);
+					--dtHistoryCounter;
+				}
+				updateCounter++;
+			}
 
-				 if (has_focus)
-				 {
-					 if (mouse_down)
-					 {
-						 now = timeGetTimeAlt();
-						 if (now - then >= 2)
-						 {
-							 int x, y;
-							 SDL_GetMouseState(&x, &y);
-							 pb::ballset(last_mouse_x - x, y - last_mouse_y);
-							 SDL_WarpMouseInWindow(window, last_mouse_x, last_mouse_y);
-						 }
-					 }
-					 if (!single_step)
-					 {
-						 auto curTime = timeGetTimeAlt();
-						 now = curTime;
-						 if (no_time_loss)
-						 {
-							 then = curTime;
-							 no_time_loss = 0;
-						 }
+			if (UpdateToFrameCounter >= UpdateToFrameRatio)
+			{
+				UpdateToFrameCounter -= UpdateToFrameRatio;
+				ImGui_ImplSDL2_NewFrame();
+				ImGui::NewFrame();
 
-						 if (curTime == then)
-						 {
-							 SDL_Delay(8);
-						 }
-						 else if (pb::frame(curTime - then))
-						 {
-							 if (gfr_display.BmpBufPtr1)
-							 {
-								 auto deltaT = now - then + 10;
-								 auto fillChar = static_cast<uint8_t>(deltaT);
-								 if (deltaT > 236)
-								 {
-									 fillChar = 1;
-								 }
-								 gdrv::fill_bitmap(&gfr_display, 1, 10, 300 - updateCounter, 0, fillChar);
-							 }
-							 --updateCounter;
-							 then = now;
-						 }
-					 }
+				RenderUi();
 
-					 auto frameEnd = static_cast<double>(SDL_GetPerformanceCounter());
-					 auto elapsedMs = (frameEnd - frameStart) * sdlTimerResMs;
-					 if (elapsedMs >= TargetFrameTime)
-					 {
-						 // Keep track of remainder, limited to one frame time.
-						 frameStart = frameEnd - std::min(elapsedMs - TargetFrameTime, TargetFrameTime) / sdlTimerResMs;
+				SDL_RenderClear(renderer);
+				render::PresentVScreen();
 
-						 ImGui_ImplSDL2_NewFrame();
-						 ImGui::NewFrame();
+				ImGui::Render();
+				ImGuiSDL::Render(ImGui::GetDrawData());
 
-						 RenderUi();
+				SDL_RenderPresent(renderer);
+				frameCounter++;
+			}
 
-						 SDL_RenderClear(renderer);
-						 render::PresentVScreen();
+			auto sdlError = SDL_GetError();
+			if (sdlError[0])
+			{
+				SDL_ClearError();
+				printf("SDL Error: %s\n", sdlError);
+			}
 
-						 ImGui::Render();
-						 ImGuiSDL::Render(ImGui::GetDrawData());
+			auto updateEnd = Clock::now();
+			auto targetTimeDelta = TargetFrameTime - DurationMs(updateEnd - frameStart) - sleepRemainder;
 
-						 SDL_RenderPresent(renderer);
-						 frameCounter++;
-					 }
+			TimePoint frameEnd;
+			if (targetTimeDelta > DurationMs::zero())
+			{
+				std::this_thread::sleep_for(targetTimeDelta);
+				frameEnd = Clock::now();
+				sleepRemainder = DurationMs(frameEnd - updateEnd) - targetTimeDelta;
+			}
+			else
+			{
+				frameEnd = updateEnd;
+				sleepRemainder = DurationMs(0);
+			}
 
-					 auto sdlError = SDL_GetError();
-					 if (sdlError[0])
-					 {
-						 SDL_ClearError();
-						 printf("SDL Error: %s\n", sdlError);
-					 }
-				 }
-			 });
+			// Limit duration to 2 * target time
+			frameDuration = std::min(frameDuration + DurationMs(frameEnd - frameStart).count(),
+			                         2 * TargetFrameTime.count());
+			frameStart = frameEnd;
+			UpdateToFrameCounter++;
+		}
+	});
 
 	gdrv::destroy_bitmap(&gfr_display);
 	options::uninit();
@@ -472,7 +458,7 @@ void winmain::RenderUi()
 				}
 				ImGui::EndMenu();
 			}
-			if (ImGui::BeginMenu("Window"))
+			if (ImGui::BeginMenu("Graphics"))
 			{
 				if (ImGui::MenuItem("Uniform Scaling", nullptr, options::Options.UniformScaling))
 				{
@@ -482,8 +468,35 @@ void winmain::RenderUi()
 				{
 					options::toggle(Menu1::WindowLinearFilter);
 				}
-				ImGui::DragFloat("", &ImIO->FontGlobalScale, 0.005f, 0.8f, 5,
-								 "UI Scale %.2f", ImGuiSliderFlags_AlwaysClamp);
+				ImGui::DragFloat("UI Scale", &ImIO->FontGlobalScale, 0.005f, 0.8f, 5,
+				                 "%.2f", ImGuiSliderFlags_AlwaysClamp);
+				ImGui::Separator();
+
+				auto changed = false;
+				if (ImGui::MenuItem("Set Default UPS/FPS"))
+				{
+					changed = true;
+					options::Options.UpdatesPerSecond = options::DefUps;
+					options::Options.FramesPerSecond = options::DefFps;
+				}
+				if (ImGui::DragInt("UPS", &options::Options.UpdatesPerSecond, 1, options::MinUps, options::MaxUps,
+				                   "%d", ImGuiSliderFlags_AlwaysClamp))
+				{
+					changed = true;
+					options::Options.FramesPerSecond = std::min(options::Options.UpdatesPerSecond,
+					                                            options::Options.FramesPerSecond);
+				}
+				if (ImGui::DragInt("FPS", &options::Options.FramesPerSecond, 1, options::MinFps, options::MaxFps,
+				                   "%d", ImGuiSliderFlags_AlwaysClamp))
+				{
+					changed = true;
+					options::Options.UpdatesPerSecond = std::max(options::Options.UpdatesPerSecond,
+					                                             options::Options.FramesPerSecond);
+				}
+				if (changed)
+				{
+					UpdateFrameRate();
+				}
 
 				ImGui::EndMenu();
 			}
@@ -813,4 +826,12 @@ void winmain::Restart()
 	restart = true;
 	SDL_Event event{SDL_QUIT};
 	SDL_PushEvent(&event);
+}
+
+void winmain::UpdateFrameRate()
+{
+	// UPS >= FPS
+	auto fps = options::Options.FramesPerSecond, ups = options::Options.UpdatesPerSecond;
+	UpdateToFrameRatio = static_cast<double>(ups) / fps;
+	TargetFrameTime = DurationMs(1000.0 / ups);
 }

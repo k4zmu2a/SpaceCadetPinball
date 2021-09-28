@@ -100,6 +100,12 @@ namespace
 
 			Clean();
 		}
+
+		void Reset()
+		{
+			Order.clear();
+			Container.clear();
+		}
 	private:
 		void Clean()
 		{
@@ -149,6 +155,7 @@ namespace
 	struct Device
 	{
 		SDL_Renderer* Renderer;
+		bool CacheWasInvalidated = false;
 
 		struct ClipRect
 		{
@@ -522,6 +529,14 @@ namespace
 
 namespace ImGuiSDL
 {
+	static int ImGuiSDLEventWatch(void* userdata, SDL_Event* event) {
+		if (event->type == SDL_RENDER_TARGETS_RESET) {
+			// Device lost event, applies to DirectX and some mobile devices.
+			CurrentDevice->CacheWasInvalidated = true;
+		}
+		return 0;
+	}
+
 	void Initialize(SDL_Renderer* renderer, int windowWidth, int windowHeight)
 	{
 		ImGuiIO& io = ImGui::GetIO();
@@ -531,6 +546,12 @@ namespace ImGuiSDL
 		ImGui::GetStyle().WindowRounding = 0.0f;
 		ImGui::GetStyle().AntiAliasedFill = false;
 		ImGui::GetStyle().AntiAliasedLines = false;
+		ImGui::GetStyle().ChildRounding = 0.0f;
+		ImGui::GetStyle().PopupRounding = 0.0f;
+		ImGui::GetStyle().FrameRounding = 0.0f;
+		ImGui::GetStyle().ScrollbarRounding = 0.0f;
+		ImGui::GetStyle().GrabRounding = 0.0f;
+		ImGui::GetStyle().TabRounding = 0.0f;
 
 		// Loads the font texture.
 		unsigned char* pixels;
@@ -545,6 +566,7 @@ namespace ImGuiSDL
 		io.Fonts->TexID = (void*)texture;
 
 		CurrentDevice = new Device(renderer);
+		SDL_AddEventWatch(ImGuiSDLEventWatch, nullptr);
 	}
 
 	void Deinitialize()
@@ -555,10 +577,17 @@ namespace ImGuiSDL
 		delete texture;
 
 		delete CurrentDevice;
+		SDL_DelEventWatch(ImGuiSDLEventWatch, nullptr);
 	}
 
 	void Render(ImDrawData* drawData)
 	{
+		if (CurrentDevice->CacheWasInvalidated) {
+			CurrentDevice->CacheWasInvalidated = false;
+			CurrentDevice->GenericTriangleCache.Reset();
+			CurrentDevice->UniformColorTriangleCache.Reset();
+		}
+
 		SDL_BlendMode blendMode;
 		SDL_GetRenderDrawBlendMode(CurrentDevice->Renderer, &blendMode);
 		SDL_SetRenderDrawBlendMode(CurrentDevice->Renderer, SDL_BLENDMODE_BLEND);

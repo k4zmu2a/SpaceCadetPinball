@@ -3,6 +3,7 @@ project(SpaceCadetPinball)
 
 set(CMAKE_CXX_STANDARD 11)
 
+option(MUSIC_TSF "Use TinySoundFont for MIDI playback" ON)
 
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_LIST_DIR}/bin)
 
@@ -175,11 +176,15 @@ set(SOURCE_FILES
         SpaceCadetPinball/imstb_textedit.h
         SpaceCadetPinball/imstb_rectpack.h
         SpaceCadetPinball/imstb_truetype.h
-        SpaceCadetPinball/gm_sf2.cpp
-        SpaceCadetPinball/tsf.cpp
-        SpaceCadetPinball/tml.h
-        SpaceCadetPinball/tsf.h
         )
+
+if (MUSIC_TSF)
+        set(SOURCE_FILES ${SOURCE_FILES}
+                SpaceCadetPinball/gm_sf2.cpp
+                SpaceCadetPinball/tsf.cpp
+                SpaceCadetPinball/tml.h
+                SpaceCadetPinball/tsf.h)
+endif()
 
 add_executable(SpaceCadetPinball ${SOURCE_FILES})
 
@@ -192,6 +197,9 @@ set_source_files_properties(
         SpaceCadetPinball/imgui_tables.cpp
         SpaceCadetPinball/imgui_demo.cpp
         SpaceCadetPinball/imgui_impl_sdl.cpp
+        SpaceCadetPinball/gm_sf2.cpp
+        SpaceCadetPinball/tsf.cpp        
+
         PROPERTIES SKIP_PRECOMPILE_HEADERS 1
 )
 target_precompile_headers(SpaceCadetPinball
@@ -199,8 +207,13 @@ target_precompile_headers(SpaceCadetPinball
     SpaceCadetPinball/pch.h
 )
 
+if (MUSIC_TSF)
+        target_compile_definitions(SpaceCadetPinball PRIVATE -DMUSIC_TSF)
+else()
+        target_compile_definitions(SpaceCadetPinball PRIVATE -DMUSIC_SDL)
+endif()
+
 target_link_libraries(SpaceCadetPinball ${SDL2_LIBRARY} ${SDL2_MIXER_LIBRARY})
-target_compile_definitions(SpaceCadetPinball PRIVATE -DMUSIC_TSF)
 
 if(${CMAKE_SYSTEM_NAME} MATCHES "Emscripten")
         target_link_libraries(SpaceCadetPinball idbfs.js)

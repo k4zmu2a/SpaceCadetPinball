@@ -48,7 +48,7 @@ public:
 	static void toggle_demo();
 	static void replay_level(int demoMode);
 	static void ballset(int x, int y);
-	static int frame(int time);
+	static void frame(int dtMilliSec);
 	static void timed_frame(float timeNow, float timeDelta, bool drawBalls);
 	static void window_size(int* width, int* height);
 	static void pause_continue();

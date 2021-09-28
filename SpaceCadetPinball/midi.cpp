@@ -10,6 +10,8 @@
 #endif
 
 midi_song midi::currentMidi = {false};
+
+#ifdef MUSIC_TSF
 tml_message* midi::currentMessage = nullptr;
 static float midiTime = 0.0f;
 static float sampPerSec = 1000.0 / 22050.0;
@@ -62,6 +64,7 @@ void midi::sdl_audio_callback(void* data, Uint8 *stream, int len)
 		tsf_render_short(tsfSynth, (short*)stream, SampleBlock, 0);
 	}
 }
+#endif
 
 constexpr uint32_t FOURCC(uint8_t a, uint8_t b, uint8_t c, uint8_t d)
 {
@@ -93,7 +96,7 @@ int midi::play_pb_theme(int flag)
 #ifdef MUSIC_SDL
 	int result = 0;
 	music_stop();
-	if (currentMidi)
+	if (currentMidi.valid)
 		result = Mix_PlayMusic(currentMidi.handle, -1);
 
 	return result;
@@ -138,13 +141,22 @@ int midi::music_init()
 		return music_init_ft();
 	}
 
-#ifdef MUSIC_SDL
-	currentMidi = Mix_LoadMUS(pinball::get_rc_string(156, 0));
-	return currentMidi != nullptr;
+#if defined(MUSIC_SDL)
+	// File name is in lower case, while game data is in upper case.
+	std::string fileName = pinball::get_rc_string(156, 0);
+	std::transform(fileName.begin(), fileName.end(), fileName.begin(), [](unsigned char c) { return std::toupper(c); });
+	auto midiPath = pinball::make_path_name(fileName);
+	auto song = Mix_LoadMUS(midiPath.c_str());
+	if (song) {
+		currentMidi = {true, song};
+	} else {
+		currentMidi = {false};
+	}
+
+	return currentMidi.valid;
 #elif defined(MUSIC_TSF)
 	currentMessage = nullptr;
 	currentMidi = {false};
-	
 	
 	tsfSynth = tsf_load_memory(gm_sf2, (int)gm_sf2_len);
 
@@ -209,18 +221,27 @@ void midi::music_shutdown_ft()
 #ifdef MUSIC_SDL
 	if (active_track.valid)
 		Mix_HaltMusic();
-	/*while (TrackList->GetCount())
-	{
-		auto midi = TrackList->Get(0);
-		Mix_FreeMusic(midi.handle);
-		TrackList->Delete(midi);
-	}*/
+
+	for (auto& track : TrackList) {
+		if (track.valid) Mix_FreeMusic(track.handle);
+	}
+
+	TrackList.clear();
 
 	active_track = {false};
-	delete TrackList;
 #elif defined(MUSIC_TSF)
+	if (active_track.valid) {
+		tsf_note_off_all(tsfSynth);
+		active_track = {false, nullptr};
+		currentMessage = nullptr;
+		midiTime = 0.0f;
+	}
 
-	active_track = {false};
+	for (auto& track : TrackList) {
+		//if (track.valid) tml_free(track.handle);
+	}
+
+	TrackList.clear();
 #endif
 }
 
@@ -237,7 +258,7 @@ midi_song midi::load_track(std::string fileName)
 		fileName.insert(0, "SOUND");
 	}
 	fileName += ".MDS";
-	
+
 	auto filePath = pinball::make_path_name(fileName);
 	auto midi = MdsToMidi(filePath);
 	if (!midi)
@@ -283,14 +304,14 @@ int midi::play_ft(midi_song* midi)
 	}
 
 #ifdef MUSIC_SDL
-	if (Mix_PlayMusic(midi.handle, -1))
+	if (Mix_PlayMusic(midi->handle, -1))
 	{
-		active_track = nullptr;
+		active_track = {false, nullptr};
 		result = 0;
 	}
 	else
 	{
-		active_track = midi;
+		active_track = *midi;
 		result = 1;
 	}
 #elif defined(MUSIC_TSF)
@@ -474,7 +495,7 @@ std::vector<uint8_t>* midi::MdsToMidi(std::string file)
 		midiBytes.insert(midiBytes.end(), metaEndTrack, metaEndTrack + 4);
 
 		// Set final MTrk size
-		auto lengthBE = SwapByteOrderInt((uint32_t)midiBytes.size() - sizeof header - sizeof track);
+		auto lengthBE = SwapByteOrderInt(static_cast<uint32_t>(midiBytes.size()) - sizeof header - sizeof track);
 		auto lengthData = reinterpret_cast<const uint8_t*>(&lengthBE);
 		std::copy_n(lengthData, 4, midiBytes.begin() + lengthPos);
 	}
