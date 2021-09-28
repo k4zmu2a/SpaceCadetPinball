@@ -59,7 +59,11 @@ int midi::music_init()
 		return music_init_ft();
 	}
 
-	currentMidi = Mix_LoadMUS(pinball::get_rc_string(156, 0));
+	// File name is in lower case, while game data is in upper case.
+	std::string fileName = pinball::get_rc_string(156, 0);
+	std::transform(fileName.begin(), fileName.end(), fileName.begin(), [](unsigned char c) { return std::toupper(c); });
+	auto midiPath = pinball::make_path_name(fileName);
+	currentMidi = Mix_LoadMUS(midiPath.c_str());
 	return currentMidi != nullptr;
 }
 
@@ -121,7 +125,7 @@ Mix_Music* midi::load_track(std::string fileName)
 		fileName.insert(0, "SOUND");
 	}
 	fileName += ".MDS";
-	
+
 	auto filePath = pinball::make_path_name(fileName);
 	auto midi = MdsToMidi(filePath);
 	if (!midi)
@@ -138,7 +142,7 @@ Mix_Music* midi::load_track(std::string fileName)
 	delete midi;
 	if (!audio)
 		return nullptr;
-	
+
 	TrackList->Add(audio);
 	return audio;
 }
@@ -329,7 +333,7 @@ std::vector<uint8_t>* midi::MdsToMidi(std::string file)
 		midiBytes.insert(midiBytes.end(), metaEndTrack, metaEndTrack + 4);
 
 		// Set final MTrk size
-		auto lengthBE = SwapByteOrderInt((uint32_t)midiBytes.size() - sizeof header - sizeof track);
+		auto lengthBE = SwapByteOrderInt(static_cast<uint32_t>(midiBytes.size()) - sizeof header - sizeof track);
 		auto lengthData = reinterpret_cast<const uint8_t*>(&lengthBE);
 		std::copy_n(lengthData, 4, midiBytes.begin() + lengthPos);
 	}

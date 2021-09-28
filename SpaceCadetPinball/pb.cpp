@@ -214,24 +214,27 @@ void pb::ballset(int x, int y)
 	ball->Speed = maths::normalize_2d(&ball->Acceleration);
 }
 
-int pb::frame(int time)
+void pb::frame(int dtMilliSec)
 {
-	if (time > 100)
-		time = 100;
-	float timeMul = time * 0.001f;
-	if (!mode_countdown(time))
+	
+	if (dtMilliSec > 100)
+		dtMilliSec = 100;
+	if (dtMilliSec <= 0)
+		return;
+	float dtMicroSec = dtMilliSec * 0.001f;
+	if (!mode_countdown(dtMilliSec))
 	{
-		time_next = time_now + timeMul;
-		timed_frame(time_now, timeMul, true);
+		time_next = time_now + dtMicroSec;
+		timed_frame(time_now, dtMicroSec, true);
 		time_now = time_next;
-		time_ticks += time;
+		time_ticks += dtMilliSec;
 		if (nudge::nudged_left || nudge::nudged_right || nudge::nudged_up)
 		{
-			nudge::nudge_count = timeMul * 4.0f + nudge::nudge_count;
+			nudge::nudge_count = dtMicroSec * 4.0f + nudge::nudge_count;
 		}
 		else
 		{
-			auto nudgeDec = nudge::nudge_count - timeMul;
+			auto nudgeDec = nudge::nudge_count - dtMicroSec;
 			if (nudgeDec <= 0.0f)
 				nudgeDec = 0.0;
 			nudge::nudge_count = nudgeDec;
@@ -249,7 +252,6 @@ int pb::frame(int time)
 				MainTable->tilt(time_now);
 		}
 	}
-	return 1;
 }
 
 void pb::timed_frame(float timeNow, float timeDelta, bool drawBalls)

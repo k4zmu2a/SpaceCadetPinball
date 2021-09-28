@@ -27,6 +27,7 @@
 #include <algorithm>
 #include <cstring>
 #include <string>
+#include <thread>
 
 #define SDL_MAIN_HANDLED
 #include "SDL.h"
