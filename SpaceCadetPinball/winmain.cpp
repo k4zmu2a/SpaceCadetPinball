@@ -789,7 +789,6 @@ void winmain::a_dialog()
 			SDL_OpenURL("https://github.com/k4zmu2a/SpaceCadetPinball");
 #endif
 		}
-		ImGui::TextUnformatted("Emscripten port by alula");
 		ImGui::Separator();
 
 		if (ImGui::Button("Ok"))
