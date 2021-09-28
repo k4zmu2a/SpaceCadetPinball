@@ -12,8 +12,13 @@ int Sound::Init(int voices)
 		channelCount = 8;
 	num_channels = channelCount;
 
-	auto init = Mix_Init(MIX_INIT_MID);
-	return Mix_OpenAudio(MIX_DEFAULT_FREQUENCY, MIX_DEFAULT_FORMAT, 2, 1024);
+	int flags = 0;
+#ifdef MUSIC_SDL
+	flags |= MIX_INIT_MID;
+#endif
+
+	auto init = Mix_Init(flags);
+	return Mix_OpenAudio(MIX_DEFAULT_FREQUENCY, AUDIO_S16LSB, 2, 1024);
 }
 
 void Sound::Enable(int channelFrom, int channelTo, int enableFlag)

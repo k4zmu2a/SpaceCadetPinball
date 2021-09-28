@@ -10,11 +10,18 @@
 #include "render.h"
 #include "Sound.h"
 
+#include <functional>
+
+#ifdef __EMSCRIPTEN__
+#include <emscripten.h>
+#include <unistd.h>
+#endif
+
 const double TargetFps = 60, TargetFrameTime = 1000 / TargetFps;
 
-SDL_Window* winmain::MainWindow = nullptr;
-SDL_Renderer* winmain::Renderer = nullptr;
-ImGuiIO* winmain::ImIO = nullptr;
+SDL_Window *winmain::MainWindow = nullptr;
+SDL_Renderer *winmain::Renderer = nullptr;
+ImGuiIO *winmain::ImIO = nullptr;
 
 int winmain::return_value = 0;
 int winmain::bQuit = 0;
@@ -40,9 +47,8 @@ bool winmain::ShowSpriteViewer = false;
 bool winmain::LaunchBallEnabled = true;
 bool winmain::HighScoresEnabled = true;
 bool winmain::DemoActive = false;
-char* winmain::BasePath;
+char *winmain::BasePath;
 std::string winmain::FpsDetails;
-
 
 uint32_t timeGetTimeAlt()
 {
@@ -50,6 +56,29 @@ uint32_t timeGetTimeAlt()
 	auto duration = now.time_since_epoch();
 	auto millis = std::chrono::duration_cast<std::chrono::milliseconds>(duration).count();
 	return static_cast<uint32_t>(millis);
+}
+
+static bool loop_stop = false;
+
+void run_loop(std::function<void()> fn)
+{
+#ifdef __EMSCRIPTEN__
+	emscripten_set_main_loop_arg([](void *arg)
+								 {
+									 auto *fn_ptr = (std::function<void()> *)arg;
+									 if (!loop_stop && fn_ptr != nullptr)
+									 {
+										 auto &fn = *fn_ptr;
+										 fn();
+									 }
+								 },
+								 (void *)&fn, 60, 1);
+#else
+	while (!loop_stop)
+	{
+		fn();
+	}
+#endif
 }
 
 int winmain::WinMain(LPCSTR lpCmdLine)
@@ -61,12 +90,17 @@ int winmain::WinMain(LPCSTR lpCmdLine)
 
 	// SDL init
 	SDL_SetMainReady();
-	if (SDL_Init(SDL_INIT_EVERYTHING) < 0)
+	if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO | SDL_INIT_TIMER | SDL_INIT_EVENTS) < 0)
 	{
 		SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, "Could not initialize SDL2", SDL_GetError(), nullptr);
 		return 1;
 	}
+#ifndef __EMSCRIPTEN__
 	BasePath = SDL_GetBasePath();
+#else
+	BasePath = strdup("/game_resources/");
+	chdir(BasePath);
+#endif
 
 	pinball::quickFlag = strstr(lpCmdLine, "-quick") != nullptr;
 	DatFileName = options::get_string("Pinball Data", pinball::get_rc_string(168, 0));
@@ -82,13 +116,11 @@ int winmain::WinMain(LPCSTR lpCmdLine)
 	}
 
 	// SDL window
-	SDL_Window* window = SDL_CreateWindow
-	(
+	SDL_Window *window = SDL_CreateWindow(
 		pinball::get_rc_string(38, 0),
 		SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED,
 		800, 556,
-		SDL_WINDOW_HIDDEN | SDL_WINDOW_RESIZABLE
-	);
+		SDL_WINDOW_HIDDEN | SDL_WINDOW_RESIZABLE);
 	MainWindow = window;
 	if (!window)
 	{
@@ -96,12 +128,10 @@ int winmain::WinMain(LPCSTR lpCmdLine)
 		return 1;
 	}
 
-	SDL_Renderer* renderer = SDL_CreateRenderer
-	(
+	SDL_Renderer *renderer = SDL_CreateRenderer(
 		window,
 		-1,
-		SDL_RENDERER_ACCELERATED
-	);
+		SDL_RENDERER_ACCELERATED);
 	Renderer = renderer;
 	if (!renderer)
 	{
@@ -116,7 +146,7 @@ int winmain::WinMain(LPCSTR lpCmdLine)
 	ImGui::CreateContext();
 	ImGuiSDL::Initialize(renderer, 0, 0);
 	ImGui::StyleColorsDark();
-	ImGuiIO& io = ImGui::GetIO();
+	ImGuiIO &io = ImGui::GetIO();
 	ImIO = &io;
 	// ImGui_ImplSDL2_Init is private, we are not actually using ImGui OpenGl backend
 	ImGui_ImplSDL2_InitForOpenGL(window, nullptr);
@@ -142,7 +172,7 @@ int winmain::WinMain(LPCSTR lpCmdLine)
 		if (pb::init())
 		{
 			SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, "Could not load game data",
-			                         "The .dat file is missing", window);
+									 "The .dat file is missing", window);
 			return 1;
 		}
 
@@ -154,10 +184,14 @@ int winmain::WinMain(LPCSTR lpCmdLine)
 	pb::reset_table();
 	pb::firsttime_setup();
 
+#ifndef __EMSCRIPTEN__
 	if (strstr(lpCmdLine, "-fullscreen"))
 	{
 		options::Options.FullScreen = 1;
 	}
+#else
+	options::Options.FullScreen = 0;
+#endif
 
 	SDL_ShowWindow(window);
 	fullscrn::set_screen_mode(options::Options.FullScreen);
@@ -172,135 +206,139 @@ int winmain::WinMain(LPCSTR lpCmdLine)
 
 	double sdlTimerResMs = 1000.0 / static_cast<double>(SDL_GetPerformanceFrequency());
 	auto frameStart = static_cast<double>(SDL_GetPerformanceCounter());
-	while (true)
-	{
-		if (!updateCounter)
-		{
-			updateCounter = 300;
-			if (DispFrameRate)
-			{
-				auto curTime = timeGetTimeAlt();
-				if (prevTime)
-				{
-					char buf[60];
-					auto elapsedSec = static_cast<float>(curTime - prevTime) * 0.001f;
-					snprintf(buf, sizeof buf, "Updates/sec = %02.02f Frames/sec = %02.02f ",
-					         300.0f / elapsedSec, frameCounter / elapsedSec);
-					SDL_SetWindowTitle(window, buf);
-					FpsDetails = buf;
-					frameCounter = 0;
 
-					if (DispGRhistory)
-					{
-						if (!gfr_display.BmpBufPtr1)
-						{
-							auto plt = static_cast<ColorRgba*>(malloc(1024u));
-							auto pltPtr = &plt[10];
-							for (int i1 = 0, i2 = 0; i1 < 256 - 10; ++i1, i2 += 8)
-							{
-								unsigned char blue = i2, redGreen = i2;
-								if (i2 > 255)
-								{
-									blue = 255;
-									redGreen = i1;
-								}
+	run_loop([&]
+			 {
+				 if (!updateCounter)
+				 {
+					 updateCounter = 300;
+					 if (DispFrameRate)
+					 {
+						 auto curTime = timeGetTimeAlt();
+						 if (prevTime)
+						 {
+							 char buf[60];
+							 auto elapsedSec = static_cast<float>(curTime - prevTime) * 0.001f;
+							 snprintf(buf, sizeof buf, "Updates/sec = %02.02f Frames/sec = %02.02f ",
+									  300.0f / elapsedSec, frameCounter / elapsedSec);
+							 SDL_SetWindowTitle(window, buf);
+							 FpsDetails = buf;
+							 frameCounter = 0;
 
-								*pltPtr++ = ColorRgba{Rgba{redGreen, redGreen, blue, 0}};
-							}
-							gdrv::display_palette(plt);
-							free(plt);
-							gdrv::create_bitmap(&gfr_display, 400, 15, 400, false);
-						}
+							 if (DispGRhistory)
+							 {
+								 if (!gfr_display.BmpBufPtr1)
+								 {
+									 auto plt = static_cast<ColorRgba *>(malloc(1024u));
+									 auto pltPtr = &plt[10];
+									 for (int i1 = 0, i2 = 0; i1 < 256 - 10; ++i1, i2 += 8)
+									 {
+										 unsigned char blue = i2, redGreen = i2;
+										 if (i2 > 255)
+										 {
+											 blue = 255;
+											 redGreen = i1;
+										 }
 
-						gdrv::copy_bitmap(&render::vscreen, 300, 10, 0, 30, &gfr_display, 0, 0);
-						gdrv::fill_bitmap(&gfr_display, 300, 10, 0, 0, 0);
-					}
-				}
-				prevTime = curTime;
-			}
-			else
-			{
-				prevTime = 0;
-			}
-		}
+										 *pltPtr++ = ColorRgba{Rgba{redGreen, redGreen, blue, 0}};
+									 }
+									 gdrv::display_palette(plt);
+									 free(plt);
+									 gdrv::create_bitmap(&gfr_display, 400, 15, 400, false);
+								 }
 
-		if (!ProcessWindowMessages() || bQuit)
-			break;
+								 gdrv::copy_bitmap(&render::vscreen, 300, 10, 0, 30, &gfr_display, 0, 0);
+								 gdrv::fill_bitmap(&gfr_display, 300, 10, 0, 0, 0);
+							 }
+						 }
+						 prevTime = curTime;
+					 }
+					 else
+					 {
+						 prevTime = 0;
+					 }
+				 }
 
-		if (has_focus)
-		{
-			if (mouse_down)
-			{
-				now = timeGetTimeAlt();
-				if (now - then >= 2)
-				{
-					int x, y;
-					SDL_GetMouseState(&x, &y);
-					pb::ballset(last_mouse_x - x, y - last_mouse_y);
-					SDL_WarpMouseInWindow(window, last_mouse_x, last_mouse_y);
-				}
-			}
-			if (!single_step)
-			{
-				auto curTime = timeGetTimeAlt();
-				now = curTime;
-				if (no_time_loss)
-				{
-					then = curTime;
-					no_time_loss = 0;
-				}
+				 if (!ProcessWindowMessages() || bQuit)
+				 {
+					 loop_stop = true;
+					 return;
+				 }
 
-				if (curTime == then)
-				{
-					SDL_Delay(8);
-				}
-				else if (pb::frame(curTime - then))
-				{
-					if (gfr_display.BmpBufPtr1)
-					{
-						auto deltaT = now - then + 10;
-						auto fillChar = static_cast<uint8_t>(deltaT);
-						if (deltaT > 236)
-						{
-							fillChar = 1;
-						}
-						gdrv::fill_bitmap(&gfr_display, 1, 10, 300 - updateCounter, 0, fillChar);
-					}
-					--updateCounter;
-					then = now;
-				}
-			}
+				 if (has_focus)
+				 {
+					 if (mouse_down)
+					 {
+						 now = timeGetTimeAlt();
+						 if (now - then >= 2)
+						 {
+							 int x, y;
+							 SDL_GetMouseState(&x, &y);
+							 pb::ballset(last_mouse_x - x, y - last_mouse_y);
+							 SDL_WarpMouseInWindow(window, last_mouse_x, last_mouse_y);
+						 }
+					 }
+					 if (!single_step)
+					 {
+						 auto curTime = timeGetTimeAlt();
+						 now = curTime;
+						 if (no_time_loss)
+						 {
+							 then = curTime;
+							 no_time_loss = 0;
+						 }
 
-			auto frameEnd = static_cast<double>(SDL_GetPerformanceCounter());
-			auto elapsedMs = (frameEnd - frameStart) * sdlTimerResMs;
-			if (elapsedMs >= TargetFrameTime)
-			{
-				// Keep track of remainder, limited to one frame time.
-				frameStart = frameEnd - std::min(elapsedMs - TargetFrameTime, TargetFrameTime) / sdlTimerResMs;
+						 if (curTime == then)
+						 {
+							 SDL_Delay(8);
+						 }
+						 else if (pb::frame(curTime - then))
+						 {
+							 if (gfr_display.BmpBufPtr1)
+							 {
+								 auto deltaT = now - then + 10;
+								 auto fillChar = static_cast<uint8_t>(deltaT);
+								 if (deltaT > 236)
+								 {
+									 fillChar = 1;
+								 }
+								 gdrv::fill_bitmap(&gfr_display, 1, 10, 300 - updateCounter, 0, fillChar);
+							 }
+							 --updateCounter;
+							 then = now;
+						 }
+					 }
 
-				ImGui_ImplSDL2_NewFrame();
-				ImGui::NewFrame();
+					 auto frameEnd = static_cast<double>(SDL_GetPerformanceCounter());
+					 auto elapsedMs = (frameEnd - frameStart) * sdlTimerResMs;
+					 if (elapsedMs >= TargetFrameTime)
+					 {
+						 // Keep track of remainder, limited to one frame time.
+						 frameStart = frameEnd - std::min(elapsedMs - TargetFrameTime, TargetFrameTime) / sdlTimerResMs;
 
-				RenderUi();
+						 ImGui_ImplSDL2_NewFrame();
+						 ImGui::NewFrame();
 
-				SDL_RenderClear(renderer);
-				render::PresentVScreen();
+						 RenderUi();
 
-				ImGui::Render();
-				ImGuiSDL::Render(ImGui::GetDrawData());
+						 SDL_RenderClear(renderer);
+						 render::PresentVScreen();
 
-				SDL_RenderPresent(renderer);
-				frameCounter++;
-			}
+						 ImGui::Render();
+						 ImGuiSDL::Render(ImGui::GetDrawData());
 
-			auto sdlError = SDL_GetError();
-			if (sdlError[0])
-			{
-				SDL_ClearError();
-				printf("SDL Error: %s\n", sdlError);
-			}
-		}
-	}
+						 SDL_RenderPresent(renderer);
+						 frameCounter++;
+					 }
+
+					 auto sdlError = SDL_GetError();
+					 if (sdlError[0])
+					 {
+						 SDL_ClearError();
+						 printf("SDL Error: %s\n", sdlError);
+					 }
+				 }
+			 });
 
 	gdrv::destroy_bitmap(&gfr_display);
 	options::uninit();
@@ -355,20 +393,24 @@ void winmain::RenderUi()
 				end_pause();
 				pb::toggle_demo();
 			}
+#ifndef __EMSCRIPTEN__
 			if (ImGui::MenuItem("Exit"))
 			{
 				SDL_Event event{SDL_QUIT};
 				SDL_PushEvent(&event);
 			}
+#endif
 			ImGui::EndMenu();
 		}
 
 		if (ImGui::BeginMenu("Options"))
 		{
+#ifndef __EMSCRIPTEN__
 			if (ImGui::MenuItem("Full Screen", "F4", options::Options.FullScreen))
 			{
 				options::toggle(Menu1::Full_Screen);
 			}
+#endif
 			if (ImGui::BeginMenu("Select Players"))
 			{
 				if (ImGui::MenuItem("1 Player", nullptr, options::Options.Players == 1))
@@ -421,7 +463,7 @@ void winmain::RenderUi()
 				}
 				for (auto i = 0; i <= fullscrn::GetMaxResolution(); i++)
 				{
-					auto& res = fullscrn::resolution_array[i];
+					auto &res = fullscrn::resolution_array[i];
 					snprintf(buffer, sizeof buffer - 1, "%d x %d", res.ScreenWidth, res.ScreenHeight);
 					if (ImGui::MenuItem(buffer, nullptr, options::Options.Resolution == i))
 					{
@@ -441,7 +483,7 @@ void winmain::RenderUi()
 					options::toggle(Menu1::WindowLinearFilter);
 				}
 				ImGui::DragFloat("", &ImIO->FontGlobalScale, 0.005f, 0.8f, 5,
-				                 "UI Scale %.2f", ImGuiSliderFlags_AlwaysClamp);
+								 "UI Scale %.2f", ImGuiSliderFlags_AlwaysClamp);
 
 				ImGui::EndMenu();
 			}
@@ -455,7 +497,7 @@ void winmain::RenderUi()
 			{
 				ShowImGuiDemo ^= true;
 			}
-#endif
+
 			if (ImGui::MenuItem("Sprite Viewer", nullptr, ShowSpriteViewer))
 			{
 				if (!ShowSpriteViewer && !single_step)
@@ -463,6 +505,7 @@ void winmain::RenderUi()
 				ShowSpriteViewer ^= true;
 			}
 			ImGui::Separator();
+#endif
 
 			if (ImGui::MenuItem("About Pinball"))
 			{
@@ -484,7 +527,7 @@ void winmain::RenderUi()
 		render::SpriteViewer(&ShowSpriteViewer);
 }
 
-int winmain::event_handler(const SDL_Event* event)
+int winmain::event_handler(const SDL_Event *event)
 {
 	ImGui_ImplSDL2_ProcessEvent(event);
 
@@ -503,7 +546,7 @@ int winmain::event_handler(const SDL_Event* event)
 		case SDL_MOUSEBUTTONUP:
 		case SDL_MOUSEWHEEL:
 			return 1;
-		default: ;
+		default:;
 		}
 	}
 	if (ImIO->WantCaptureKeyboard)
@@ -513,7 +556,7 @@ int winmain::event_handler(const SDL_Event* event)
 		case SDL_KEYDOWN:
 		case SDL_KEYUP:
 			return 1;
-		default: ;
+		default:;
 		}
 	}
 
@@ -663,10 +706,10 @@ int winmain::event_handler(const SDL_Event* event)
 		case SDL_WINDOWEVENT_RESIZED:
 			fullscrn::window_size_changed();
 			break;
-		default: ;
+		default:;
 		}
 		break;
-	default: ;
+	default:;
 	}
 
 	return 1;
@@ -675,6 +718,7 @@ int winmain::event_handler(const SDL_Event* event)
 int winmain::ProcessWindowMessages()
 {
 	SDL_Event event;
+#ifndef __EMSCRIPTEN__
 	if (has_focus && !single_step)
 	{
 		while (SDL_PollEvent(&event))
@@ -688,14 +732,23 @@ int winmain::ProcessWindowMessages()
 
 	SDL_WaitEvent(&event);
 	return event_handler(&event);
+#else
+	while (SDL_PollEvent(&event))
+	{
+		if (!event_handler(&event))
+			return 0;
+	}
+
+	return 1;
+#endif
 }
 
 void winmain::memalloc_failure()
 {
 	midi::music_stop();
 	Sound::Close();
-	char* caption = pinball::get_rc_string(170, 0);
-	char* text = pinball::get_rc_string(179, 0);
+	char *caption = pinball::get_rc_string(170, 0);
+	char *text = pinball::get_rc_string(179, 0);
 	SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, caption, text, MainWindow);
 	std::exit(1);
 }
@@ -723,6 +776,7 @@ void winmain::a_dialog()
 			SDL_OpenURL("https://github.com/k4zmu2a/SpaceCadetPinball");
 #endif
 		}
+		ImGui::TextUnformatted("Emscripten port by alula");
 		ImGui::Separator();
 
 		if (ImGui::Button("Ok"))

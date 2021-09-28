@@ -5,7 +5,63 @@
 #include "pb.h"
 #include "pinball.h"
 
-Mix_Music* midi::currentMidi;
+#ifndef TSF_RENDER_EFFECTSAMPLEBLOCK
+#define TSF_RENDER_EFFECTSAMPLEBLOCK 64
+#endif
+
+midi_song midi::currentMidi = {false};
+tml_message* midi::currentMessage = nullptr;
+static float midiTime = 0.0f;
+static float sampPerSec = 1000.0 / 22050.0;
+static tsf* tsfSynth = nullptr;
+
+void midi::sdl_audio_callback(void* data, Uint8 *stream, int len)
+{
+	memset(stream, 0, len);
+		
+	if (tsfSynth == nullptr) {
+		return;
+	}
+
+	int SampleBlock, SampleCount = (len / (2 * sizeof(short)));
+	for (SampleBlock = TSF_RENDER_EFFECTSAMPLEBLOCK; SampleCount; SampleCount -= SampleBlock, stream += (SampleBlock * (2 * sizeof(short))))
+	{
+		if (SampleBlock > SampleCount) SampleBlock = SampleCount;
+
+		for (midiTime += SampleBlock * sampPerSec; midi::currentMessage && midiTime >= midi::currentMessage->time; )
+		{
+			switch (midi::currentMessage->type)
+			{
+				case TML_PROGRAM_CHANGE:
+					tsf_channel_set_presetnumber(tsfSynth, midi::currentMessage->channel, midi::currentMessage->program, (midi::currentMessage->channel == 9));
+					tsf_channel_midi_control(tsfSynth, midi::currentMessage->channel, TML_ALL_NOTES_OFF, 0);
+					break;
+				case TML_NOTE_ON:
+					tsf_channel_note_on(tsfSynth, midi::currentMessage->channel, midi::currentMessage->key, midi::currentMessage->velocity / 127.0f);
+					break;
+				case TML_NOTE_OFF:
+					tsf_channel_note_off(tsfSynth, midi::currentMessage->channel, midi::currentMessage->key);
+					break;
+				case TML_PITCH_BEND:
+					tsf_channel_set_pitchwheel(tsfSynth, midi::currentMessage->channel, midi::currentMessage->pitch_bend);
+					break;
+				case TML_CONTROL_CHANGE:
+					tsf_channel_midi_control(tsfSynth, midi::currentMessage->channel, midi::currentMessage->control, midi::currentMessage->control_value);
+					break;
+			}
+
+			if (midi::currentMessage->next == nullptr) {
+				midiTime = 0.0f;
+				midi::currentMessage = midi::currentMidi.start;
+			} else {
+				midi::currentMessage = midi::currentMessage->next;
+			}
+		}
+
+		// Render the block of audio samples in float format
+		tsf_render_short(tsfSynth, (short*)stream, SampleBlock, 0);
+	}
+}
 
 constexpr uint32_t FOURCC(uint8_t a, uint8_t b, uint8_t c, uint8_t d)
 {
@@ -31,15 +87,29 @@ int midi::play_pb_theme(int flag)
 {
 	if (pb::FullTiltMode)
 	{
-		return play_ft(track1);
+		return play_ft(&track1);
 	}
 
+#ifdef MUSIC_SDL
 	int result = 0;
 	music_stop();
 	if (currentMidi)
-		result = Mix_PlayMusic(currentMidi, -1);
+		result = Mix_PlayMusic(currentMidi.handle, -1);
 
 	return result;
+#elif defined(MUSIC_TSF)
+	int result = 0;
+	if (currentMidi.valid) {
+		currentMessage = currentMidi.start;
+		midiTime = 0.0f;
+		// Mix_HookMusic(midi::sdl_audio_callback, nullptr);
+		result = 1;
+	}
+
+	return result;
+#else
+	return 0;
+#endif
 }
 
 int midi::music_stop()
@@ -49,8 +119,17 @@ int midi::music_stop()
 		return stop_ft();
 	}
 
+#ifdef MUSIC_SDL
 	return Mix_HaltMusic();
+#else
+	return 0;
+#endif
 }
+
+#ifdef MUSIC_TSF
+extern unsigned char gm_sf2[];
+extern unsigned int gm_sf2_len;
+#endif
 
 int midi::music_init()
 {
@@ -59,8 +138,36 @@ int midi::music_init()
 		return music_init_ft();
 	}
 
+#ifdef MUSIC_SDL
 	currentMidi = Mix_LoadMUS(pinball::get_rc_string(156, 0));
 	return currentMidi != nullptr;
+#elif defined(MUSIC_TSF)
+	currentMessage = nullptr;
+	currentMidi = {false};
+	
+	
+	tsfSynth = tsf_load_memory(gm_sf2, (int)gm_sf2_len);
+
+	int sampleRate;
+	if (Mix_QuerySpec(&sampleRate, nullptr, nullptr)) {
+		tsf_set_output(tsfSynth, TSF_STEREO_INTERLEAVED, sampleRate, 0.0f);
+		sampPerSec = 1000.0f / float(sampleRate);
+	}
+
+	auto fileName = std::string(pinball::get_rc_string(156, 0));
+	std::transform(fileName.begin(), fileName.end(), fileName.begin(), [](unsigned char c) { return std::toupper(c); });
+	auto filePath = pinball::make_path_name(fileName);
+
+	auto midi = tml_load_filename(filePath.c_str());
+	if (midi != nullptr) {
+		currentMidi = {true, midi};
+	}
+
+	Mix_HookMusic(midi::sdl_audio_callback, nullptr);
+	return currentMidi.valid;
+#else
+	return 1;
+#endif
 }
 
 void midi::music_shutdown()
@@ -71,44 +178,53 @@ void midi::music_shutdown()
 		return;
 	}
 
-	Mix_FreeMusic(currentMidi);
+#ifdef MUSIC_SDL
+	Mix_FreeMusic(currentMidi.handle);
+#endif
 }
 
 
-objlist_class<Mix_Music>* midi::TrackList;
-Mix_Music *midi::track1, *midi::track2, *midi::track3, *midi::active_track, *midi::active_track2;
+std::vector<midi_song> midi::TrackList;
+midi_song midi::track1, midi::track2, midi::track3, midi::active_track, midi::active_track2;
 int midi::some_flag1;
 
 int midi::music_init_ft()
 {
-	active_track = nullptr;
-	TrackList = new objlist_class<Mix_Music>(0, 1);
+	active_track = {false};
+	//TrackList = new objlist_class<midi_song>(0, 1);
+	TrackList.clear();
 
 	track1 = load_track("taba1");
 	track2 = load_track("taba2");
 	track3 = load_track("taba3");
-	if (!track2)
+	if (!track2.valid)
 		track2 = track1;
-	if (!track3)
+	if (!track3.valid)
 		track3 = track1;
 	return 1;
 }
 
 void midi::music_shutdown_ft()
 {
-	if (active_track)
+#ifdef MUSIC_SDL
+	if (active_track.valid)
 		Mix_HaltMusic();
-	while (TrackList->GetCount())
+	/*while (TrackList->GetCount())
 	{
 		auto midi = TrackList->Get(0);
-		Mix_FreeMusic(midi);
+		Mix_FreeMusic(midi.handle);
 		TrackList->Delete(midi);
-	}
-	active_track = nullptr;
+	}*/
+
+	active_track = {false};
 	delete TrackList;
+#elif defined(MUSIC_TSF)
+
+	active_track = {false};
+#endif
 }
 
-Mix_Music* midi::load_track(std::string fileName)
+midi_song midi::load_track(std::string fileName)
 {
 	auto origFile = fileName;
 
@@ -125,7 +241,7 @@ Mix_Music* midi::load_track(std::string fileName)
 	auto filePath = pinball::make_path_name(fileName);
 	auto midi = MdsToMidi(filePath);
 	if (!midi)
-		return nullptr;
+		return {false};
 
 	// Dump converted MIDI file
 	/*origFile += ".midi";
@@ -133,29 +249,41 @@ Mix_Music* midi::load_track(std::string fileName)
 	fwrite(midi->data(), 1, midi->size(), fileHandle);
 	fclose(fileHandle);*/
 
+#ifdef MUSIC_SDL
 	auto rw = SDL_RWFromMem(midi->data(), static_cast<int>(midi->size()));
 	auto audio = Mix_LoadMUS_RW(rw, 1); // This call seems to leak memory no matter what.
+	
+#elif defined(MUSIC_TSF)
+	auto audio = tml_load_memory(midi->data(), static_cast<int>(midi->size()));
+#else
+	void* audio = nullptr;
+#endif
 	delete midi;
 	if (!audio)
-		return nullptr;
+		return {false};
 	
-	TrackList->Add(audio);
-	return audio;
+	midi_song song = {true, audio};
+	TrackList.push_back(song);
+
+	return song;
 }
 
-int midi::play_ft(Mix_Music* midi)
+int midi::play_ft(midi_song* midi)
 {
-	int result;
+	int result = 0;
 
 	stop_ft();
-	if (!midi)
+	if (!midi || !midi->valid)
 		return 0;
+
 	if (some_flag1)
 	{
-		active_track2 = midi;
+		active_track2 = *midi;
 		return 0;
 	}
-	if (Mix_PlayMusic(midi, -1))
+
+#ifdef MUSIC_SDL
+	if (Mix_PlayMusic(midi.handle, -1))
 	{
 		active_track = nullptr;
 		result = 0;
@@ -165,15 +293,32 @@ int midi::play_ft(Mix_Music* midi)
 		active_track = midi;
 		result = 1;
 	}
+#elif defined(MUSIC_TSF)
+	active_track = *midi;
+	result = 1;
+#endif
+
 	return result;
 }
 
 int midi::stop_ft()
 {
 	int returnCode = 0;
-	if (active_track)
+	
+#ifdef MUSIC_SDL
+	if (active_track.valid)
 		returnCode = Mix_HaltMusic();
-	active_track = nullptr;
+
+	active_track.valid = false;
+	active_track.handle = nullptr;
+#elif defined(MUSIC_TSF)
+	// Mix_HookMusic(nullptr, nullptr);
+	tsf_note_off_all(tsfSynth);
+	active_track = {false, nullptr};
+	currentMessage = nullptr;
+	midiTime = 0.0f;
+#endif
+
 	return returnCode;
 }
 

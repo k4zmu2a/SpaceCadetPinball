@@ -1,6 +1,11 @@
 #pragma once
 #include "objlist_class.h"
 
+#ifdef MUSIC_TSF
+#include "tml.h"
+#include "tsf.h"
+#endif
+
 constexpr uint32_t SwapByteOrderInt(uint32_t val)
 {
 	return (val >> 24) |
@@ -84,6 +89,18 @@ static_assert(sizeof(midi_track) == 8, "Wrong size of midi_track");
 
 #pragma pack(pop)
 
+struct midi_song 
+{
+	bool valid;
+#ifdef MUSIC_SDL
+	Mix_Music* handle;
+#elif defined(MUSIC_TSF)
+	tml_message* start;
+#else
+	void* dummy;
+#endif
+};
+
 class midi
 {
 public:
@@ -92,15 +109,19 @@ public:
 	static int music_init();
 	static void music_shutdown();
 private:
-	static Mix_Music* currentMidi;
+	static midi_song currentMidi;
+#ifdef MUSIC_TSF
+	static tml_message* currentMessage;
+	static void sdl_audio_callback(void* data, Uint8 *stream, int len);
+#endif
 
-	static objlist_class<Mix_Music>* TrackList;
-	static Mix_Music *track1, *track2, *track3, *active_track, *active_track2;
+	static std::vector<midi_song> TrackList;
+	static midi_song track1, track2, track3, active_track, active_track2;
 	static int some_flag1;
 	static int music_init_ft();
 	static void music_shutdown_ft();
-	static Mix_Music* load_track(std::string fileName);
-	static int play_ft(Mix_Music* midi);
+	static midi_song load_track(std::string fileName);
+	static int play_ft(midi_song* midi);
 	static int stop_ft();
 	static std::vector<uint8_t>* MdsToMidi(std::string file);
 };

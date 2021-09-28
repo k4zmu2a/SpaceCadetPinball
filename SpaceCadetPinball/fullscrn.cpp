@@ -39,6 +39,7 @@ int fullscrn::set_screen_mode(int isFullscreen)
 	int result = isFullscreen;
 	if (isFullscreen == screen_mode)
 		return result;
+#ifndef __EMSCRIPTEN__
 	screen_mode = isFullscreen;
 	if (isFullscreen)
 	{
@@ -50,6 +51,7 @@ int fullscrn::set_screen_mode(int isFullscreen)
 		disableFullscreen();
 		result = 1;
 	}
+#endif
 	return result;
 }
 
