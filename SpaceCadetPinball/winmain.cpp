@@ -109,7 +109,7 @@ int winmain::WinMain(LPCSTR lpCmdLine)
 	SDL_Window *window = SDL_CreateWindow(
 		pinball::get_rc_string(38, 0),
 		SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED,
-		800, 556,
+		600, 440,
 		SDL_WINDOW_HIDDEN | SDL_WINDOW_RESIZABLE);
 	MainWindow = window;
 	if (!window)
