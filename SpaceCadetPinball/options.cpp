@@ -44,6 +44,8 @@ short options::vk_list[28]
 
 std::map<std::string, std::string> options::settings{};
 
+constexpr int options::MaxUps, options::MaxFps, options::MinUps, options::MinFps, options::DefUps, options::DefFps;
+
 
 void options::init()
 {
