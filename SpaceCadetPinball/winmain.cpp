@@ -584,7 +584,7 @@ int winmain::event_handler(const SDL_Event* event)
 				pause();
 			options::keyboard();
 			break;
-		case SDLK_F0:
+		case SDLK_F9:
 			options::toggle(Menu1::Show_Menu);
 			break;
 		default:
