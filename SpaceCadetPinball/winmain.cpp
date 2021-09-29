@@ -360,7 +360,7 @@ void winmain::RenderUi()
 
 		if (ImGui::BeginMenu("Options"))
 		{
-			if (ImGui::MenuItem("Show Menu", "F5", options::Options.ShowMenu))
+			if (ImGui::MenuItem("Show Menu", "F9", options::Options.ShowMenu))
 			{
 				options::toggle(Menu1::Show_Menu);
 			}
@@ -583,6 +583,9 @@ int winmain::event_handler(const SDL_Event* event)
 			if (!single_step)
 				pause();
 			options::keyboard();
+			break;
+		case SDLK_F0:
+			options::toggle(Menu1::Show_Menu);
 			break;
 		default:
 			break;
