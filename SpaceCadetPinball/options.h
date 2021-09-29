@@ -20,6 +20,7 @@ enum class Menu1:int
 	TwoPlayers = 409,
 	ThreePlayers = 410,
 	FourPlayers = 411,
+	Show_Menu = 412,
 	MaximumResolution = 500,
 	R640x480 = 501,
 	R800x600 = 502,
@@ -32,6 +33,7 @@ struct optionsStruct
 {
 	int Sounds;
 	int Music;
+	int ShowMenu;
 	int FullScreen;
 	int Players;
 	int LeftFlipperKey;

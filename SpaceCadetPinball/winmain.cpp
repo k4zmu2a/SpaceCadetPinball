@@ -244,16 +244,23 @@ int winmain::WinMain(LPCSTR lpCmdLine)
 			if (UpdateToFrameCounter >= UpdateToFrameRatio)
 			{
 				UpdateToFrameCounter -= UpdateToFrameRatio;
-				ImGui_ImplSDL2_NewFrame();
-				ImGui::NewFrame();
 
-				RenderUi();
+				if (options::Options.ShowMenu)
+				{
+					ImGui_ImplSDL2_NewFrame();
+					ImGui::NewFrame();
+
+					RenderUi();
+				}
 
 				SDL_RenderClear(renderer);
 				render::PresentVScreen();
 
-				ImGui::Render();
-				ImGuiSDL::Render(ImGui::GetDrawData());
+				if (options::Options.ShowMenu)
+				{
+					ImGui::Render();
+					ImGuiSDL::Render(ImGui::GetDrawData());
+				}
 
 				SDL_RenderPresent(renderer);
 				frameCounter++;
@@ -353,6 +360,10 @@ void winmain::RenderUi()
 
 		if (ImGui::BeginMenu("Options"))
 		{
+			if (ImGui::MenuItem("Show Menu", "F9", options::Options.ShowMenu))
+			{
+				options::toggle(Menu1::Show_Menu);
+			}
 			if (ImGui::MenuItem("Full Screen", "F4", options::Options.FullScreen))
 			{
 				options::toggle(Menu1::Full_Screen);
@@ -572,6 +583,9 @@ int winmain::event_handler(const SDL_Event* event)
 			if (!single_step)
 				pause();
 			options::keyboard();
+			break;
+		case SDLK_F9:
+			options::toggle(Menu1::Show_Menu);
 			break;
 		default:
 			break;
