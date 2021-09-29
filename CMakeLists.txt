@@ -28,6 +28,8 @@ endforeach()
 set(SOURCE_FILES
         SpaceCadetPinball/control.cpp
         SpaceCadetPinball/control.h
+        SpaceCadetPinball/EmbeddedData.cpp
+        SpaceCadetPinball/EmbeddedData.h
         SpaceCadetPinball/fullscrn.cpp
         SpaceCadetPinball/fullscrn.h
         SpaceCadetPinball/gdrv.cpp
