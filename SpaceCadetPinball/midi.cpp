@@ -5,7 +5,10 @@
 #include "pb.h"
 #include "pinball.h"
 
-Mix_Music* midi::currentMidi;
+
+objlist_class<Mix_Music>* midi::LoadedTracks;
+Mix_Music *midi::track1, *midi::track2, *midi::track3, *midi::active_track, *midi::NextTrack;
+bool midi::SetNextTrackFlag;
 
 constexpr uint32_t FOURCC(uint8_t a, uint8_t b, uint8_t c, uint8_t d)
 {
@@ -27,159 +30,126 @@ int ToVariableLen(uint32_t value, uint32_t& dst)
 	return count;
 }
 
-int midi::play_pb_theme(int flag)
+int midi::play_pb_theme()
 {
-	if (pb::FullTiltMode)
-	{
-		return play_ft(track1);
-	}
-
-	int result = 0;
-	music_stop();
-	if (currentMidi)
-		result = Mix_PlayMusic(currentMidi, -1);
-
-	return result;
+	// Todo: add support for tracks 2 and 3
+	return play_track(track1);
 }
 
 int midi::music_stop()
 {
-	if (pb::FullTiltMode)
+	if (active_track)
 	{
-		return stop_ft();
+		active_track = nullptr;
+		Mix_HaltMusic();
 	}
 
-	return Mix_HaltMusic();
+	return true;
 }
 
 int midi::music_init()
 {
-	if (pb::FullTiltMode)
-	{
-		return music_init_ft();
-	}
-
-	// File name is in lower case, while game data is in upper case.
-	std::string fileName = pinball::get_rc_string(156, 0);
-	std::transform(fileName.begin(), fileName.end(), fileName.begin(), [](unsigned char c) { return std::toupper(c); });
-	auto midiPath = pinball::make_path_name(fileName);
-	currentMidi = Mix_LoadMUS(midiPath.c_str());
-	return currentMidi != nullptr;
-}
-
-void midi::music_shutdown()
-{
-	if (pb::FullTiltMode)
-	{
-		music_shutdown_ft();
-		return;
-	}
-
-	Mix_FreeMusic(currentMidi);
-}
-
-
-objlist_class<Mix_Music>* midi::TrackList;
-Mix_Music *midi::track1, *midi::track2, *midi::track3, *midi::active_track, *midi::active_track2;
-int midi::some_flag1;
-
-int midi::music_init_ft()
-{
 	active_track = nullptr;
-	TrackList = new objlist_class<Mix_Music>(0, 1);
+	LoadedTracks = new objlist_class<Mix_Music>(0, 1);
 
-	track1 = load_track("taba1");
-	track2 = load_track("taba2");
-	track3 = load_track("taba3");
+	if (pb::FullTiltMode)
+	{
+		track1 = load_track("TABA1.MDS", true);
+		track2 = load_track("TABA2.MDS", true);
+		track3 = load_track("TABA3.MDS", true);
+	}
+	else
+	{
+		// 3DPB has only one music track. PINBALL2.MID is a bitmap font, in the same format as PB_MSGFT.bin
+		track1 = load_track("PINBALL.MID", false);
+	}
+
 	if (!track2)
 		track2 = track1;
 	if (!track3)
 		track3 = track1;
-	return 1;
+	return track1 != nullptr;
 }
 
-void midi::music_shutdown_ft()
+void midi::music_shutdown()
 {
 	if (active_track)
 		Mix_HaltMusic();
-	while (TrackList->GetCount())
+
+	while (LoadedTracks->GetCount())
 	{
-		auto midi = TrackList->Get(0);
+		auto midi = LoadedTracks->Get(0);
 		Mix_FreeMusic(midi);
-		TrackList->Delete(midi);
+		LoadedTracks->Delete(midi);
 	}
 	active_track = nullptr;
-	delete TrackList;
+	delete LoadedTracks;
 }
 
-Mix_Music* midi::load_track(std::string fileName)
+Mix_Music* midi::load_track(std::string fileName, bool isMds)
 {
+	Mix_Music* audio;
 	auto origFile = fileName;
 
-	// File name is in lower case, while game data is in upper case.				
-	std::transform(fileName.begin(), fileName.end(), fileName.begin(), [](unsigned char c) { return std::toupper(c); });
 	if (pb::FullTiltMode)
 	{
 		// FT sounds are in SOUND subfolder
 		fileName.insert(0, 1, PathSeparator);
 		fileName.insert(0, "SOUND");
 	}
-	fileName += ".MDS";
 
 	auto filePath = pinball::make_path_name(fileName);
-	auto midi = MdsToMidi(filePath);
-	if (!midi)
-		return nullptr;
-
-	// Dump converted MIDI file
-	/*origFile += ".midi";
-	FILE* fileHandle = fopen(origFile.c_str(), "wb");
-	fwrite(midi->data(), 1, midi->size(), fileHandle);
-	fclose(fileHandle);*/
-
-	auto rw = SDL_RWFromMem(midi->data(), static_cast<int>(midi->size()));
-	auto audio = Mix_LoadMUS_RW(rw, 1); // This call seems to leak memory no matter what.
-	delete midi;
-	if (!audio)
-		return nullptr;
-
-	TrackList->Add(audio);
-	return audio;
-}
-
-int midi::play_ft(Mix_Music* midi)
-{
-	int result;
-
-	stop_ft();
-	if (!midi)
-		return 0;
-	if (some_flag1)
+	if (isMds)
 	{
-		active_track2 = midi;
-		return 0;
-	}
-	if (Mix_PlayMusic(midi, -1))
-	{
-		active_track = nullptr;
-		result = 0;
+		auto midi = MdsToMidi(filePath);
+		if (!midi)
+			return nullptr;
+
+		// Dump converted MIDI file
+		/*origFile += ".midi";
+		FILE* fileHandle = fopen(origFile.c_str(), "wb");
+		fwrite(midi->data(), 1, midi->size(), fileHandle);
+		fclose(fileHandle);*/
+
+		auto rw = SDL_RWFromMem(midi->data(), static_cast<int>(midi->size()));
+		audio = Mix_LoadMUS_RW(rw, 1); // This call seems to leak memory no matter what.
+		delete midi;
 	}
 	else
 	{
-		active_track = midi;
-		result = 1;
+		audio = Mix_LoadMUS(filePath.c_str());
 	}
-	return result;
+
+	if (!audio)
+		return nullptr;
+
+	LoadedTracks->Add(audio);
+	return audio;
 }
 
-int midi::stop_ft()
+bool midi::play_track(Mix_Music* midi)
 {
-	int returnCode = 0;
-	if (active_track)
-		returnCode = Mix_HaltMusic();
-	active_track = nullptr;
-	return returnCode;
+	music_stop();
+	if (!midi)
+		return false;
+
+	if (SetNextTrackFlag)
+	{
+		NextTrack = midi;
+		SetNextTrackFlag = false;
+		return true;
+	}
+
+	if (Mix_PlayMusic(midi, -1))
+	{
+		active_track = nullptr;
+		return false;
+	}
+
+	active_track = midi;
+	return true;
 }
+
 
 /// <summary>
 /// SDL_mixed does not support MIDS. To support FT music, a conversion to MIDI is required.
@@ -194,9 +164,9 @@ std::vector<uint8_t>* midi::MdsToMidi(std::string file)
 
 	fseek(fileHandle, 0, SEEK_END);
 	auto fileSize = static_cast<uint32_t>(ftell(fileHandle));
-	auto filePtr = reinterpret_cast<riff_header*>(memory::allocate(fileSize));
+	auto fileBuf = reinterpret_cast<riff_header*>(new uint8_t [fileSize]);
 	fseek(fileHandle, 0, SEEK_SET);
-	fread(filePtr, 1, fileSize, fileHandle);
+	fread(fileBuf, 1, fileSize, fileHandle);
 	fclose(fileHandle);
 
 	int returnCode = 0;
@@ -208,14 +178,14 @@ std::vector<uint8_t>* midi::MdsToMidi(std::string file)
 			returnCode = 3;
 			break;
 		}
-		if (filePtr->Riff != FOURCC('R', 'I', 'F', 'F') ||
-			filePtr->Mids != FOURCC('M', 'I', 'D', 'S') ||
-			filePtr->Fmt != FOURCC('f', 'm', 't', ' '))
+		if (fileBuf->Riff != FOURCC('R', 'I', 'F', 'F') ||
+			fileBuf->Mids != FOURCC('M', 'I', 'D', 'S') ||
+			fileBuf->Fmt != FOURCC('f', 'm', 't', ' '))
 		{
 			returnCode = 3;
 			break;
 		}
-		if (filePtr->FileSize > fileSize - 8)
+		if (fileBuf->FileSize > fileSize - 8)
 		{
 			returnCode = 3;
 			break;
@@ -225,14 +195,14 @@ std::vector<uint8_t>* midi::MdsToMidi(std::string file)
 			returnCode = 3;
 			break;
 		}
-		if (filePtr->FmtSize < 12 || filePtr->FmtSize > fileSize - 12)
+		if (fileBuf->FmtSize < 12 || fileBuf->FmtSize > fileSize - 12)
 		{
 			returnCode = 3;
 			break;
 		}
 
-		auto streamIdUsed = filePtr->dwFlags == 0;
-		auto dataChunk = reinterpret_cast<riff_data*>(reinterpret_cast<char*>(&filePtr->dwTimeFormat) + filePtr->
+		auto streamIdUsed = fileBuf->dwFlags == 0;
+		auto dataChunk = reinterpret_cast<riff_data*>(reinterpret_cast<char*>(&fileBuf->dwTimeFormat) + fileBuf->
 			FmtSize);
 		if (dataChunk->Data != FOURCC('d', 'a', 't', 'a'))
 		{
@@ -274,7 +244,7 @@ std::vector<uint8_t>* midi::MdsToMidi(std::string file)
 		// MThd chunk
 		std::vector<uint8_t>& midiBytes = *new std::vector<uint8_t>();
 		midiOut = &midiBytes;
-		midi_header header(SwapByteOrderShort(static_cast<uint16_t>(filePtr->dwTimeFormat)));
+		midi_header header(SwapByteOrderShort(static_cast<uint16_t>(fileBuf->dwTimeFormat)));
 		auto headerData = reinterpret_cast<const uint8_t*>(&header);
 		midiBytes.insert(midiBytes.end(), headerData, headerData + sizeof header);
 
@@ -339,8 +309,7 @@ std::vector<uint8_t>* midi::MdsToMidi(std::string file)
 	}
 	while (false);
 
-	if (filePtr)
-		memory::free(filePtr);
+	delete[] fileBuf;
 	if (returnCode && midiOut)
 		delete midiOut;
 	return midiOut;

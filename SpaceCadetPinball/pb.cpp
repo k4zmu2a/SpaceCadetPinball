@@ -202,7 +202,7 @@ void pb::replay_level(int demoMode)
 	demo_mode = demoMode;
 	mode_change(1);
 	if (options::Options.Music)
-		midi::play_pb_theme(0);
+		midi::play_pb_theme();
 	MainTable->Message(1014, static_cast<float>(options::Options.Players));
 }
 
@@ -350,7 +350,7 @@ void pb::pause_continue()
 			pinball::InfoTextBox->Display(text, textTime);
 		}
 		if (options::Options.Music && !winmain::single_step)
-			midi::play_pb_theme(0);
+			midi::play_pb_theme();
 		Sound::Activate();
 	}
 }

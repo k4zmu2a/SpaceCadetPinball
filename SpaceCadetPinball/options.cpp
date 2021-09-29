@@ -188,7 +188,7 @@ void options::toggle(Menu1 uIDCheckItem)
 		if (!newValue)
 			midi::music_stop();
 		else
-			midi::play_pb_theme(0);
+			midi::play_pb_theme();
 		return;
 	case Menu1::Show_Menu:
 		Options.ShowMenu = Options.ShowMenu == 0;

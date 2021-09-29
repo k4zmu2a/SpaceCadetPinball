@@ -57,7 +57,7 @@ struct midi_header
 	{
 	}
 
-	const char MThd[4]{ 'M','T','h','d' };
+	const char MThd[4]{'M', 'T', 'h', 'd'};
 	const uint32_t chunklen = SwapByteOrderInt(6);
 	const int16_t format = SwapByteOrderShort(0);
 	const uint16_t ntracks = SwapByteOrderShort(1);
@@ -71,7 +71,7 @@ struct midi_track
 	{
 	}
 
-	const char MTrk[4]{ 'M','T','r','k' };
+	const char MTrk[4]{'M', 'T', 'r', 'k'};
 	uint32_t chunklen;
 };
 
@@ -87,20 +87,15 @@ static_assert(sizeof(midi_track) == 8, "Wrong size of midi_track");
 class midi
 {
 public:
-	static int play_pb_theme(int flag);
+	static int play_pb_theme();
 	static int music_stop();
 	static int music_init();
 	static void music_shutdown();
 private:
-	static Mix_Music* currentMidi;
-
-	static objlist_class<Mix_Music>* TrackList;
-	static Mix_Music *track1, *track2, *track3, *active_track, *active_track2;
-	static int some_flag1;
-	static int music_init_ft();
-	static void music_shutdown_ft();
-	static Mix_Music* load_track(std::string fileName);
-	static int play_ft(Mix_Music* midi);
-	static int stop_ft();
+	static objlist_class<Mix_Music>* LoadedTracks;
+	static Mix_Music *track1, *track2, *track3, *active_track, *NextTrack;
+	static bool SetNextTrackFlag;
+	static Mix_Music* load_track(std::string fileName, bool isMds);
+	static bool play_track(Mix_Music* midi);
 	static std::vector<uint8_t>* MdsToMidi(std::string file);
 };
