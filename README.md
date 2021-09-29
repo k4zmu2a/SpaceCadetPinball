@@ -26,7 +26,8 @@ Platforms covered by this project: desktop Windows and Linux.
  * All structures were populated, globals and locals named.
  * All subs were decompiled, C pseudo code was converted to compilable C++. Loose (namespace?) subs were assigned to classes.
 
-**Compiling:**\
+**Compiling:**
+
 Project uses `C++11` and depends on `SDL2` libs.\
 On Windows:\
 Download and unpack devel packages for `SDL2` and `SDL2_mixer`.\
@@ -36,6 +37,12 @@ Compile with Visual Studio; tested with 2019.
 On Linux:\
 Install devel packages for `SDL2` and `SDL2_mixer`.\
 Compile with CMake; tested with GCC 10, Clang 11. 
+
+On macOS:\
+**Homebrew**: Install the `SDL2`, `SDL2_mixer` homebrew packages.\
+**MacPorts**: Install the `libSDL2`, `libSDL2_mixer` macports packages.\
+Compile with CMake. Ensure that `CMAKE_OSX_ARCHITECTURES` variable is set for either `x86_64` Apple Intel or `arm64` for Apple Silicon.\
+Tested with: macOS Big Sur (Intel) with Xcode 13 & macOS Montery Beta (Apple Silicon) with Xcode 13.
 
 **Plans:**
  * ~~Decompile original game~~
