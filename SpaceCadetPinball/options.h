@@ -33,7 +33,6 @@ struct optionsStruct
 {
 	int Sounds;
 	int Music;
-	int ShowMenu;
 	int FullScreen;
 	int Players;
 	int LeftFlipperKey;
@@ -53,6 +52,7 @@ struct optionsStruct
 	bool LinearFiltering;
 	int FramesPerSecond;
 	int UpdatesPerSecond;
+	bool ShowMenu;
 };
 
 

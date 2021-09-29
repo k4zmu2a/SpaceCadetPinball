@@ -245,18 +245,19 @@ int winmain::WinMain(LPCSTR lpCmdLine)
 			{
 				UpdateToFrameCounter -= UpdateToFrameRatio;
 
-				if (options::Options.ShowMenu)
+				// Option might be changed in RenderUi, unpairing NewFrame from EndFrame.
+				auto showMenu = options::Options.ShowMenu;
+				if (showMenu)
 				{
 					ImGui_ImplSDL2_NewFrame();
 					ImGui::NewFrame();
-
 					RenderUi();
 				}
 
 				SDL_RenderClear(renderer);
 				render::PresentVScreen();
 
-				if (options::Options.ShowMenu)
+				if (showMenu)
 				{
 					ImGui::Render();
 					ImGuiSDL::Render(ImGui::GetDrawData());

@@ -67,7 +67,6 @@ void options::init()
 
 	Options.Sounds = 1;
 	Options.Music = 0;
-	Options.ShowMenu = 1;
 	Options.FullScreen = 0;
 	Options.LeftFlipperKeyDft = SDLK_z;
 	Options.RightFlipperKeyDft = SDLK_SLASH;
@@ -91,7 +90,6 @@ void options::init()
 	Options.UniformScaling = true;
 	Options.Sounds = get_int("Sounds", Options.Sounds);
 	Options.Music = get_int("Music", Options.Music);
-	Options.ShowMenu = get_int("ShowMenu", Options.ShowMenu);
 	Options.FullScreen = get_int("FullScreen", Options.FullScreen);
 	Options.Players = get_int("Players", Options.Players);
 	Options.LeftFlipperKey = get_int("Left Flipper key", Options.LeftFlipperKey);
@@ -107,6 +105,7 @@ void options::init()
 	Options.FramesPerSecond = std::min(MaxFps, std::max(MinUps, get_int("Frames Per Second", DefFps)));
 	Options.UpdatesPerSecond = std::min(MaxUps, std::max(MinUps, get_int("Updates Per Second", DefUps)));
 	Options.UpdatesPerSecond = std::max(Options.UpdatesPerSecond, Options.FramesPerSecond);
+	Options.ShowMenu = get_int("ShowMenu", true);
 
 	winmain::UpdateFrameRate();
 
@@ -122,7 +121,6 @@ void options::uninit()
 {
 	set_int("Sounds", Options.Sounds);
 	set_int("Music", Options.Music);
-	set_int("ShowMenu", Options.ShowMenu);
 	set_int("FullScreen", Options.FullScreen);
 	set_int("Players", Options.Players);
 	set_int("Left Flipper key", Options.LeftFlipperKey);
@@ -137,6 +135,7 @@ void options::uninit()
 	set_int("Linear Filtering", Options.LinearFiltering);
 	set_int("Frames Per Second", Options.FramesPerSecond);
 	set_int("Updates Per Second", Options.UpdatesPerSecond);
+	set_int("ShowMenu", Options.ShowMenu);
 }
 
 
