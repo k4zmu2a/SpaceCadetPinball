@@ -99,7 +99,6 @@ int high_score::write(high_score_struct* table, int* ptrToSmth)
 		{
 		}
 		scoreSum += tablePtr->Score;
-		++position;
 		++tablePtr;
 	}
 	scramble_number_string(scoreSum, buf);
