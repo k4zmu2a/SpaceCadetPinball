@@ -54,14 +54,14 @@ int midi::music_init()
 
 	if (pb::FullTiltMode)
 	{
-		track1 = load_track("TABA1.MDS", true);
-		track2 = load_track("TABA2.MDS", true);
-		track3 = load_track("TABA3.MDS", true);
+		track1 = load_track("TABA1");
+		track2 = load_track("TABA2");
+		track3 = load_track("TABA3");
 	}
 	else
 	{
 		// 3DPB has only one music track. PINBALL2.MID is a bitmap font, in the same format as PB_MSGFT.bin
-		track1 = load_track("PINBALL.MID", false);
+		track1 = load_track("PINBALL");
 	}
 
 	if (!track2)
@@ -86,11 +86,9 @@ void midi::music_shutdown()
 	delete LoadedTracks;
 }
 
-Mix_Music* midi::load_track(std::string fileName, bool isMds)
+Mix_Music* midi::load_track(std::string fileName)
 {
-	Mix_Music* audio;
-	auto origFile = fileName;
-
+	Mix_Music* audio = nullptr;
 	if (pb::FullTiltMode)
 	{
 		// FT sounds are in SOUND subfolder
@@ -98,26 +96,37 @@ Mix_Music* midi::load_track(std::string fileName, bool isMds)
 		fileName.insert(0, "SOUND");
 	}
 
-	auto filePath = pinball::make_path_name(fileName);
-	if (isMds)
+	// FT has music in two formats, depending on version: MIDI in 16bit, MIDS in 32bit.
+	// 3DPB music is MIDI only.
+	auto basePath = pinball::make_path_name(fileName);
+	for (int i = 0; i <= 1 && !audio; i++)
 	{
-		auto midi = MdsToMidi(filePath);
-		if (!midi)
-			return nullptr;
+		if (i == 0)
+		{
+			auto filePath = basePath + ".MID";
+			auto fileHandle = fopen(filePath.c_str(), "rb");
+			if (fileHandle)
+			{
+				fclose(fileHandle);
+				audio = Mix_LoadMUS(filePath.c_str());
+			}
+		}
+		else
+		{
+			auto midi = MdsToMidi(basePath + ".MDS");
+			if (midi)
+			{
+				// Dump converted MIDI file
+				/*auto filePath = basePath + ".midi";
+				FILE* fileHandle = fopen(filePath.c_str(), "wb");
+				fwrite(midi->data(), 1, midi->size(), fileHandle);
+				fclose(fileHandle);*/
 
-		// Dump converted MIDI file
-		/*origFile += ".midi";
-		FILE* fileHandle = fopen(origFile.c_str(), "wb");
-		fwrite(midi->data(), 1, midi->size(), fileHandle);
-		fclose(fileHandle);*/
-
-		auto rw = SDL_RWFromMem(midi->data(), static_cast<int>(midi->size()));
-		audio = Mix_LoadMUS_RW(rw, 1); // This call seems to leak memory no matter what.
-		delete midi;
-	}
-	else
-	{
-		audio = Mix_LoadMUS(filePath.c_str());
+				auto rw = SDL_RWFromMem(midi->data(), static_cast<int>(midi->size()));
+				audio = Mix_LoadMUS_RW(rw, 1); // This call seems to leak memory no matter what.
+				delete midi;
+			}
+		}
 	}
 
 	if (!audio)
