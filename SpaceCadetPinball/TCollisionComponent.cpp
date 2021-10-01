@@ -2,17 +2,15 @@
 #include "TCollisionComponent.h"
 #include "loader.h"
 #include "maths.h"
-#include "objlist_class.h"
 #include "TEdgeSegment.h"
 #include "TPinballTable.h"
 
 
-TCollisionComponent::TCollisionComponent(TPinballTable* table, int groupIndex, bool createWall) : TPinballComponent(
-	table, groupIndex, true)
+TCollisionComponent::TCollisionComponent(TPinballTable* table, int groupIndex, bool createWall) :
+	TPinballComponent(table, groupIndex, true)
 {
 	visualStruct visual{};
 
-	EdgeList = new objlist_class<TEdgeSegment>(4, 4);
 	ActiveFlag = 1;
 	if (GroupName != nullptr)
 		UnusedBaseFlag = 1;
@@ -42,22 +40,15 @@ TCollisionComponent::TCollisionComponent(TPinballTable* table, int groupIndex, b
 
 TCollisionComponent::~TCollisionComponent()
 {
-	for (TEdgeSegment* edge; EdgeList->GetCount() > 0;)
-	{
-		edge = EdgeList->Get(0);
-		EdgeList->Delete(edge);
+	for (auto edge : EdgeList)
 		delete edge;
-	}
-	delete EdgeList;
 }
 
 
 void TCollisionComponent::port_draw()
 {
-	for (int index = EdgeList->GetCount() - 1; index >= 0; index--)
-	{
-		EdgeList->Get(index)->port_draw();
-	}
+	for (auto edge : EdgeList)
+		edge->port_draw();
 }
 
 int TCollisionComponent::DefaultCollision(TBall* ball, vector_type* nextPosition, vector_type* direction)

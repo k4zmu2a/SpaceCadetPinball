@@ -4,7 +4,6 @@
 
 #include "control.h"
 #include "loader.h"
-#include "objlist_class.h"
 #include "render.h"
 #include "TBall.h"
 #include "timer.h"
@@ -58,7 +57,7 @@ void TLightRollover::Collision(TBall* ball, vector_type* nextPosition, vector_ty
 			control::handler(63, this);
 			RolloverFlag = RolloverFlag == 0;
 			if (ListBitmap)
-				render::sprite_set_bitmap(RenderSprite, ListBitmap->Get(0));
+				render::sprite_set_bitmap(RenderSprite, ListBitmap->at(0));
 		}
 	}
 }

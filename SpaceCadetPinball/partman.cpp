@@ -1,7 +1,6 @@
 #include "pch.h"
 #include "partman.h"
 
-#include "fullscrn.h"
 #include "gdrv.h"
 #include "GroupData.h"
 #include "memory.h"
@@ -56,27 +55,25 @@ DatFile* partman::load_records(LPCSTR lpFileName, bool fullTiltMode)
 	bool abort = false;
 	for (auto groupIndex = 0; !abort && groupIndex < header.NumberOfGroups; ++groupIndex)
 	{
-		auto entryCount = _lread_char(fileHandle);
+		auto entryCount = LRead<uint8_t>(fileHandle);
 		auto groupData = new GroupData(groupIndex);
 		groupData->ReserveEntries(entryCount);
 
 		for (auto entryIndex = 0; entryIndex < entryCount; ++entryIndex)
 		{
 			auto entryData = new EntryData();
-			auto entryType = static_cast<FieldTypes>(_lread_char(fileHandle));
+			auto entryType = static_cast<FieldTypes>(LRead<uint8_t>(fileHandle));
 			entryData->EntryType = entryType;
 
-			int fieldSize = _field_size[static_cast<int>(entryType)];
-			if (fieldSize < 0)
-				fieldSize = _lread_long(fileHandle);
-			entryData->FieldSize = fieldSize;
+			int fixedSize = _field_size[static_cast<int>(entryType)];
+			size_t fieldSize = fixedSize >= 0 ? fixedSize : LRead<uint32_t>(fileHandle);
+			entryData->FieldSize = static_cast<int>(fieldSize);
 
 			if (entryType == FieldTypes::Bitmap8bit)
 			{
 				fread(&bmpHeader, 1, sizeof(dat8BitBmpHeader), fileHandle);
 				assertm(bmpHeader.Size + sizeof(dat8BitBmpHeader) == fieldSize, "partman: Wrong bitmap field size");
-				assertm(bmpHeader.Resolution >= 0 && bmpHeader.Resolution <= 2,
-				        "partman: bitmap resolution out of bounds");
+				assertm(bmpHeader.Resolution <= 2, "partman: bitmap resolution out of bounds");
 
 				auto bmp = memory::allocate<gdrv_bitmap8>();
 				entryData->Buffer = reinterpret_cast<char*>(bmp);
@@ -90,28 +87,28 @@ DatFile* partman::load_records(LPCSTR lpFileName, bool fullTiltMode)
 			else if (entryType == FieldTypes::Bitmap16bit)
 			{
 				/*Full tilt has extra byte(@0:resolution) in zMap*/
-				char zMapResolution = 0;
+				auto zMapResolution = 0u;
 				if (fullTiltMode)
 				{
-					zMapResolution = _lread_char(fileHandle);
+					zMapResolution = LRead<uint8_t>(fileHandle);
 					fieldSize--;
-					assertm(zMapResolution >= 0 && zMapResolution <= 2, "partman: zMap resolution out of bounds");
+					assertm(zMapResolution <= 2, "partman: zMap resolution out of bounds");
 				}
 
 				fread(&zMapHeader, 1, sizeof(dat16BitBmpHeader), fileHandle);
-				int length = fieldSize - sizeof(dat16BitBmpHeader);
+				auto length = fieldSize - sizeof(dat16BitBmpHeader);
 
 				auto zMap = memory::allocate<zmap_header_type>();
 				zdrv::create_zmap(zMap, zMapHeader.Width, zMapHeader.Height, zMapHeader.Stride);
 				zMap->Resolution = zMapResolution;
-				if (zMapHeader.Stride * zMapHeader.Height * 2 == length)
+				if (zMapHeader.Stride * zMapHeader.Height * 2u == length)
 				{
 					fread(zMap->ZPtr1, 1, length, fileHandle);
 				}
 				else
 				{
 					// 3DPB .dat has zeroed zMap headers, in groups 497 and 498, skip them.
-					fseek(fileHandle, length, SEEK_CUR);
+					fseek(fileHandle, static_cast<int>(length), SEEK_CUR);
 				}
 				entryData->Buffer = reinterpret_cast<char*>(zMap);
 			}
@@ -139,18 +136,4 @@ DatFile* partman::load_records(LPCSTR lpFileName, bool fullTiltMode)
 		return datFile;
 	delete datFile;
 	return nullptr;
-}
-
-char partman::_lread_char(FILE* file)
-{
-	char Buffer = 0;
-	fread(&Buffer, 1, 1, file);
-	return Buffer;
-}
-
-int partman::_lread_long(FILE* file)
-{
-	int Buffer = 0;
-	fread(&Buffer, 1, 4, file);
-	return Buffer;
 }

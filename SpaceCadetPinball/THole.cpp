@@ -4,7 +4,6 @@
 
 #include "control.h"
 #include "loader.h"
-#include "objlist_class.h"
 #include "pb.h"
 #include "TBall.h"
 #include "timer.h"
@@ -37,7 +36,7 @@ THole::THole(TPinballTable* table, int groupIndex) : TCollisionComponent(table, 
 	if (tCircle)
 	{
 		tCircle->place_in_grid();
-		EdgeList->Add(tCircle);
+		EdgeList.push_back(tCircle);
 	}
 
 	ZSetValue = loader::query_float_attribute(groupIndex, 0, 408)[2];

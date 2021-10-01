@@ -4,13 +4,11 @@
 
 #include "control.h"
 #include "loader.h"
-#include "objlist_class.h"
 #include "timer.h"
 #include "TPinballTable.h"
 
 TComponentGroup::TComponentGroup(TPinballTable* table, int groupIndex) : TPinballComponent(table, groupIndex, false)
 {
-	List = new objlist_class<TPinballComponent>(4, 4);
 	Timer = 0;
 	if (groupIndex > 0)
 	{
@@ -21,7 +19,7 @@ TComponentGroup::TComponentGroup(TPinballTable* table, int groupIndex) : TPinbal
 		{
 			auto component = table->find_component(*shortArrPtr);
 			if (component)
-				List->Add(component);
+				List.push_back(component);
 		}
 	}
 }
@@ -33,7 +31,6 @@ TComponentGroup::~TComponentGroup()
 		timer::kill(Timer);
 		Timer = 0;
 	}
-	delete List;
 }
 
 int TComponentGroup::Message(int code, float value)
@@ -50,9 +47,9 @@ int TComponentGroup::Message(int code, float value)
 	}
 	else if (code <= 1007 || code > 1011 && code != 1020 && code != 1022)
 	{
-		for (int i = 0; i < List->GetCount(); i++)
+		for (auto component : List)
 		{
-			List->Get(i)->Message(code, value);
+			component->Message(code, value);
 		}
 	}
 	return 0;

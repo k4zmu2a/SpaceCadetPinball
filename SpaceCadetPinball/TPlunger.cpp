@@ -5,7 +5,6 @@
 #include "control.h"
 #include "loader.h"
 #include "maths.h"
-#include "objlist_class.h"
 #include "pb.h"
 #include "render.h"
 #include "TBall.h"
@@ -27,7 +26,7 @@ TPlunger::TPlunger(TPinballTable* table, int groupIndex) : TCollisionComponent(t
 	MaxPullback = 100;
 	Elasticity = 0.5f;
 	Smoothness = 0.5f;
-	PullbackIncrement = static_cast<int>(100.0 / (ListBitmap->GetCount() * 8.0));
+	PullbackIncrement = static_cast<int>(100.0 / (ListBitmap->size() * 8.0));
 	Unknown4F = 0.025f;
 	float* floatArr = loader::query_float_attribute(groupIndex, 0, 601);
 	table->PlungerPositionX = floatArr[0];
@@ -65,8 +64,8 @@ int TPlunger::Message(int code, float value)
 			PullbackTimer_ = 0;
 			if (code == 1005)
 				loader::play_sound(SoundIndexP2);
-			auto bmp = ListBitmap->Get(0);
-			auto zMap = ListZMap->Get(0);
+			auto bmp = ListBitmap->at(0);
+			auto zMap = ListZMap->at(0);
 			render::sprite_set(
 				RenderSprite,
 				bmp,
@@ -79,7 +78,7 @@ int TPlunger::Message(int code, float value)
 		}
 	case 1015:
 		{
-			auto ball = PinballTable->BallList->Get(0);
+			auto ball = PinballTable->BallList.at(0);
 			ball->Message(1024, 0.0);
 			ball->Position.X = PinballTable->PlungerPositionX;
 			ball->Position.Y = PinballTable->PlungerPositionY;
@@ -112,8 +111,8 @@ int TPlunger::Message(int code, float value)
 			PullbackTimer_ = 0;
 			if (code == 1005)
 				loader::play_sound(SoundIndexP2);
-			auto bmp = ListBitmap->Get(0);
-			auto zMap = ListZMap->Get(0);
+			auto bmp = ListBitmap->at(0);
+			auto zMap = ListZMap->at(0);
 			render::sprite_set(
 				RenderSprite,
 				bmp,
@@ -151,10 +150,10 @@ void TPlunger::PullbackTimer(int timerId, void* caller)
 		plunger->Boost = static_cast<float>(plunger->MaxPullback);
 	}
 	int index = static_cast<int>(floor(
-		static_cast<float>(plunger->ListBitmap->GetCount() - 1) *
+		static_cast<float>(plunger->ListBitmap->size() - 1) *
 		(plunger->Boost / static_cast<float>(plunger->MaxPullback))));
-	auto bmp = plunger->ListBitmap->Get(index);
-	auto zMap = plunger->ListZMap->Get(index);
+	auto bmp = plunger->ListBitmap->at(index);
+	auto zMap = plunger->ListZMap->at(index);
 	render::sprite_set(
 		plunger->RenderSprite,
 		bmp,

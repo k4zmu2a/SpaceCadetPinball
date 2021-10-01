@@ -8,7 +8,7 @@ class TBall;
 class TCollisionComponent : public TPinballComponent
 {
 public:
-	objlist_class<TEdgeSegment>* EdgeList;
+	std::vector<TEdgeSegment*> EdgeList;
 	float Elasticity;
 	float Smoothness;
 	float Boost;

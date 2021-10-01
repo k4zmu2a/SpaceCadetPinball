@@ -4,7 +4,6 @@
 
 #include "control.h"
 #include "loader.h"
-#include "objlist_class.h"
 #include "TBall.h"
 #include "TLine.h"
 #include "TPinballTable.h"
@@ -27,7 +26,7 @@ TOneway::TOneway(TPinballTable* table, int groupIndex) : TCollisionComponent(tab
 		{
 			line->Offset(table->CollisionCompOffset);
 			line->place_in_grid();
-			EdgeList->Add(line);
+			EdgeList.push_back(line);
 		}
 
 		line = new TLine(this, &ActiveFlag, visual.CollisionGroup, &linePt1, &linePt2);
@@ -36,7 +35,7 @@ TOneway::TOneway(TPinballTable* table, int groupIndex) : TCollisionComponent(tab
 		{
 			line->Offset(-table->CollisionCompOffset * 0.8f);
 			Line->place_in_grid();
-			EdgeList->Add(Line);
+			EdgeList.push_back(Line);
 		}
 	}
 }

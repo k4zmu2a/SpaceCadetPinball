@@ -1,7 +1,6 @@
 #include "pch.h"
 #include "TEdgeSegment.h"
 
-#include "objlist_class.h"
 #include "TCircle.h"
 #include "TCollisionComponent.h"
 #include "TLine.h"
@@ -41,7 +40,7 @@ TEdgeSegment* TEdgeSegment::install_wall(float* floatArr, TCollisionComponent* c
 				circle->place_in_grid();
 			}
 
-			collComp->EdgeList->Add(circle);
+			collComp->EdgeList.push_back(circle);
 			break;
 		}
 	case wall_type::Line:
@@ -58,7 +57,7 @@ TEdgeSegment* TEdgeSegment::install_wall(float* floatArr, TCollisionComponent* c
 				line->WallValue = reinterpret_cast<void*>(wallValue);
 				line->Offset(offset);
 				line->place_in_grid();
-				collComp->EdgeList->Add(line);
+				collComp->EdgeList.push_back(line);
 			}
 			break;
 		}
@@ -104,7 +103,7 @@ TEdgeSegment* TEdgeSegment::install_wall(float* floatArr, TCollisionComponent* c
 						{
 							circle->WallValue = reinterpret_cast<void*>(wallValue);
 							circle->place_in_grid();
-							collComp->EdgeList->Add(circle);
+							collComp->EdgeList.push_back(circle);
 						}
 					}
 				}
@@ -121,7 +120,7 @@ TEdgeSegment* TEdgeSegment::install_wall(float* floatArr, TCollisionComponent* c
 					line->WallValue = reinterpret_cast<void*>(wallValue);
 					line->Offset(offset);
 					line->place_in_grid();
-					collComp->EdgeList->Add(line);
+					collComp->EdgeList.push_back(line);
 				}
 
 				prevCenter = center;

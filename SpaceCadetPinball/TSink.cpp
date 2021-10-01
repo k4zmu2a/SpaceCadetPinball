@@ -4,7 +4,6 @@
 
 #include "control.h"
 #include "loader.h"
-#include "objlist_class.h"
 #include "render.h"
 #include "TPinballTable.h"
 #include "TBall.h"
@@ -95,7 +94,7 @@ void TSink::Collision(TBall* ball, vector_type* nextPosition, vector_type* direc
 void TSink::TimerExpired(int timerId, void* caller)
 {
 	auto sink = static_cast<TSink*>(caller);
-	auto ball = sink->PinballTable->BallList->Get(0);
+	auto ball = sink->PinballTable->BallList.at(0);
 	ball->CollisionComp = nullptr;
 	ball->ActiveFlag = 1;
 	ball->Position.X = sink->BallPosition.X;

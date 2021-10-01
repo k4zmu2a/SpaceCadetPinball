@@ -5,7 +5,6 @@
 #include "control.h"
 #include "loader.h"
 #include "maths.h"
-#include "objlist_class.h"
 #include "render.h"
 #include "timer.h"
 #include "TPinballTable.h"
@@ -66,8 +65,8 @@ void TKickback::TimerExpired(int timerId, void* caller)
 		loader::play_sound(kick->HardHitSoundId);
 		if (kick->ListBitmap)
 		{
-			auto bmp = kick->ListBitmap->Get(1);
-			auto zMap = kick->ListZMap->Get(1);
+			auto bmp = kick->ListBitmap->at(1);
+			auto zMap = kick->ListZMap->at(1);
 			render::sprite_set(
 				kick->RenderSprite,
 				bmp,
@@ -80,8 +79,8 @@ void TKickback::TimerExpired(int timerId, void* caller)
 	{
 		if (kick->ListBitmap)
 		{
-			auto bmp = kick->ListBitmap->Get(0);
-			auto zMap = kick->ListZMap->Get(0);
+			auto bmp = kick->ListBitmap->at(0);
+			auto zMap = kick->ListZMap->at(0);
 			render::sprite_set(
 				kick->RenderSprite,
 				bmp,

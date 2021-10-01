@@ -6,7 +6,7 @@
 #include "pinball.h"
 
 
-objlist_class<Mix_Music>* midi::LoadedTracks;
+std::vector<Mix_Music*> midi::LoadedTracks{};
 Mix_Music *midi::track1, *midi::track2, *midi::track3, *midi::active_track, *midi::NextTrack;
 bool midi::SetNextTrackFlag;
 
@@ -50,7 +50,6 @@ int midi::music_stop()
 int midi::music_init()
 {
 	active_track = nullptr;
-	LoadedTracks = new objlist_class<Mix_Music>(0, 1);
 
 	if (pb::FullTiltMode)
 	{
@@ -76,14 +75,12 @@ void midi::music_shutdown()
 	if (active_track)
 		Mix_HaltMusic();
 
-	while (LoadedTracks->GetCount())
+	for (auto midi : LoadedTracks)
 	{
-		auto midi = LoadedTracks->Get(0);
 		Mix_FreeMusic(midi);
-		LoadedTracks->Delete(midi);
 	}
 	active_track = nullptr;
-	delete LoadedTracks;
+	LoadedTracks.clear();
 }
 
 Mix_Music* midi::load_track(std::string fileName)
@@ -132,7 +129,7 @@ Mix_Music* midi::load_track(std::string fileName)
 	if (!audio)
 		return nullptr;
 
-	LoadedTracks->Add(audio);
+	LoadedTracks.push_back(audio);
 	return audio;
 }
 

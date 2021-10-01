@@ -247,8 +247,8 @@ int DatFile::record_labeled(LPCSTR targetGroupName)
 		if (!groupName)
 			continue;
 
-		int index;
-		for (index = 0; index < targetLength; index++)
+		auto index = 0u;
+		for (; index < targetLength; index++)
 			if (targetGroupName[index] != groupName[index])
 				break;
 		if (index == targetLength && !targetGroupName[index] && !groupName[index])

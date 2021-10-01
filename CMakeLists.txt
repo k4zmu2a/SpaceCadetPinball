@@ -48,7 +48,6 @@ set(SOURCE_FILES
         SpaceCadetPinball/midi.h
         SpaceCadetPinball/nudge.cpp
         SpaceCadetPinball/nudge.h
-        SpaceCadetPinball/objlist_class.h
         SpaceCadetPinball/options.cpp
         SpaceCadetPinball/options.h
         SpaceCadetPinball/partman.cpp
@@ -83,7 +82,6 @@ set(SOURCE_FILES
         SpaceCadetPinball/TDemo.h
         SpaceCadetPinball/TDrain.cpp
         SpaceCadetPinball/TDrain.h
-        SpaceCadetPinball/TEdgeBox.cpp
         SpaceCadetPinball/TEdgeBox.h
         SpaceCadetPinball/TEdgeManager.cpp
         SpaceCadetPinball/TEdgeManager.h

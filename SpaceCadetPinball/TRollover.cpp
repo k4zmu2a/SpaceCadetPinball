@@ -5,7 +5,6 @@
 #include "control.h"
 #include "gdrv.h"
 #include "loader.h"
-#include "objlist_class.h"
 #include "render.h"
 #include "TBall.h"
 #include "TEdgeSegment.h"
@@ -22,7 +21,7 @@ TRollover::TRollover(TPinballTable* table, int groupIndex) : TCollisionComponent
 {
 	RolloverFlag = 0;
 	if (ListBitmap)
-		render::sprite_set_bitmap(RenderSprite, ListBitmap->Get(0));
+		render::sprite_set_bitmap(RenderSprite, ListBitmap->at(0));
 	build_walls(groupIndex);
 }
 
@@ -34,7 +33,7 @@ int TRollover::Message(int code, float value)
 		this->ActiveFlag = 1;
 		this->RolloverFlag = 0;
 		if (this->ListBitmap)
-			render::sprite_set_bitmap(this->RenderSprite, this->ListBitmap->Get(0));
+			render::sprite_set_bitmap(this->RenderSprite, this->ListBitmap->at(0));
 	}
 	return 0;
 }
@@ -63,7 +62,7 @@ void TRollover::Collision(TBall* ball, vector_type* nextPosition, vector_type* d
 		if (ListBitmap)
 		{
 			if (!RolloverFlag)
-				bmp = ListBitmap->Get(0);
+				bmp = ListBitmap->at(0);
 			render::sprite_set_bitmap(RenderSprite, bmp);
 		}
 	}

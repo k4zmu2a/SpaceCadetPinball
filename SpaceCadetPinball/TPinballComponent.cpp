@@ -1,7 +1,6 @@
 #include "pch.h"
 #include "TPinballComponent.h"
 #include "loader.h"
-#include "objlist_class.h"
 #include "render.h"
 #include "TPinballTable.h"
 
@@ -19,7 +18,7 @@ TPinballComponent::TPinballComponent(TPinballTable* table, int groupIndex, bool 
 	GroupName = nullptr;
 	Control = nullptr;
 	if (table)
-		table->ComponentList->Add(this);
+		table->ComponentList.push_back(this);
 	if (groupIndex >= 0)
 		GroupName = loader::query_name(groupIndex);
 	if (loadVisuals && groupIndex >= 0)
@@ -31,32 +30,31 @@ TPinballComponent::TPinballComponent(TPinballTable* table, int groupIndex, bool 
 			if (visual.Bitmap)
 			{
 				if (!ListBitmap)
-					ListBitmap = new objlist_class<gdrv_bitmap8>(visualCount, 4);
+					ListBitmap = new std::vector<gdrv_bitmap8*>();
 				if (ListBitmap)
-					ListBitmap->Add(visual.Bitmap);
+					ListBitmap->push_back(visual.Bitmap);
 			}
 			if (visual.ZMap)
 			{
 				if (!ListZMap)
-					ListZMap = new objlist_class<zmap_header_type>(visualCount, 4);
+					ListZMap = new std::vector<zmap_header_type*>();
 				if (ListZMap)
-					ListZMap->Add(visual.ZMap);
+					ListZMap->push_back(visual.ZMap);
 			}
 		}
-		zmap_header_type* zMap = nullptr;
-		if (ListZMap)
-			zMap = ListZMap->Get(0);
+
+		auto zMap = ListZMap ? ListZMap->at(0) : nullptr;
 		if (ListBitmap)
 		{
 			rectangle_type bmp1Rect{}, tmpRect{};
-			auto rootBmp = ListBitmap->Get(0);
+			auto rootBmp = ListBitmap->at(0);
 			bmp1Rect.XPosition = rootBmp->XPosition - table->XOffset;
 			bmp1Rect.YPosition = rootBmp->YPosition - table->YOffset;
 			bmp1Rect.Width = rootBmp->Width;
 			bmp1Rect.Height = rootBmp->Height;
-			for (int index = 1; index < ListBitmap->GetCount(); index++)
+			for (auto index = 1u; index < ListBitmap->size(); index++)
 			{
-				auto bmp = ListBitmap->Get(index);
+				auto bmp = ListBitmap->at(index);
 				tmpRect.XPosition = bmp->XPosition - table->XOffset;
 				tmpRect.YPosition = bmp->YPosition - table->YOffset;
 				tmpRect.Width = bmp->Width;
@@ -79,9 +77,14 @@ TPinballComponent::TPinballComponent(TPinballTable* table, int groupIndex, bool 
 
 TPinballComponent::~TPinballComponent()
 {
-	TPinballTable* table = PinballTable;
-	if (table)
-		table->ComponentList->Delete(this);
+	if (PinballTable)
+	{
+		// ComponentList contains one reference to each component.
+		auto& components = PinballTable->ComponentList;
+		auto position = std::find(components.begin(), components.end(), this);
+		if (position != components.end())
+			components.erase(position);
+	}
 
 	delete ListBitmap;
 	delete ListZMap;

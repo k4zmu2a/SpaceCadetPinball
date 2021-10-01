@@ -65,8 +65,8 @@ public:
 	int YOffset;
 	int Width;
 	int Height;
-	objlist_class<TPinballComponent>* ComponentList;
-	objlist_class<TBall>* BallList;
+	std::vector<TPinballComponent*> ComponentList;
+	std::vector<TBall*> BallList;
 	TLightGroup* LightGroup;
 	float GravityDirVectMult;
 	float GravityAngleX;

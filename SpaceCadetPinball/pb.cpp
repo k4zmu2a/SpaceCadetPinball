@@ -12,7 +12,6 @@
 #include "loader.h"
 #include "midi.h"
 #include "nudge.h"
-#include "objlist_class.h"
 #include "options.h"
 #include "timer.h"
 #include "winmain.h"
@@ -75,7 +74,7 @@ int pb::init()
 		zMin = cameraInfo[1];
 		zScaler = cameraInfo[2];
 	}
-	
+
 	render::init(nullptr, zMin, zScaler, resInfo->TableWidth, resInfo->TableHeight);
 	gdrv::copy_bitmap(
 		&render::vscreen,
@@ -101,7 +100,7 @@ int pb::init()
 	MainTable = new TPinballTable();
 
 	high_score::read(highscore_table);
-	ball_speed_limit = MainTable->BallList->Get(0)->Offset * 200.0f;
+	ball_speed_limit = MainTable->BallList.at(0)->Offset * 200.0f;
 	--memory::critical_allocation;
 	return 0;
 }
@@ -112,8 +111,7 @@ int pb::uninit()
 	loader::unload();
 	delete record_table;
 	high_score::write(highscore_table);
-	if (MainTable)
-		delete MainTable;
+	delete MainTable;
 	MainTable = nullptr;
 	timer::uninit();
 	render::uninit();
@@ -208,7 +206,7 @@ void pb::replay_level(int demoMode)
 
 void pb::ballset(int x, int y)
 {
-	TBall* ball = MainTable->BallList->Get(0);
+	TBall* ball = MainTable->BallList.at(0);
 	ball->Acceleration.X = x * 30.0f;
 	ball->Acceleration.Y = y * 30.0f;
 	ball->Speed = maths::normalize_2d(&ball->Acceleration);
@@ -216,7 +214,6 @@ void pb::ballset(int x, int y)
 
 void pb::frame(int dtMilliSec)
 {
-	
 	if (dtMilliSec > 100)
 		dtMilliSec = 100;
 	if (dtMilliSec <= 0)
@@ -258,9 +255,8 @@ void pb::timed_frame(float timeNow, float timeDelta, bool drawBalls)
 {
 	vector_type vec1{}, vec2{};
 
-	for (int i = 0; i < MainTable->BallList->GetCount(); i++)
+	for (auto ball : MainTable->BallList)
 	{
-		auto ball = MainTable->BallList->Get(i);
 		if (ball->ActiveFlag != 0)
 		{
 			auto collComp = ball->CollisionComp;
@@ -301,9 +297,8 @@ void pb::timed_frame(float timeNow, float timeDelta, bool drawBalls)
 
 	if (drawBalls)
 	{
-		for (int i = 0; i < MainTable->BallList->GetCount(); i++)
+		for (auto ball : MainTable->BallList)
 		{
-			auto ball = MainTable->BallList->Get(i);
 			if (ball->ActiveFlag)
 				ball->Repaint();
 		}
@@ -444,19 +439,19 @@ void pb::keydown(int key)
 		{
 		case 'b':
 			TBall* ball;
-			if (MainTable->BallList->GetCount() <= 0)
+			if (MainTable->BallList.empty())
 			{
 				ball = new TBall(MainTable);
 			}
 			else
 			{
-				for (auto index = 0; ;)
+				for (auto index = 0u; ;)
 				{
-					ball = MainTable->BallList->Get(index);
+					ball = MainTable->BallList.at(index);
 					if (!ball->ActiveFlag)
 						break;
 					++index;
-					if (index >= MainTable->BallList->GetCount())
+					if (index >= MainTable->BallList.size())
 					{
 						ball = new TBall(MainTable);
 						break;

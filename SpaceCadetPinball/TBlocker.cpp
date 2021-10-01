@@ -4,7 +4,6 @@
 
 #include "control.h"
 #include "loader.h"
-#include "objlist_class.h"
 #include "render.h"
 #include "timer.h"
 
@@ -46,7 +45,7 @@ int TBlocker::Message(int code, float value)
 	case 52:
 		ActiveFlag = 1;
 		loader::play_sound(SoundIndex4);
-		render::sprite_set_bitmap(RenderSprite, ListBitmap->Get(0));
+		render::sprite_set_bitmap(RenderSprite, ListBitmap->at(0));
 		break;
 	case 59:
 		break;

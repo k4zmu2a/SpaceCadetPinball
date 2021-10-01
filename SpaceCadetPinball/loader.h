@@ -4,7 +4,7 @@
 #include "zdrv.h"
 
 
-struct DatFile;
+class DatFile;
 
 struct errorMsg
 {

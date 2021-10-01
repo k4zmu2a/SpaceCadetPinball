@@ -5,7 +5,6 @@
 #include "fullscrn.h"
 #include "loader.h"
 #include "maths.h"
-#include "objlist_class.h"
 #include "pb.h"
 #include "proj.h"
 #include "render.h"
@@ -32,7 +31,7 @@ TBall::TBall(TPinballTable* table) : TPinballComponent(table, -1, false)
 	Position.X = 0.0;
 	Position.Y = 0.0;
 
-	ListBitmap = new objlist_class<gdrv_bitmap8>(0, 4);
+	ListBitmap = new std::vector<gdrv_bitmap8*>();
 
 	/*Full tilt: ball is ballN, where N[0,2] resolution*/
 	if (pb::FullTiltMode)
@@ -49,7 +48,7 @@ TBall::TBall(TPinballTable* table) : TPinballComponent(table, -1, false)
 		{
 			loader::query_visual(groupIndex, index, &visual);
 			if (ListBitmap)
-				ListBitmap->Add(visual.Bitmap);
+				ListBitmap->push_back(visual.Bitmap);
 			auto visVec = reinterpret_cast<vector_type*>(loader::query_float_attribute(groupIndex, index, 501));
 			auto zDepth = proj::z_distance(visVec);
 			++index;
@@ -79,13 +78,13 @@ void TBall::Repaint()
 	auto zDepth = proj::z_distance(&Position);
 
 	auto zArrPtr = VisualZArray;
-	int index;
-	for (index = 0; index < ListBitmap->GetCount() - 1; ++index, zArrPtr++)
+	auto index = 0u;
+	for (; index < ListBitmap->size() - 1; ++index, zArrPtr++)
 	{
 		if (*zArrPtr <= zDepth) break;
 	}
 
-	auto bmp = ListBitmap->Get(index);
+	auto bmp = ListBitmap->at(index);
 	render::ball_set(
 		RenderSprite,
 		bmp,

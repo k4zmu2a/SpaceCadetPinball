@@ -4,7 +4,6 @@
 
 #include "control.h"
 #include "loader.h"
-#include "objlist_class.h"
 #include "render.h"
 #include "TBall.h"
 #include "timer.h"
@@ -26,7 +25,7 @@ TFlagSpinner::TFlagSpinner(TPinballTable* table, int groupIndex) : TCollisionCom
 	if (line)
 	{
 		line->place_in_grid();
-		EdgeList->Add(line);
+		EdgeList.push_back(line);
 	}
 
 	line = new TLine(this, &ActiveFlag, visual.CollisionGroup, &end, &start);
@@ -34,7 +33,7 @@ TFlagSpinner::TFlagSpinner(TPinballTable* table, int groupIndex) : TCollisionCom
 	if (line)
 	{
 		line->place_in_grid();
-		EdgeList->Add(line);
+		EdgeList.push_back(line);
 	}
 
 	SpeedDecrement = 0.64999998f;
@@ -61,8 +60,8 @@ int TFlagSpinner::Message(int code, float value)
 			Timer = 0;
 		}
 		BmpIndex = 0;
-		auto bmp = ListBitmap->Get(0);
-		auto zMap = ListZMap->Get(0);
+		auto bmp = ListBitmap->at(0);
+		auto zMap = ListZMap->at(0);
 		render::sprite_set(
 			RenderSprite,
 			bmp,
@@ -108,7 +107,7 @@ void TFlagSpinner::NextFrame()
 {
 	BmpIndex += SpinDirection;
 	int bmpIndex = BmpIndex;
-	int bmpCount = ListBitmap->GetCount();
+	int bmpCount = ListBitmap->size();
 	if (bmpIndex >= bmpCount)
 		BmpIndex = 0;
 	else if (bmpIndex < 0)
@@ -123,8 +122,8 @@ void TFlagSpinner::NextFrame()
 			control::handler(62, this);
 	}
 
-	auto bmp = ListBitmap->Get(BmpIndex);
-	auto zMap = ListZMap->Get(BmpIndex);
+	auto bmp = ListBitmap->at(BmpIndex);
+	auto zMap = ListZMap->at(BmpIndex);
 	render::sprite_set(
 		RenderSprite,
 		bmp,

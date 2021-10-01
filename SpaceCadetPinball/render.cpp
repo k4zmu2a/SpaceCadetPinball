@@ -517,7 +517,7 @@ void render::SpriteViewer(bool* show)
 				if (!bmp)
 					continue;
 
-				auto type = BitmapTypes[static_cast<char>(bmp->BitmapType)];
+				auto type = BitmapTypes[static_cast<uint8_t>(bmp->BitmapType)];
 				ImGui::Text("type:%s, size:%d, resolution: %dx%d, offset:%dx%d", type,
 				            bmp->Resolution,
 				            bmp->Width, bmp->Height, bmp->XPosition, bmp->YPosition);
@@ -575,7 +575,7 @@ void render::BlitVScreen()
 		reinterpret_cast<void**>(&lockedPixels),
 		&pitch
 	);
-	assertm(pitch == vscreen.Width * sizeof(ColorRgba), "Padding on vScreen texture");
+	assertm(static_cast<unsigned>(pitch) == vscreen.Width * sizeof(ColorRgba), "Padding on vScreen texture");
 
 	if (offset_x == 0 && offset_y == 0)
 	{

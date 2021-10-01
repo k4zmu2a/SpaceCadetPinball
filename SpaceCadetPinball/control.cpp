@@ -1,7 +1,6 @@
 #include "pch.h"
 #include "control.h"
 
-#include "objlist_class.h"
 #include "pb.h"
 #include "pinball.h"
 #include "TBlocker.h"
@@ -606,16 +605,14 @@ TPinballComponent* control::make_component_link(component_tag_base* tag)
 	if (tag->GetComponent())
 		return tag->GetComponent();
 
-	auto compList = TableG->ComponentList;
-	for (int index = 0; index < compList->GetCount(); index++)
+	for (auto component: TableG->ComponentList)
 	{
-		auto comp = compList->Get(index);
-		if (comp->GroupName)
+		if (component->GroupName)
 		{
-			if (!strcmp(comp->GroupName, tag->Name))
+			if (!strcmp(component->GroupName, tag->Name))
 			{
-				tag->SetComponent(comp);
-				return comp;
+				tag->SetComponent(component);
+				return component;
 			}
 		}
 	}

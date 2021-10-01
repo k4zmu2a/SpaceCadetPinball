@@ -4,7 +4,6 @@
 
 #include "control.h"
 #include "loader.h"
-#include "objlist_class.h"
 #include "TBall.h"
 #include "TEdgeSegment.h"
 #include "TLine.h"
@@ -35,7 +34,7 @@ TRamp::TRamp(TPinballTable* table, int groupIndex) : TCollisionComponent(table, 
 	start.X = floatArr4[4];
 	start.Y = floatArr4[5];
 	Line1 = new TLine(this, &ActiveFlag, 1 << static_cast<int>(floor(floatArr4[0])), &start, &end);
-	EdgeList->Add(Line1);
+	EdgeList.push_back(Line1);
 	if (Line1)
 	{
 		Line1->WallValue = nullptr;
@@ -53,7 +52,7 @@ TRamp::TRamp(TPinballTable* table, int groupIndex) : TCollisionComponent(table, 
 		&end2,
 		&start2);
 	Line2 = new TLine(this, &ActiveFlag, CollisionGroup, start2, end2);
-	EdgeList->Add(Line2);
+	EdgeList.push_back(Line2);
 	if (Line2)
 	{
 		Line2->WallValue = nullptr;
@@ -71,7 +70,7 @@ TRamp::TRamp(TPinballTable* table, int groupIndex) : TCollisionComponent(table, 
 		&end3,
 		&start3);
 	Line3 = new TLine(this, &ActiveFlag, CollisionGroup, start3, end3);
-	EdgeList->Add(Line3);
+	EdgeList.push_back(Line3);
 	if (Line3)
 	{
 		Line3->WallValue = nullptr;
@@ -118,7 +117,7 @@ TRamp::TRamp(TPinballTable* table, int groupIndex) : TCollisionComponent(table, 
 			if (collisionGroup)
 			{
 				auto line = new TLine(this, &ActiveFlag, collisionGroup, point1, point2);
-				EdgeList->Add(line);
+				EdgeList.push_back(line);
 				if (line)
 				{
 					line->WallValue = plane;

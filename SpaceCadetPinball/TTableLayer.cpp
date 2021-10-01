@@ -4,7 +4,6 @@
 
 #include "fullscrn.h"
 #include "loader.h"
-#include "objlist_class.h"
 #include "pb.h"
 #include "proj.h"
 #include "render.h"
@@ -91,7 +90,7 @@ TTableLayer::TTableLayer(TPinballTable* table): TCollisionComponent(table, -1, f
 		if (line)
 		{
 			line->place_in_grid();
-			EdgeList->Add(line);
+			EdgeList.push_back(line);
 		}
 
 		visArrPtr += 2;

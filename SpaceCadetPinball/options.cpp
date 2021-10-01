@@ -4,7 +4,6 @@
 #include "fullscrn.h"
 #include "memory.h"
 #include "midi.h"
-#include "pb.h"
 #include "Sound.h"
 #include "winmain.h"
 

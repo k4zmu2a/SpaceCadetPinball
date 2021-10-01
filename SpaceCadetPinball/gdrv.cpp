@@ -3,7 +3,6 @@
 
 #include "GroupData.h"
 #include "memory.h"
-#include "options.h"
 #include "partman.h"
 #include "pb.h"
 #include "score.h"

@@ -87,7 +87,7 @@ void loader::loadfrom(DatFile* datFile)
 	loader_table = datFile;
 	sound_record_table = loader_table;
 
-	for (auto groupIndex = 0; groupIndex < datFile->Groups.size(); ++groupIndex)
+	for (auto groupIndex = 0; groupIndex < static_cast<int>(datFile->Groups.size()); ++groupIndex)
 	{
 		auto value = reinterpret_cast<int16_t*>(datFile->field(groupIndex, FieldTypes::ShortValue));
 		if (value && *value == 202)

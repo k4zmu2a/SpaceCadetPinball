@@ -4,7 +4,6 @@
 
 #include "control.h"
 #include "loader.h"
-#include "objlist_class.h"
 #include "render.h"
 #include "timer.h"
 #include "TPinballTable.h"
@@ -41,8 +40,8 @@ int TSoloTarget::Message(int code, float value)
 	if (ListBitmap)
 	{
 		auto index = 1 - ActiveFlag;
-		auto bmp = ListBitmap->Get(index);
-		auto zMap = ListZMap->Get(index);
+		auto bmp = ListBitmap->at(index);
+		auto zMap = ListZMap->at(index);
 		render::sprite_set(
 			RenderSprite,
 			bmp,

@@ -4,7 +4,6 @@
 
 #include "control.h"
 #include "loader.h"
-#include "objlist_class.h"
 #include "render.h"
 #include "timer.h"
 #include "TPinballTable.h"
@@ -143,14 +142,14 @@ int TLight::Message(int code, float value)
 		schedule_timeout(value);
 		break;
 	case 11:
-		BmpIndex2 = static_cast<int>(floor(value));
-		if (BmpIndex2 > ListBitmap->GetCount())
-			BmpIndex2 = ListBitmap->GetCount();
 		bmpIndex = 0;
+		BmpIndex2 = static_cast<int>(floor(value));
+		if (BmpIndex2 > static_cast<int>(ListBitmap->size()))
+			BmpIndex2 = ListBitmap->size();		
 		if (BmpIndex2 < 0)
 			BmpIndex2 = 0;
 		Flasher.BmpArr[0] = nullptr;
-		Flasher.BmpArr[1] = ListBitmap->Get(BmpIndex2);
+		Flasher.BmpArr[1] = ListBitmap->at(BmpIndex2);
 		if (FlasherActive == 0)
 		{
 			if (!FlasherFlag1)
@@ -169,8 +168,8 @@ int TLight::Message(int code, float value)
 		break;
 	case 12:
 		bmpIndex = BmpIndex2 + 1;
-		if (bmpIndex > ListBitmap->GetCount())
-			bmpIndex = ListBitmap->GetCount();
+		if (bmpIndex > static_cast<int>(ListBitmap->size()))
+			bmpIndex = ListBitmap->size();
 		Message(11, static_cast<float>(bmpIndex));
 		break;
 	case 13:
@@ -257,7 +256,7 @@ void TLight::Reset()
 	Flasher.Sprite = RenderSprite;
 	Flasher.BmpArr[0] = nullptr;
 	if (ListBitmap)
-		Flasher.BmpArr[1] = ListBitmap->Get(0);
+		Flasher.BmpArr[1] = ListBitmap->at(0);
 	Flasher.Unknown4 = 0;
 	Flasher.Unknown3 = 0;
 	MessageField = 0;

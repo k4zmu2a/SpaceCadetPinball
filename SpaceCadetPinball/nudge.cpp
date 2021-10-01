@@ -2,7 +2,6 @@
 #include "nudge.h"
 
 
-#include "objlist_class.h"
 #include "pb.h"
 #include "render.h"
 #include "TBall.h"
@@ -68,12 +67,10 @@ void nudge::_nudge(float xDiff, float yDiff)
 	vector_type accelMod;
 	float invAccelX, invAccelY;
 
-	auto ballList = pb::MainTable->BallList;
 	accelMod.X = xDiff * 0.5f;
 	accelMod.Y = yDiff * 0.5f;
-	for (auto index = 0; index < ballList->GetCount(); index++)
+	for (auto ball : pb::MainTable->BallList)
 	{
-		auto ball = ballList->Get(index);
 		if (ball->ActiveFlag && !ball->CollisionComp)
 		{
 			ball->Acceleration.X = ball->Acceleration.X * ball->Speed;

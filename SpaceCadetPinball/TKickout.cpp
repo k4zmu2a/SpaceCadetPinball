@@ -4,7 +4,6 @@
 
 #include "control.h"
 #include "loader.h"
-#include "objlist_class.h"
 #include "TBall.h"
 #include "TCircle.h"
 #include "timer.h"
@@ -40,7 +39,7 @@ TKickout::TKickout(TPinballTable* table, int groupIndex, bool someFlag): TCollis
 	if (tCircle)
 	{
 		tCircle->place_in_grid();
-		EdgeList->Add(tCircle);
+		EdgeList.push_back(tCircle);
 	}
 
 	Circle.RadiusSq = visual.FloatArr[2] * visual.FloatArr[2];

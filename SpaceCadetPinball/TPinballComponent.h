@@ -1,5 +1,4 @@
 #pragma once
-#include "objlist_class.h"
 
 struct zmap_header_type;
 struct gdrv_bitmap8;
@@ -32,11 +31,10 @@ public:
 	char ActiveFlag;
 	int MessageField;
 	char* GroupName;
-	int Unknown4;
 	component_control* Control;
 	int GroupIndex;
 	render_sprite_type_struct* RenderSprite;
 	TPinballTable* PinballTable;
-	objlist_class<gdrv_bitmap8>* ListBitmap;
-	objlist_class<zmap_header_type>* ListZMap;
+	std::vector<gdrv_bitmap8*>* ListBitmap;
+	std::vector<zmap_header_type*>* ListZMap;
 };

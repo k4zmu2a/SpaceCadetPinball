@@ -3,7 +3,6 @@
 
 
 #include "control.h"
-#include "objlist_class.h"
 #include "render.h"
 #include "timer.h"
 
@@ -12,7 +11,7 @@ TWall::TWall(TPinballTable* table, int groupIndex) : TCollisionComponent(table, 
 	if (RenderSprite)
 		render::sprite_set_bitmap(RenderSprite, nullptr);
 	if (ListBitmap)
-		BmpPtr = ListBitmap->Get(0);
+		BmpPtr = ListBitmap->at(0);
 	Timer = 0;
 }
 

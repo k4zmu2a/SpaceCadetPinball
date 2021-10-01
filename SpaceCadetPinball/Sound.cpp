@@ -12,7 +12,7 @@ int Sound::Init(int voices)
 		channelCount = 8;
 	num_channels = channelCount;
 
-	auto init = Mix_Init(MIX_INIT_MID);
+	Mix_Init(MIX_INIT_MID);
 	return Mix_OpenAudio(MIX_DEFAULT_FREQUENCY, MIX_DEFAULT_FORMAT, 2, 1024);
 }
 

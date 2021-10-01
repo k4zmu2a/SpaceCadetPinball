@@ -3,7 +3,6 @@
 
 
 #include "maths.h"
-#include "objlist_class.h"
 #include "TBall.h"
 #include "TEdgeBox.h"
 #include "TEdgeSegment.h"
@@ -49,12 +48,12 @@ int TEdgeManager::increment_box_y(int y)
 
 void TEdgeManager::add_edge_to_box(int x, int y, TEdgeSegment* edge)
 {
-	BoxArray[x + y * MaxBoxX].EdgeList->Add(edge);
+	BoxArray[x + y * MaxBoxX].EdgeList.push_back(edge);
 }
 
 void TEdgeManager::add_field_to_box(int x, int y, field_effect_type* field)
 {
-	BoxArray[x + y * MaxBoxX].FieldList->Add(field);
+	BoxArray[x + y * MaxBoxX].FieldList.push_back(field);
 }
 
 int TEdgeManager::TestGridBox(int x, int y, float* distPtr, TEdgeSegment** edgeDst, ray_type* ray, TBall* ball,
@@ -64,9 +63,9 @@ int TEdgeManager::TestGridBox(int x, int y, float* distPtr, TEdgeSegment** edgeD
 	{
 		TEdgeBox* edgeBox = &BoxArray[x + y * MaxBoxX];
 		TEdgeSegment** edgePtr = &EdgeArray[edgeIndex];
-		for (auto index = edgeBox->EdgeList->GetCount() - 1; index >= 0; --index)
+		for (auto it = edgeBox->EdgeList.rbegin(); it != edgeBox->EdgeList.rend(); ++it)
 		{
-			auto edge = edgeBox->EdgeList->Get(index);
+			auto edge = *it;
 			if (!edge->ProcessedFlag && *edge->ActiveFlag && (edge->CollisionGroup & ray->FieldFlag))
 			{
 				if (!ball->already_hit(edge))
@@ -94,9 +93,9 @@ void TEdgeManager::FieldEffects(TBall* ball, vector_type* dstVec)
 	TEdgeBox* edgeBox = &BoxArray[box_x(ball->Position.X) + box_y(ball->Position.Y) *
 		MaxBoxX];
 
-	for (int index = edgeBox->FieldList->GetCount() - 1; index >= 0; --index)
+	for (auto it = edgeBox->FieldList.rbegin(); it != edgeBox->FieldList.rend(); ++it)
 	{
-		auto field = edgeBox->FieldList->Get(index);
+		auto field = *it;
 		if (*field->Flag2Ptr && ball->FieldFlag & field->Mask)
 		{
 			if (field->CollisionComp->FieldEffect(ball, &vec))
