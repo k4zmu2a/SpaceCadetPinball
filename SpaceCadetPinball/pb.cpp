@@ -365,27 +365,27 @@ void pb::keyup(int key)
 {
 	if (game_mode == 1 && !winmain::single_step && !demo_mode)
 	{
-		if (key == options::Options.LeftFlipperKey)
+		if (key == options::Options.Key.LeftFlipper)
 		{
 			MainTable->Message(1001, time_now);
 		}
-		else if (key == options::Options.RightFlipperKey)
+		else if (key == options::Options.Key.RightFlipper)
 		{
 			MainTable->Message(1003, time_now);
 		}
-		else if (key == options::Options.PlungerKey)
+		else if (key == options::Options.Key.Plunger)
 		{
 			MainTable->Message(1005, time_now);
 		}
-		else if (key == options::Options.LeftTableBumpKey)
+		else if (key == options::Options.Key.LeftTableBump)
 		{
 			nudge::un_nudge_right(0, nullptr);
 		}
-		else if (key == options::Options.RightTableBumpKey)
+		else if (key == options::Options.Key.RightTableBump)
 		{
 			nudge::un_nudge_left(0, nullptr);
 		}
-		else if (key == options::Options.BottomTableBumpKey)
+		else if (key == options::Options.Key.BottomTableBump)
 		{
 			nudge::un_nudge_up(0, nullptr);
 		}
@@ -394,6 +394,7 @@ void pb::keyup(int key)
 
 void pb::keydown(int key)
 {
+	options::KeyDown(key);
 	if (winmain::single_step || demo_mode)
 		return;
 	if (game_mode != 1)
@@ -402,35 +403,35 @@ void pb::keydown(int key)
 		return;
 	}
 	control::pbctrl_bdoor_controller(key);
-	if (key == options::Options.LeftFlipperKey)
+	if (key == options::Options.Key.LeftFlipper)
 	{
 		MainTable->Message(1000, time_now);
 		return;
 	}
-	if (key == options::Options.RightFlipperKey)
+	if (key == options::Options.Key.RightFlipper)
 	{
 		MainTable->Message(1002, time_now);
 	}
 	else
 	{
-		if (key == options::Options.PlungerKey)
+		if (key == options::Options.Key.Plunger)
 		{
 			MainTable->Message(1004, time_now);
 			return;
 		}
-		if (key == options::Options.LeftTableBumpKey)
+		if (key == options::Options.Key.LeftTableBump)
 		{
 			if (!MainTable->TiltLockFlag)
 				nudge::nudge_right();
 			return;
 		}
-		if (key == options::Options.RightTableBumpKey)
+		if (key == options::Options.Key.RightTableBump)
 		{
 			if (!MainTable->TiltLockFlag)
 				nudge::nudge_left();
 			return;
 		}
-		if (key == options::Options.BottomTableBumpKey)
+		if (key == options::Options.Key.BottomTableBump)
 		{
 			if (!MainTable->TiltLockFlag)
 				nudge::nudge_up();

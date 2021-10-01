@@ -8,43 +8,22 @@
 #include "Sound.h"
 #include "winmain.h"
 
-optionsStruct options::Options{};
-
-short options::vk_list[28]
-{
-	-32703,
-	0x5A,
-	-32720,
-	0x39,
-	0x402E,
-	0x402F,
-	0x403B,
-	0x4027,
-	0x405B,
-	0x405D,
-	0x20,
-	0x0D,
-	0x9,
-	0x14,
-	0x25,
-	0x27,
-	0x26,
-	0x28,
-	0x2D,
-	0x2E,
-	0x24,
-	0x23,
-	0x21,
-	0x22,
-	0x90,
-	0x91,
-	0x13,
-	-1
-};
-
-std::map<std::string, std::string> options::settings{};
-
 constexpr int options::MaxUps, options::MaxFps, options::MinUps, options::MinFps, options::DefUps, options::DefFps;
+
+optionsStruct options::Options{};
+std::map<std::string, std::string> options::settings{};
+ControlsStruct options::RebindControls{};
+bool options::ShowDialog = false;
+const ControlRef* options::ControlWaitingForKey = nullptr;
+const ControlRef options::Controls[6]
+{
+	{"Left Flipper", RebindControls.LeftFlipper},
+	{"Right Flipper", RebindControls.RightFlipper},
+	{"Left Table Bump", RebindControls.LeftTableBump},
+	{"Right Table Bump", RebindControls.RightTableBump},
+	{"Bottom Table Bump", RebindControls.BottomTableBump},
+	{"Plunger", RebindControls.Plunger},
+};
 
 
 void options::init()
@@ -68,36 +47,26 @@ void options::init()
 	Options.Sounds = 1;
 	Options.Music = 0;
 	Options.FullScreen = 0;
-	Options.LeftFlipperKeyDft = SDLK_z;
-	Options.RightFlipperKeyDft = SDLK_SLASH;
-	Options.PlungerKeyDft = SDLK_SPACE;
-	Options.LeftTableBumpKeyDft = SDLK_x;
-	Options.RightTableBumpKeyDft = SDLK_PERIOD;
-	Options.BottomTableBumpKeyDft = SDLK_UP;
-	/*pinball::get_rc_int(159, &Options.LeftFlipperKeyDft);
-	pinball::get_rc_int(160, &Options.RightFlipperKeyDft);
-	pinball::get_rc_int(161, &Options.PlungerKeyDft);
-	pinball::get_rc_int(162, &Options.LeftTableBumpKeyDft);
-	pinball::get_rc_int(163, &Options.RightTableBumpKeyDft);
-	pinball::get_rc_int(164, &Options.BottomTableBumpKeyDft);*/
-	Options.LeftFlipperKey = Options.LeftFlipperKeyDft;
-	Options.RightFlipperKey = Options.RightFlipperKeyDft;
-	Options.PlungerKey = Options.PlungerKeyDft;
-	Options.LeftTableBumpKey = Options.LeftTableBumpKeyDft;
-	Options.RightTableBumpKey = Options.RightTableBumpKeyDft;
+	Options.KeyDft.LeftFlipper = SDLK_z;
+	Options.KeyDft.RightFlipper = SDLK_SLASH;
+	Options.KeyDft.Plunger = SDLK_SPACE;
+	Options.KeyDft.LeftTableBump = SDLK_x;
+	Options.KeyDft.RightTableBump = SDLK_PERIOD;
+	Options.KeyDft.BottomTableBump = SDLK_UP;
+	Options.Key = Options.KeyDft;
 	Options.Players = 1;
-	Options.BottomTableBumpKey = Options.BottomTableBumpKeyDft;
+
 	Options.UniformScaling = true;
 	Options.Sounds = get_int("Sounds", Options.Sounds);
 	Options.Music = get_int("Music", Options.Music);
 	Options.FullScreen = get_int("FullScreen", Options.FullScreen);
 	Options.Players = get_int("Players", Options.Players);
-	Options.LeftFlipperKey = get_int("Left Flipper key", Options.LeftFlipperKey);
-	Options.RightFlipperKey = get_int("Right Flipper key", Options.RightFlipperKey);
-	Options.PlungerKey = get_int("Plunger key", Options.PlungerKey);
-	Options.LeftTableBumpKey = get_int("Left Table Bump key", Options.LeftTableBumpKey);
-	Options.RightTableBumpKey = get_int("Right Table Bump key", Options.RightTableBumpKey);
-	Options.BottomTableBumpKey = get_int("Bottom Table Bump key", Options.BottomTableBumpKey);
+	Options.Key.LeftFlipper = get_int("Left Flipper key", Options.Key.LeftFlipper);
+	Options.Key.RightFlipper = get_int("Right Flipper key", Options.Key.RightFlipper);
+	Options.Key.Plunger = get_int("Plunger key", Options.Key.Plunger);
+	Options.Key.LeftTableBump = get_int("Left Table Bump key", Options.Key.LeftTableBump);
+	Options.Key.RightTableBump = get_int("Right Table Bump key", Options.Key.RightTableBump);
+	Options.Key.BottomTableBump = get_int("Bottom Table Bump key", Options.Key.BottomTableBump);
 	Options.UniformScaling = get_int("Uniform scaling", Options.UniformScaling);
 	ImGui::GetIO().FontGlobalScale = get_float("UI Scale", 1.0f);
 	Options.Resolution = get_int("Screen Resolution", -1);
@@ -123,12 +92,12 @@ void options::uninit()
 	set_int("Music", Options.Music);
 	set_int("FullScreen", Options.FullScreen);
 	set_int("Players", Options.Players);
-	set_int("Left Flipper key", Options.LeftFlipperKey);
-	set_int("Right Flipper key", Options.RightFlipperKey);
-	set_int("Plunger key", Options.PlungerKey);
-	set_int("Left Table Bump key", Options.LeftTableBumpKey);
-	set_int("Right Table Bump key", Options.RightTableBumpKey);
-	set_int("Bottom Table Bump key", Options.BottomTableBumpKey);
+	set_int("Left Flipper key", Options.Key.LeftFlipper);
+	set_int("Right Flipper key", Options.Key.RightFlipper);
+	set_int("Plunger key", Options.Key.Plunger);
+	set_int("Left Table Bump key", Options.Key.LeftTableBump);
+	set_int("Right Table Bump key", Options.Key.RightTableBump);
+	set_int("Bottom Table Bump key", Options.Key.BottomTableBump);
 	set_int("Screen Resolution", Options.Resolution);
 	set_int("Uniform scaling", Options.UniformScaling);
 	set_float("UI Scale", ImGui::GetIO().FontGlobalScale);
@@ -241,9 +210,108 @@ void options::toggle(Menu1 uIDCheckItem)
 	}
 }
 
-void options::keyboard()
+void options::KeyDown(int key)
 {
-	//DialogBoxParamA(nullptr, "KEYMAPPER", nullptr, KeyMapDlgProc, 0);
+	if (ControlWaitingForKey)
+	{
+		// Skip function keys, just in case.
+		if (key < SDLK_F1 || key > SDLK_F12)
+		{
+			ControlWaitingForKey->Option = key;
+			ControlWaitingForKey = nullptr;
+		}
+	}
+}
+
+void options::ShowControlDialog()
+{
+	if (!ShowDialog)
+	{
+		ControlWaitingForKey = nullptr;
+		RebindControls = Options.Key;
+		ShowDialog = true;
+	}
+}
+
+void options::RenderControlDialog()
+{
+	if (!ShowDialog)
+		return;
+
+	ImGui::PushStyleVar(ImGuiStyleVar_WindowMinSize, ImVec2{500, 400});
+	if (ImGui::Begin("3D Pinball: Player Controls", &ShowDialog))
+	{
+		ImGui::TextUnformatted("Instructions");
+		ImGui::Separator();
+
+		ImGui::TextWrapped(
+			"To change game controls, click the control button, press the new key, and then choose OK.");
+		ImGui::TextWrapped(
+			"To restore 3D Pinball to its original settings, choose Default, and then choose OK.");
+		ImGui::TextWrapped("Original warns against binding the same key to multiple controls, but does not forbid it.");
+		ImGui::Spacing();
+
+		ImGui::TextUnformatted("Control Options");
+		ImGui::Separator();
+
+		ImGui::PushStyleVar(ImGuiStyleVar_CellPadding, ImVec2{5, 10});
+		if (ImGui::BeginTable("Controls", 2, ImGuiTableFlags_NoSavedSettings | ImGuiTableFlags_Borders))
+		{
+			for (auto& ctrl : Controls)
+			{
+				ImGui::TableNextColumn();
+				if (ImGui::BeginTable("Control", 2, ImGuiTableFlags_NoSavedSettings))
+				{
+					ImGui::TableNextColumn();
+					ImGui::TextWrapped("%s", ctrl.Name);
+
+					ImGui::TableNextColumn();
+					if (ControlWaitingForKey == &ctrl)
+					{
+						ImGui::Button("Press the key", ImVec2(-1, 0));
+					}
+					else
+					{
+						auto keyName = SDL_GetKeyName(ctrl.Option);
+						if (!keyName[0])
+							keyName = "Unknown key";
+						if (ImGui::Button(keyName, ImVec2(-1, 0)))
+						{
+							ControlWaitingForKey = &ctrl;
+						}
+					}
+					ImGui::EndTable();
+				}
+			}
+			ImGui::EndTable();
+		}
+		ImGui::PopStyleVar();
+		ImGui::Spacing();
+
+		if (ImGui::Button("OK"))
+		{
+			Options.Key = RebindControls;
+			ShowDialog = false;
+		}
+
+		ImGui::SameLine();
+		if (ImGui::Button("Cancel"))
+		{
+			ShowDialog = false;
+		}
+
+		ImGui::SameLine();
+		if (ImGui::Button("Default"))
+		{
+			RebindControls = Options.KeyDft;
+			ControlWaitingForKey = nullptr;
+		}
+	}
+	ImGui::End();
+	ImGui::PopStyleVar();
+
+	if (!ShowDialog)
+		ControlWaitingForKey = nullptr;
 }
 
 void options::MyUserData_ReadLine(ImGuiContext* ctx, ImGuiSettingsHandler* handler, void* entry, const char* line)

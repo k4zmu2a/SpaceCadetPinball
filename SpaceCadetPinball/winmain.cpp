@@ -324,8 +324,8 @@ void winmain::RenderUi()
 			}
 			ImGui::PopStyleColor(1);
 			ImGui::PopID();
-			ImGui::End();
 		}
+		ImGui::End();
 		ImGui::PopStyleVar();
 		return;
 	}
@@ -424,7 +424,7 @@ void winmain::RenderUi()
 			{
 				if (!single_step)
 					pause();
-				options::keyboard();
+				options::ShowControlDialog();
 			}
 			if (ImGui::BeginMenu("Table Resolution"))
 			{
@@ -524,6 +524,7 @@ void winmain::RenderUi()
 	high_score::RenderHighScoreDialog();
 	if (ShowSpriteViewer)
 		render::SpriteViewer(&ShowSpriteViewer);
+	options::RenderControlDialog();
 }
 
 int winmain::event_handler(const SDL_Event* event)
@@ -598,7 +599,7 @@ int winmain::event_handler(const SDL_Event* event)
 		case SDLK_F8:
 			if (!single_step)
 				pause();
-			options::keyboard();
+			options::ShowControlDialog();
 			break;
 		case SDLK_F9:
 			options::toggle(Menu1::Show_Menu);
@@ -644,14 +645,14 @@ int winmain::event_handler(const SDL_Event* event)
 				SDL_SetWindowGrab(MainWindow, SDL_TRUE);
 			}
 			else
-				pb::keydown(options::Options.LeftFlipperKey);
+				pb::keydown(options::Options.Key.LeftFlipper);
 			break;
 		case SDL_BUTTON_RIGHT:
 			if (!pb::cheat_mode)
-				pb::keydown(options::Options.RightFlipperKey);
+				pb::keydown(options::Options.Key.RightFlipper);
 			break;
 		case SDL_BUTTON_MIDDLE:
-			pb::keydown(options::Options.PlungerKey);
+			pb::keydown(options::Options.Key.Plunger);
 			break;
 		default:
 			break;
@@ -668,14 +669,14 @@ int winmain::event_handler(const SDL_Event* event)
 				SDL_SetWindowGrab(MainWindow, SDL_FALSE);
 			}
 			if (!pb::cheat_mode)
-				pb::keyup(options::Options.LeftFlipperKey);
+				pb::keyup(options::Options.Key.LeftFlipper);
 			break;
 		case SDL_BUTTON_RIGHT:
 			if (!pb::cheat_mode)
-				pb::keyup(options::Options.RightFlipperKey);
+				pb::keyup(options::Options.Key.RightFlipper);
 			break;
 		case SDL_BUTTON_MIDDLE:
-			pb::keyup(options::Options.PlungerKey);
+			pb::keyup(options::Options.Key.Plunger);
 			break;
 		default:
 			break;

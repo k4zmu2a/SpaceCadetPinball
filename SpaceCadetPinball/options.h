@@ -29,30 +29,36 @@ enum class Menu1:int
 	WindowLinearFilter = 601,
 };
 
+struct ControlsStruct
+{
+	int LeftFlipper;
+	int RightFlipper;
+	int Plunger;
+	int LeftTableBump;
+	int RightTableBump;
+	int BottomTableBump;
+};
+
 struct optionsStruct
 {
+	ControlsStruct Key;
+	ControlsStruct KeyDft;
 	int Sounds;
 	int Music;
 	int FullScreen;
 	int Players;
-	int LeftFlipperKey;
-	int RightFlipperKey;
-	int PlungerKey;
-	int LeftTableBumpKey;
-	int RightTableBumpKey;
-	int BottomTableBumpKey;
-	int LeftFlipperKeyDft;
-	int RightFlipperKeyDft;
-	int PlungerKeyDft;
-	int LeftTableBumpKeyDft;
-	int RightTableBumpKeyDft;
-	int BottomTableBumpKeyDft;
 	int Resolution;
 	bool UniformScaling;
 	bool LinearFiltering;
 	int FramesPerSecond;
 	int UpdatesPerSecond;
 	bool ShowMenu;
+};
+
+struct ControlRef
+{
+	const char* Name;
+	int& Option;
 };
 
 
@@ -73,11 +79,15 @@ public:
 	static float get_float(LPCSTR lpValueName, float defaultValue);
 	static void set_float(LPCSTR lpValueName, float data);
 	static void toggle(Menu1 uIDCheckItem);
-
-	static void keyboard();
+	static void KeyDown(int key);
+	static void ShowControlDialog();
+	static void RenderControlDialog();
 private:
-	static short vk_list[28];
 	static std::map<std::string, std::string> settings;
+	static ControlsStruct RebindControls;
+	static bool ShowDialog;
+	static const ControlRef Controls[6];
+	static const ControlRef* ControlWaitingForKey;
 
 	static void MyUserData_ReadLine(ImGuiContext* ctx, ImGuiSettingsHandler* handler, void* entry, const char* line);
 	static void* MyUserData_ReadOpen(ImGuiContext* ctx, ImGuiSettingsHandler* handler, const char* name);
