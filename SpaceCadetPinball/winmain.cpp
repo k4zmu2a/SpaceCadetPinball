@@ -2,7 +2,6 @@
 #include "winmain.h"
 
 #include "fullscrn.h"
-#include "memory.h"
 #include "midi.h"
 #include "pinball.h"
 #include "options.h"
@@ -28,7 +27,7 @@ int winmain::no_time_loss;
 
 bool winmain::restart = false;
 
-gdrv_bitmap8 winmain::gfr_display{};
+gdrv_bitmap8* winmain::gfr_display = nullptr;
 std::string winmain::DatFileName;
 bool winmain::ShowAboutDialog = false;
 bool winmain::ShowImGuiDemo = false;
@@ -46,7 +45,7 @@ int winmain::WinMain(LPCSTR lpCmdLine)
 	restart = false;
 	bQuit = false;
 
-	memory::init(memalloc_failure);
+	std::set_new_handler(memalloc_failure);
 
 	// SDL init
 	SDL_SetMainReady();
@@ -117,8 +116,6 @@ int winmain::WinMain(LPCSTR lpCmdLine)
 
 	// PB init from message handler
 	{
-		++memory::critical_allocation;
-
 		options::init();
 		auto voiceCount = options::get_int("Voices", 8);
 		if (Sound::Init(voiceCount))
@@ -136,8 +133,6 @@ int winmain::WinMain(LPCSTR lpCmdLine)
 		}
 
 		fullscrn::init();
-
-		--memory::critical_allocation;
 	}
 
 	pb::reset_table();
@@ -182,7 +177,7 @@ int winmain::WinMain(LPCSTR lpCmdLine)
 
 		if (DispGRhistory)
 		{
-			if (!gfr_display.BmpBufPtr1)
+			if (!gfr_display)
 			{
 				auto plt = static_cast<ColorRgba*>(malloc(1024u));
 				auto pltPtr = &plt[10];
@@ -199,14 +194,14 @@ int winmain::WinMain(LPCSTR lpCmdLine)
 				}
 				gdrv::display_palette(plt);
 				free(plt);
-				gdrv::create_bitmap(&gfr_display, 400, 15, 400, false);
+				gfr_display = new gdrv_bitmap8(400, 15, false);
 			}
 
 			if (!dtHistoryCounter)
 			{
 				dtHistoryCounter = 300;
-				gdrv::copy_bitmap(&render::vscreen, 300, 10, 0, 30, &gfr_display, 0, 0);
-				gdrv::fill_bitmap(&gfr_display, 300, 10, 0, 0, 0);
+				gdrv::copy_bitmap(render::vscreen, 300, 10, 0, 30, gfr_display, 0, 0);
+				gdrv::fill_bitmap(gfr_display, 300, 10, 0, 0, 0);
 			}
 		}
 
@@ -227,7 +222,7 @@ int winmain::WinMain(LPCSTR lpCmdLine)
 				auto deltaT = static_cast<int>(frameDuration);
 				frameDuration -= deltaT;
 				pb::frame(deltaT);
-				if (gfr_display.BmpBufPtr1)
+				if (gfr_display)
 				{
 					auto deltaTPal = deltaT + 10;
 					auto fillChar = static_cast<uint8_t>(deltaTPal);
@@ -235,7 +230,7 @@ int winmain::WinMain(LPCSTR lpCmdLine)
 					{
 						fillChar = 1;
 					}
-					gdrv::fill_bitmap(&gfr_display, 1, 10, 300 - dtHistoryCounter, 0, fillChar);
+					gdrv::fill_bitmap(gfr_display, 1, 10, 300 - dtHistoryCounter, 0, fillChar);
 					--dtHistoryCounter;
 				}
 				updateCounter++;
@@ -289,7 +284,7 @@ int winmain::WinMain(LPCSTR lpCmdLine)
 		}
 	}
 
-	gdrv::destroy_bitmap(&gfr_display);
+	delete gfr_display;
 	options::uninit();
 	midi::music_shutdown();
 	pb::uninit();

@@ -28,6 +28,7 @@
 #include <cstring>
 #include <string>
 #include <thread>
+#include <map>
 
 #define SDL_MAIN_HANDLED
 #include "SDL.h"

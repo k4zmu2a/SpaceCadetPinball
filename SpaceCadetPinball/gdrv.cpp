@@ -2,7 +2,6 @@
 #include "gdrv.h"
 
 #include "GroupData.h"
-#include "memory.h"
 #include "partman.h"
 #include "pb.h"
 #include "score.h"
@@ -10,77 +9,74 @@
 
 ColorRgba gdrv::current_palette[256]{};
 
-int gdrv::create_bitmap(gdrv_bitmap8* bmp, int width, int height, int stride, bool indexed)
+gdrv_bitmap8::gdrv_bitmap8(int width, int height, bool indexed)
 {
 	assertm(width >= 0 && height >= 0, "Negative bitmap8 dimensions");
 
-	bmp->Width = width;
-	bmp->Height = height;
-	bmp->Stride = width;
-	bmp->BitmapType = BitmapTypes::DibBitmap;
-	bmp->Texture = nullptr;
-
-	if (stride >= 0)
-		bmp->IndexedStride = stride;
-	else
-	{
-		bmp->IndexedStride = width;
-		if (width % 4)
-			bmp->IndexedStride = width - width % 4 + 4;
-	}
+	Width = width;
+	Height = height;
+	Stride = width;
+	IndexedStride = width;
+	BitmapType = BitmapTypes::DibBitmap;
+	Texture = nullptr;
+	IndexedBmpPtr = nullptr;
+	XPosition = 0;
+	YPosition = 0;
+	Resolution = 0;
 
 	if (indexed)
-		bmp->IndexedBmpPtr = memory::allocate(bmp->Height * bmp->IndexedStride);
-	bmp->BmpBufPtr1 = memory::allocate<ColorRgba>(bmp->Height * bmp->Stride);
-	if (bmp->BmpBufPtr1)
-	{
-		return 0;
-	}
-	return -1;
+		IndexedBmpPtr = new char[Height * IndexedStride];
+	BmpBufPtr1 = new ColorRgba[Height * Stride];
 }
 
-int gdrv::create_bitmap(gdrv_bitmap8& bmp, const dat8BitBmpHeader& header)
+gdrv_bitmap8::gdrv_bitmap8(const dat8BitBmpHeader& header)
 {
 	assertm(header.Width >= 0 && header.Height >= 0, "Negative bitmap8 dimensions");
 
 	if (header.IsFlagSet(bmp8Flags::Spliced))
-		bmp.BitmapType = BitmapTypes::Spliced;
+		BitmapType = BitmapTypes::Spliced;
 	else if (header.IsFlagSet(bmp8Flags::DibBitmap))
-		bmp.BitmapType = BitmapTypes::DibBitmap;
+		BitmapType = BitmapTypes::DibBitmap;
 	else
-		bmp.BitmapType = BitmapTypes::RawBitmap;
+		BitmapType = BitmapTypes::RawBitmap;
 
-	bmp.Width = header.Width;
-	bmp.Stride = header.Width;
-	bmp.IndexedStride = header.Width;
-	bmp.Height = header.Height;
-	bmp.XPosition = header.XPosition;
-	bmp.YPosition = header.YPosition;
-	bmp.Resolution = header.Resolution;
-	bmp.Texture = nullptr;
+	Width = header.Width;
+	Stride = header.Width;
+	IndexedStride = header.Width;
+	Height = header.Height;
+	XPosition = header.XPosition;
+	YPosition = header.YPosition;
+	Resolution = header.Resolution;
+	Texture = nullptr;
 
 	int sizeInBytes;
-	if (bmp.BitmapType == BitmapTypes::Spliced)
+	if (BitmapType == BitmapTypes::Spliced)
 	{
 		sizeInBytes = header.Size;
 	}
 	else
 	{
-		if (bmp.BitmapType == BitmapTypes::RawBitmap)
-			assertm(bmp.Width % 4 == 0 || header.IsFlagSet(bmp8Flags::RawBmpUnaligned), "Wrong raw bitmap align flag");
-		if (bmp.Width % 4)
-			bmp.IndexedStride = bmp.Width - bmp.Width % 4 + 4;
-		sizeInBytes = bmp.Height * bmp.IndexedStride;
+		if (BitmapType == BitmapTypes::RawBitmap)
+			assertm(Width % 4 == 0 || header.IsFlagSet(bmp8Flags::RawBmpUnaligned), "Wrong raw bitmap align flag");
+		if (Width % 4)
+			IndexedStride = Width - Width % 4 + 4;
+		sizeInBytes = Height * IndexedStride;
 		assertm(sizeInBytes == header.Size, "Wrong bitmap8 size");
 	}
 
-	bmp.IndexedBmpPtr = memory::allocate(sizeInBytes);
-	bmp.BmpBufPtr1 = memory::allocate<ColorRgba>(bmp.Stride * bmp.Height);
-	if (bmp.BmpBufPtr1)
+	IndexedBmpPtr = new char[sizeInBytes];
+	BmpBufPtr1 = new ColorRgba[Stride * Height];
+}
+
+gdrv_bitmap8::~gdrv_bitmap8()
+{
+	if (BitmapType != BitmapTypes::None)
 	{
-		return 0;
+		delete[] BmpBufPtr1;
+		delete[] IndexedBmpPtr;
+		if (Texture)
+			SDL_DestroyTexture(Texture);
 	}
-	return -1;
 }
 
 int gdrv::display_palette(ColorRgba* plt)
@@ -136,24 +132,6 @@ int gdrv::display_palette(ColorRgba* plt)
 		}
 	}
 
-	return 0;
-}
-
-
-int gdrv::destroy_bitmap(gdrv_bitmap8* bmp)
-{
-	if (!bmp)
-		return -1;
-
-	if (bmp->BitmapType != BitmapTypes::None)
-	{
-		memory::free(bmp->BmpBufPtr1);
-		if (bmp->IndexedBmpPtr)
-			memory::free(bmp->IndexedBmpPtr);
-		if (bmp->Texture)
-			SDL_DestroyTexture(bmp->Texture);
-	}
-	memset(bmp, 0, sizeof(gdrv_bitmap8));
 	return 0;
 }
 

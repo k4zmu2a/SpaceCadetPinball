@@ -1,7 +1,6 @@
 #include "pch.h"
 #include "timer.h"
 
-#include "memory.h"
 #include "pb.h"
 
 int timer::SetCount;
@@ -13,7 +12,7 @@ timer_struct* timer::TimerBuffer;
 
 int timer::init(int count)
 {
-	auto buf = memory::allocate<timer_struct>(count);
+	auto buf = new timer_struct[count];
 	TimerBuffer = buf;
 	if (!buf)
 		return 1;
@@ -32,8 +31,7 @@ int timer::init(int count)
 
 void timer::uninit()
 {
-	if (TimerBuffer)
-		memory::free(TimerBuffer);
+	delete[] TimerBuffer;
 	TimerBuffer = nullptr;
 }
 

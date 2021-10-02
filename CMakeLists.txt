@@ -42,8 +42,6 @@ set(SOURCE_FILES
         SpaceCadetPinball/loader.h
         SpaceCadetPinball/maths.cpp
         SpaceCadetPinball/maths.h
-        SpaceCadetPinball/memory.cpp
-        SpaceCadetPinball/memory.h
         SpaceCadetPinball/midi.cpp
         SpaceCadetPinball/midi.h
         SpaceCadetPinball/nudge.cpp

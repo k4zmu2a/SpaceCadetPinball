@@ -1,6 +1,5 @@
 #include "pch.h"
 #include "TTextBoxMessage.h"
-#include "memory.h"
 #include "pb.h"
 
 TTextBoxMessage::TTextBoxMessage(char* text, float time)
@@ -11,7 +10,7 @@ TTextBoxMessage::TTextBoxMessage(char* text, float time)
 	if (text)
 	{
 		const auto textLen = strlen(text) + 1;
-		Text = memory::allocate(textLen);
+		Text = new char[textLen];
 		if (Text)
 			strncpy(Text, text, textLen);
 	}
@@ -21,8 +20,7 @@ TTextBoxMessage::TTextBoxMessage(char* text, float time)
 
 TTextBoxMessage::~TTextBoxMessage()
 {
-	if (Text)
-		memory::free(Text);
+	delete[] Text;
 }
 
 float TTextBoxMessage::TimeLeft() const

@@ -4,7 +4,6 @@
 
 #include "control.h"
 #include "loader.h"
-#include "memory.h"
 #include "pb.h"
 #include "pinball.h"
 #include "render.h"
@@ -194,18 +193,18 @@ TPinballTable::TPinballTable(): TPinballComponent(nullptr, -1, false)
 
 TPinballTable::~TPinballTable()
 {
-	for (int scoreIndex = 0; scoreIndex < 4; scoreIndex++)
+	for (auto& PlayerScore : PlayerScores)
 	{
-		memory::free(PlayerScores[scoreIndex].ScoreStruct);
+		delete PlayerScore.ScoreStruct;
 	}
 	if (ScorePlayerNumber1)
 	{
-		memory::free(ScorePlayerNumber1);
+		delete ScorePlayerNumber1;
 		ScorePlayerNumber1 = nullptr;
 	}
 	if (ScoreBallcount)
 	{
-		memory::free(ScoreBallcount);
+		delete ScoreBallcount;
 		ScoreBallcount = nullptr;
 	}
 	delete LightGroup;

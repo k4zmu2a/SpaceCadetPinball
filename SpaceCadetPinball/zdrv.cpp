@@ -1,21 +1,26 @@
 #include "pch.h"
 #include "zdrv.h"
-#include "memory.h"
 #include "winmain.h"
 
 
-int zdrv::create_zmap(zmap_header_type* zmap, int width, int height, int stride)
+zmap_header_type::zmap_header_type(int width, int height, int stride)
 {
-	zmap->Width = width;
-	zmap->Height = height;
-	zmap->Stride = stride >= 0 ? stride : pad(width);
-	zmap->Texture = nullptr;
-
-	zmap->ZPtr1 = memory::allocate<unsigned short>(zmap->Stride * zmap->Height);
-	return zmap->ZPtr1 ? 0 : -1;
+	Resolution = 0;
+	Width = width;
+	Height = height;
+	Stride = stride >= 0 ? stride : pad(width);
+	Texture = nullptr;
+	ZPtr1 = new unsigned short[Stride * Height];
 }
 
-int zdrv::pad(int width)
+zmap_header_type::~zmap_header_type()
+{
+	delete[] ZPtr1;
+	if (Texture)
+		SDL_DestroyTexture(Texture);
+}
+
+int zmap_header_type::pad(int width)
 {
 	int result = width;
 	if (width & 3)
@@ -23,17 +28,6 @@ int zdrv::pad(int width)
 	return result;
 }
 
-int zdrv::destroy_zmap(zmap_header_type* zmap)
-{
-	if (!zmap)
-		return -1;
-	if (zmap->ZPtr1)
-		memory::free(zmap->ZPtr1);
-	if (zmap->Texture)
-		SDL_DestroyTexture(zmap->Texture);
-	memset(zmap, 0, sizeof(zmap_header_type));
-	return 0;
-}
 
 void zdrv::fill(zmap_header_type* zmap, int width, int height, int xOff, int yOff, uint16_t fillWord)
 {

@@ -3,7 +3,6 @@
 
 #include "gdrv.h"
 #include "GroupData.h"
-#include "memory.h"
 #include "zdrv.h"
 
 short partman::_field_size[] =
@@ -40,7 +39,7 @@ DatFile* partman::load_records(LPCSTR lpFileName, bool fullTiltMode)
 
 	if (header.Unknown)
 	{
-		auto unknownBuf = memory::allocate(header.Unknown);
+		auto unknownBuf = new char[header.Unknown];
 		if (!unknownBuf)
 		{
 			fclose(fileHandle);
@@ -48,7 +47,7 @@ DatFile* partman::load_records(LPCSTR lpFileName, bool fullTiltMode)
 			return nullptr;
 		}
 		fread(unknownBuf, 1, header.Unknown, fileHandle);
-		memory::free(unknownBuf);
+		delete[] unknownBuf;
 	}
 
 	datFile->Groups.reserve(header.NumberOfGroups);
@@ -75,13 +74,8 @@ DatFile* partman::load_records(LPCSTR lpFileName, bool fullTiltMode)
 				assertm(bmpHeader.Size + sizeof(dat8BitBmpHeader) == fieldSize, "partman: Wrong bitmap field size");
 				assertm(bmpHeader.Resolution <= 2, "partman: bitmap resolution out of bounds");
 
-				auto bmp = memory::allocate<gdrv_bitmap8>();
-				entryData->Buffer = reinterpret_cast<char*>(bmp);
-				if (!bmp || gdrv::create_bitmap(*bmp, bmpHeader))
-				{
-					abort = true;
-					break;
-				}
+				auto bmp = new gdrv_bitmap8(bmpHeader);
+				entryData->Buffer = reinterpret_cast<char*>(bmp);				
 				fread(bmp->IndexedBmpPtr, 1, bmpHeader.Size, fileHandle);
 			}
 			else if (entryType == FieldTypes::Bitmap16bit)
@@ -98,8 +92,7 @@ DatFile* partman::load_records(LPCSTR lpFileName, bool fullTiltMode)
 				fread(&zMapHeader, 1, sizeof(dat16BitBmpHeader), fileHandle);
 				auto length = fieldSize - sizeof(dat16BitBmpHeader);
 
-				auto zMap = memory::allocate<zmap_header_type>();
-				zdrv::create_zmap(zMap, zMapHeader.Width, zMapHeader.Height, zMapHeader.Stride);
+				auto zMap = new zmap_header_type(zMapHeader.Width, zMapHeader.Height, zMapHeader.Stride);
 				zMap->Resolution = zMapResolution;
 				if (zMapHeader.Stride * zMapHeader.Height * 2u == length)
 				{
@@ -114,7 +107,7 @@ DatFile* partman::load_records(LPCSTR lpFileName, bool fullTiltMode)
 			}
 			else
 			{
-				char* entryBuffer = memory::allocate(fieldSize);
+				auto entryBuffer = new char[fieldSize];
 				entryData->Buffer = entryBuffer;
 				if (!entryBuffer)
 				{

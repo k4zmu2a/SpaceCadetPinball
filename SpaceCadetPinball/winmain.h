@@ -52,7 +52,7 @@ public:
 
 	static int WinMain(LPCSTR lpCmdLine);
 	static int event_handler(const SDL_Event* event);
-	static void memalloc_failure();
+	[[ noreturn ]] static void memalloc_failure();
 	static int ProcessWindowMessages();
 	static void a_dialog();
 	static void end_pause();
@@ -64,7 +64,7 @@ public:
 private:
 	static int return_value, bQuit, DispFrameRate, DispGRhistory, activated;
 	static int has_focus, mouse_down, last_mouse_x, last_mouse_y, no_time_loss;
-	static gdrv_bitmap8 gfr_display;
+	static gdrv_bitmap8* gfr_display;
 	static std::string FpsDetails;
 	static bool restart;
 	static bool ShowAboutDialog;

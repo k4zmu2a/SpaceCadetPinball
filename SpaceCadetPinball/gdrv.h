@@ -39,6 +39,9 @@ static_assert(sizeof(ColorRgba) == 4, "Wrong size of RGBA color");
 
 struct gdrv_bitmap8
 {
+	gdrv_bitmap8(int width, int height, bool indexed);
+	gdrv_bitmap8(const struct dat8BitBmpHeader& header);
+	~gdrv_bitmap8();
 	ColorRgba* BmpBufPtr1;
 	char* IndexedBmpPtr;
 	int Width;
@@ -49,7 +52,6 @@ struct gdrv_bitmap8
 	int XPosition;
 	int YPosition;
 	unsigned Resolution;
-	//ColorRgba* RgbaBuffer;
 	SDL_Texture* Texture;
 };
 
@@ -57,9 +59,6 @@ struct gdrv_bitmap8
 class gdrv
 {
 public:
-	static int create_bitmap(gdrv_bitmap8* bmp, int width, int height, int stride = -1, bool indexed = true);
-	static int create_bitmap(gdrv_bitmap8& bmp, const struct dat8BitBmpHeader& header);
-	static int destroy_bitmap(gdrv_bitmap8* bmp);
 	static int display_palette(ColorRgba* plt);
 	static void fill_bitmap(gdrv_bitmap8* bmp, int width, int height, int xOff, int yOff, uint8_t fillChar);
 	static void copy_bitmap(gdrv_bitmap8* dstBmp, int width, int height, int xOff, int yOff, gdrv_bitmap8* srcBmp,

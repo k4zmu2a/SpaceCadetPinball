@@ -4,7 +4,6 @@
 #include "EmbeddedData.h"
 #include "fullscrn.h"
 #include "loader.h"
-#include "memory.h"
 #include "GroupData.h"
 #include "pb.h"
 #include "render.h"
@@ -19,7 +18,7 @@ int score::init()
 
 scoreStruct* score::create(LPCSTR fieldName, gdrv_bitmap8* renderBgBmp)
 {
-	auto score = memory::allocate<scoreStruct>();
+	auto score = new scoreStruct();
 	if (!score)
 		return nullptr;
 	score->Score = -9999;
@@ -31,7 +30,7 @@ scoreStruct* score::create(LPCSTR fieldName, gdrv_bitmap8* renderBgBmp)
 	                                                                         FieldTypes::ShortArray));
 	if (!dimensions)
 	{
-		memory::free(score);
+		delete score;
 		return nullptr;
 	}
 	int groupIndex = *dimensions++;
@@ -50,10 +49,7 @@ scoreStruct* score::create(LPCSTR fieldName, gdrv_bitmap8* renderBgBmp)
 
 scoreStruct* score::dup(scoreStruct* score, int scoreIndex)
 {
-	auto result = memory::allocate<scoreStruct>();
-	if (result)
-		memcpy(result, score, sizeof(scoreStruct));
-	return result;
+	return new scoreStruct(*score);
 }
 
 void score::load_msg_font(LPCSTR lpName)
@@ -73,7 +69,7 @@ void score::load_msg_font_3DPB(LPCSTR lpName)
 	auto rcData = reinterpret_cast<int16_t*>(ImFontAtlas::DecompressCompressedBase85Data(
 		EmbeddedData::PB_MSGFT_bin_compressed_data_base85));
 
-	auto fontp = memory::allocate<score_msg_font_type>();
+	auto fontp = new score_msg_font_type();
 	msg_fontp = fontp;
 	if (!fontp)
 	{
@@ -91,10 +87,10 @@ void score::load_msg_font_3DPB(LPCSTR lpName)
 	}
 
 	auto height = rcData[2];
-	auto tmpCharBur = memory::allocate(maxWidth * height + 4);
+	auto tmpCharBur = new char[maxWidth * height + 4];
 	if (!tmpCharBur)
 	{
-		memory::free(msg_fontp);
+		delete msg_fontp;
 		msg_fontp = nullptr;
 		IM_FREE(rcData);
 		return;
@@ -111,19 +107,8 @@ void score::load_msg_font_3DPB(LPCSTR lpName)
 		if (!width)
 			continue;
 
-		auto bmp = memory::allocate<gdrv_bitmap8>();
+		auto bmp = new gdrv_bitmap8(width, height, true);
 		msg_fontp->Chars[charInd] = bmp;
-		if (!bmp)
-		{
-			break;
-		}
-
-		if (gdrv::create_bitmap(bmp, width, height, width))
-		{
-			memory::free(bmp);
-			msg_fontp->Chars[charInd] = nullptr;
-			break;
-		}
 
 		auto sizeInBytes = height * width + 1;
 		memcpy(tmpCharBur + 3, ptrToData, sizeInBytes);
@@ -139,7 +124,7 @@ void score::load_msg_font_3DPB(LPCSTR lpName)
 		}
 	}
 
-	memory::free(tmpCharBur);
+	delete[] tmpCharBur;
 	IM_FREE(rcData);
 	if (charInd != 128)
 		unload_msg_font();
@@ -152,7 +137,7 @@ void score::load_msg_font_FT(LPCSTR lpName)
 	int groupIndex = pb::record_table->record_labeled(lpName);
 	if (groupIndex < 0)
 		return;
-	msg_fontp = reinterpret_cast<score_msg_font_type*>(memory::allocate(sizeof(score_msg_font_type)));
+	msg_fontp = new score_msg_font_type();
 	if (!msg_fontp)
 		return;
 
@@ -179,15 +164,11 @@ void score::unload_msg_font()
 	{
 		/*3DBP creates bitmaps, FT just references them from partman*/
 		if (!pb::FullTiltMode)
-			for (int i = 0; i < 128; i++)
+			for (auto& Char : msg_fontp->Chars)
 			{
-				if (msg_fontp->Chars[i])
-				{
-					gdrv::destroy_bitmap(msg_fontp->Chars[i]);
-					memory::free(msg_fontp->Chars[i]);
-				}
+				delete Char;
 			}
-		memory::free(msg_fontp);
+		delete msg_fontp;
 		msg_fontp = nullptr;
 	}
 }
@@ -198,7 +179,7 @@ void score::erase(scoreStruct* score, int blitFlag)
 	{
 		if (score->BackgroundBmp)
 			gdrv::copy_bitmap(
-				&render::vscreen,
+				render::vscreen,
 				score->Width,
 				score->Height,
 				score->OffsetX,
@@ -207,7 +188,7 @@ void score::erase(scoreStruct* score, int blitFlag)
 				score->OffsetX,
 				score->OffsetY);
 		else
-			gdrv::fill_bitmap(&render::vscreen, score->Width, score->Height, score->OffsetX, score->OffsetY, 0);
+			gdrv::fill_bitmap(render::vscreen, score->Width, score->Height, score->OffsetX, score->OffsetY, 0);
 	}
 }
 
@@ -242,9 +223,9 @@ void score::update(scoreStruct* score)
 				int height = bmp->Height;
 				int width = bmp->Width;
 				if (render::background_bitmap)
-					gdrv::copy_bitmap_w_transparency(&render::vscreen, width, height, x, y, bmp, 0, 0);
+					gdrv::copy_bitmap_w_transparency(render::vscreen, width, height, x, y, bmp, 0, 0);
 				else
-					gdrv::copy_bitmap(&render::vscreen, width, height, x, y, bmp, 0, 0);
+					gdrv::copy_bitmap(render::vscreen, width, height, x, y, bmp, 0, 0);
 			}
 		}
 	}

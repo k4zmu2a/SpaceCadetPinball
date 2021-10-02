@@ -5,7 +5,6 @@
 #include "control.h"
 #include "fullscrn.h"
 #include "high_score.h"
-#include "memory.h"
 #include "pinball.h"
 #include "proj.h"
 #include "render.h"
@@ -40,7 +39,6 @@ int pb::init()
 {
 	float projMat[12], zMin = 0, zScaler = 0;
 
-	++memory::critical_allocation;
 	auto dataFilePath = pinball::make_path_name(winmain::DatFileName);
 	record_table = partman::load_records(dataFilePath.c_str(), FullTiltMode);
 
@@ -77,7 +75,7 @@ int pb::init()
 
 	render::init(nullptr, zMin, zScaler, resInfo->TableWidth, resInfo->TableHeight);
 	gdrv::copy_bitmap(
-		&render::vscreen,
+		render::vscreen,
 		backgroundBmp->Width,
 		backgroundBmp->Height,
 		backgroundBmp->XPosition,
@@ -101,7 +99,6 @@ int pb::init()
 
 	high_score::read(highscore_table);
 	ball_speed_limit = MainTable->BallList.at(0)->Offset * 200.0f;
-	--memory::critical_allocation;
 	return 0;
 }
 
@@ -470,11 +467,6 @@ void pb::keydown(int key)
 			char String1[200];
 			strncpy(String1, pinball::get_rc_string(26, 0), sizeof String1 - 1);
 			high_score::show_and_set_high_score_dialog(highscore_table, 1000000000, 1, String1);
-			break;
-		case 'm':
-			char buffer[20];
-			snprintf(buffer, sizeof buffer, "%zu", memory::use_total);
-			SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_INFORMATION, "Mem:", buffer, winmain::MainWindow);
 			break;
 		case 'r':
 			control::cheat_bump_rank();

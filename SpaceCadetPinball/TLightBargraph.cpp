@@ -4,7 +4,6 @@
 
 #include "control.h"
 #include "loader.h"
-#include "memory.h"
 #include "timer.h"
 #include "TPinballTable.h"
 
@@ -17,11 +16,11 @@ TLightBargraph::TLightBargraph(TPinballTable* table, int groupIndex) : TLightGro
 		float* floatArr = loader::query_float_attribute(groupIndex, 0, 904);
 		if (floatArr)
 		{
-			int count = 2 * List.size();
-			TimerTimeArray = memory::allocate<float>(count);
+			auto count = 2 * List.size();
+			TimerTimeArray = new float[count];
 			if (TimerTimeArray)
 			{
-				for (int i = 0; i < count; ++floatArr)
+				for (auto i = 0u; i < count; ++floatArr)
 					TimerTimeArray[i++] = *floatArr;
 			}
 		}
@@ -30,8 +29,7 @@ TLightBargraph::TLightBargraph(TPinballTable* table, int groupIndex) : TLightGro
 
 TLightBargraph::~TLightBargraph()
 {
-	if (TimerTimeArray)
-		memory::free(TimerTimeArray);
+	delete[] TimerTimeArray;
 }
 
 int TLightBargraph::Message(int code, float value)

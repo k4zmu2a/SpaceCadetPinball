@@ -4,7 +4,6 @@
 
 #include "fullscrn.h"
 #include "gdrv.h"
-#include "memory.h"
 #include "zdrv.h"
 
 
@@ -13,10 +12,15 @@ EntryData::~EntryData()
 	if (Buffer)
 	{
 		if (EntryType == FieldTypes::Bitmap8bit)
-			gdrv::destroy_bitmap(reinterpret_cast<gdrv_bitmap8*>(Buffer));
+		{
+			delete reinterpret_cast<gdrv_bitmap8*>(Buffer);
+		}
 		else if (EntryType == FieldTypes::Bitmap16bit)
-			zdrv::destroy_zmap(reinterpret_cast<zmap_header_type*>(Buffer));
-		memory::free(Buffer);
+		{
+			delete reinterpret_cast<zmap_header_type*>(Buffer);
+		}
+		else
+			delete[] Buffer;
 	}
 }
 
@@ -40,8 +44,8 @@ void GroupData::AddEntry(EntryData* entry)
 			if (srcBmp->BitmapType == BitmapTypes::Spliced)
 			{
 				// Get rid of spliced bitmap early on, to simplify render pipeline
-				auto bmp = memory::allocate<gdrv_bitmap8>();
-				auto zMap = memory::allocate<zmap_header_type>();
+				auto bmp = new gdrv_bitmap8(srcBmp->Width, srcBmp->Height, srcBmp->Width);
+				auto zMap = new zmap_header_type(srcBmp->Width, srcBmp->Height, srcBmp->Width);
 				SplitSplicedBitmap(*srcBmp, *bmp, *zMap);
 
 				NeedsSort = true;
@@ -97,13 +101,11 @@ void GroupData::SplitSplicedBitmap(const gdrv_bitmap8& srcBmp, gdrv_bitmap8& bmp
 {
 	assertm(srcBmp.BitmapType == BitmapTypes::Spliced, "GroupData: wrong bitmap type");
 
-	gdrv::create_bitmap(&bmp, srcBmp.Width, srcBmp.Height, srcBmp.Width);
 	std::memset(bmp.IndexedBmpPtr, 0xff, bmp.Stride * bmp.Height);
 	bmp.XPosition = srcBmp.XPosition;
 	bmp.YPosition = srcBmp.YPosition;
 	bmp.Resolution = srcBmp.Resolution;
-
-	zdrv::create_zmap(&zMap, srcBmp.Width, srcBmp.Height, srcBmp.Width);
+	
 	zdrv::fill(&zMap, zMap.Width, zMap.Height, 0, 0, 0xFFFF);
 	zMap.Resolution = srcBmp.Resolution;
 

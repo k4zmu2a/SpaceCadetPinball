@@ -2,7 +2,6 @@
 #include "options.h"
 
 #include "fullscrn.h"
-#include "memory.h"
 #include "midi.h"
 #include "Sound.h"
 #include "winmain.h"

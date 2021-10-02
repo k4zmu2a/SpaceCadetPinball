@@ -75,7 +75,7 @@ void TTextBox::Clear()
 	gdrv_bitmap8* bmp = BgBmp;
 	if (bmp)
 		gdrv::copy_bitmap(
-			&render::vscreen,
+			render::vscreen,
 			Width,
 			Height,
 			OffsetX,
@@ -84,7 +84,7 @@ void TTextBox::Clear()
 			OffsetX,
 			OffsetY);
 	else
-		gdrv::fill_bitmap(&render::vscreen, Width, Height, OffsetX, OffsetY, 0);	
+		gdrv::fill_bitmap(render::vscreen, Width, Height, OffsetX, OffsetY, 0);	
 	if (Timer)
 	{
 		if (Timer != -1)
@@ -149,7 +149,7 @@ void TTextBox::Draw()
 	auto bmp = BgBmp;
 	if (bmp)
 		gdrv::copy_bitmap(
-			&render::vscreen,
+			render::vscreen,
 			Width,
 			Height,
 			OffsetX,
@@ -158,7 +158,7 @@ void TTextBox::Draw()
 			OffsetX,
 			OffsetY);
 	else
-		gdrv::fill_bitmap(&render::vscreen, Width, Height, OffsetX, OffsetY, 0);
+		gdrv::fill_bitmap(render::vscreen, Width, Height, OffsetX, OffsetY, 0);
 
 	bool display = false;
 	while (Message1)
@@ -191,8 +191,8 @@ void TTextBox::Draw()
 		{
 			gdrv::grtext_draw_ttext_in_box(
 				Message1->Text,
-				render::vscreen.XPosition + OffsetX,
-				render::vscreen.YPosition + OffsetY,
+				render::vscreen->XPosition + OffsetX,
+				render::vscreen->YPosition + OffsetY,
 				Width,
 				Height,
 				255);
@@ -245,10 +245,10 @@ void TTextBox::Draw()
 					auto height = charBmp->Height;
 					auto width = charBmp->Width;
 					if (render::background_bitmap)
-						gdrv::copy_bitmap_w_transparency(&render::vscreen, width, height, offX, y, charBmp, 0,
+						gdrv::copy_bitmap_w_transparency(render::vscreen, width, height, offX, y, charBmp, 0,
 						                                 0);
 					else
-						gdrv::copy_bitmap(&render::vscreen, width, height, offX, y, charBmp, 0, 0);
+						gdrv::copy_bitmap(render::vscreen, width, height, offX, y, charBmp, 0, 0);
 					font = Font;
 					offX += charBmp->Width + font->GapWidth;
 				}
