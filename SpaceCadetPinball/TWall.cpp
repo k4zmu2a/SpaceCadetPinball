@@ -12,7 +12,6 @@ TWall::TWall(TPinballTable* table, int groupIndex) : TCollisionComponent(table, 
 		render::sprite_set_bitmap(RenderSprite, nullptr);
 	if (ListBitmap)
 		BmpPtr = ListBitmap->at(0);
-	Timer = 0;
 }
 
 int TWall::Message(int code, float value)

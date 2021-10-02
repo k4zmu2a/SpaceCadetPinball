@@ -28,10 +28,6 @@ TLightGroup::TLightGroup(TPinballTable* table, int groupIndex) : TPinballCompone
 	}
 }
 
-TLightGroup::~TLightGroup()
-{
-}
-
 int TLightGroup::Message(int code, float value)
 {
 	auto count = static_cast<int>(List.size());

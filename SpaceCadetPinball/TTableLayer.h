@@ -27,9 +27,8 @@ public:
 	float Unknown4F;
 	float GraityDirX;
 	float GraityDirY;
-	int Unknown7;
 	float GraityMult;
-	field_effect_type Field;
+	field_effect_type Field{};
 
 	static TEdgeManager* edge_manager;
 };

@@ -16,6 +16,6 @@ public:
 
 	int Timer;
 	float TimerTime;
-	int Scores[3];
-	int PlayerMessagefieldBackup[4];
+	int Scores[3]{};
+	int PlayerMessagefieldBackup[4]{};
 };

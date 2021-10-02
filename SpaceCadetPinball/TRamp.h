@@ -17,8 +17,8 @@ public:
 	int FieldEffect(TBall* ball, vector_type* vecDst) override;
 	void port_draw() override;
 
-	int Scores[4];
-	field_effect_type Field;
+	int Scores[4]{};
+	field_effect_type Field{};
 	int CollisionGroup;
 	int RampFlag1;
 	int RampPlaneCount;

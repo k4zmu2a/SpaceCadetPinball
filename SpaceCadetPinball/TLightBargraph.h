@@ -13,7 +13,7 @@ public:
 	static void BargraphTimerExpired(int timerId, void* caller);
 
 	float* TimerTimeArray;
-	int TimerBargraph;
-	int TimeIndex;
-	int PlayerTimerIndexBackup[4];
+	int TimerBargraph{};
+	int TimeIndex{};
+	int PlayerTimerIndexBackup[4]{};
 };

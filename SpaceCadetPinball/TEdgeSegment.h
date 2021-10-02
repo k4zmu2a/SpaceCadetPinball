@@ -16,7 +16,7 @@ public:
 	TCollisionComponent* CollisionComponent;
 	char* ActiveFlag;
 	char ProcessedFlag;
-	void* WallValue;
+	void* WallValue{};
 	unsigned int CollisionGroup;
 
 	TEdgeSegment(TCollisionComponent* collComp, char* activeFlag, unsigned int collisionGroup);

@@ -19,7 +19,6 @@ TRollover::TRollover(TPinballTable* table, int groupIndex, bool createWall) : TC
 
 TRollover::TRollover(TPinballTable* table, int groupIndex) : TCollisionComponent(table, groupIndex, false)
 {
-	RolloverFlag = 0;
 	if (ListBitmap)
 		render::sprite_set_bitmap(RenderSprite, ListBitmap->at(0));
 	build_walls(groupIndex);

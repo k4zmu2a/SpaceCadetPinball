@@ -40,17 +40,16 @@ public:
 	static void flasher_start(struct flasher_type* flash, int bmpIndex);	
 	static void flasher_callback(int timerId, void* caller);
 
-	flasher_type Flasher;
-	int BmpIndex1;
+	flasher_type Flasher{};
+	int BmpIndex1{};
 	int FlasherActive;
-	int FlasherFlag1;
-	int FlasherFlag2;
-	int TurnOffAfterFlashingFg;
-	int BmpIndex2;
-	float FlasherDelay[2];
+	int FlasherFlag1{};
+	int FlasherFlag2{};
+	int TurnOffAfterFlashingFg{};
+	int BmpIndex2{};
+	float FlasherDelay[2]{};
 	int Timer1;
 	int Timer2;
-	int Unknown19;
-	float Unknown20F;
-	TLight_player_backup PlayerData[4];
+	float Unknown20F{};
+	TLight_player_backup PlayerData[4]{};
 };

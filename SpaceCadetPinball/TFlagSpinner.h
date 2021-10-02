@@ -15,14 +15,14 @@ public:
 
 	static void SpinTimer(int timerId, void* caller);
 
-	float Speed;
+	float Speed{};
 	float MaxSpeed;
 	float MinSpeed;
 	float SpeedDecrement;
-	int SpinDirection;
-	int BmpIndex;
+	int SpinDirection{};
+	int BmpIndex{};
 	int Timer;
 	TEdgeSegment* PrevCollider;
-	int Scores[2];
+	int Scores[2]{};
 };
 

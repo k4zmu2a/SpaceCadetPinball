@@ -18,6 +18,6 @@ public:
 
 	static void TimerExpired(int timerId, void* caller);
 
-	char RolloverFlag;
-	int Scores[2];
+	char RolloverFlag{};
+	int Scores[2]{};
 };

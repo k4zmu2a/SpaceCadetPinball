@@ -17,21 +17,20 @@ public :
 	static void throw_ball(TBall* ball, struct vector_type* acceleration, float angleMult, float speedMult1,
 	                       float speedMult2);
 
-	vector_type Position;
-	vector_type Acceleration;
+	vector_type Position{};
+	vector_type Acceleration{};
 	float Speed;
 	float RayMaxDistance;
 	float TimeDelta;
 	float TimeNow;
-	vector_type InvAcceleration;
-	vector_type RampFieldForce;	
+	vector_type InvAcceleration{};
+	vector_type RampFieldForce{};	
 	TCollisionComponent* CollisionComp;
 	int FieldFlag;
-	TEdgeSegment* Collisions[5];
+	TEdgeSegment* Collisions[5]{};
 	int EdgeCollisionCount;
-	vector_type CollisionOffset;
+	vector_type CollisionOffset{};
 	int CollisionFlag;
 	float Offset;
-	int Unknown29;
-	float VisualZArray[50];
+	float VisualZArray[50]{};
 };

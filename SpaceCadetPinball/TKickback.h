@@ -15,5 +15,5 @@ public:
 	float TimerTime;
 	float TimerTime2;
 	int Timer;
-	int ActiveFlag;
+	int KickActiveFlag;
 };

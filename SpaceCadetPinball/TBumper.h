@@ -28,6 +28,6 @@ public:
 	float OriginalThreshold;
 	int SoundIndex4;
 	int SoundIndex3;
-	int Scores[4];
-	TBumper_player_backup PlayerData[4];
+	int Scores[4]{};
+	TBumper_player_backup PlayerData[4]{};
 };

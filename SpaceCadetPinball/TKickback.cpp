@@ -13,8 +13,8 @@ TKickback::TKickback(TPinballTable* table, int groupIndex): TCollisionComponent(
 {
 	MessageField = 0;
 	Timer = 0;
-	ActiveFlag = 0;
-	TimerTime = 0.69999999f;
+	KickActiveFlag = 0;
+	TimerTime = 0.7f;
 	TimerTime2 = 0.1f;
 	Threshold = 1000000000.0f;
 }
@@ -27,7 +27,7 @@ int TKickback::Message(int code, float value)
 		if (ListBitmap)
 			render::sprite_set_bitmap(RenderSprite, nullptr);
 		Timer = 0;
-		ActiveFlag = 0;
+		KickActiveFlag = 0;
 		Threshold = 1000000000.0;
 	}
 	return 0;
@@ -43,14 +43,14 @@ void TKickback::Collision(TBall* ball, vector_type* nextPosition, vector_type* d
 	}
 	else
 	{
-		if (!ActiveFlag)
+		if (!KickActiveFlag)
 		{
 			Threshold = 1000000000.0;
-			ActiveFlag = 1;
+			KickActiveFlag = 1;
 			Timer = timer::set(TimerTime, this, TimerExpired);
 		}
 		if (DefaultCollision(ball, nextPosition, direction))
-			ActiveFlag = 0;
+			KickActiveFlag = 0;
 	}
 }
 
@@ -58,7 +58,7 @@ void TKickback::TimerExpired(int timerId, void* caller)
 {
 	auto kick = static_cast<TKickback*>(caller);
 
-	if (kick->ActiveFlag)
+	if (kick->KickActiveFlag)
 	{
 		kick->Threshold = 0.0;
 		kick->Timer = timer::set(kick->TimerTime2, kick, TimerExpired);

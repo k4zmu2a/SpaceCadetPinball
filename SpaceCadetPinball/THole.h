@@ -16,7 +16,7 @@ public:
 	static void TimerExpired(int timerId, void* caller);
 
 	int BallCapturedFlag;
-	int BallCapturedSecondStage;
+	int BallCapturedSecondStage{};
 	int Timer;
 	float Unknown3;
 	float Unknown4;
@@ -24,6 +24,6 @@ public:
 	float ZSetValue;
 	int FieldFlag;
 	float GravityPull;
-	circle_type Circle;
-	field_effect_type Field;
+	circle_type Circle{};
+	field_effect_type Field{};
 };

@@ -14,5 +14,5 @@ public:
 	int get_scoring(int index) override;
 
 	TLine* Line;
-	int Scores[6];
+	int Scores[6]{};
 };

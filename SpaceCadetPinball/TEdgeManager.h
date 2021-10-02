@@ -35,5 +35,5 @@ public:
 	float X;
 	float Y;
 	TEdgeBox* BoxArray;
-	TEdgeSegment* EdgeArray[1000];
+	TEdgeSegment* EdgeArray[1000]{};
 };

@@ -111,13 +111,3 @@ int TPinballComponent::get_scoring(int index)
 {
 	return 0;
 }
-
-void* TPinballComponent::operator new(size_t Size)
-{
-	return calloc(1u, Size);
-}
-
-void TPinballComponent::operator delete(void* p)
-{
-	free(p); /*Original does not have this*/
-}

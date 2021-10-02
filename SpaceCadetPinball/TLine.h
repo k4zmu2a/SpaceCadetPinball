@@ -6,7 +6,7 @@ class TLine :
 	public TEdgeSegment
 {
 public:
-	line_type Line;
+	line_type Line{};
 	float X0, Y0, X1, Y1;
 	TLine(TCollisionComponent* collCmp, char* activeFlag, unsigned int collisionGroup, float x0, float y0, float x1, float y1);
 	TLine(TCollisionComponent* collCmp, char* activeFlag, unsigned int collisionGroup, vector_type* start, vector_type* end);

@@ -17,13 +17,13 @@ public:
 
 	int Timer;
 	float TimerTime;
-	vector_type BallPosition;
-	vector_type BallAcceleration;
+	vector_type BallPosition{};
+	vector_type BallAcceleration{};
 	float ThrowAngleMult;
 	float ThrowSpeedMult1;
 	float ThrowSpeedMult2;
 	int SoundIndex4;
 	int SoundIndex3;
-	int Scores[3];
-	int PlayerMessagefieldBackup[4];
+	int Scores[3]{};
+	int PlayerMessagefieldBackup[4]{};
 };

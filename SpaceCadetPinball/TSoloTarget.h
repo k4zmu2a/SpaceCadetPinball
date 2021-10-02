@@ -13,10 +13,9 @@ public:
 	               TEdgeSegment* edge) override;
 
 	static void TimerExpired(int timerId, void* caller);
-
-	int Unknown0;
+	
 	int Timer;
 	float TimerTime;
 	int SoundIndex4;
-	int Scores[1];
+	int Scores[1]{};
 };
