@@ -53,6 +53,7 @@ struct optionsStruct
 	int FramesPerSecond;
 	int UpdatesPerSecond;
 	bool ShowMenu;
+	bool UncappedUpdatesPerSecond;
 };
 
 struct ControlRef

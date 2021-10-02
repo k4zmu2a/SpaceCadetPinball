@@ -269,7 +269,7 @@ int winmain::WinMain(LPCSTR lpCmdLine)
 			auto targetTimeDelta = TargetFrameTime - DurationMs(updateEnd - frameStart) - sleepRemainder;
 
 			TimePoint frameEnd;
-			if (targetTimeDelta > DurationMs::zero())
+			if (targetTimeDelta > DurationMs::zero() && !options::Options.UncappedUpdatesPerSecond)
 			{
 				std::this_thread::sleep_for(targetTimeDelta);
 				frameEnd = Clock::now();
@@ -459,6 +459,7 @@ void winmain::RenderUi()
 				                 "%.2f", ImGuiSliderFlags_AlwaysClamp);
 				ImGui::Separator();
 
+				char buffer[80]{};
 				auto changed = false;
 				if (ImGui::MenuItem("Set Default UPS/FPS"))
 				{
@@ -480,6 +481,12 @@ void winmain::RenderUi()
 					options::Options.UpdatesPerSecond = std::max(options::Options.UpdatesPerSecond,
 					                                             options::Options.FramesPerSecond);
 				}
+				snprintf(buffer, sizeof buffer - 1, "Uncapped UPS (FPS ratio %02.02f)", UpdateToFrameRatio);
+				if (ImGui::MenuItem(buffer, nullptr, options::Options.UncappedUpdatesPerSecond))
+				{
+					options::Options.UncappedUpdatesPerSecond ^= true;
+				}
+
 				if (changed)
 				{
 					UpdateFrameRate();

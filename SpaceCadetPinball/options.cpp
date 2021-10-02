@@ -74,6 +74,7 @@ void options::init()
 	Options.UpdatesPerSecond = std::min(MaxUps, std::max(MinUps, get_int("Updates Per Second", DefUps)));
 	Options.UpdatesPerSecond = std::max(Options.UpdatesPerSecond, Options.FramesPerSecond);
 	Options.ShowMenu = get_int("ShowMenu", true);
+	Options.UncappedUpdatesPerSecond = get_int("Uncapped Updates Per Second", false);
 
 	winmain::UpdateFrameRate();
 
@@ -104,6 +105,7 @@ void options::uninit()
 	set_int("Frames Per Second", Options.FramesPerSecond);
 	set_int("Updates Per Second", Options.UpdatesPerSecond);
 	set_int("ShowMenu", Options.ShowMenu);
+	set_int("Uncapped Updates Per Second", Options.UncappedUpdatesPerSecond);
 }
 
 
