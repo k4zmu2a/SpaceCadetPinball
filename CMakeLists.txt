@@ -14,6 +14,9 @@ if(WIN32)
    set(SDL2_MIXER_PATH "${CMAKE_CURRENT_LIST_DIR}/Libs/SDL2_mixer")
 endif()
 
+# SDL2main is not needed
+set(SDL2_BUILDING_LIBRARY ON)
+
 find_package(SDL2 REQUIRED)
 FIND_PACKAGE(SDL2_mixer REQUIRED)
 
@@ -186,8 +189,7 @@ target_link_libraries(SpaceCadetPinball ${SDL2_LIBRARY} ${SDL2_MIXER_LIBRARY})
 
 # On Windows, copy DLL to output
 if(WIN32)
-    list(GET SDL2_LIBRARY 1 SDL2_LIB_PATH)
-    get_filename_component(SDL2_DLL_PATH ${SDL2_LIB_PATH} DIRECTORY)
+    get_filename_component(SDL2_DLL_PATH ${SDL2_LIBRARY} DIRECTORY)
     get_filename_component(SDL2_MIXER_DLL_PATH ${SDL2_MIXER_LIBRARY} DIRECTORY)
     message(STATUS "copy paths='${SDL2_DLL_PATH}' '${SDL2_MIXER_DLL_PATH}'") 
     add_custom_command(TARGET SpaceCadetPinball POST_BUILD
