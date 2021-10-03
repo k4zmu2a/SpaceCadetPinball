@@ -167,6 +167,12 @@ set(SOURCE_FILES
         SpaceCadetPinball/imstb_truetype.h
         )
 
+# On Windows, include resource file with the icon
+if(WIN32)
+    set_source_files_properties(SpaceCadetPinball/SpaceCadetPinball.rc LANGUAGE RC)
+    list(APPEND SOURCE_FILES SpaceCadetPinball/SpaceCadetPinball.rc)   
+endif(WIN32)
+
 add_executable(SpaceCadetPinball ${SOURCE_FILES})
 
 # Skip pch on foreign code
