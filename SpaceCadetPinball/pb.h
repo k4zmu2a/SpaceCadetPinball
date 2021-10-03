@@ -33,7 +33,7 @@ class pb
 {
 public:
 	static int time_ticks;
-	static float ball_speed_limit, time_now, time_next;
+	static float ball_speed_limit, time_now, time_next, time_ticks_remainder;
 	static int cheat_mode, game_mode;
 	static DatFile* record_table;
 	static TPinballTable* MainTable;
@@ -48,7 +48,7 @@ public:
 	static void toggle_demo();
 	static void replay_level(int demoMode);
 	static void ballset(int x, int y);
-	static void frame(int dtMilliSec);
+	static void frame(float dtMilliSec);
 	static void timed_frame(float timeNow, float timeDelta, bool drawBalls);
 	static void window_size(int* width, int* height);
 	static void pause_continue();

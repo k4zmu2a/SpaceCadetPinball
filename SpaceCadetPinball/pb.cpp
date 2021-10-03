@@ -30,7 +30,7 @@
 TPinballTable* pb::MainTable = nullptr;
 DatFile* pb::record_table = nullptr;
 int pb::time_ticks = 0, pb::demo_mode = 0, pb::cheat_mode = 0, pb::game_mode = 2, pb::mode_countdown_;
-float pb::time_now, pb::time_next, pb::ball_speed_limit;
+float pb::time_now = 0, pb::time_next = 0, pb::ball_speed_limit, pb::time_ticks_remainder = 0;
 high_score_struct pb::highscore_table[5];
 bool pb::FullTiltMode = false;
 
@@ -209,26 +209,31 @@ void pb::ballset(int x, int y)
 	ball->Speed = maths::normalize_2d(&ball->Acceleration);
 }
 
-void pb::frame(int dtMilliSec)
+void pb::frame(float dtMilliSec)
 {
 	if (dtMilliSec > 100)
 		dtMilliSec = 100;
-	if (dtMilliSec <= 0)
+	if (dtMilliSec < 0)
 		return;
-	float dtMicroSec = dtMilliSec * 0.001f;
+	float dtSec = dtMilliSec * 0.001f;
 	if (!mode_countdown(dtMilliSec))
 	{
-		time_next = time_now + dtMicroSec;
-		timed_frame(time_now, dtMicroSec, true);
+		time_next = time_now + dtSec;
+		timed_frame(time_now, dtSec, true);
 		time_now = time_next;
-		time_ticks += dtMilliSec;
+
+		dtMilliSec += time_ticks_remainder;
+		auto dtWhole = static_cast<int>(dtMilliSec);
+		time_ticks_remainder = dtMilliSec - static_cast<float>(dtWhole);
+		time_ticks += dtWhole;
+
 		if (nudge::nudged_left || nudge::nudged_right || nudge::nudged_up)
 		{
-			nudge::nudge_count = dtMicroSec * 4.0f + nudge::nudge_count;
+			nudge::nudge_count = dtSec * 4.0f + nudge::nudge_count;
 		}
 		else
 		{
-			auto nudgeDec = nudge::nudge_count - dtMicroSec;
+			auto nudgeDec = nudge::nudge_count - dtSec;
 			if (nudgeDec <= 0.0f)
 				nudgeDec = 0.0;
 			nudge::nudge_count = nudgeDec;

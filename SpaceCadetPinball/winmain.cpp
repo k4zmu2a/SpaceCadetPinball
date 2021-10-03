@@ -154,8 +154,8 @@ int winmain::WinMain(LPCSTR lpCmdLine)
 	DWORD dtHistoryCounter = 300u, updateCounter = 0, frameCounter = 0;
 
 	auto frameStart = Clock::now();
-	double frameDuration = TargetFrameTime.count(), UpdateToFrameCounter = 0;
-	DurationMs sleepRemainder(0);
+	double UpdateToFrameCounter = 0;
+	DurationMs sleepRemainder(0), frameDuration(TargetFrameTime);
 	auto prevTime = frameStart;
 	while (true)
 	{
@@ -219,12 +219,12 @@ int winmain::WinMain(LPCSTR lpCmdLine)
 			}
 			if (!single_step)
 			{
-				auto deltaT = static_cast<int>(frameDuration);
-				frameDuration -= deltaT;
-				pb::frame(deltaT);
+				auto dt = static_cast<float>(frameDuration.count());
+				auto dtWhole = static_cast<int>(std::round(dt));
+				pb::frame(dt);
 				if (gfr_display)
 				{
-					auto deltaTPal = deltaT + 10;
+					auto deltaTPal = dtWhole + 10;
 					auto fillChar = static_cast<uint8_t>(deltaTPal);
 					if (deltaTPal > 236)
 					{
@@ -277,8 +277,7 @@ int winmain::WinMain(LPCSTR lpCmdLine)
 			}
 
 			// Limit duration to 2 * target time
-			frameDuration = std::min(frameDuration + DurationMs(frameEnd - frameStart).count(),
-			                         2 * TargetFrameTime.count());
+			frameDuration = std::min<DurationMs>(DurationMs(frameEnd - frameStart), 2 * TargetFrameTime);
 			frameStart = frameEnd;
 			UpdateToFrameCounter++;
 		}
