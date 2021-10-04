@@ -640,210 +640,64 @@ void control::handler(int code, TPinballComponent* cmp)
 
 void control::pbctrl_bdoor_controller(int key)
 {
-	int v1; // eax
-	int v2; // eax
-	bool v3; // zf
-
-	if (!control_lite198_tag.Component->MessageField)
+	static char buffer[11 + 1]{};
+	static const char* quotes[8]
 	{
-		if (key <= 'm')
-		{
-			if (key == 'm')
-			{
-				v2 = pbctrl_state;
-				if (pbctrl_state == 4 || pbctrl_state == 61 || pbctrl_state == 81 || pbctrl_state == 101)
-					goto LABEL_87;
-				v3 = pbctrl_state == 121;
-			}
-			else
-			{
-				if (key <= 'd')
-				{
-					if (key != 'd')
-					{
-						if (key == ' ')
-						{
-							if (pbctrl_state == 26)
-							{
-								pbctrl_state = 27;
-								return;
-							}
-							goto LABEL_77;
-						}
-						if (key != '1')
-						{
-							if (key != 'a')
-							{
-								if (key != 'b')
-								{
-									if (key == 'c')
-									{
-										if (!pbctrl_state)
-										{
-											pbctrl_state = 1;
-											return;
-										}
-										if (pbctrl_state == 11)
-										{
-											pbctrl_state = 12;
-											return;
-										}
-									}
-									goto LABEL_77;
-								}
-								v1 = pbctrl_state != 0 ? 0 : 81;
-								goto LABEL_88;
-							}
-							v2 = pbctrl_state;
-							if (pbctrl_state == 5 || pbctrl_state == 62 || pbctrl_state == 82 || pbctrl_state == 102)
-								goto LABEL_87;
-							v3 = pbctrl_state == 122;
-							goto LABEL_86;
-						}
-						v1 = pbctrl_state != 0 ? 0 : 61;
-					LABEL_88:
-						pbctrl_state = v1;
-						return;
-					}
-					if (pbctrl_state != 22 && pbctrl_state != 23)
-						goto LABEL_77;
-				LABEL_58:
-					++pbctrl_state;
-					return;
-				}
-				if (key != 'e')
-				{
-					switch (key)
-					{
-					case 'g':
-						v1 = pbctrl_state != 0 ? 0 : 101;
-						break;
-					case 'h':
-						v1 = pbctrl_state != 0 ? 0 : 21;
-						break;
-					case 'i':
-						v2 = pbctrl_state;
-						if (pbctrl_state == 1 || pbctrl_state == 10)
-							goto LABEL_87;
-						v3 = pbctrl_state == 21;
-						goto LABEL_86;
-					default:
-						goto LABEL_77;
-					}
-					goto LABEL_88;
-				}
-				v2 = pbctrl_state;
-				if (pbctrl_state == 3 || pbctrl_state == 24 || pbctrl_state == 28)
-					goto LABEL_87;
-				v3 = pbctrl_state == 44;
-			}
-			goto LABEL_86;
-		}
-		if (key <= 's')
-		{
-			if (key == 's')
-			{
-				v2 = pbctrl_state;
-				if (pbctrl_state == 12 || pbctrl_state == 29)
-					goto LABEL_87;
-				v3 = pbctrl_state == 45;
-			}
-			else
-			{
-				if (key != 'n')
-				{
-					if (key != 'o')
-					{
-						if (key != 'q')
-						{
-							if (key == 'r')
-							{
-								if (!pbctrl_state)
-								{
-									pbctrl_state = 121;
-									return;
-								}
-								if (pbctrl_state == 7)
-								{
-									pbctrl_state = 8;
-									return;
-								}
-							}
-							goto LABEL_77;
-						}
-						v1 = pbctrl_state != 0 ? 0 : 41;
-						goto LABEL_88;
-					}
-					if (pbctrl_state != 8 && pbctrl_state != 42)
-						goto LABEL_77;
-					goto LABEL_58;
-				}
-				v2 = pbctrl_state;
-				if (pbctrl_state == 2 || pbctrl_state == 9)
-					goto LABEL_87;
-				v3 = pbctrl_state == 25;
-			}
-		LABEL_86:
-			if (v3)
-			{
-			LABEL_87:
-				v1 = v2 + 1;
-				goto LABEL_88;
-			}
-		LABEL_77:
-			pbctrl_state = 0;
-			return;
-		}
-		switch (key)
-		{
-		case 't':
-			v2 = pbctrl_state;
-			if (pbctrl_state != 30)
-			{
-				if (pbctrl_state == 27 || pbctrl_state == 6)
-					goto LABEL_87;
-				v3 = pbctrl_state == 43;
-				goto LABEL_86;
-			}
-			pb::cheat_mode = 1;
-			break;
-		case 'u':
-			if (pbctrl_state == 41)
-			{
-				pbctrl_state = 42;
-				return;
-			}
-			goto LABEL_77;
-		case 'x':
-			if (pbctrl_state == 63)
-			{
-				table_add_extra_ball(2.0);
-				goto LABEL_76;
-			}
-			if (pbctrl_state != 83)
-			{
-				if (pbctrl_state == 103)
-				{
-					GravityWellKickoutControl(64, nullptr);
-				}
-				else
-				{
-					if (pbctrl_state != 123)
-						goto LABEL_77;
-					cheat_bump_rank();
-				}
-			LABEL_76:
-				TableG->CheatsUsed = 1;
-				goto LABEL_77;
-			}
-			table_unlimited_balls = 1;
-			break;
-		default:
-			goto LABEL_77;
-		}
-		TableG->CheatsUsed = 1;
-		goto LABEL_77;
+		"Hey, is that a screen saver?",
+		"I guess it has been a good week",
+		"She may already be a glue bottle",
+		"If you don't come in Saturday,\n...\n",
+		"don't even bother coming in Sunday.",
+		"Tomorrow already sucks",
+		"I knew it worked too good to be right.",
+		"World's most expensive flippers"
+	};
+
+	if (control_lite198_tag.Component->MessageField || !key)
+	{
+		return;
 	}
+
+	std::memmove(&buffer[1], &buffer[0], 10);
+	buffer[0] = static_cast<char>(key);
+
+	if (strncmp(buffer, "tset neddih", 11) == 0)
+	{
+		pb::cheat_mode = 1;
+	}
+	else if (strncmp(buffer, "xamg", 4) == 0)
+	{
+		GravityWellKickoutControl(64, nullptr);
+	}
+	else if (strncmp(buffer, "xam1", 4) == 0)
+	{
+		table_add_extra_ball(2.0);
+	}
+	else if (strncmp(buffer, "xamb", 4) == 0)
+	{
+		table_unlimited_balls = 1;
+	}
+	else if (strncmp(buffer, "xamr", 4) == 0)
+	{
+		cheat_bump_rank();
+	}
+	else if (strncmp(buffer, "etouq", 5) == 0)
+	{
+		// A sad developer easter egg type 'cheat' from Full Tilt 
+		if (pb::FullTiltMode)
+		{
+			float time = 0;
+			for (auto quote : quotes)
+				control_mission_text_box_tag.Component->Display(quote, time += 3);
+		}
+		return;
+	}
+	else
+	{
+		return;
+	}
+
+	TableG->CheatsUsed = 1;
 }
 
 void control::table_add_extra_ball(float count)
