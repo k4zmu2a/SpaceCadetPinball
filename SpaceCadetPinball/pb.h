@@ -34,7 +34,8 @@ class pb
 public:
 	static int time_ticks;
 	static float ball_speed_limit, time_now, time_next, time_ticks_remainder;
-	static int cheat_mode, game_mode;
+	static int game_mode;
+	static bool cheat_mode;
 	static DatFile* record_table;
 	static TPinballTable* MainTable;
 	static high_score_struct highscore_table[5];
@@ -62,6 +63,7 @@ public:
 	static void tilt_no_more();
 	static bool chk_highscore();
 	static float collide(float timeNow, float timeDelta, TBall* ball);
+	static void PushCheat(const std::string& cheat);
 private:
 	static int demo_mode, mode_countdown_;
 };

@@ -1,6 +1,7 @@
 #include "pch.h"
 #include "winmain.h"
 
+#include "control.h"
 #include "fullscrn.h"
 #include "midi.h"
 #include "pinball.h"
@@ -504,6 +505,23 @@ void winmain::RenderUi()
 				if (!ShowSpriteViewer && !single_step)
 					pause();
 				ShowSpriteViewer ^= true;
+			}
+			if (ImGui::BeginMenu("Cheats"))
+			{
+				if (ImGui::MenuItem("hidden test", nullptr, pb::cheat_mode))
+					pb::PushCheat("hidden test");
+				if (ImGui::MenuItem("1max"))
+					pb::PushCheat("1max");
+				if (ImGui::MenuItem("bmax", nullptr, control::table_unlimited_balls))
+					pb::PushCheat("bmax");
+				if (ImGui::MenuItem("gmax"))
+					pb::PushCheat("gmax");
+				if (ImGui::MenuItem("rmax"))
+					pb::PushCheat("rmax");
+				if (pb::FullTiltMode && ImGui::MenuItem("quote"))
+					pb::PushCheat("quote");
+
+				ImGui::EndMenu();
 			}
 			ImGui::Separator();
 

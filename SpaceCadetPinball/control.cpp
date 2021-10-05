@@ -29,8 +29,6 @@
 #include "TWall.h"
 #include "TTextBox.h"
 
-int control::pbctrl_state;
-
 int control_bump_scores1[] = {500, 1000, 1500, 2000};
 int control_roll_scores1[] = {2000};
 int control_bump_scores2[] = {1500, 2500, 3500, 4500};
@@ -529,7 +527,8 @@ component_tag_base* control::simple_components[142]
 	&control_soundwave7_tag
 };
 
-int control::table_unlimited_balls, control::waiting_deployment_flag;
+int control::waiting_deployment_flag;
+bool control::table_unlimited_balls = false;
 int control::extraball_light_flag;
 int control::RankRcArray[9] = {84, 85, 86, 87, 88, 89, 90, 91, 92};
 int control::MissionRcArray[17] = {60, 61, 62, 63, 64, 65, 66, 67, 68, 69, 70, 71, 72, 73, 74, 75, 76};
@@ -638,9 +637,11 @@ void control::handler(int code, TPinballComponent* cmp)
 	MissionControl(code, cmp);
 }
 
-void control::pbctrl_bdoor_controller(int key)
+void control::pbctrl_bdoor_controller(char key)
 {
-	static char buffer[11 + 1]{};
+	// Buffer large enough for longest cheat + null
+	static char cheatBuffer[11 + 1]{};
+	static char* bufferEnd = &cheatBuffer[11];
 	static const char* quotes[8]
 	{
 		"Hey, is that a screen saver?",
@@ -653,43 +654,36 @@ void control::pbctrl_bdoor_controller(int key)
 		"World's most expensive flippers"
 	};
 
-	if (control_lite198_tag.Component->MessageField || !key)
-	{
-		return;
-	}
+	// Original allowed to enter cheats only before the first launch.
+	std::memmove(&cheatBuffer[0], &cheatBuffer[1], 10);
+	cheatBuffer[10] = key;
 
-	std::memmove(&buffer[1], &buffer[0], 10);
-	buffer[0] = static_cast<char>(key);
-
-	if (strncmp(buffer, "tset neddih", 11) == 0)
+	if (strcmp(bufferEnd - 11, "hidden test") == 0)
 	{
-		pb::cheat_mode = 1;
+		pb::cheat_mode ^= true;
 	}
-	else if (strncmp(buffer, "xamg", 4) == 0)
+	else if (strcmp(bufferEnd - 4, "gmax") == 0)
 	{
 		GravityWellKickoutControl(64, nullptr);
 	}
-	else if (strncmp(buffer, "xam1", 4) == 0)
+	else if (strcmp(bufferEnd - 4, "1max") == 0)
 	{
 		table_add_extra_ball(2.0);
 	}
-	else if (strncmp(buffer, "xamb", 4) == 0)
+	else if (strcmp(bufferEnd - 4, "bmax") == 0)
 	{
-		table_unlimited_balls = 1;
+		table_unlimited_balls ^= true;
 	}
-	else if (strncmp(buffer, "xamr", 4) == 0)
+	else if (strcmp(bufferEnd - 4, "rmax") == 0)
 	{
 		cheat_bump_rank();
 	}
-	else if (strncmp(buffer, "etouq", 5) == 0)
+	else if (pb::FullTiltMode && strcmp(bufferEnd - 5, "quote") == 0)
 	{
 		// A sad developer easter egg type 'cheat' from Full Tilt 
-		if (pb::FullTiltMode)
-		{
-			float time = 0;
-			for (auto quote : quotes)
-				control_mission_text_box_tag.Component->Display(quote, time += 3);
-		}
+		float time = 0;
+		for (auto quote : quotes)
+			control_mission_text_box_tag.Component->Display(quote, time += 3);
 		return;
 	}
 	else
@@ -2200,7 +2194,7 @@ void control::PlungerControl(int code, TPinballComponent* caller)
 	}
 	else if (code == 1016)
 	{
-		table_unlimited_balls = 0;
+		table_unlimited_balls = false;
 		if (!control_middle_circle_tag.Component->Message(37, 0.0))
 			control_middle_circle_tag.Component->Message(32, 0.0);
 		if (!light_on(&control_lite200_tag))
@@ -2499,7 +2493,7 @@ void control::table_control_handler(int code)
 {
 	if (code == 1011)
 	{
-		table_unlimited_balls = 0;
+		table_unlimited_balls = false;
 		control_lite77_tag.Component->Message(7, 0.0);
 	}
 }

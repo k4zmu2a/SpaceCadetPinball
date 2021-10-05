@@ -29,10 +29,10 @@
 
 TPinballTable* pb::MainTable = nullptr;
 DatFile* pb::record_table = nullptr;
-int pb::time_ticks = 0, pb::demo_mode = 0, pb::cheat_mode = 0, pb::game_mode = 2, pb::mode_countdown_;
+int pb::time_ticks = 0, pb::demo_mode = 0, pb::game_mode = 2, pb::mode_countdown_;
 float pb::time_now = 0, pb::time_next = 0, pb::ball_speed_limit, pb::time_ticks_remainder = 0;
 high_score_struct pb::highscore_table[5];
-bool pb::FullTiltMode = false;
+bool pb::FullTiltMode = false, pb::cheat_mode = false;
 
 
 int pb::init()
@@ -399,7 +399,7 @@ void pb::keydown(int key)
 		mode_countdown(-1);
 		return;
 	}
-	control::pbctrl_bdoor_controller(key);
+	control::pbctrl_bdoor_controller(static_cast<char>(key));
 	if (key == options::Options.Key.LeftFlipper)
 	{
 		MainTable->Message(1000, time_now);
@@ -639,4 +639,10 @@ float pb::collide(float timeNow, float timeDelta, TBall* ball)
 		}
 	}
 	return timeDelta;
+}
+
+void pb::PushCheat(const std::string& cheat)
+{
+	for (auto ch : cheat)
+		control::pbctrl_bdoor_controller(ch);
 }
