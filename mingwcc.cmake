@@ -2,7 +2,8 @@ set(TOOLCHAIN_PREFIX "x86_64-w64-mingw32")
 
 set(CMAKE_SYSTEM_NAME Windows)
 
-set(CMAKE_CXX_COMPILER "${TOOLCHAIN_PREFIX}-g++")
+#posix for std::this_thread, might work with just g++
+set(CMAKE_CXX_COMPILER "${TOOLCHAIN_PREFIX}-g++-posix")
 set(CMAKE_C_COMPILER "${TOOLCHAIN_PREFIX}-gcc")
 set(CMAKE_OBJCOPY "${TOOLCHAIN_PREFIX}-objcopy")
 set(CMAKE_STRIP "${TOOLCHAIN_PREFIX}-strip")
