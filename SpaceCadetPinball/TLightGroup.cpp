@@ -30,7 +30,7 @@ TLightGroup::TLightGroup(TPinballTable* table, int groupIndex) : TPinballCompone
 
 int TLightGroup::Message(int code, float value)
 {
-	auto count = static_cast<int>(List.size());
+	auto const count = static_cast<int>(List.size());
 	switch (code)
 	{
 	case 1011:
@@ -352,24 +352,18 @@ int TLightGroup::Message(int code, float value)
 		{
 			control::handler(code, this);
 			auto index = static_cast<int>(floor(value));
-			if (index >= 0)
+			if (index >= 0 && index < count)
 			{
-				if (index <= count)
+				// Turn off lights (index, end]
+				for (auto i = count - 1; i > index; i--)
 				{
-					auto countSub1 = count - 1;
-					if (countSub1 > index)
-					{
-						for (auto i = countSub1, k = countSub1 - index; k != 0; i--, k--)
-						{
-							auto light = List.at(i);
-							light->Message(20, 0.0);
-						}
-					}
+					List.at(i)->Message(20, 0.0);
+				}
 
-					for (auto it = List.rbegin(); it != List.rend(); ++it)
-					{
-						(*it)->Message(19, 0.0);
-					}
+				// Turn on lights [begin, index]
+				for (auto i = index; i >= 0; i--)
+				{
+					List.at(i)->Message(19, 0.0);
 				}
 			}
 			break;
@@ -448,7 +442,7 @@ int TLightGroup::next_light_down()
 {
 	for (auto index = static_cast<int>(List.size()) - 1; index >= 0; --index)
 	{
-		if (!List.at(index)->BmpIndex1)
+		if (List.at(index)->BmpIndex1)
 			return index;
 	}
 	return -1;
