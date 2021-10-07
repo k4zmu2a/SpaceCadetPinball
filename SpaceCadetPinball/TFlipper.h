@@ -19,8 +19,8 @@ public:
 	int BmpIndex;
 	TFlipperEdge* FlipperEdge;
 	int Timer;
-	float BmpCoef1{};
-	float BmpCoef2{};
+	float ExtendAnimationFrameTime{};
+	float RetractAnimationFrameTime{};
 	float TimerTime{};
 	float InputTime;
 };

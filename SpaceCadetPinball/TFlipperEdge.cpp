@@ -12,15 +12,15 @@ line_type TFlipperEdge::lineA, TFlipperEdge::lineB;
 circle_type TFlipperEdge::circlebase, TFlipperEdge::circleT1;
 
 TFlipperEdge::TFlipperEdge(TCollisionComponent* collComp, char* activeFlag, unsigned int collisionGroup, TPinballTable* table,
-                           vector_type* origin, vector_type* vecT1, vector_type* vecT2, float bmpCoef1, float bmpCoef2,
+                           vector_type* origin, vector_type* vecT1, vector_type* vecT2, float extendTime, float retractTime,
                            float collMult, float elasticity, float smoothness): TEdgeSegment(collComp, activeFlag, collisionGroup)
 {
 	vector_type crossProd{}, vecDir1{}, vecDir2{};
 
 	Elasticity = elasticity;
 	Smoothness = smoothness;
-	BmpCoef1 = bmpCoef1;
-	BmpCoef2 = bmpCoef2;
+	ExtendTime = extendTime;
+	RetractTime = retractTime;
 	CollisionMult = collMult;
 
 	T1Src = *vecT1;
@@ -78,9 +78,9 @@ TFlipperEdge::TFlipperEdge(TCollisionComponent* collComp, char* activeFlag, unsi
 	auto distance1 = sqrt(dy * dy + dx * dx) + table->CollisionCompOffset + vecT1->Z;
 	DistanceDivSq = distance1 * distance1;
 
-	float bmpCoef = std::min(BmpCoef1, BmpCoef2);
+	float minMoveTime = std::min(ExtendTime, RetractTime);
 	auto distance = maths::Distance(vecT1, vecT2);
-	CollisionTimeAdvance = bmpCoef / (distance / CircleT1Radius + distance / CircleT1Radius);
+	CollisionTimeAdvance = minMoveTime / (distance / CircleT1Radius + distance / CircleT1Radius);
 
 	TFlipperEdge::place_in_grid();
 	EdgeCollisionFlag = 0;
@@ -469,12 +469,12 @@ void TFlipperEdge::SetMotion(int code, float value)
 	case 1:
 		Angle2 = flipper_angle(value);
 		Angle1 = AngleMax;
-		AngleMult = BmpCoef1;
+		AngleMult = ExtendTime;
 		break;
 	case 2:
 		Angle2 = flipper_angle(value);
 		Angle1 = 0.0;
-		AngleMult = BmpCoef2;
+		AngleMult = RetractTime;
 		break;
 	case 1024:
 		FlipperFlag = 0;
