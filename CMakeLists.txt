@@ -10,8 +10,8 @@ list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_LIST_DIR}/CMakeModules")
 
 # On Windows, set paths to SDL-devel packages here
 if(WIN32)
-   set(SDL2_PATH "${CMAKE_CURRENT_LIST_DIR}/Libs/SDL2")
-   set(SDL2_MIXER_PATH "${CMAKE_CURRENT_LIST_DIR}/Libs/SDL2_mixer")
+   list(APPEND SDL2_PATH "${CMAKE_CURRENT_LIST_DIR}/Libs/SDL2")
+   list(APPEND SDL2_MIXER_PATH "${CMAKE_CURRENT_LIST_DIR}/Libs/SDL2_mixer")
 endif()
 
 # SDL2main is not needed
@@ -195,8 +195,14 @@ target_link_libraries(SpaceCadetPinball ${SDL2_LIBRARY} ${SDL2_MIXER_LIBRARY})
 
 # On Windows, copy DLL to output
 if(WIN32)
-    get_filename_component(SDL2_DLL_PATH ${SDL2_LIBRARY} DIRECTORY)
-    get_filename_component(SDL2_MIXER_DLL_PATH ${SDL2_MIXER_LIBRARY} DIRECTORY)
+    list(POP_BACK SDL2_LIBRARY SDL2_DLL_PATH)
+    list(POP_BACK SDL2_MIXER_LIBRARY SDL2_MIXER_DLL_PATH)
+    get_filename_component(SDL2_DLL_PATH ${SDL2_DLL_PATH} DIRECTORY)
+    get_filename_component(SDL2_MIXER_DLL_PATH ${SDL2_MIXER_DLL_PATH} DIRECTORY)
+    if(MINGW)
+        string(REGEX REPLACE "lib$" "bin" SDL2_DLL_PATH ${SDL2_DLL_PATH})
+        string(REGEX REPLACE "lib$" "bin" SDL2_MIXER_DLL_PATH ${SDL2_MIXER_DLL_PATH})
+    endif()
     message(STATUS "copy paths='${SDL2_DLL_PATH}' '${SDL2_MIXER_DLL_PATH}'") 
     add_custom_command(TARGET SpaceCadetPinball POST_BUILD
         COMMAND ${CMAKE_COMMAND} -E copy_if_different "${SDL2_DLL_PATH}/SDL2.dll" $<TARGET_FILE_DIR:SpaceCadetPinball>
