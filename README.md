@@ -38,7 +38,7 @@ Compile with Visual Studio; tested with 2019.
 On Linux:\
 Install devel packages for `SDL2` and `SDL2_mixer`.\
 Compile with CMake; tested with GCC 10, Clang 11.\
-To cross-compile for Windows, install a 64-bit version of mingw and its `SDL2` and `SDL2_mixer` distributions,t hen use the `mingwcc.cmake` toolchain. 
+To cross-compile for Windows, install a 64-bit version of mingw and its `SDL2` and `SDL2_mixer` distributions, then use the `mingwcc.cmake` toolchain. 
 
 On macOS:\
 **Homebrew**: Install the `SDL2`, `SDL2_mixer` homebrew packages.\
