@@ -17,36 +17,36 @@ constexpr uint16_t SwapByteOrderShort(uint16_t val)
 #pragma pack(1)
 struct riff_block
 {
-	DWORD TkStart;
-	DWORD CbBuffer;
+	uint32_t TkStart;
+	uint32_t CbBuffer;
 	char AData[4];
 };
 
 struct riff_data
 {
-	DWORD Data;
-	DWORD DataSize;
-	DWORD BlocksPerChunk;
+	uint32_t Data;
+	uint32_t DataSize;
+	uint32_t BlocksPerChunk;
 	riff_block Blocks[1];
 };
 
 struct riff_header
 {
-	DWORD Riff;
-	DWORD FileSize;
-	DWORD Mids;
-	DWORD Fmt;
-	DWORD FmtSize;
-	DWORD dwTimeFormat;
-	DWORD cbMaxBuffer;
-	DWORD dwFlags;
+	uint32_t Riff;
+	uint32_t FileSize;
+	uint32_t Mids;
+	uint32_t Fmt;
+	uint32_t FmtSize;
+	uint32_t dwTimeFormat;
+	uint32_t cbMaxBuffer;
+	uint32_t dwFlags;
 	riff_data Data;
 };
 
 struct midi_event
 {
-	DWORD iTicks;
-	DWORD iEvent;
+	uint32_t iTicks;
+	uint32_t iEvent;
 };
 
 struct midi_header

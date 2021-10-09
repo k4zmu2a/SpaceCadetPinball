@@ -41,7 +41,6 @@
 //https://github.com/Tyyppi77/imgui_sdl 01deb04b102b6a1c15c7fdec1977a2c96a885e6f
 #include "imgui_sdl.h"
 
-typedef uint32_t  DWORD;
 typedef char* LPSTR;
 typedef const char* LPCSTR;
 

@@ -152,7 +152,7 @@ int winmain::WinMain(LPCSTR lpCmdLine)
 	else
 		pb::replay_level(0);
 
-	DWORD dtHistoryCounter = 300u, updateCounter = 0, frameCounter = 0;
+	unsigned dtHistoryCounter = 300u, updateCounter = 0, frameCounter = 0;
 
 	auto frameStart = Clock::now();
 	double UpdateToFrameCounter = 0;

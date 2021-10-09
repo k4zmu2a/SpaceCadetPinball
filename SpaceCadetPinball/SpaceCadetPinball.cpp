@@ -5,24 +5,36 @@
 
 #include "winmain.h"
 
+int MainActual(LPCSTR lpCmdLine)
+{
+	// Todo: get rid of restart to change resolution.
+	int returnCode;
+	do
+	{
+		returnCode = winmain::WinMain(lpCmdLine);
+	}
+	while (winmain::RestartRequested());
+	return returnCode;
+}
+
 int main(int argc, char* argv[])
 {
-	{
-		// Testing with UI
-		std::string cmdLine;
-		for (int i = 0; i < argc; i++)
-			cmdLine += argv[i];
+	std::string cmdLine;
+	for (int i = 1; i < argc; i++)
+		cmdLine += argv[i];
 
-		// Todo: get rid of restart to change resolution.
-		int returnCode;
-		do
-		{
-			returnCode = winmain::WinMain(cmdLine.c_str());
-		}
-		while (winmain::RestartRequested());
-		return returnCode;
-	}
+	return MainActual(cmdLine.c_str());
 }
+
+#if _WIN32
+#include <windows.h>
+
+// Windows subsystem main
+int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nShowCmd)
+{
+	return MainActual(lpCmdLine);
+}
+#endif
 
 // Run program: Ctrl + F5 or Debug > Start Without Debugging menu
 // Debug program: F5 or Debug > Start Debugging menu
