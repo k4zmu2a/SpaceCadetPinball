@@ -5,6 +5,7 @@
 #include "control.h"
 #include "loader.h"
 #include "objlist_class.h"
+#include "pb.h"
 #include "TBall.h"
 #include "TCircle.h"
 #include "timer.h"
@@ -44,7 +45,8 @@ TKickout::TKickout(TPinballTable* table, int groupIndex, bool someFlag): TCollis
 	}
 
 	Circle.RadiusSq = visual.FloatArr[2] * visual.FloatArr[2];
-	CollisionBallSetZ = loader::query_float_attribute(groupIndex, 0, 408)[2];
+	auto zAttr = loader::query_float_attribute(groupIndex, 0, 408);
+	CollisionBallSetZ = pb::FullTiltMode ? zAttr[3] : zAttr[2];
 	ThrowSpeedMult2 = visual.Kicker.ThrowBallMult * 0.01f;
 	BallAcceleration = visual.Kicker.ThrowBallAcceleration;
 	ThrowAngleMult = visual.Kicker.ThrowBallAngleMult;

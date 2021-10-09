@@ -26,10 +26,10 @@
 
 TPinballTable* pb::MainTable = nullptr;
 datFileStruct* pb::record_table = nullptr;
-int pb::time_ticks = 0, pb::demo_mode = 0, pb::cheat_mode = 0, pb::game_mode = 2, pb::mode_countdown_, pb::state;
+int pb::time_ticks = 0, pb::demo_mode = 0, pb::game_mode = 2, pb::mode_countdown_, pb::state;
 float pb::time_now, pb::time_next, pb::ball_speed_limit;
 high_score_struct pb::highscore_table[5];
-bool pb::FullTiltMode = false;
+bool pb::FullTiltMode = false, pb::cheat_mode = false;
 
 
 int pb::init()
@@ -404,7 +404,7 @@ void pb::keydown(int key)
 		mode_countdown(-1);
 		return;
 	}
-	control::pbctrl_bdoor_controller(key);
+	control::pbctrl_bdoor_controller(static_cast<char>(key));
 	if (key == options::Options.LeftFlipperKey)
 	{
 		MainTable->Message(1000, time_now);

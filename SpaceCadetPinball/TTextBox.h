@@ -21,7 +21,7 @@ public:
 	~TTextBox() override;
 	int Message(int code, float value) override;
 	void Clear();
-	void Display(char* text, float time);
+	void Display(const char* text, float time);
 	void Draw();
 
 	static void TimerExpired(int timerId, void* tb);

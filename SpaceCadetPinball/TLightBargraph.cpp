@@ -57,9 +57,8 @@ int TLightBargraph::Message(int code, float value)
 				TLightGroup::Message(45, static_cast<float>(timeIndex / 2));
 				if (!(timeIndex & 1))
 					TLightGroup::Message(46, 0.0);
-				float* timeArray = TimerTimeArray;
-				if (timeArray)
-					TimerBargraph = timer::set(timeArray[timeIndex], this, BargraphTimerExpired);
+				if (TimerTimeArray)
+					TimerBargraph = timer::set(TimerTimeArray[timeIndex], this, BargraphTimerExpired);
 				TimeIndex = timeIndex;
 			}
 			else

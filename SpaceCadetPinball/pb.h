@@ -10,7 +10,8 @@ class pb
 public:
 	static int time_ticks;
 	static float ball_speed_limit, time_now, time_next;
-	static int cheat_mode, game_mode;
+	static int game_mode;
+	static bool cheat_mode;
 	static datFileStruct* record_table;
 	static TPinballTable* MainTable;
 	static high_score_struct highscore_table[5];

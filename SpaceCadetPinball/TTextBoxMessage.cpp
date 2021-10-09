@@ -3,7 +3,7 @@
 #include "memory.h"
 #include "pb.h"
 
-TTextBoxMessage::TTextBoxMessage(char* text, float time)
+TTextBoxMessage::TTextBoxMessage(const char* text, float time)
 {
 	NextMessage = nullptr;
 	Time = time;

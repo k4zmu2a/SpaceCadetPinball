@@ -7,7 +7,7 @@ public:
 	float Time;
 	int EndTicks;
 
-	TTextBoxMessage(char* text, float time);
+	TTextBoxMessage(const char* text, float time);
 	~TTextBoxMessage();
 	float TimeLeft() const;
 	void Refresh(float time);

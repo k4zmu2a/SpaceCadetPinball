@@ -374,31 +374,21 @@ int TLightGroup::Message(int code, float value)
 		}
 	case 45:
 		{
+			auto count = List->GetCount();
 			control::handler(code, this);
 			auto index = static_cast<int>(floor(value));
-			if (index >= 0)
+			if (index >= 0 && index < count)
 			{
-				auto count = List->GetCount();
-				if (index <= count)
+				// Turn off lights (index, end]
+				for (auto i = count - 1; i > index; i--)
 				{
-					auto countSub1 = count - 1;
-					if (countSub1 > index)
-					{
-						countSub1 = index;
-						for (auto i = countSub1, k = countSub1 - index; k != 0; i--, k--)
-						{
-							auto light = List->Get(i);
-							light->Message(20, 0.0);
-						}
-					}
-					if (countSub1 >= 0)
-					{
-						for (auto i = countSub1; i != 0; i--)
-						{
-							auto light = List->Get(i);
-							light->Message(19, 0.0);
-						}
-					}
+					List->Get(i)->Message(20, 0.0);
+				}
+
+				// Turn on lights [begin, index]
+				for (auto i = index; i >= 0; i--)
+				{
+					List->Get(i)->Message(19, 0.0);
 				}
 			}
 			break;
@@ -477,7 +467,7 @@ int TLightGroup::next_light_down()
 {
 	for (int index = List->GetCount() - 1; index >= 0; --index)
 	{
-		if (!List->Get(index)->BmpIndex1)
+		if (List->Get(index)->BmpIndex1)
 			return index;
 	}
 	return -1;
