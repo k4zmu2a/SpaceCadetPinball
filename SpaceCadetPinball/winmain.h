@@ -72,6 +72,7 @@ private:
 	static bool ShowSpriteViewer;
 	static double UpdateToFrameRatio;
 	static DurationMs TargetFrameTime;
+	static struct optionsStruct& Options;
 
 	static void RenderUi();
 };

@@ -42,9 +42,9 @@ struct optionsStruct
 {
 	ControlsStruct Key;
 	ControlsStruct KeyDft;
-	int Sounds;
-	int Music;
-	int FullScreen;
+	bool Sounds;
+	bool Music;
+	bool FullScreen;
 	int Players;
 	int Resolution;
 	bool UniformScaling;
@@ -53,6 +53,7 @@ struct optionsStruct
 	int UpdatesPerSecond;
 	bool ShowMenu;
 	bool UncappedUpdatesPerSecond;
+	int SoundChannels;
 };
 
 struct ControlRef
@@ -68,6 +69,8 @@ public:
 	// Original does ~120 updates per second.
 	static constexpr int MaxUps = 360, MaxFps = MaxUps, MinUps = 60, MinFps = MinUps,
 	                     DefUps = 120, DefFps = 60;
+	// Original uses 8 sound channels
+	static constexpr int MaxSoundChannels = 32, MinSoundChannels = 1, DefSoundChannels = 8;
 	static optionsStruct Options;
 
 	static void init();

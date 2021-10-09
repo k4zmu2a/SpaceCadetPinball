@@ -4,6 +4,7 @@
 #include "GroupData.h"
 #include "options.h"
 #include "pb.h"
+#include "score.h"
 #include "TPinballTable.h"
 #include "winmain.h"
 
@@ -516,6 +517,27 @@ void render::SpriteViewer(bool* show)
 					else
 						ImGui::SameLine();
 					ImGui::Image(zMap->Texture, ImVec2(zMap->Width * scale, zMap->Height * scale),
+					             uv_min, uv_max, tint_col, border_col);
+				}
+			}
+		}
+
+		// 3DPB font is not in dat file.
+		if (!pb::FullTiltMode)
+		{
+			int index = -1;
+			for (auto bmp : score::msg_fontp->Chars)
+			{
+				index++;
+				if (!bmp)
+					continue;
+
+				ImGui::Text("Char: %d, symbol:'%c'", index, index);
+
+				gdrv::CreatePreview(*bmp);
+				if (bmp->Texture)
+				{
+					ImGui::Image(bmp->Texture, ImVec2(bmp->Width * scale, bmp->Height * scale),
 					             uv_min, uv_max, tint_col, border_col);
 				}
 			}

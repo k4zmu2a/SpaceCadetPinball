@@ -40,6 +40,7 @@ char* winmain::BasePath;
 std::string winmain::FpsDetails;
 double winmain::UpdateToFrameRatio;
 winmain::DurationMs winmain::TargetFrameTime;
+optionsStruct& winmain::Options = options::Options;
 
 int winmain::WinMain(LPCSTR lpCmdLine)
 {
@@ -118,13 +119,11 @@ int winmain::WinMain(LPCSTR lpCmdLine)
 	// PB init from message handler
 	{
 		options::init();
-		auto voiceCount = options::get_int("Voices", 8);
-		if (Sound::Init(voiceCount))
-			options::Options.Sounds = 0;
-		Sound::Activate();
+		if (!Sound::Init(Options.SoundChannels, Options.Sounds))
+			Options.Sounds = false;
 
 		if (!pinball::quickFlag && !midi::music_init())
-			options::Options.Music = 0;
+			Options.Music = false;
 
 		if (pb::init())
 		{
@@ -141,11 +140,11 @@ int winmain::WinMain(LPCSTR lpCmdLine)
 
 	if (strstr(lpCmdLine, "-fullscreen"))
 	{
-		options::Options.FullScreen = 1;
+		Options.FullScreen = true;
 	}
 
 	SDL_ShowWindow(window);
-	fullscrn::set_screen_mode(options::Options.FullScreen);
+	fullscrn::set_screen_mode(Options.FullScreen);
 
 	if (strstr(lpCmdLine, "-demo"))
 		pb::toggle_demo();
@@ -265,7 +264,7 @@ int winmain::WinMain(LPCSTR lpCmdLine)
 			auto targetTimeDelta = TargetFrameTime - DurationMs(updateEnd - frameStart) - sleepRemainder;
 
 			TimePoint frameEnd;
-			if (targetTimeDelta > DurationMs::zero() && !options::Options.UncappedUpdatesPerSecond)
+			if (targetTimeDelta > DurationMs::zero() && !Options.UncappedUpdatesPerSecond)
 			{
 				std::this_thread::sleep_for(targetTimeDelta);
 				frameEnd = Clock::now();
@@ -302,7 +301,7 @@ int winmain::WinMain(LPCSTR lpCmdLine)
 void winmain::RenderUi()
 {
 	// A minimal window with a button to prevent menu lockout.
-	if (!options::Options.ShowMenu)
+	if (!Options.ShowMenu)
 	{
 		ImGui::SetNextWindowPos(ImVec2{});
 		ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2{10, 0});
@@ -371,32 +370,32 @@ void winmain::RenderUi()
 
 		if (ImGui::BeginMenu("Options"))
 		{
-			if (ImGui::MenuItem("Show Menu", "F9", options::Options.ShowMenu))
+			if (ImGui::MenuItem("Show Menu", "F9", Options.ShowMenu))
 			{
 				options::toggle(Menu1::Show_Menu);
 			}
-			if (ImGui::MenuItem("Full Screen", "F4", options::Options.FullScreen))
+			if (ImGui::MenuItem("Full Screen", "F4", Options.FullScreen))
 			{
 				options::toggle(Menu1::Full_Screen);
 			}
 			if (ImGui::BeginMenu("Select Players"))
 			{
-				if (ImGui::MenuItem("1 Player", nullptr, options::Options.Players == 1))
+				if (ImGui::MenuItem("1 Player", nullptr, Options.Players == 1))
 				{
 					options::toggle(Menu1::OnePlayer);
 					new_game();
 				}
-				if (ImGui::MenuItem("2 Players", nullptr, options::Options.Players == 2))
+				if (ImGui::MenuItem("2 Players", nullptr, Options.Players == 2))
 				{
 					options::toggle(Menu1::TwoPlayers);
 					new_game();
 				}
-				if (ImGui::MenuItem("3 Players", nullptr, options::Options.Players == 3))
+				if (ImGui::MenuItem("3 Players", nullptr, Options.Players == 3))
 				{
 					options::toggle(Menu1::ThreePlayers);
 					new_game();
 				}
-				if (ImGui::MenuItem("4 Players", nullptr, options::Options.Players == 4))
+				if (ImGui::MenuItem("4 Players", nullptr, Options.Players == 4))
 				{
 					options::toggle(Menu1::FourPlayers);
 					new_game();
@@ -405,13 +404,21 @@ void winmain::RenderUi()
 			}
 			ImGui::Separator();
 
-			if (ImGui::MenuItem("Sound", nullptr, options::Options.Sounds))
+			if (ImGui::MenuItem("Sound", "F5", Options.Sounds))
 			{
 				options::toggle(Menu1::Sounds);
 			}
-			if (ImGui::MenuItem("Music", nullptr, options::Options.Music))
+			if (ImGui::MenuItem("Music", "F6", Options.Music))
 			{
 				options::toggle(Menu1::Music);
+			}
+			ImGui::TextUnformatted("Sound Channels");
+			if (ImGui::SliderInt("##Sound Channels", &Options.SoundChannels, options::MinSoundChannels,
+			                     options::MaxSoundChannels, "%d", ImGuiSliderFlags_AlwaysClamp))
+			{
+				Options.SoundChannels = std::min(options::MaxSoundChannels,
+				                                 std::max(options::MinSoundChannels, Options.SoundChannels));
+				Sound::SetChannels(Options.SoundChannels);
 			}
 			ImGui::Separator();
 
@@ -425,7 +432,7 @@ void winmain::RenderUi()
 			{
 				char buffer[20]{};
 				auto maxResText = pinball::get_rc_string(fullscrn::GetMaxResolution() + 2030, 0);
-				if (ImGui::MenuItem(maxResText, nullptr, options::Options.Resolution == -1))
+				if (ImGui::MenuItem(maxResText, nullptr, Options.Resolution == -1))
 				{
 					options::toggle(Menu1::MaximumResolution);
 				}
@@ -433,7 +440,7 @@ void winmain::RenderUi()
 				{
 					auto& res = fullscrn::resolution_array[i];
 					snprintf(buffer, sizeof buffer - 1, "%d x %d", res.ScreenWidth, res.ScreenHeight);
-					if (ImGui::MenuItem(buffer, nullptr, options::Options.Resolution == i))
+					if (ImGui::MenuItem(buffer, nullptr, Options.Resolution == i))
 					{
 						options::toggle(static_cast<Menu1>(static_cast<int>(Menu1::R640x480) + i));
 					}
@@ -442,11 +449,11 @@ void winmain::RenderUi()
 			}
 			if (ImGui::BeginMenu("Graphics"))
 			{
-				if (ImGui::MenuItem("Uniform Scaling", nullptr, options::Options.UniformScaling))
+				if (ImGui::MenuItem("Uniform Scaling", nullptr, Options.UniformScaling))
 				{
 					options::toggle(Menu1::WindowUniformScale);
 				}
-				if (ImGui::MenuItem("Linear Filtering", nullptr, options::Options.LinearFiltering))
+				if (ImGui::MenuItem("Linear Filtering", nullptr, Options.LinearFiltering))
 				{
 					options::toggle(Menu1::WindowLinearFilter);
 				}
@@ -459,27 +466,25 @@ void winmain::RenderUi()
 				if (ImGui::MenuItem("Set Default UPS/FPS"))
 				{
 					changed = true;
-					options::Options.UpdatesPerSecond = options::DefUps;
-					options::Options.FramesPerSecond = options::DefFps;
+					Options.UpdatesPerSecond = options::DefUps;
+					Options.FramesPerSecond = options::DefFps;
 				}
-				if (ImGui::DragInt("UPS", &options::Options.UpdatesPerSecond, 1, options::MinUps, options::MaxUps,
-				                   "%d", ImGuiSliderFlags_AlwaysClamp))
+				if (ImGui::SliderInt("UPS", &Options.UpdatesPerSecond, options::MinUps, options::MaxUps, "%d",
+				                     ImGuiSliderFlags_AlwaysClamp))
 				{
 					changed = true;
-					options::Options.FramesPerSecond = std::min(options::Options.UpdatesPerSecond,
-					                                            options::Options.FramesPerSecond);
+					Options.FramesPerSecond = std::min(Options.UpdatesPerSecond, Options.FramesPerSecond);
 				}
-				if (ImGui::DragInt("FPS", &options::Options.FramesPerSecond, 1, options::MinFps, options::MaxFps,
-				                   "%d", ImGuiSliderFlags_AlwaysClamp))
+				if (ImGui::SliderInt("FPS", &Options.FramesPerSecond, options::MinFps, options::MaxFps, "%d",
+				                     ImGuiSliderFlags_AlwaysClamp))
 				{
 					changed = true;
-					options::Options.UpdatesPerSecond = std::max(options::Options.UpdatesPerSecond,
-					                                             options::Options.FramesPerSecond);
+					Options.UpdatesPerSecond = std::max(Options.UpdatesPerSecond, Options.FramesPerSecond);
 				}
 				snprintf(buffer, sizeof buffer - 1, "Uncapped UPS (FPS ratio %02.02f)", UpdateToFrameRatio);
-				if (ImGui::MenuItem(buffer, nullptr, options::Options.UncappedUpdatesPerSecond))
+				if (ImGui::MenuItem(buffer, nullptr, Options.UncappedUpdatesPerSecond))
 				{
-					options::Options.UncappedUpdatesPerSecond ^= true;
+					Options.UncappedUpdatesPerSecond ^= true;
 				}
 
 				if (changed)
@@ -596,7 +601,7 @@ int winmain::event_handler(const SDL_Event* event)
 		switch (event->key.keysym.sym)
 		{
 		case SDLK_ESCAPE:
-			if (options::Options.FullScreen)
+			if (Options.FullScreen)
 				options::toggle(Menu1::Full_Screen);
 			SDL_MinimizeWindow(MainWindow);
 			break;
@@ -664,14 +669,14 @@ int winmain::event_handler(const SDL_Event* event)
 				SDL_SetWindowGrab(MainWindow, SDL_TRUE);
 			}
 			else
-				pb::keydown(options::Options.Key.LeftFlipper);
+				pb::keydown(Options.Key.LeftFlipper);
 			break;
 		case SDL_BUTTON_RIGHT:
 			if (!pb::cheat_mode)
-				pb::keydown(options::Options.Key.RightFlipper);
+				pb::keydown(Options.Key.RightFlipper);
 			break;
 		case SDL_BUTTON_MIDDLE:
-			pb::keydown(options::Options.Key.Plunger);
+			pb::keydown(Options.Key.Plunger);
 			break;
 		default:
 			break;
@@ -688,14 +693,14 @@ int winmain::event_handler(const SDL_Event* event)
 				SDL_SetWindowGrab(MainWindow, SDL_FALSE);
 			}
 			if (!pb::cheat_mode)
-				pb::keyup(options::Options.Key.LeftFlipper);
+				pb::keyup(Options.Key.LeftFlipper);
 			break;
 		case SDL_BUTTON_RIGHT:
 			if (!pb::cheat_mode)
-				pb::keyup(options::Options.Key.RightFlipper);
+				pb::keyup(Options.Key.RightFlipper);
 			break;
 		case SDL_BUTTON_MIDDLE:
-			pb::keyup(options::Options.Key.Plunger);
+			pb::keyup(Options.Key.Plunger);
 			break;
 		default:
 			break;
@@ -709,7 +714,7 @@ int winmain::event_handler(const SDL_Event* event)
 		case SDL_WINDOWEVENT_SHOWN:
 			activated = 1;
 			Sound::Activate();
-			if (options::Options.Music && !single_step)
+			if (Options.Music && !single_step)
 				midi::play_pb_theme();
 			no_time_loss = 1;
 			has_focus = 1;
@@ -718,7 +723,7 @@ int winmain::event_handler(const SDL_Event* event)
 		case SDL_WINDOWEVENT_HIDDEN:
 			activated = 0;
 			fullscrn::activate(0);
-			options::Options.FullScreen = 0;
+			Options.FullScreen = false;
 			Sound::Deactivate();
 			midi::music_stop();
 			has_focus = 0;
@@ -789,6 +794,7 @@ void winmain::a_dialog()
 		ImGui::Separator();
 
 		ImGui::TextUnformatted("Decompiled -> Ported to SDL");
+		ImGui::TextUnformatted("Version 2.0");
 		if (ImGui::SmallButton("Project home: https://github.com/k4zmu2a/SpaceCadetPinball"))
 		{
 #if SDL_VERSION_ATLEAST(2, 0, 14)
@@ -837,7 +843,7 @@ void winmain::Restart()
 void winmain::UpdateFrameRate()
 {
 	// UPS >= FPS
-	auto fps = options::Options.FramesPerSecond, ups = options::Options.UpdatesPerSecond;
+	auto fps = Options.FramesPerSecond, ups = Options.UpdatesPerSecond;
 	UpdateToFrameRatio = static_cast<double>(ups) / fps;
 	TargetFrameTime = DurationMs(1000.0 / ups);
 }

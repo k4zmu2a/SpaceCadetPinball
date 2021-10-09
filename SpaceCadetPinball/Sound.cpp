@@ -3,22 +3,23 @@
 
 
 int Sound::num_channels;
-unsigned int Sound::enabled_flag = -1;
+bool Sound::enabled_flag = false;
+int* Sound::TimeStamps = nullptr;
 
-int Sound::Init(int voices)
+bool Sound::Init(int channels, bool enableFlag)
 {
-	int channelCount = voices;
-	if (voices > 8)
-		channelCount = 8;
-	num_channels = channelCount;
-
 	Mix_Init(MIX_INIT_MID);
-	return Mix_OpenAudio(MIX_DEFAULT_FREQUENCY, MIX_DEFAULT_FORMAT, 2, 1024);
+	auto result = Mix_OpenAudio(MIX_DEFAULT_FREQUENCY, MIX_DEFAULT_FORMAT, 2, 1024);
+	SetChannels(channels);
+	Enable(enableFlag);
+	return !result;
 }
 
-void Sound::Enable(int channelFrom, int channelTo, int enableFlag)
+void Sound::Enable(bool enableFlag)
 {
-	enabled_flag = enableFlag ? -1 : 0;
+	enabled_flag = enableFlag;
+	if (!enableFlag)
+		Mix_HaltChannel(-1);
 }
 
 void Sound::Activate()
@@ -33,17 +34,28 @@ void Sound::Deactivate()
 
 void Sound::Close()
 {
+	delete[] TimeStamps;
 	Mix_CloseAudio();
 	Mix_Quit();
 }
 
-void Sound::PlaySound(Mix_Chunk* wavePtr, int minChannel, int maxChannel, unsigned int dwFlags, int16_t loops)
+void Sound::PlaySound(Mix_Chunk* wavePtr, int time)
 {
 	if (wavePtr && enabled_flag)
-		Mix_PlayChannel(-1, wavePtr, loops);
+	{
+		if (Mix_Playing(-1) == num_channels)
+		{
+			auto oldestChannel = std::min_element(TimeStamps, TimeStamps + num_channels) - TimeStamps;
+			Mix_HaltChannel(oldestChannel);
+		}
+
+		auto channel = Mix_PlayChannel(-1, wavePtr, 0);
+		if (channel != -1)
+			TimeStamps[channel] = time;
+	}
 }
 
-Mix_Chunk* Sound::LoadWaveFile(std::string lpName)
+Mix_Chunk* Sound::LoadWaveFile(const std::string& lpName)
 {
 	auto wavFile = fopen(lpName.c_str(), "r");
 	if (!wavFile)
@@ -57,4 +69,15 @@ void Sound::FreeSound(Mix_Chunk* wave)
 {
 	if (wave)
 		Mix_FreeChunk(wave);
+}
+
+void Sound::SetChannels(int channels)
+{
+	if (channels <= 0)
+		channels = 8;
+
+	num_channels = channels;
+	delete[] TimeStamps;
+	TimeStamps = new int[num_channels]();
+	Mix_AllocateChannels(num_channels);
 }

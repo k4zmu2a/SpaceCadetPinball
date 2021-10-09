@@ -7,6 +7,7 @@
 #include "winmain.h"
 
 constexpr int options::MaxUps, options::MaxFps, options::MinUps, options::MinFps, options::DefUps, options::DefFps;
+constexpr int options::MaxSoundChannels, options::MinSoundChannels, options::DefSoundChannels;
 
 optionsStruct options::Options{};
 std::map<std::string, std::string> options::settings{};
@@ -42,9 +43,6 @@ void options::init()
 		ImGui::EndFrame();
 	}
 
-	Options.Sounds = 1;
-	Options.Music = 0;
-	Options.FullScreen = 0;
 	Options.KeyDft.LeftFlipper = SDLK_z;
 	Options.KeyDft.RightFlipper = SDLK_SLASH;
 	Options.KeyDft.Plunger = SDLK_SPACE;
@@ -52,20 +50,18 @@ void options::init()
 	Options.KeyDft.RightTableBump = SDLK_PERIOD;
 	Options.KeyDft.BottomTableBump = SDLK_UP;
 	Options.Key = Options.KeyDft;
-	Options.Players = 1;
 
-	Options.UniformScaling = true;
-	Options.Sounds = get_int("Sounds", Options.Sounds);
-	Options.Music = get_int("Music", Options.Music);
-	Options.FullScreen = get_int("FullScreen", Options.FullScreen);
-	Options.Players = get_int("Players", Options.Players);
+	Options.Sounds = get_int("Sounds", true);
+	Options.Music = get_int("Music", false);
+	Options.FullScreen = get_int("FullScreen", false);
+	Options.Players = get_int("Players", 1);
 	Options.Key.LeftFlipper = get_int("Left Flipper key", Options.Key.LeftFlipper);
 	Options.Key.RightFlipper = get_int("Right Flipper key", Options.Key.RightFlipper);
 	Options.Key.Plunger = get_int("Plunger key", Options.Key.Plunger);
 	Options.Key.LeftTableBump = get_int("Left Table Bump key", Options.Key.LeftTableBump);
 	Options.Key.RightTableBump = get_int("Right Table Bump key", Options.Key.RightTableBump);
 	Options.Key.BottomTableBump = get_int("Bottom Table Bump key", Options.Key.BottomTableBump);
-	Options.UniformScaling = get_int("Uniform scaling", Options.UniformScaling);
+	Options.UniformScaling = get_int("Uniform scaling", true);
 	ImGui::GetIO().FontGlobalScale = get_float("UI Scale", 1.0f);
 	Options.Resolution = get_int("Screen Resolution", -1);
 	Options.LinearFiltering = get_int("Linear Filtering", true);
@@ -74,10 +70,10 @@ void options::init()
 	Options.UpdatesPerSecond = std::max(Options.UpdatesPerSecond, Options.FramesPerSecond);
 	Options.ShowMenu = get_int("ShowMenu", true);
 	Options.UncappedUpdatesPerSecond = get_int("Uncapped Updates Per Second", false);
+	Options.SoundChannels = get_int("Sound Channels", DefSoundChannels);
+	Options.SoundChannels = std::min(MaxSoundChannels, std::max(MinSoundChannels, Options.SoundChannels));
 
 	winmain::UpdateFrameRate();
-
-	Sound::Enable(0, 7, Options.Sounds);
 
 	auto maxRes = fullscrn::GetMaxResolution();
 	if (Options.Resolution >= 0 && Options.Resolution > maxRes)
@@ -105,6 +101,7 @@ void options::uninit()
 	set_int("Updates Per Second", Options.UpdatesPerSecond);
 	set_int("ShowMenu", Options.ShowMenu);
 	set_int("Uncapped Updates Per Second", Options.UncappedUpdatesPerSecond);
+	set_int("Sound Channels", Options.SoundChannels);
 }
 
 
@@ -143,18 +140,15 @@ void options::set_float(LPCSTR lpValueName, float data)
 
 void options::toggle(Menu1 uIDCheckItem)
 {
-	int newValue;
 	switch (uIDCheckItem)
 	{
 	case Menu1::Sounds:
-		newValue = Options.Sounds == 0;
-		Options.Sounds = Options.Sounds == 0;
-		Sound::Enable(0, 7, newValue);
+		Options.Sounds ^= true;
+		Sound::Enable(Options.Sounds);
 		return;
 	case Menu1::Music:
-		newValue = Options.Music == 0;
-		Options.Music = Options.Music == 0;
-		if (!newValue)
+		Options.Music ^= true;
+		if (!Options.Music)
 			midi::music_stop();
 		else
 			midi::play_pb_theme();
@@ -163,9 +157,8 @@ void options::toggle(Menu1 uIDCheckItem)
 		Options.ShowMenu = Options.ShowMenu == 0;
 		return;
 	case Menu1::Full_Screen:
-		newValue = Options.FullScreen == 0;
-		Options.FullScreen = Options.FullScreen == 0;
-		fullscrn::set_screen_mode(newValue);
+		Options.FullScreen ^= true;
+		fullscrn::set_screen_mode(Options.FullScreen);
 		return;
 	case Menu1::OnePlayer:
 	case Menu1::TwoPlayers:
