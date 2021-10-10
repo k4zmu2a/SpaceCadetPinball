@@ -201,11 +201,13 @@ void pb::replay_level(int demoMode)
 	MainTable->Message(1014, static_cast<float>(options::Options.Players));
 }
 
-void pb::ballset(int x, int y)
+void pb::ballset(float dx, float dy)
 {
+	// dx and dy are normalized to window, ideally in [-1, 1]
+	static constexpr float sensitivity = 7000;
 	TBall* ball = MainTable->BallList.at(0);
-	ball->Acceleration.X = x * 30.0f;
-	ball->Acceleration.Y = y * 30.0f;
+	ball->Acceleration.X = dx * sensitivity;
+	ball->Acceleration.Y = dy * sensitivity;
 	ball->Speed = maths::normalize_2d(&ball->Acceleration);
 }
 

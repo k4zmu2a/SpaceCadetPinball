@@ -212,10 +212,18 @@ int winmain::WinMain(LPCSTR lpCmdLine)
 		{
 			if (mouse_down)
 			{
-				int x, y;
+				int x, y, w, h;
 				SDL_GetMouseState(&x, &y);
-				pb::ballset(last_mouse_x - x, y - last_mouse_y);
+				SDL_GetWindowSize(window, &w, &h);
+				float dx = (last_mouse_x - x) / static_cast<float>(w);
+				float dy = (y - last_mouse_y) / static_cast<float>(h);
+				pb::ballset(dx, dy);
+				
 				SDL_WarpMouseInWindow(window, last_mouse_x, last_mouse_y);
+
+				// Mouse warp does not work over remote desktop or in some VMs
+				//last_mouse_x = x;
+				//last_mouse_y = y;
 			}
 			if (!single_step)
 			{
@@ -560,7 +568,6 @@ int winmain::event_handler(const SDL_Event* event)
 		if (mouse_down)
 		{
 			mouse_down = 0;
-			SDL_ShowCursor(SDL_ENABLE);
 			SDL_SetWindowGrab(MainWindow, SDL_FALSE);
 		}
 		switch (event->type)
@@ -665,7 +672,6 @@ int winmain::event_handler(const SDL_Event* event)
 				mouse_down = 1;
 				last_mouse_x = event->button.x;
 				last_mouse_y = event->button.y;
-				SDL_ShowCursor(SDL_DISABLE);
 				SDL_SetWindowGrab(MainWindow, SDL_TRUE);
 			}
 			else
@@ -689,7 +695,6 @@ int winmain::event_handler(const SDL_Event* event)
 			if (mouse_down)
 			{
 				mouse_down = 0;
-				SDL_ShowCursor(SDL_ENABLE);
 				SDL_SetWindowGrab(MainWindow, SDL_FALSE);
 			}
 			if (!pb::cheat_mode)
