@@ -119,7 +119,6 @@ int gdrv::display_palette(ColorRgba* plt)
 
 	current_palette[255].Color = 0xffFFFFFF;
 
-	score::ApplyPalette();
 	for (const auto group : pb::record_table->Groups)
 	{
 		for (int i = 0; i <= 2; i++)

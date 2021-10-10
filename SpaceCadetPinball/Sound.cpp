@@ -35,6 +35,7 @@ void Sound::Deactivate()
 void Sound::Close()
 {
 	delete[] TimeStamps;
+	TimeStamps = nullptr;
 	Mix_CloseAudio();
 	Mix_Quit();
 }

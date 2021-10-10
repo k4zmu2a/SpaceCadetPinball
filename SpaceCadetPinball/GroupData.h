@@ -55,6 +55,27 @@ struct EntryData
 	char* Buffer{};
 };
 
+
+#pragma pack(push, 1)
+struct MsgFontChar
+{
+	uint8_t Width;
+	char Data[1];
+};
+
+struct MsgFont
+{
+	int16_t GapWidth;
+	int16_t Unknown1;
+	int16_t Height;
+	uint8_t CharWidths[128];
+	MsgFontChar Data[1];
+};
+#pragma pack(pop)
+
+static_assert(sizeof(MsgFont) == 136, "Wrong size of MsgFont");
+
+
 class GroupData
 {
 public:
@@ -100,4 +121,8 @@ public:
 	char* field_labeled(LPCSTR lpString, FieldTypes fieldType);
 	gdrv_bitmap8* GetBitmap(int groupIndex);
 	zmap_header_type* GetZMap(int groupIndex);
+	void Finalize();
+
+private:
+	void AddMsgFont(MsgFont* font, const std::string& fontName);
 };

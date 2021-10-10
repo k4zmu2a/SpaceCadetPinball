@@ -2,8 +2,11 @@
 
 #include "GroupData.h"
 
+#include "EmbeddedData.h"
 #include "fullscrn.h"
 #include "gdrv.h"
+#include "pb.h"
+#include "pinball.h"
 #include "zdrv.h"
 
 
@@ -105,7 +108,7 @@ void GroupData::SplitSplicedBitmap(const gdrv_bitmap8& srcBmp, gdrv_bitmap8& bmp
 	bmp.XPosition = srcBmp.XPosition;
 	bmp.YPosition = srcBmp.YPosition;
 	bmp.Resolution = srcBmp.Resolution;
-	
+
 	zdrv::fill(&zMap, zMap.Width, zMap.Height, 0, 0, 0xFFFF);
 	zMap.Resolution = srcBmp.Resolution;
 
@@ -276,4 +279,80 @@ zmap_header_type* DatFile::GetZMap(int groupIndex)
 {
 	auto group = Groups[groupIndex];
 	return group->GetZMap(fullscrn::GetResolution());
+}
+
+void DatFile::Finalize()
+{
+	if (!pb::FullTiltMode)
+	{
+		int groupIndex = record_labeled("pbmsg_ft");
+		assertm(groupIndex < 0, "DatFile: pbmsg_ft is already in .dat");
+
+		// Load 3DPB font into dat to simplify pipeline
+		auto rcData = reinterpret_cast<MsgFont*>(ImFontAtlas::DecompressCompressedBase85Data(
+			EmbeddedData::PB_MSGFT_bin_compressed_data_base85));
+		AddMsgFont(rcData, "pbmsg_ft");
+		IM_FREE(rcData);
+
+		// PINBALL2.MID is an alternative font provided in 3DPB data
+		/*auto file = pinball::make_path_name("PINBALL2.MID");
+		auto fileHandle = fopen(file.c_str(), "rb");
+		fseek(fileHandle, 0, SEEK_END);
+		auto fileSize = static_cast<uint32_t>(ftell(fileHandle));
+		auto rcData = reinterpret_cast<MsgFont*>(new uint8_t[fileSize]);
+		fseek(fileHandle, 0, SEEK_SET);
+		fread(rcData, 1, fileSize, fileHandle);
+		fclose(fileHandle);
+		AddMsgFont(rcData, "pbmsg_ft");
+		delete[] rcData;*/
+	}
+
+	for (auto group : Groups)
+	{
+		group->FinalizeGroup();
+	}
+}
+
+void DatFile::AddMsgFont(MsgFont* font, const std::string& fontName)
+{
+	auto groupId = Groups.back()->GroupId + 1;
+	auto ptrToData = reinterpret_cast<char*>(font->Data);
+	for (auto charInd = 32; charInd < 128; charInd++, groupId++)
+	{
+		auto curChar = reinterpret_cast<MsgFontChar*>(ptrToData);
+		assertm(curChar->Width == font->CharWidths[charInd], "Score: mismatched font width");
+		ptrToData += curChar->Width * font->Height + 1;
+
+		auto bmp = new gdrv_bitmap8(curChar->Width, font->Height, true);
+		auto srcPtr = curChar->Data;
+		auto dstPtr = &bmp->IndexedBmpPtr[bmp->Stride * (bmp->Height - 1)];
+		for (auto y = 0; y < font->Height; ++y)
+		{
+			memcpy(dstPtr, srcPtr, curChar->Width);
+			srcPtr += curChar->Width;
+			dstPtr -= bmp->Stride;
+		}
+
+		auto group = new GroupData(groupId);
+		group->AddEntry(new EntryData(FieldTypes::Bitmap8bit, reinterpret_cast<char*>(bmp)));
+		if (charInd == 32)
+		{
+			// First font group holds font name and gap width
+			auto groupName = new char[fontName.length() + 1];
+			strcpy(groupName, fontName.c_str());
+			group->AddEntry(new EntryData(FieldTypes::GroupName, groupName));
+
+			auto gaps = new char[2];
+			*reinterpret_cast<int16_t*>(gaps) = font->GapWidth;
+			group->AddEntry(new EntryData(FieldTypes::ShortArray, gaps));
+		}
+		else
+		{
+			auto groupName = new char[30];
+			sprintf(groupName, "char %d='%c'", charInd, charInd);
+			group->AddEntry(new EntryData(FieldTypes::GroupName, groupName));
+		}
+
+		Groups.push_back(group);
+	}
 }

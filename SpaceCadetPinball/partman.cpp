@@ -75,7 +75,7 @@ DatFile* partman::load_records(LPCSTR lpFileName, bool fullTiltMode)
 				assertm(bmpHeader.Resolution <= 2, "partman: bitmap resolution out of bounds");
 
 				auto bmp = new gdrv_bitmap8(bmpHeader);
-				entryData->Buffer = reinterpret_cast<char*>(bmp);				
+				entryData->Buffer = reinterpret_cast<char*>(bmp);
 				fread(bmp->IndexedBmpPtr, 1, bmpHeader.Size, fileHandle);
 			}
 			else if (entryType == FieldTypes::Bitmap16bit)
@@ -120,13 +120,15 @@ DatFile* partman::load_records(LPCSTR lpFileName, bool fullTiltMode)
 			groupData->AddEntry(entryData);
 		}
 
-		groupData->FinalizeGroup();
 		datFile->Groups.push_back(groupData);
 	}
 
 	fclose(fileHandle);
 	if (datFile->Groups.size() == header.NumberOfGroups)
+	{
+		datFile->Finalize();
 		return datFile;
+	}
 	delete datFile;
 	return nullptr;
 }

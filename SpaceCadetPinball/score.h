@@ -17,15 +17,7 @@ struct score_msg_font_type
 {
 	int GapWidth;
 	int Height;
-	gdrv_bitmap8* Chars[128];
-};
-
-struct score_font_rc
-{
-	short Header0;
-	short Header1;
-	short Height;
-	char SomeLen[128];
+	gdrv_bitmap8* Chars[128]{};
 };
 
 
@@ -42,8 +34,4 @@ public:
 	static void set(scoreStruct* score, int value);
 	static void update(scoreStruct* score);
 	static void string_format(int score, char* str);
-	static void ApplyPalette();
-private :
-	static void load_msg_font_3DPB(LPCSTR lpName);
-	static void load_msg_font_FT(LPCSTR lpName);
 };

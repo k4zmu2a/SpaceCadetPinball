@@ -54,99 +54,22 @@ scoreStruct* score::dup(scoreStruct* score, int scoreIndex)
 
 void score::load_msg_font(LPCSTR lpName)
 {
-	/*3DPB stores font in resources, FT in dat. FT font has multiple resolutions*/
-	if (pb::FullTiltMode)
-		load_msg_font_FT(lpName);
-	else
-		load_msg_font_3DPB(lpName);
-}
-
-void score::load_msg_font_3DPB(LPCSTR lpName)
-{
-	if (strcmp(lpName, "pbmsg_ft") != 0)
-		return;
-
-	auto rcData = reinterpret_cast<int16_t*>(ImFontAtlas::DecompressCompressedBase85Data(
-		EmbeddedData::PB_MSGFT_bin_compressed_data_base85));
-
-	auto fontp = new score_msg_font_type();
-	msg_fontp = fontp;
-	if (!fontp)
-	{
-		return;
-	}
-	memset(fontp->Chars, 0, sizeof fontp->Chars);
-
-	auto maxWidth = 0;
-	auto ptrToWidths = (char*)rcData + 6;
-	for (auto index = 128; index; index--)
-	{
-		if (*ptrToWidths > maxWidth)
-			maxWidth = *ptrToWidths;
-		++ptrToWidths;
-	}
-
-	auto height = rcData[2];
-	auto tmpCharBur = new char[maxWidth * height + 4];
-	if (!tmpCharBur)
-	{
-		delete msg_fontp;
-		msg_fontp = nullptr;
-		IM_FREE(rcData);
-		return;
-	}
-
-	msg_fontp->GapWidth = rcData[0];
-	msg_fontp->Height = height;
-
-	auto ptrToData = (char*)(rcData + 67);
-	int charInd;
-	for (charInd = 0; charInd < 128; charInd++)
-	{
-		auto width = *((char*)rcData + 6 + charInd);
-		if (!width)
-			continue;
-
-		auto bmp = new gdrv_bitmap8(width, height, true);
-		msg_fontp->Chars[charInd] = bmp;
-
-		auto sizeInBytes = height * width + 1;
-		memcpy(tmpCharBur + 3, ptrToData, sizeInBytes);
-		ptrToData += sizeInBytes;
-
-		auto srcPtr = tmpCharBur + 4;
-		auto dstPtr = &bmp->IndexedBmpPtr[bmp->Stride * (bmp->Height - 1)];
-		for (auto y = 0; y < height; ++y)
-		{
-			memcpy(dstPtr, srcPtr, width);
-			srcPtr += width;
-			dstPtr -= bmp->Stride;
-		}
-	}
-
-	delete[] tmpCharBur;
-	IM_FREE(rcData);
-	if (charInd != 128)
-		unload_msg_font();
-}
-
-void score::load_msg_font_FT(LPCSTR lpName)
-{
 	if (!pb::record_table)
 		return;
+
 	int groupIndex = pb::record_table->record_labeled(lpName);
 	if (groupIndex < 0)
 		return;
-	msg_fontp = new score_msg_font_type();
-	if (!msg_fontp)
-		return;
 
-	memset(msg_fontp, 0, sizeof(score_msg_font_type));
+	msg_fontp = new score_msg_font_type();
+
+	// FT font has multiple resolutions
 	auto gapArray = reinterpret_cast<int16_t*>(pb::record_table->field(groupIndex, FieldTypes::ShortArray));
 	if (gapArray)
 		msg_fontp->GapWidth = gapArray[fullscrn::GetResolution()];
 	else
 		msg_fontp->GapWidth = 0;
+
 	for (auto charIndex = 32; charIndex < 128; charIndex++, ++groupIndex)
 	{
 		auto bmp = pb::record_table->GetBitmap(groupIndex);
@@ -158,16 +81,11 @@ void score::load_msg_font_FT(LPCSTR lpName)
 	}
 }
 
+
 void score::unload_msg_font()
 {
 	if (msg_fontp)
 	{
-		/*3DBP creates bitmaps, FT just references them from partman*/
-		if (!pb::FullTiltMode)
-			for (auto& Char : msg_fontp->Chars)
-			{
-				delete Char;
-			}
 		delete msg_fontp;
 		msg_fontp = nullptr;
 	}
@@ -264,21 +182,6 @@ void score::string_format(int score, char* str)
 				scoreMillions,
 				score % 1000000 / 1000,
 				score % 1000);
-		}
-	}
-}
-
-void score::ApplyPalette()
-{
-	if (!msg_fontp || pb::FullTiltMode)
-		return;
-
-	// Only 3DPB font needs this, because it is not loaded by partman
-	for (auto& Char : msg_fontp->Chars)
-	{
-		if (Char)
-		{
-			gdrv::ApplyPalette(*Char);
 		}
 	}
 }
