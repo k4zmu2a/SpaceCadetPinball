@@ -23,6 +23,7 @@ struct optionsStruct
 	int BottomTableBumpKeyDft;
 	int Resolution;
 	bool UniformScaling;
+	bool AlternativeRender;
 };
 
 

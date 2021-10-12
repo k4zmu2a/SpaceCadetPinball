@@ -31,7 +31,6 @@ struct render_sprite_type_struct
 class render
 {
 public:
-	static int blit;
 	static int many_dirty, many_sprites, many_balls;
 	static render_sprite_type_struct **dirty_list, **sprite_list, **ball_list;
 	static zmap_header_type* background_zmap;
@@ -43,7 +42,7 @@ public:
 
 	static void init(gdrv_bitmap8* bmp, float zMin, float zScaler, int width, int height);
 	static void uninit();
-	static void update();
+	static void update(bool blit);
 	static void paint();
 	static void sprite_modified(render_sprite_type_struct* sprite);
 	static render_sprite_type_struct* create_sprite(VisualType visualType, gdrv_bitmap8* bmp,

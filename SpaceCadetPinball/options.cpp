@@ -108,6 +108,8 @@ void options::init(HMENU menuHandle)
 	Options.RightTableBumpKey = get_int(nullptr, "Right Table Bump key", Options.RightTableBumpKey);
 	Options.BottomTableBumpKey = get_int(nullptr, "Bottom Table Bump key", Options.BottomTableBumpKey);
 	Options.UniformScaling = get_int(nullptr, "Uniform scaling", true);
+	Options.AlternativeRender = get_int(nullptr, "Alternative Render", false);
+
 	menu_check(Menu1_Sounds, Options.Sounds);
 	Sound::Enable(0, 7, Options.Sounds);
 	menu_check(Menu1_Music, Options.Music);
@@ -117,6 +119,7 @@ void options::init(HMENU menuHandle)
 	menu_check(Menu1_3Players, Options.Players == 3);
 	menu_check(Menu1_4Players, Options.Players == 4);
 	menu_check(Menu1_WindowUniformScale, Options.UniformScaling);
+	menu_check(Menu1_AlternativeRender, Options.AlternativeRender);
 	auto tmpBuf = memory::allocate(0x1F4u);
 	if (tmpBuf)
 	{
@@ -149,6 +152,7 @@ void options::uninit()
 	set_int(nullptr, "Bottom Table Bump key", Options.BottomTableBumpKey);
 	set_int(nullptr, "Screen Resolution", Options.Resolution);
 	set_int(nullptr, "Uniform scaling", Options.UniformScaling);
+	set_int(nullptr, "Alternative Render", Options.AlternativeRender);
 }
 
 void options::path_init(LPCSTR regPath)
@@ -340,6 +344,12 @@ void options::toggle(UINT uIDCheckItem)
 	case Menu1_WindowUniformScale:
 		Options.UniformScaling ^= true;
 		menu_check(Menu1_WindowUniformScale, Options.UniformScaling);
+		fullscrn::window_size_changed();
+		fullscrn::paint();
+		break;
+	case Menu1_AlternativeRender:
+		Options.AlternativeRender ^= true;
+		menu_check(Menu1_AlternativeRender, Options.AlternativeRender);
 		fullscrn::window_size_changed();
 		fullscrn::paint();
 		break;

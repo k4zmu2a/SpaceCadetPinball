@@ -2,7 +2,6 @@
 #include "render.h"
 #include "memory.h"
 
-int render::blit = 0;
 int render::many_dirty, render::many_sprites, render::many_balls;
 render_sprite_type_struct **render::dirty_list, **render::sprite_list, **render::ball_list;
 zmap_header_type* render::background_zmap;
@@ -60,83 +59,69 @@ void render::uninit()
 	many_balls = 0;
 }
 
-void render::update()
+void render::update(bool blit)
 {
 	rectangle_type overlapRect{};
 
-	auto dirtyPtr = dirty_list;
-	for (int index = 0; index < many_dirty; ++dirtyPtr, ++index)
-	{
-		auto curSprite = *dirtyPtr;
-		if ((*dirtyPtr)->VisualType != VisualType::None)
-		{
-			if ((*dirtyPtr)->VisualType == VisualType::Sprite)
-			{
-				if (curSprite->BmpRectCopy.Width > 0)
-					maths::enclosing_box(&curSprite->BmpRectCopy, &curSprite->BmpRect, &curSprite->DirtyRect);
-
-				if (!maths::rectangle_clip(&curSprite->DirtyRect, &vscreen_rect, &curSprite->DirtyRect))
-				{
-					curSprite->DirtyRect.Width = -1;
-					continue;
-				}
-
-				auto yPos = curSprite->DirtyRect.YPosition;
-				auto width = curSprite->DirtyRect.Width;
-				auto xPos = curSprite->DirtyRect.XPosition;
-				auto height = curSprite->DirtyRect.Height;
-				zdrv::fill(&zscreen, width, height, xPos, yPos, 0xFFFF);
-				if (background_bitmap)
-					gdrv::copy_bitmap(&vscreen, width, height, xPos, yPos, background_bitmap, xPos, yPos);
-				else
-					gdrv::fill_bitmap(&vscreen, width, height, xPos, yPos, 0);
-			}
-		}
-		else
-		{
-			if (!maths::rectangle_clip(&curSprite->BmpRect, &vscreen_rect, &curSprite->DirtyRect))
-			{
-				curSprite->DirtyRect.Width = -1;
-				continue;
-			}
-			if (!curSprite->Bmp)
-			{
-				auto yPos = curSprite->DirtyRect.YPosition;
-				auto width = curSprite->DirtyRect.Width;
-				auto xPos = curSprite->DirtyRect.XPosition;
-				auto height = curSprite->DirtyRect.Height;
-				zdrv::fill(&zscreen, width, height, xPos, yPos, 0xFFFF);
-				if (background_bitmap)
-					gdrv::copy_bitmap(&vscreen, width, height, xPos, yPos, background_bitmap, xPos, yPos);
-				else
-					gdrv::fill_bitmap(&vscreen, width, height, xPos, yPos, 0);
-			}
-		}
-	}
-
-	dirtyPtr = dirty_list;
 	for (int index = 0; index < many_dirty; ++index)
 	{
-		auto sprite = *dirtyPtr;
-		if ((*dirtyPtr)->DirtyRect.Width > 0 && (sprite->VisualType == VisualType::None || sprite->VisualType ==
-			VisualType::Sprite))
-			repaint(*dirtyPtr);
-		++dirtyPtr;
+		auto curSprite = dirty_list[index];
+		bool clearSprite = false;
+		switch (curSprite->VisualType)
+		{
+		case VisualType::Sprite:
+			if (curSprite->BmpRectCopy.Width > 0)
+				maths::enclosing_box(&curSprite->BmpRectCopy, &curSprite->BmpRect, &curSprite->DirtyRect);
+
+			if (maths::rectangle_clip(&curSprite->DirtyRect, &vscreen_rect, &curSprite->DirtyRect))
+				clearSprite = true;
+			else
+				curSprite->DirtyRect.Width = -1;
+			break;
+		case VisualType::None:
+			if (maths::rectangle_clip(&curSprite->BmpRect, &vscreen_rect, &curSprite->DirtyRect))
+				clearSprite = !curSprite->Bmp;
+			else
+				curSprite->DirtyRect.Width = -1;
+			break;
+		default: break;
+		}
+
+		if (clearSprite)
+		{
+			auto yPos = curSprite->DirtyRect.YPosition;
+			auto width = curSprite->DirtyRect.Width;
+			auto xPos = curSprite->DirtyRect.XPosition;
+			auto height = curSprite->DirtyRect.Height;
+			zdrv::fill(&zscreen, width, height, xPos, yPos, 0xFFFF);
+			if (background_bitmap)
+				gdrv::copy_bitmap(&vscreen, width, height, xPos, yPos, background_bitmap, xPos, yPos);
+			else
+				gdrv::fill_bitmap(&vscreen, width, height, xPos, yPos, 0);
+		}
 	}
 
-	paint_balls();
+	for (int index = 0; index < many_dirty; ++index)
+	{
+		auto sprite = dirty_list[index];
+		if (sprite->DirtyRect.Width > 0 && (sprite->VisualType == VisualType::None || sprite->VisualType ==
+			VisualType::Sprite))
+			repaint(sprite);
+	}
+
 	if (blit)
 	{
+		paint_balls();
 		gdrv::start_blit_sequence();
 
 		auto xPos = vscreen.XPosition + offset_x;
 		auto yPos = vscreen.YPosition + offset_y;
-		dirtyPtr = dirty_list;
-		for (int index = 0; index < many_dirty; ++dirtyPtr, ++index)
+
+		for (int index = 0; index < many_dirty; ++index)
 		{
-			auto sprite = *dirtyPtr;
-			auto dirtyRect = &(*dirtyPtr)->DirtyRect;
-			auto width2 = (*dirtyPtr)->DirtyRect.Width;
+			auto sprite = dirty_list[index];
+			auto dirtyRect = &sprite->DirtyRect;
+			auto width2 = sprite->DirtyRect.Width;
 			if (width2 > 0)
 				gdrv::blit_sequence(
 					&vscreen,
@@ -147,21 +132,16 @@ void render::update()
 					width2,
 					dirtyRect->Height);
 
-			auto rect = &sprite->BmpRectCopy;
-			rect->XPosition = dirtyRect->XPosition;
-			rect->YPosition = dirtyRect->YPosition;
-			rect->Width = dirtyRect->Width;
-			rect->Height = dirtyRect->Height;
-
+			sprite->BmpRectCopy = *dirtyRect;
 			if (sprite->UnknownFlag != 0)
 				remove_sprite(sprite);
 		}
 
-		dirtyPtr = ball_list;
-		for (int index = 0; index < many_balls; ++dirtyPtr, ++index)
+		for (int index = 0; index < many_balls; ++index)
 		{
-			auto rectCopy = &(*dirtyPtr)->BmpRectCopy;
-			auto dirtyRect = &(*dirtyPtr)->DirtyRect;
+			auto sprite = ball_list[index];
+			auto rectCopy = &sprite->BmpRectCopy;
+			auto dirtyRect = &sprite->DirtyRect;
 			if (maths::overlapping_box(dirtyRect, rectCopy, &overlapRect) && dirtyRect->Width > 0)
 			{
 				if (overlapRect.Width > 0)
@@ -198,12 +178,21 @@ void render::update()
 		}
 
 		gdrv::end_blit_sequence();
+		unpaint_balls();
+	}
+	else
+	{
+		for (int index = 0; index < many_dirty; ++index)
+		{
+			auto sprite = dirty_list[index];
+			sprite->BmpRectCopy = sprite->DirtyRect;
+			if (sprite->UnknownFlag != 0)
+				remove_sprite(sprite);
+		}
 	}
 
 	many_dirty = 0;
-	unpaint_balls();
 }
-
 
 void render::paint()
 {
@@ -473,7 +462,7 @@ void render::paint_balls()
 
 void render::unpaint_balls()
 {
-	for (int index = many_balls-1; index >= 0; index--)
+	for (int index = many_balls - 1; index >= 0; index--)
 	{
 		auto curBall = ball_list[index];
 		if (curBall->DirtyRect.Width > 0)

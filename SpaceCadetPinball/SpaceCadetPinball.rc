@@ -98,6 +98,7 @@ BEGIN
         POPUP "&Window"
         BEGIN
             MENUITEM "&Uniform Scaling",            Menu1_WindowUniformScale
+            MENUITEM "&Alternative Rendering",      Menu1_AlternativeRender
         END
     END
     POPUP "&Help"

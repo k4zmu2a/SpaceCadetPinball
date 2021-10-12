@@ -240,6 +240,7 @@
 #define DLG_HIGHSCORES_EditName3        603
 #define DLG_HIGHSCORES_EditName4        604
 #define DLG_HIGHSCORES_EditName5        605
+#define Menu1_AlternativeRender         601
 
 // Next default values for new objects
 // 

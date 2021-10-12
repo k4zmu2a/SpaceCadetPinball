@@ -26,7 +26,7 @@
 
 TPinballTable* pb::MainTable = nullptr;
 datFileStruct* pb::record_table = nullptr;
-int pb::time_ticks = 0, pb::demo_mode = 0, pb::game_mode = 2, pb::mode_countdown_, pb::state;
+int pb::time_ticks = 0, pb::demo_mode = 0, pb::game_mode = 2, pb::mode_countdown_, pb::state, pb::frameCounter = 0;
 float pb::time_now, pb::time_next, pb::ball_speed_limit;
 high_score_struct pb::highscore_table[5];
 bool pb::FullTiltMode = false, pb::cheat_mode = false;
@@ -129,9 +129,7 @@ void pb::reset_table()
 
 void pb::firsttime_setup()
 {
-	render::blit = 0;
-	render::update();
-	render::blit = 1;
+	render::update(false);
 }
 
 void pb::paint()
@@ -223,6 +221,8 @@ void pb::ballset(int x, int y)
 
 int pb::frame(int time)
 {
+	static int frameTime = 0;
+
 	if (time > 100)
 		time = 100;
 	float timeMul = time * 0.001f;
@@ -244,7 +244,29 @@ int pb::frame(int time)
 			nudge::nudge_count = nudgeDec;
 		}
 		timer::check();
-		render::update();
+
+		if (!options::Options.AlternativeRender)
+		{
+			render::update(true);
+		}
+		else
+		{
+			// Screen update at UPS > screen refresh rate cause tearing.
+			// Especially noticeable on fast moving ball in scaled up window.
+			// Retained render prevents frame skip. The next best thing - complete refresh at fixed rate. 
+			render::update(false);
+
+			// Frame time at 60 FPS = 16.(6) ms = (16 + 17 + 17) / 3
+			auto targetTime = frameCounter % 3 == 0 ? 16 : 17;
+			frameTime += time;
+			if (frameTime >= targetTime)
+			{
+				frameTime = min(frameTime - targetTime, 100);
+				render::shift(0, 0, 0, 0, MainTable->Width, MainTable->Height);
+				frameCounter++;
+			}
+		}
+
 		score::update(MainTable->CurScoreStruct);
 		if (!MainTable->TiltLockFlag)
 		{
@@ -288,8 +310,8 @@ void pb::timed_frame(float timeNow, float timeDelta, bool drawBalls)
 					ball->Acceleration.Y = ball->Speed * ball->Acceleration.Y;
 					maths::vector_add(&ball->Acceleration, &vec2);
 					ball->Speed = maths::normalize_2d(&ball->Acceleration);
-					ball->InvAcceleration.X = ball->Acceleration.X == 0.0f ? 1000000000.0f : 1.0f / ball->Acceleration.X;
-					ball->InvAcceleration.Y = ball->Acceleration.Y == 0.0f ? 1000000000.0f : 1.0f / ball->Acceleration.Y;
+					ball->InvAcceleration.X = ball->Acceleration.X == 0.0f ? 1.0e9f : 1.0f / ball->Acceleration.X;
+					ball->InvAcceleration.Y = ball->Acceleration.Y == 0.0f ? 1.0e9f : 1.0f / ball->Acceleration.Y;
 				}
 
 				auto timeDelta2 = timeDelta;

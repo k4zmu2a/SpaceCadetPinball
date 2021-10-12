@@ -220,7 +220,16 @@ int winmain::WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLi
 				if (prevTime)
 				{
 					char buf[60];
-					sprintf_s(buf, "Frames/sec = %02.02f", 300.0f / (static_cast<float>(curTime - prevTime) * 0.001f));
+					auto dt = static_cast<float>(curTime - prevTime) * 0.001f;
+					if (!options::Options.AlternativeRender)
+						sprintf_s(buf, "Frames/sec = %02.02f", 300.0f / dt);
+					else 
+					{
+						sprintf_s(buf, "Updates/sec = %02.02f Frames/sec = %02.02f",
+							300.0f / dt, pb::frameCounter / dt);
+						pb::frameCounter = 0;
+					}
+
 					SetWindowTextA(hwnd_frame, buf);
 
 					if (DispGRhistory)
@@ -610,6 +619,7 @@ LRESULT CALLBACK winmain::message_handler(HWND hWnd, UINT Msg, WPARAM wParam, LP
 		case Menu1_800x600:
 		case Menu1_1024x768:
 		case Menu1_WindowUniformScale:
+		case Menu1_AlternativeRender:
 			options::toggle(wParamI);
 			break;
 		case Menu1_Help_Topics:
