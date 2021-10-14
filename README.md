@@ -50,7 +50,7 @@ Tested with: macOS Big Sur (Intel) with Xcode 13 & macOS Montery Beta (Apple Sil
  * ~~Decompile original game~~
  * ~~Resizable window, scaled graphics~~
  * ~~Loader for high-res sprites from CADET.DAT~~
- * Misc features of Full Tilt: 3 music tracs, multiball, centered textboxes, etc.
+ * Misc features of Full Tilt: 3 music tracks, multiball, centered textboxes, etc.
  * Cross-platform port
    * Using SDL2, SDL2_mixer, ImGui
    * Maybe: Android port
