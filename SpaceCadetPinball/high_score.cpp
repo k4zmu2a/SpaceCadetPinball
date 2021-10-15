@@ -162,32 +162,31 @@ void high_score::RenderHighScoreDialog()
 			ImGui::TableSetupColumn("Score");
 			ImGui::TableHeadersRow();
 
-			high_score_struct* tablePtr = dlg_hst;
-			for (int row = 0; row < 5; row++)
+			for (int offset = 0, row = 0; row < 5; row++)
 			{
 				ImGui::TableNextRow();
 				ImGui::TableNextColumn();
 				snprintf(buf, sizeof buf, "%d", row);
 				ImGui::TextUnformatted(buf);
 
-				auto score = tablePtr->Score;
+				auto currentRow = &dlg_hst[row + offset];
+				auto score = currentRow->Score;
 				ImGui::TableNextColumn();
 				if (dlg_enter_name == 1 && dlg_position == row)
 				{
+					offset = -1;
 					score = dlg_score;
 					ImGui::PushItemWidth(200);
 					ImGui::InputText("", default_name, IM_ARRAYSIZE(default_name));
 				}
 				else
 				{
-					ImGui::TextUnformatted(tablePtr->Name);
+					ImGui::TextUnformatted(currentRow->Name);
 				}
 
 				ImGui::TableNextColumn();
 				score::string_format(score, buf);
 				ImGui::TextUnformatted(buf);
-
-				tablePtr++;
 			}
 			ImGui::EndTable();
 		}
