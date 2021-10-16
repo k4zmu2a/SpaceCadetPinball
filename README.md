@@ -2,7 +2,8 @@
 **Summary:** Reverse engineering of `3D Pinball for Windows – Space Cadet`, a game bundled with Windows.
 
 **How to play:** Place compiled executable into a folder containing original game resources (not included).\
-Supports data files from Windows and Full Tilt versions of the game.
+Supports data files from Windows and Full Tilt versions of the game.\
+Game data is available on the Internet Archive: <https://archive.org/details/SpaceCadet_Plus95>
 
 **Known source ports:**
 | Platform | Author | URL |
