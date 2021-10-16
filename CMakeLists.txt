@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.16)
+cmake_minimum_required(VERSION 3.0)
 project(SpaceCadetPinball)
 
 set(CMAKE_CXX_STANDARD 11)
@@ -191,10 +191,13 @@ set_source_files_properties(
         SpaceCadetPinball/imgui_impl_sdl.cpp
         PROPERTIES SKIP_PRECOMPILE_HEADERS 1
 )
-target_precompile_headers(SpaceCadetPinball
-  PUBLIC
-    SpaceCadetPinball/pch.h
-)
+
+if(${CMAKE_VERSION} VERSION_GREATER "3.16.0" OR ${CMAKE_VERSION} VERSION_EQUAL "3.16.0")
+    target_precompile_headers(SpaceCadetPinball
+            PUBLIC
+            SpaceCadetPinball/pch.h
+            )
+endif()
 
 target_link_libraries(SpaceCadetPinball ${SDL2_LIBRARY} ${SDL2_MIXER_LIBRARY})
 
