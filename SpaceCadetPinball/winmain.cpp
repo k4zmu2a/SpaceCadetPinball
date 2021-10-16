@@ -800,10 +800,11 @@ HDC winmain::_GetDC(HWND hWnd)
 int winmain::a_dialog(HINSTANCE hInstance, HWND hWnd)
 {
 	char appName[100];
-	char szOtherStuff[100];
+	char szOtherStuff[130];
 
 	lstrcpyA(appName, pinball::get_rc_string(38, 0));
 	lstrcpyA(szOtherStuff, pinball::get_rc_string(102, 0));
+	strcat_s(szOtherStuff, " Decompilation version 1.1.2");
 	auto icon = LoadIconA(hInstance, "ICON_1");
 	return ShellAboutA(hWnd, appName, szOtherStuff, icon);
 }
