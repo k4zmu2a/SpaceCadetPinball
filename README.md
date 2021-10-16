@@ -21,6 +21,13 @@ Supports data files from Windows and Full Tilt versions of the game.
 
 Platforms covered by this project: desktop Windows, Linux and macOS.
 
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+
 ## Source
 
 * `pinball.exe` from `Windows XP` (SHA-1 `2A5B525E0F631BB6107639E2A69DF15986FB0D05`) and its public PDB
