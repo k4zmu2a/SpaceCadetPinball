@@ -8,7 +8,7 @@ int* Sound::TimeStamps = nullptr;
 
 bool Sound::Init(int channels, bool enableFlag)
 {
-#if MIX_PATCHLEVEL > 2
+#if SDL_MIXER_VERSION_ATLEAST(2, 0, 3)
 	Mix_Init(MIX_INIT_MID);
 #else
     Mix_Init(MIX_INIT_FLUIDSYNTH);
