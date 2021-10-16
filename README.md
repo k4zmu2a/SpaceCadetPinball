@@ -11,6 +11,7 @@ Supports data files from Windows and Full Tilt versions of the game.
 | Emscripten | alula | <https://github.com/alula/SpaceCadetPinball> <br> Play online: https://alula.github.io/SpaceCadetPinball |
 | Nintendo Switch | averne | https://github.com/averne/SpaceCadetPinball-NX |
 | webOS TV | mariotaku | https://github.com/webosbrew/SpaceCadetPinball |
+| Android (WIP) | Iscle | https://github.com/Iscle/SpaceCadetPinball |
 
 Platforms covered by this project: desktop Windows, Linux and macOS.
 \
