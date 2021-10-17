@@ -1019,7 +1019,7 @@ void control::LaunchRampControl(int code, TPinballComponent* caller)
 			{
 				sound = control_soundwave21_tag.Component;
 			}
-			else if (someFlag <= 1 || someFlag > 3)
+			else if (someFlag <= 1 || someFlag > 3) //!! <1 ?
 			{
 				sound = control_soundwave24_tag.Component;
 			}
@@ -2148,7 +2148,7 @@ void control::HyperspaceKickOutControl(int code, TPinballComponent* caller)
 		}
 		else
 		{
-			if (someFlag <= 1 || someFlag > 3)
+			if (someFlag <= 1 || someFlag > 3) //!! <1 ?
 			{
 				auto duration = control_soundwave41_tag.Component->Play();
 				control_soundwave36_1_tag.Component->Play();
@@ -2919,7 +2919,7 @@ void control::GameoverController(int code, TPinballComponent* caller)
 
 	if (missionMsg & 0x200)
 	{
-		int highscoreId = missionMsg % 4;
+		int highscoreId = missionMsg % 4; //!! %5 ?
 		int highScore = pb::highscore_table[highscoreId].Score;
 		auto nextHidhscoreId = highscoreId + 1;
 		if (highScore > 0)
@@ -3923,9 +3923,7 @@ void control::SelectMissionController(int code, TPinballComponent* caller)
 			if (light_on(&control_lite319_tag))
 				control_lite319_tag.Component->Message(20, 0.0);
 			if (!light_on(&control_lite317_tag))
-			{
 				control_lite317_tag.Component->Message(7, 0.0);
-			}
 		}
 		else
 		{
@@ -4158,6 +4156,7 @@ void control::TimeWarpPartTwoController(int code, TPinballComponent* caller)
 	control_lite317_tag.Component->Message(20, 0.0);
 	control_lite198_tag.Component->MessageField = 1;
 	MissionControl(66, nullptr);
+	//!! Display score?
 }
 
 void control::UnselectMissionController(int code, TPinballComponent* caller)

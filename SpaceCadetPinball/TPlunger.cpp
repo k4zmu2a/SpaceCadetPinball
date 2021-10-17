@@ -37,7 +37,7 @@ void TPlunger::Collision(TBall* ball, vector_type* nextPosition, vector_type* di
 {
 	if (PinballTable->TiltLockFlag)
 		Message(1017, 0.0);
-	coef = RandFloat() * Boost * 0.1f + Boost;
+	coef = RandFloat() * Boost * 0.1f + Boost; //!! passed in coef is never used
 	maths::basic_collision(ball, nextPosition, direction, Elasticity, Smoothness, Threshold, coef);
 }
 
@@ -109,7 +109,7 @@ int TPlunger::Message(int code, float value)
 			if (PullbackTimer_)
 				timer::kill(PullbackTimer_);
 			PullbackTimer_ = 0;
-			if (code == 1005)
+			if (code == 1005) //!!
 				loader::play_sound(SoundIndexP2);
 			auto bmp = ListBitmap->at(0);
 			auto zMap = ListZMap->at(0);
