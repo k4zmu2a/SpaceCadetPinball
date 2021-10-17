@@ -218,7 +218,7 @@ int winmain::WinMain(LPCSTR lpCmdLine)
 				float dx = (last_mouse_x - x) / static_cast<float>(w);
 				float dy = (y - last_mouse_y) / static_cast<float>(h);
 				pb::ballset(dx, dy);
-				
+
 				SDL_WarpMouseInWindow(window, last_mouse_x, last_mouse_y);
 
 				// Mouse warp does not work over remote desktop or in some VMs
@@ -563,7 +563,7 @@ int winmain::event_handler(const SDL_Event* event)
 {
 	ImGui_ImplSDL2_ProcessEvent(event);
 
-	if (ImIO->WantCaptureMouse)
+	if (ImIO->WantCaptureMouse && !options::WaitingForInput())
 	{
 		if (mouse_down)
 		{
@@ -600,11 +600,11 @@ int winmain::event_handler(const SDL_Event* event)
 		return_value = 0;
 		return 0;
 	case SDL_KEYUP:
-		pb::keyup(event->key.keysym.sym);
+		pb::InputUp({InputTypes::Keyboard, event->key.keysym.sym});
 		break;
 	case SDL_KEYDOWN:
 		if (!event->key.repeat)
-			pb::keydown(event->key.keysym.sym);
+			pb::InputDown({InputTypes::Keyboard, event->key.keysym.sym});
 		switch (event->key.keysym.sym)
 		{
 		case SDLK_ESCAPE:
@@ -664,51 +664,47 @@ int winmain::event_handler(const SDL_Event* event)
 		}
 		break;
 	case SDL_MOUSEBUTTONDOWN:
-		switch (event->button.button)
 		{
-		case SDL_BUTTON_LEFT:
-			if (pb::cheat_mode)
+			bool noInput = false;
+			switch (event->button.button)
 			{
-				mouse_down = 1;
-				last_mouse_x = event->button.x;
-				last_mouse_y = event->button.y;
-				SDL_SetWindowGrab(MainWindow, SDL_TRUE);
+			case SDL_BUTTON_LEFT:
+				if (pb::cheat_mode)
+				{
+					mouse_down = 1;
+					last_mouse_x = event->button.x;
+					last_mouse_y = event->button.y;
+					SDL_SetWindowGrab(MainWindow, SDL_TRUE);
+					noInput = true;
+				}
+				break;
+			default:
+				break;
 			}
-			else
-				pb::keydown(Options.Key.LeftFlipper);
-			break;
-		case SDL_BUTTON_RIGHT:
-			if (!pb::cheat_mode)
-				pb::keydown(Options.Key.RightFlipper);
-			break;
-		case SDL_BUTTON_MIDDLE:
-			pb::keydown(Options.Key.Plunger);
-			break;
-		default:
-			break;
+
+			if (!noInput)
+				pb::InputDown({InputTypes::Mouse, event->button.button});
 		}
 		break;
 	case SDL_MOUSEBUTTONUP:
-		switch (event->button.button)
 		{
-		case SDL_BUTTON_LEFT:
-			if (mouse_down)
+			bool noInput = false;
+			switch (event->button.button)
 			{
-				mouse_down = 0;
-				SDL_SetWindowGrab(MainWindow, SDL_FALSE);
+			case SDL_BUTTON_LEFT:
+				if (mouse_down)
+				{
+					mouse_down = 0;
+					SDL_SetWindowGrab(MainWindow, SDL_FALSE);
+					noInput = true;
+				}
+				break;
+			default:
+				break;
 			}
-			if (!pb::cheat_mode)
-				pb::keyup(Options.Key.LeftFlipper);
-			break;
-		case SDL_BUTTON_RIGHT:
-			if (!pb::cheat_mode)
-				pb::keyup(Options.Key.RightFlipper);
-			break;
-		case SDL_BUTTON_MIDDLE:
-			pb::keyup(Options.Key.Plunger);
-			break;
-		default:
-			break;
+
+			if (!noInput)
+				pb::InputUp({InputTypes::Mouse, event->button.button});
 		}
 		break;
 	case SDL_WINDOWEVENT:
@@ -741,69 +737,34 @@ int winmain::event_handler(const SDL_Event* event)
 		default: ;
 		}
 		break;
-    case SDL_JOYDEVICEADDED:
-        if (SDL_IsGameController(event->jdevice.which))
-        {
-            SDL_GameControllerOpen(event->jdevice.which);
-        }
-        break;
-    case SDL_JOYDEVICEREMOVED:
-        {
-            SDL_GameController *controller = SDL_GameControllerFromInstanceID(event->jdevice.which);
-            if (controller)
-            {
-                SDL_GameControllerClose(controller);
-            }
-        }
-        break;
-    case SDL_CONTROLLERBUTTONDOWN:
-        switch (event->cbutton.button)
-        {
-            case SDL_CONTROLLER_BUTTON_A:
-                pb::keydown(Options.Key.Plunger);
-                break;
-            case SDL_CONTROLLER_BUTTON_LEFTSHOULDER:
-                pb::keydown(Options.Key.LeftFlipper);
-                break;
-            case SDL_CONTROLLER_BUTTON_RIGHTSHOULDER:
-                pb::keydown(Options.Key.RightFlipper);
-                break;
-            case SDL_CONTROLLER_BUTTON_DPAD_LEFT:
-                pb::keydown(Options.Key.LeftTableBump);
-                break;
-            case SDL_CONTROLLER_BUTTON_DPAD_RIGHT:
-                pb::keydown(Options.Key.RightTableBump);
-                break;
-            case SDL_CONTROLLER_BUTTON_DPAD_DOWN:
-                pb::keydown(Options.Key.BottomTableBump);
-                break;
-            default: ;
-        }
-        break;
-    case SDL_CONTROLLERBUTTONUP:
-        switch (event->cbutton.button)
-        {
-            case SDL_CONTROLLER_BUTTON_A:
-                pb::keyup(Options.Key.Plunger);
-                break;
-            case SDL_CONTROLLER_BUTTON_LEFTSHOULDER:
-                pb::keyup(Options.Key.LeftFlipper);
-                break;
-            case SDL_CONTROLLER_BUTTON_RIGHTSHOULDER:
-                pb::keyup(Options.Key.RightFlipper);
-                break;
-            case SDL_CONTROLLER_BUTTON_DPAD_LEFT:
-                pb::keyup(Options.Key.LeftTableBump);
-                break;
-            case SDL_CONTROLLER_BUTTON_DPAD_RIGHT:
-                pb::keyup(Options.Key.RightTableBump);
-                break;
-            case SDL_CONTROLLER_BUTTON_DPAD_DOWN:
-                pb::keyup(Options.Key.BottomTableBump);
-                break;
-            default: ;
-        }
-        break;
+	case SDL_JOYDEVICEADDED:
+		if (SDL_IsGameController(event->jdevice.which))
+		{
+			SDL_GameControllerOpen(event->jdevice.which);
+		}
+		break;
+	case SDL_JOYDEVICEREMOVED:
+		{
+			SDL_GameController* controller = SDL_GameControllerFromInstanceID(event->jdevice.which);
+			if (controller)
+			{
+				SDL_GameControllerClose(controller);
+			}
+		}
+		break;
+	case SDL_CONTROLLERBUTTONDOWN:
+		pb::InputDown({InputTypes::GameController, event->cbutton.button});
+		switch (event->cbutton.button)
+		{
+		case SDL_CONTROLLER_BUTTON_START:
+			pause();
+			break;
+		default: ;
+		}
+		break;
+	case SDL_CONTROLLERBUTTONUP:
+		pb::InputUp({InputTypes::GameController, event->cbutton.button});
+		break;
 	default: ;
 	}
 

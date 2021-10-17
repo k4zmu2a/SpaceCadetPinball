@@ -13,7 +13,7 @@ optionsStruct options::Options{};
 std::map<std::string, std::string> options::settings{};
 ControlsStruct options::RebindControls{};
 bool options::ShowDialog = false;
-const ControlRef* options::ControlWaitingForKey = nullptr;
+GameInput* options::ControlWaitingForInput = nullptr;
 const ControlRef options::Controls[6]
 {
 	{"Left Flipper", RebindControls.LeftFlipper},
@@ -43,24 +43,50 @@ void options::init()
 		ImGui::EndFrame();
 	}
 
-	Options.KeyDft.LeftFlipper = SDLK_z;
-	Options.KeyDft.RightFlipper = SDLK_SLASH;
-	Options.KeyDft.Plunger = SDLK_SPACE;
-	Options.KeyDft.LeftTableBump = SDLK_x;
-	Options.KeyDft.RightTableBump = SDLK_PERIOD;
-	Options.KeyDft.BottomTableBump = SDLK_UP;
-	Options.Key = Options.KeyDft;
+	Options.Key = Options.KeyDft =
+	{
+		{
+			{InputTypes::Keyboard, SDLK_z},
+			{InputTypes::Mouse, SDL_BUTTON_LEFT},
+			{InputTypes::GameController, SDL_CONTROLLER_BUTTON_LEFTSHOULDER},
+		},
+		{
+			{InputTypes::Keyboard, SDLK_SLASH},
+			{InputTypes::Mouse, SDL_BUTTON_RIGHT},
+			{InputTypes::GameController, SDL_CONTROLLER_BUTTON_RIGHTSHOULDER},
+		},
+		{
+			{InputTypes::Keyboard, SDLK_SPACE},
+			{InputTypes::Mouse, SDL_BUTTON_MIDDLE},
+			{InputTypes::GameController, SDL_CONTROLLER_BUTTON_A},
+		},
+		{
+			{InputTypes::Keyboard, SDLK_x},
+			{InputTypes::Mouse, SDL_BUTTON_X1},
+			{InputTypes::GameController, SDL_CONTROLLER_BUTTON_DPAD_LEFT},
+		},
+		{
+			{InputTypes::Keyboard, SDLK_PERIOD},
+			{InputTypes::Mouse, SDL_BUTTON_X2},
+			{InputTypes::GameController, SDL_CONTROLLER_BUTTON_DPAD_RIGHT},
+		},
+		{
+			{InputTypes::Keyboard, SDLK_UP},
+			{InputTypes::Mouse, SDL_BUTTON_X2 + 1},
+			{InputTypes::GameController, SDL_CONTROLLER_BUTTON_DPAD_UP},
+		},
+	};
+	GetInput("Left Flipper key", Options.Key.LeftFlipper);
+	GetInput("Right Flipper key", Options.Key.RightFlipper);
+	GetInput("Plunger key", Options.Key.Plunger);
+	GetInput("Left Table Bump key", Options.Key.LeftTableBump);
+	GetInput("Right Table Bump key", Options.Key.RightTableBump);
+	GetInput("Bottom Table Bump key", Options.Key.BottomTableBump);
 
 	Options.Sounds = get_int("Sounds", true);
 	Options.Music = get_int("Music", false);
 	Options.FullScreen = get_int("FullScreen", false);
 	Options.Players = get_int("Players", 1);
-	Options.Key.LeftFlipper = get_int("Left Flipper key", Options.Key.LeftFlipper);
-	Options.Key.RightFlipper = get_int("Right Flipper key", Options.Key.RightFlipper);
-	Options.Key.Plunger = get_int("Plunger key", Options.Key.Plunger);
-	Options.Key.LeftTableBump = get_int("Left Table Bump key", Options.Key.LeftTableBump);
-	Options.Key.RightTableBump = get_int("Right Table Bump key", Options.Key.RightTableBump);
-	Options.Key.BottomTableBump = get_int("Bottom Table Bump key", Options.Key.BottomTableBump);
 	Options.UniformScaling = get_int("Uniform scaling", true);
 	ImGui::GetIO().FontGlobalScale = get_float("UI Scale", 1.0f);
 	Options.Resolution = get_int("Screen Resolution", -1);
@@ -83,16 +109,17 @@ void options::init()
 
 void options::uninit()
 {
+	SetInput("Left Flipper key", Options.Key.LeftFlipper);
+	SetInput("Right Flipper key", Options.Key.RightFlipper);
+	SetInput("Plunger key", Options.Key.Plunger);
+	SetInput("Left Table Bump key", Options.Key.LeftTableBump);
+	SetInput("Right Table Bump key", Options.Key.RightTableBump);
+	SetInput("Bottom Table Bump key", Options.Key.BottomTableBump);
+
 	set_int("Sounds", Options.Sounds);
 	set_int("Music", Options.Music);
 	set_int("FullScreen", Options.FullScreen);
 	set_int("Players", Options.Players);
-	set_int("Left Flipper key", Options.Key.LeftFlipper);
-	set_int("Right Flipper key", Options.Key.RightFlipper);
-	set_int("Plunger key", Options.Key.Plunger);
-	set_int("Left Table Bump key", Options.Key.LeftTableBump);
-	set_int("Right Table Bump key", Options.Key.RightTableBump);
-	set_int("Bottom Table Bump key", Options.Key.BottomTableBump);
 	set_int("Screen Resolution", Options.Resolution);
 	set_int("Uniform scaling", Options.UniformScaling);
 	set_float("UI Scale", ImGui::GetIO().FontGlobalScale);
@@ -137,6 +164,28 @@ void options::set_float(LPCSTR lpValueName, float data)
 	SetSetting(lpValueName, std::to_string(data));
 }
 
+void options::GetInput(const std::string& rowName, GameInput (&defaultValues)[3])
+{
+	for (auto i = 0u; i <= 2; i++)
+	{
+		auto name = rowName + " " + std::to_string(i);
+		auto inputType = static_cast<InputTypes>(get_int((name + " type").c_str(), -1));
+		auto input = get_int((name + " input").c_str(), -1);
+		if (inputType <= InputTypes::GameController && input != -1)
+			defaultValues[i] = {inputType, input};
+	}
+}
+
+void options::SetInput(const std::string& rowName, GameInput (&values)[3])
+{
+	for (auto i = 0u; i <= 2; i++)
+	{
+		auto input = values[i];
+		auto name = rowName + " " + std::to_string(i);
+		set_int((name + " type").c_str(), static_cast<int>(input.Type));
+		set_int((name + " input").c_str(), input.Value);
+	}
+}
 
 void options::toggle(Menu1 uIDCheckItem)
 {
@@ -203,16 +252,20 @@ void options::toggle(Menu1 uIDCheckItem)
 	}
 }
 
-void options::KeyDown(int key)
+void options::InputDown(GameInput input)
 {
-	if (ControlWaitingForKey)
+	if (ControlWaitingForInput)
 	{
 		// Skip function keys, just in case.
-		if (key < SDLK_F1 || key > SDLK_F12)
-		{
-			ControlWaitingForKey->Option = key;
-			ControlWaitingForKey = nullptr;
-		}
+		if (input.Type == InputTypes::Keyboard && input.Value >= SDLK_F1 && input.Value <= SDLK_F12)
+			return;
+
+		// Start is reserved for pause
+		if (input.Type == InputTypes::GameController && input.Value == SDL_CONTROLLER_BUTTON_START)
+			return;
+
+		*ControlWaitingForInput = input;
+		ControlWaitingForInput = nullptr;
 	}
 }
 
@@ -220,7 +273,7 @@ void options::ShowControlDialog()
 {
 	if (!ShowDialog)
 	{
-		ControlWaitingForKey = nullptr;
+		ControlWaitingForInput = nullptr;
 		RebindControls = Options.Key;
 		ShowDialog = true;
 	}
@@ -228,10 +281,20 @@ void options::ShowControlDialog()
 
 void options::RenderControlDialog()
 {
+	static const char* mouseButtons[]
+	{
+		nullptr,
+		"Mouse Left",
+		"Mouse Middle",
+		"Mouse Right",
+		"Mouse X1",
+		"Mouse X2",
+	};
+
 	if (!ShowDialog)
 		return;
 
-	ImGui::PushStyleVar(ImGuiStyleVar_WindowMinSize, ImVec2{500, 400});
+	ImGui::PushStyleVar(ImGuiStyleVar_WindowMinSize, ImVec2{550, 450});
 	if (ImGui::Begin("3D Pinball: Player Controls", &ShowDialog))
 	{
 		ImGui::TextUnformatted("Instructions");
@@ -241,39 +304,70 @@ void options::RenderControlDialog()
 			"To change game controls, click the control button, press the new key, and then choose OK.");
 		ImGui::TextWrapped(
 			"To restore 3D Pinball to its original settings, choose Default, and then choose OK.");
-		ImGui::TextWrapped("Original warns against binding the same key to multiple controls, but does not forbid it.");
 		ImGui::Spacing();
 
 		ImGui::TextUnformatted("Control Options");
-		ImGui::Separator();
 
 		ImGui::PushStyleVar(ImGuiStyleVar_CellPadding, ImVec2{5, 10});
-		if (ImGui::BeginTable("Controls", 2, ImGuiTableFlags_NoSavedSettings | ImGuiTableFlags_Borders))
+		if (ImGui::BeginTable("Controls", 4, ImGuiTableFlags_NoSavedSettings | ImGuiTableFlags_Borders))
 		{
-			for (auto& ctrl : Controls)
+			ImGui::TableSetupColumn("Control");
+			ImGui::TableSetupColumn("Binding 1");
+			ImGui::TableSetupColumn("Binding 2");
+			ImGui::TableSetupColumn("Binding 3");
+			ImGui::TableHeadersRow();
+
+			int index = 0;
+			for (auto& row : Controls)
 			{
 				ImGui::TableNextColumn();
-				if (ImGui::BeginTable("Control", 2, ImGuiTableFlags_NoSavedSettings))
+				ImGui::PushStyleColor(ImGuiCol_Button, ImVec4{0.5, 0, 0, 1});
+				if (ImGui::Button(row.Name))
 				{
-					ImGui::TableNextColumn();
-					ImGui::TextWrapped("%s", ctrl.Name);
+					for (auto i = 0u; i <= 2; i++)
+						row.Option[i] = {};
+				}
+				ImGui::PopStyleColor(1);
 
+				for (auto i = 0u; i <= 2; i++)
+				{
+					auto& ctrl = row.Option[i];
 					ImGui::TableNextColumn();
-					if (ControlWaitingForKey == &ctrl)
+					if (ControlWaitingForInput == &ctrl)
 					{
 						ImGui::Button("Press the key", ImVec2(-1, 0));
 					}
 					else
 					{
-						auto keyName = SDL_GetKeyName(ctrl.Option);
-						if (!keyName[0])
-							keyName = "Unknown key";
-						if (ImGui::Button(keyName, ImVec2(-1, 0)))
+						std::string tmp;
+						const char* keyName;
+						switch (ctrl.Type)
 						{
-							ControlWaitingForKey = &ctrl;
+						case InputTypes::Keyboard:
+							keyName = SDL_GetKeyName(ctrl.Value);
+							break;
+						case InputTypes::Mouse:
+							if (ctrl.Value >= SDL_BUTTON_LEFT && ctrl.Value <= SDL_BUTTON_X2)
+								keyName = mouseButtons[ctrl.Value];
+							else
+								keyName = (tmp += "Mouse " + std::to_string(ctrl.Value)).c_str();
+							break;
+						case InputTypes::GameController:
+							keyName = SDL_GameControllerGetStringForButton(
+								static_cast<SDL_GameControllerButton>(ctrl.Value));
+							break;
+						case InputTypes::None:
+						default:
+							keyName = "Unused";
+						}
+						if (!keyName || !keyName[0])
+							keyName = "Unknown key";
+						if (ImGui::Button((std::string{keyName} + "##" + std::to_string(index++)).c_str(),
+						                  ImVec2(-1, 0)))
+						{
+							ControlWaitingForInput = &ctrl;
 						}
 					}
-					ImGui::EndTable();
 				}
 			}
 			ImGui::EndTable();
@@ -297,14 +391,14 @@ void options::RenderControlDialog()
 		if (ImGui::Button("Default"))
 		{
 			RebindControls = Options.KeyDft;
-			ControlWaitingForKey = nullptr;
+			ControlWaitingForInput = nullptr;
 		}
 	}
 	ImGui::End();
 	ImGui::PopStyleVar();
 
 	if (!ShowDialog)
-		ControlWaitingForKey = nullptr;
+		ControlWaitingForInput = nullptr;
 }
 
 void options::MyUserData_ReadLine(ImGuiContext* ctx, ImGuiSettingsHandler* handler, void* entry, const char* line)

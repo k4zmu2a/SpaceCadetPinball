@@ -1,6 +1,7 @@
 #pragma once
 #include "high_score.h"
 
+struct GameInput;
 class TPinballTable;
 class DatFile;
 class TBall;
@@ -54,8 +55,8 @@ public:
 	static void window_size(int* width, int* height);
 	static void pause_continue();
 	static void loose_focus();
-	static void keyup(int key);
-	static void keydown(int key);
+	static void InputUp(GameInput input);
+	static void InputDown(GameInput input);
 	static int mode_countdown(int time);
 	static void launch_ball();
 	static void end_game();
@@ -66,4 +67,6 @@ public:
 	static void PushCheat(const std::string& cheat);
 private:
 	static int demo_mode, mode_countdown_;
+
+	static bool AnyBindingMatchesInput(GameInput (&options)[3], GameInput key);
 };

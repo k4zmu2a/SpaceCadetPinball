@@ -28,14 +28,33 @@ enum class Menu1:int
 	WindowLinearFilter = 601,
 };
 
+enum class InputTypes: unsigned
+{
+	None = 0,
+	Keyboard = 1,
+	Mouse = 2,
+	GameController = 3,
+};
+
+struct GameInput
+{
+	InputTypes Type;
+	int Value;
+
+	bool operator==(const GameInput& other) const
+	{
+		return Type == other.Type && Value == other.Value;
+	}
+};
+
 struct ControlsStruct
 {
-	int LeftFlipper;
-	int RightFlipper;
-	int Plunger;
-	int LeftTableBump;
-	int RightTableBump;
-	int BottomTableBump;
+	GameInput LeftFlipper[3];
+	GameInput RightFlipper[3];
+	GameInput Plunger[3];
+	GameInput LeftTableBump[3];
+	GameInput RightTableBump[3];
+	GameInput BottomTableBump[3];
 };
 
 struct optionsStruct
@@ -59,7 +78,7 @@ struct optionsStruct
 struct ControlRef
 {
 	const char* Name;
-	int& Option;
+	GameInput (&Option)[3];
 };
 
 
@@ -81,16 +100,19 @@ public:
 	static void set_string(LPCSTR lpValueName, LPCSTR value);
 	static float get_float(LPCSTR lpValueName, float defaultValue);
 	static void set_float(LPCSTR lpValueName, float data);
+	static void GetInput(const std::string& rowName, GameInput (&defaultValues)[3]);
+	static void SetInput(const std::string& rowName, GameInput (&values)[3]);
 	static void toggle(Menu1 uIDCheckItem);
-	static void KeyDown(int key);
+	static void InputDown(GameInput input);
 	static void ShowControlDialog();
 	static void RenderControlDialog();
+	static bool WaitingForInput() { return ControlWaitingForInput != nullptr; }
 private:
 	static std::map<std::string, std::string> settings;
 	static ControlsStruct RebindControls;
 	static bool ShowDialog;
 	static const ControlRef Controls[6];
-	static const ControlRef* ControlWaitingForKey;
+	static GameInput* ControlWaitingForInput;
 
 	static void MyUserData_ReadLine(ImGuiContext* ctx, ImGuiSettingsHandler* handler, void* entry, const char* line);
 	static void* MyUserData_ReadOpen(ImGuiContext* ctx, ImGuiSettingsHandler* handler, const char* name);
