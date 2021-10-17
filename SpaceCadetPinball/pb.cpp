@@ -29,8 +29,8 @@
 
 TPinballTable* pb::MainTable = nullptr;
 DatFile* pb::record_table = nullptr;
-int pb::time_ticks = 0, pb::demo_mode = 0, pb::game_mode = 2, pb::mode_countdown_;
-float pb::time_now = 0, pb::time_next = 0, pb::ball_speed_limit, pb::time_ticks_remainder = 0;
+int pb::time_ticks = 0, pb::demo_mode = 0, pb::game_mode = 2;
+float pb::mode_countdown_, pb::time_now = 0, pb::time_next = 0, pb::ball_speed_limit, pb::time_ticks_remainder = 0;
 high_score_struct pb::highscore_table[5];
 bool pb::FullTiltMode = false, pb::cheat_mode = false;
 
@@ -169,7 +169,7 @@ void pb::mode_change(int mode)
 	case 4:
 		winmain::LaunchBallEnabled = false;
 		winmain::HighScoresEnabled = false;
-		mode_countdown_ = 5000;
+		mode_countdown_ = 5000.f;
 		break;
 	}
 	game_mode = mode;
@@ -399,7 +399,7 @@ void pb::InputDown(GameInput input)
 
 	if (game_mode != 1)
 	{
-		mode_countdown(-1);
+		mode_countdown(-1.f);
 		return;
 	}
 
@@ -485,7 +485,7 @@ void pb::InputDown(GameInput input)
 	}
 }
 
-int pb::mode_countdown(int time)
+int pb::mode_countdown(float time)
 {
 	if (!game_mode || game_mode <= 0)
 		return 1;
@@ -494,13 +494,13 @@ int pb::mode_countdown(int time)
 		if (game_mode == 3)
 		{
 			mode_countdown_ -= time;
-			if (mode_countdown_ < 0 || time < 0)
+			if (mode_countdown_ < 0.f || time < 0.f)
 				mode_change(4);
 		}
 		else if (game_mode == 4)
 		{
 			mode_countdown_ -= time;
-			if (mode_countdown_ < 0 || time < 0)
+			if (mode_countdown_ < 0.f || time < 0.f)
 				mode_change(1);
 		}
 		return 1;
@@ -517,7 +517,6 @@ void pb::end_game()
 {
 	int scores[4]{};
 	int scoreIndex[4]{};
-	char String1[200];
 
 	mode_change(2);
 	int playerCount = MainTable->PlayerCount;
@@ -532,7 +531,7 @@ void pb::end_game()
 
 	for (auto i = 0; i < playerCount; ++i)
 	{
-		for (auto j = i; j < playerCount; ++j)
+		for (auto j = i+1; j < playerCount; ++j)
 		{
 			if (scores[j] > scores[i])
 			{
@@ -554,6 +553,7 @@ void pb::end_game()
 			int position = high_score::get_score_position(highscore_table, scores[i]);
 			if (position >= 0)
 			{
+				char String1[200];
 				strncpy(String1, pinball::get_rc_string(scoreIndex[i] + 26, 0), sizeof String1 - 1);
 				high_score::show_and_set_high_score_dialog(highscore_table, scores[i], position, String1);
 			}
@@ -593,9 +593,6 @@ bool pb::chk_highscore()
 
 float pb::collide(float timeNow, float timeDelta, TBall* ball)
 {
-	ray_type ray{};
-	vector_type positionMod{};
-
 	if (ball->ActiveFlag && !ball->CollisionComp)
 	{
 		if (ball_speed_limit < ball->Speed)
@@ -606,6 +603,7 @@ float pb::collide(float timeNow, float timeDelta, TBall* ball)
 		ball->RayMaxDistance = maxDistance;
 		ball->TimeNow = timeNow;
 
+		ray_type ray{};
 		ray.Origin.X = ball->Position.X;
 		ray.Origin.Y = ball->Position.Y;
 		ray.Origin.Z = ball->Position.Z;
@@ -625,6 +623,7 @@ float pb::collide(float timeNow, float timeDelta, TBall* ball)
 		{
 			maxDistance = timeDelta * ball->Speed;
 			ball->RayMaxDistance = maxDistance;
+			vector_type positionMod{};
 			positionMod.X = maxDistance * ball->Acceleration.X;
 			positionMod.Y = maxDistance * ball->Acceleration.Y;
 			positionMod.Z = 0.0;
