@@ -1,6 +1,9 @@
 #include "pch.h"
 #include "Sound.h"
 
+#ifndef SDL_MIXER_VERSION_ATLEAST
+#define SDL_MIXER_VERSION_ATLEAST(X, Y, Z)   (SDL_MIXER_COMPILEDVERSION >= SDL_VERSIONNUM(X, Y, Z))
+#endif
 
 int Sound::num_channels;
 bool Sound::enabled_flag = false;
