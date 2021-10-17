@@ -741,6 +741,69 @@ int winmain::event_handler(const SDL_Event* event)
 		default: ;
 		}
 		break;
+    case SDL_JOYDEVICEADDED:
+        if (SDL_IsGameController(event->jdevice.which))
+        {
+            SDL_GameControllerOpen(event->jdevice.which);
+        }
+        break;
+    case SDL_JOYDEVICEREMOVED:
+        {
+            SDL_GameController *controller = SDL_GameControllerFromInstanceID(event->jdevice.which);
+            if (controller)
+            {
+                SDL_GameControllerClose(controller);
+            }
+        }
+        break;
+    case SDL_CONTROLLERBUTTONDOWN:
+        switch (event->cbutton.button)
+        {
+            case SDL_CONTROLLER_BUTTON_A:
+                pb::keydown(Options.Key.Plunger);
+                break;
+            case SDL_CONTROLLER_BUTTON_LEFTSHOULDER:
+                pb::keydown(Options.Key.LeftFlipper);
+                break;
+            case SDL_CONTROLLER_BUTTON_RIGHTSHOULDER:
+                pb::keydown(Options.Key.RightFlipper);
+                break;
+            case SDL_CONTROLLER_BUTTON_DPAD_LEFT:
+                pb::keydown(Options.Key.LeftTableBump);
+                break;
+            case SDL_CONTROLLER_BUTTON_DPAD_RIGHT:
+                pb::keydown(Options.Key.RightTableBump);
+                break;
+            case SDL_CONTROLLER_BUTTON_DPAD_DOWN:
+                pb::keydown(Options.Key.BottomTableBump);
+                break;
+            default: ;
+        }
+        break;
+    case SDL_CONTROLLERBUTTONUP:
+        switch (event->cbutton.button)
+        {
+            case SDL_CONTROLLER_BUTTON_A:
+                pb::keyup(Options.Key.Plunger);
+                break;
+            case SDL_CONTROLLER_BUTTON_LEFTSHOULDER:
+                pb::keyup(Options.Key.LeftFlipper);
+                break;
+            case SDL_CONTROLLER_BUTTON_RIGHTSHOULDER:
+                pb::keyup(Options.Key.RightFlipper);
+                break;
+            case SDL_CONTROLLER_BUTTON_DPAD_LEFT:
+                pb::keyup(Options.Key.LeftTableBump);
+                break;
+            case SDL_CONTROLLER_BUTTON_DPAD_RIGHT:
+                pb::keyup(Options.Key.RightTableBump);
+                break;
+            case SDL_CONTROLLER_BUTTON_DPAD_DOWN:
+                pb::keyup(Options.Key.BottomTableBump);
+                break;
+            default: ;
+        }
+        break;
 	default: ;
 	}
 

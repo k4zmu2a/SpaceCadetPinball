@@ -8,7 +8,11 @@ int* Sound::TimeStamps = nullptr;
 
 bool Sound::Init(int channels, bool enableFlag)
 {
+#if SDL_MIXER_VERSION_ATLEAST(2, 0, 3)
 	Mix_Init(MIX_INIT_MID);
+#else
+    Mix_Init(MIX_INIT_FLUIDSYNTH);
+#endif
 	auto result = Mix_OpenAudio(MIX_DEFAULT_FREQUENCY, MIX_DEFAULT_FORMAT, 2, 1024);
 	SetChannels(channels);
 	Enable(enableFlag);
