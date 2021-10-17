@@ -17,7 +17,13 @@ TLightBargraph::TLightBargraph(TPinballTable* table, int groupIndex) : TLightGro
 		if (floatArr)
 		{
 			auto count = 2 * List.size();
-			TimerTimeArray = new float[count];
+			try
+			{
+				TimerTimeArray = new float[count];
+			}
+			catch (...)
+			{
+			}
 			if (TimerTimeArray)
 			{
 				for (auto i = 0u; i < count; ++floatArr)

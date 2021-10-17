@@ -116,7 +116,14 @@ TRamp::TRamp(TPinballTable* table, int groupIndex) : TCollisionComponent(table, 
 			}
 			if (collisionGroup)
 			{
-				auto line = new TLine(this, &ActiveFlag, collisionGroup, point1, point2);
+				TLine* line = nullptr;
+				try
+				{
+					line = new TLine(this, &ActiveFlag, collisionGroup, point1, point2);
+				}
+				catch (...)
+				{
+				}
 				EdgeList.push_back(line);
 				if (line)
 				{

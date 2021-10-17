@@ -34,20 +34,26 @@ TFlipper::TFlipper(TPinballTable* table, int groupIndex) : TCollisionComponent(t
 	auto vecT2 = reinterpret_cast<vector_type*>(loader::query_float_attribute(groupIndex, 0, 802));
 	auto vecT1 = reinterpret_cast<vector_type*>(loader::query_float_attribute(groupIndex, 0, 801));
 	auto origin = reinterpret_cast<vector_type*>(loader::query_float_attribute(groupIndex, 0, 800));
-	auto flipperEdge = new TFlipperEdge(
-		this,
-		&ActiveFlag,
-		visual.CollisionGroup,
-		table,
-		origin,
-		vecT1,
-		vecT2,
-		extendTime,
-		retractTime,
-		collMult,
-		Elasticity,
-		Smoothness);
-
+	TFlipperEdge* flipperEdge = nullptr;
+	try
+	{
+		flipperEdge = new TFlipperEdge(
+			this,
+			&ActiveFlag,
+			visual.CollisionGroup,
+			table,
+			origin,
+			vecT1,
+			vecT2,
+			extendTime,
+			retractTime,
+			collMult,
+			Elasticity,
+			Smoothness);
+	}
+	catch (...)
+	{
+	}
 	FlipperEdge = flipperEdge;
 	if (flipperEdge)
 	{
@@ -65,7 +71,7 @@ TFlipper::~TFlipper()
 
 int TFlipper::Message(int code, float value)
 {
-	if (code == 1 || code == 2 || code > 1008 && code <= 1011 || code == 1022)
+	if (code == 1 || code == 2 || (code > 1008 && code <= 1011) || code == 1022)
 	{
 		float timerTime;
 		int command = code;

@@ -35,8 +35,15 @@ TKickout::TKickout(TPinballTable* table, int groupIndex, bool someFlag): TCollis
 	Circle.RadiusSq = *loader::query_float_attribute(groupIndex, 0, 306) * visual.FloatArr[2];
 	if (Circle.RadiusSq == 0.0f)
 		Circle.RadiusSq = 0.001f;
-	auto tCircle = new TCircle(this, &ActiveFlag, visual.CollisionGroup,
-	                           reinterpret_cast<vector_type*>(visual.FloatArr), Circle.RadiusSq);
+	TCircle* tCircle = nullptr;
+	try
+	{
+		tCircle = new TCircle(this, &ActiveFlag, visual.CollisionGroup,
+							  reinterpret_cast<vector_type*>(visual.FloatArr), Circle.RadiusSq);
+	}
+	catch (...)
+	{
+	}
 	if (tCircle)
 	{
 		tCircle->place_in_grid();

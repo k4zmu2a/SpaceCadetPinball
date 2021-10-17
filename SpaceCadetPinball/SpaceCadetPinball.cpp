@@ -27,7 +27,7 @@ int main(int argc, char* argv[])
 }
 
 #if _WIN32
-#include <windows.h>
+#include <Windows.h>
 
 // Windows subsystem main
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nShowCmd)

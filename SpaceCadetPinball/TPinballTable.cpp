@@ -58,7 +58,14 @@ TPinballTable::TPinballTable(): TPinballComponent(nullptr, -1, false)
 	MultiballFlag = 0;
 	PlayerCount = 0;
 
-	auto ballObj = new TBall(this);
+	TBall* ballObj = nullptr;
+	try
+	{
+		ballObj = new TBall(this);
+	}
+	catch (...)
+	{
+	}
 	BallList.push_back(ballObj);
 	if (ballObj)
 		ballObj->ActiveFlag = 0;
@@ -368,7 +375,7 @@ int TPinballTable::Message(int code, float value)
 		LightGroup->Message(34, 0.0);
 		LightGroup->Message(20, 0.0);
 		Plunger->Message(1016, 0.0);
-		if (Demo->ActiveFlag)
+		if (Demo && Demo->ActiveFlag)
 			rc_text = pinball::get_rc_string(30, 0);
 		else
 			rc_text = pinball::get_rc_string(26, 0);

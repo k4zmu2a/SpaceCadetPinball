@@ -123,7 +123,14 @@ void TTextBox::Display(const char* text, float time)
 		if (Timer == -1)
 			Clear();
 
-		auto message = new TTextBoxMessage(text, time);
+		TTextBoxMessage* message = nullptr;
+		try
+		{
+			message = new TTextBoxMessage(text, time);
+		}
+		catch (...)
+		{
+		}
 		if (message)
 		{
 			if (message->Text)
