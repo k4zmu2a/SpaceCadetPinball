@@ -1,21 +1,13 @@
 #include "pch.h"
 #include "Sound.h"
 
-#ifndef SDL_MIXER_VERSION_ATLEAST
-#define SDL_MIXER_VERSION_ATLEAST(X, Y, Z)   (SDL_MIXER_COMPILEDVERSION >= SDL_VERSIONNUM(X, Y, Z))
-#endif
-
 int Sound::num_channels;
 bool Sound::enabled_flag = false;
 int* Sound::TimeStamps = nullptr;
 
 bool Sound::Init(int channels, bool enableFlag)
 {
-#if SDL_MIXER_VERSION_ATLEAST(2, 0, 3)
-	Mix_Init(MIX_INIT_MID);
-#else
-    Mix_Init(MIX_INIT_FLUIDSYNTH);
-#endif
+	Mix_Init(MIX_INIT_MID_Proxy);
 	auto result = Mix_OpenAudio(MIX_DEFAULT_FREQUENCY, MIX_DEFAULT_FORMAT, 2, 1024);
 	SetChannels(channels);
 	Enable(enableFlag);

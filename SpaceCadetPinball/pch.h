@@ -34,6 +34,14 @@
 #include "SDL.h"
 #include <SDL_mixer.h>
 
+// MIX_INIT_FLUIDSYNTH was renamed to MIX_INIT_MID in SDL_mixer v2.0.2
+constexpr int MIX_INIT_MID_Proxy =
+#if SDL_MIXER_PATCHLEVEL >= 2
+	MIX_INIT_MID;
+#else
+	MIX_INIT_FLUIDSYNTH;
+#endif
+
 //https://github.com/ocornut/imgui 7b913db1ce9dd2fd98e5790aa59974dd4496be3b
 #include "imgui.h"
 #include "imgui_internal.h"
