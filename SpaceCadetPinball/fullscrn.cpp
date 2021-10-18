@@ -57,10 +57,11 @@ int fullscrn::enableFullscreen()
 {
 	if (!display_changed)
 	{
-		SDL_SetWindowFullscreen(winmain::MainWindow, SDL_WINDOW_FULLSCREEN_DESKTOP);
-		display_changed = 1;
-		if (display_changed)
+		if (SDL_SetWindowFullscreen(winmain::MainWindow, SDL_WINDOW_FULLSCREEN_DESKTOP) == 0)
+		{
+			display_changed = 1;
 			return 1;
+		}
 	}
 	return 0;
 }
@@ -69,8 +70,8 @@ int fullscrn::disableFullscreen()
 {
 	if (display_changed)
 	{
-		SDL_SetWindowFullscreen(winmain::MainWindow, 0);
-		display_changed = 0;
+		if (SDL_SetWindowFullscreen(winmain::MainWindow, 0) == 0)
+			display_changed = 0;
 	}
 
 	return 0;

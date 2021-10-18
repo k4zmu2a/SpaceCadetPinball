@@ -1019,7 +1019,7 @@ void control::LaunchRampControl(int code, TPinballComponent* caller)
 			{
 				sound = control_soundwave21_tag.Component;
 			}
-			else if (someFlag <= 1 || someFlag > 3)
+			else if (someFlag < 1 || someFlag > 3)
 			{
 				sound = control_soundwave24_tag.Component;
 			}
@@ -2148,7 +2148,7 @@ void control::HyperspaceKickOutControl(int code, TPinballComponent* caller)
 		}
 		else
 		{
-			if (someFlag <= 1 || someFlag > 3)
+			if (someFlag < 1 || someFlag > 3)
 			{
 				auto duration = control_soundwave41_tag.Component->Play();
 				control_soundwave36_1_tag.Component->Play();
@@ -2919,7 +2919,7 @@ void control::GameoverController(int code, TPinballComponent* caller)
 
 	if (missionMsg & 0x200)
 	{
-		int highscoreId = missionMsg % 4;
+		int highscoreId = missionMsg % 5;
 		int highScore = pb::highscore_table[highscoreId].Score;
 		auto nextHidhscoreId = highscoreId + 1;
 		if (highScore > 0)

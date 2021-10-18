@@ -316,7 +316,11 @@ std::vector<uint8_t>* midi::MdsToMidi(std::string file)
 	while (false);
 
 	delete[] fileBuf;
-	if (returnCode && midiOut)
+	if (returnCode && midiOut) 
+	{
 		delete midiOut;
+		midiOut = nullptr;
+	}
+
 	return midiOut;
 }
