@@ -318,5 +318,5 @@ std::vector<uint8_t>* midi::MdsToMidi(std::string file)
 	delete[] fileBuf;
 	if (returnCode && midiOut)
 		delete midiOut;
-	return midiOut; //!! could be already deleted
+	return midiOut;
 }

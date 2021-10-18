@@ -40,10 +40,10 @@ TBall::TBall(TPinballTable* table) : TPinballComponent(table, -1, false)
 
 	Offset = *loader::query_float_attribute(groupIndex, 0, 500);
 	auto visualCount = loader::query_visual_states(groupIndex);
+	auto index = 0;
 	if (visualCount > 0)
 	{
 		auto visualZPtr = VisualZArray;
-		int index = 0;
 		do
 		{
 			loader::query_visual(groupIndex, index, &visual);

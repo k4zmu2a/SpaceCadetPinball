@@ -142,15 +142,9 @@ void render::sprite_modified(render_sprite_type_struct* sprite)
 render_sprite_type_struct* render::create_sprite(VisualTypes visualType, gdrv_bitmap8* bmp, zmap_header_type* zMap,
                                                  int xPosition, int yPosition, rectangle_type* rect)
 {
-	render_sprite_type_struct* sprite;
-	try
-	{
-		sprite = new render_sprite_type_struct();
-	}
-	catch (...)
-	{
+	auto sprite = new render_sprite_type_struct();
+	if (!sprite)
 		return nullptr;
-	}
 	sprite->BmpRect.YPosition = yPosition;
 	sprite->BmpRect.XPosition = xPosition;
 	sprite->Bmp = bmp;
@@ -426,7 +420,7 @@ void render::build_occlude_list()
 				}
 			}
 
-			if (mainSprite->Bmp && spriteArr->size() < 2)
+			if (!mainSprite->UnknownFlag && mainSprite->Bmp && spriteArr->size() < 2)
 				spriteArr->clear();
 			if (!spriteArr->empty())
 			{

@@ -19,7 +19,7 @@ int winmain::bQuit = 0;
 int winmain::activated;
 int winmain::DispFrameRate = 0;
 int winmain::DispGRhistory = 0;
-int winmain::single_step = 0; //!! is constant
+int winmain::single_step = 0;
 int winmain::has_focus = 1;
 int winmain::last_mouse_x;
 int winmain::last_mouse_y;
@@ -180,7 +180,7 @@ int winmain::WinMain(LPCSTR lpCmdLine)
 			if (!gfr_display)
 			{
 				auto plt = static_cast<ColorRgba*>(malloc(1024u));
-				auto pltPtr = &plt[10]; // first 10 entries are system colors hardcoded in display_palette()
+				auto pltPtr = &plt[10];
 				for (int i1 = 0, i2 = 0; i1 < 256 - 10; ++i1, i2 += 8)
 				{
 					unsigned char blue = i2, redGreen = i2;
@@ -215,8 +215,8 @@ int winmain::WinMain(LPCSTR lpCmdLine)
 				int x, y, w, h;
 				SDL_GetMouseState(&x, &y);
 				SDL_GetWindowSize(window, &w, &h);
-				float dx = static_cast<float>(last_mouse_x - x) / static_cast<float>(w);
-				float dy = static_cast<float>(y - last_mouse_y) / static_cast<float>(h);
+				float dx = (last_mouse_x - x) / static_cast<float>(w);
+				float dy = (y - last_mouse_y) / static_cast<float>(h);
 				pb::ballset(dx, dy);
 
 				SDL_WarpMouseInWindow(window, last_mouse_x, last_mouse_y);

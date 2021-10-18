@@ -27,12 +27,8 @@ DatFile* partman::load_records(LPCSTR lpFileName, bool fullTiltMode)
 		return nullptr;
 	}
 
-	DatFile* datFile;
-	try
-	{
-		datFile = new DatFile();
-	}
-	catch (...)
+	auto datFile = new DatFile();
+	if (!datFile)
 	{
 		fclose(fileHandle);
 		return nullptr;
@@ -43,12 +39,8 @@ DatFile* partman::load_records(LPCSTR lpFileName, bool fullTiltMode)
 
 	if (header.Unknown)
 	{
-		char* unknownBuf;
-		try
-		{
-			unknownBuf = new char[header.Unknown];
-		}
-		catch (...)
+		auto unknownBuf = new char[header.Unknown];
+		if (!unknownBuf)
 		{
 			fclose(fileHandle);
 			delete datFile;
@@ -115,18 +107,13 @@ DatFile* partman::load_records(LPCSTR lpFileName, bool fullTiltMode)
 			}
 			else
 			{
-				char* entryBuffer;
-				try
+				auto entryBuffer = new char[fieldSize];
+				entryData->Buffer = entryBuffer;
+				if (!entryBuffer)
 				{
-					entryBuffer = new char[fieldSize];
-				}
-				catch (...)
-				{
-					entryData->Buffer = nullptr;
 					abort = true;
 					break;
 				}
-				entryData->Buffer = entryBuffer;
 				fread(entryBuffer, 1, fieldSize, fileHandle);
 			}
 

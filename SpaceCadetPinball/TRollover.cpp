@@ -44,6 +44,7 @@ void TRollover::Collision(TBall* ball, vector_type* nextPosition, vector_type* d
 	ball->Position.Y = nextPosition->Y;
 	ball->RayMaxDistance -= coef;
 	ball->not_again(edge);
+	gdrv_bitmap8* bmp = nullptr;
 	if (!PinballTable->TiltLockFlag)
 	{
 		if (RolloverFlag)
@@ -59,7 +60,6 @@ void TRollover::Collision(TBall* ball, vector_type* nextPosition, vector_type* d
 		RolloverFlag = RolloverFlag == 0;
 		if (ListBitmap)
 		{
-			gdrv_bitmap8* bmp = nullptr;
 			if (!RolloverFlag)
 				bmp = ListBitmap->at(0);
 			render::sprite_set_bitmap(RenderSprite, bmp);

@@ -109,6 +109,7 @@ float TFlipperEdge::FindCollisionDistance(ray_type* ray)
 	{
 		if (FlipperFlag == 0)
 		{
+			EdgeCollisionFlag = 0;
 			CollisionFlag1 = 0;
 			CollisionFlag2 = 0;
 			set_control_points(ogRay->TimeNow);
@@ -435,6 +436,7 @@ float TFlipperEdge::flipper_angle(float timeNow)
 
 int TFlipperEdge::is_ball_inside(float x, float y)
 {
+	vector_type testPoint{};
 	float dx = RotOrigin.X - x;
 	float dy = RotOrigin.Y - y;
 	if ((A2.X - A1.X) * (y - A1.Y) - (A2.Y - A1.Y) * (x - A1.X) >= 0.0f &&
@@ -445,7 +447,6 @@ int TFlipperEdge::is_ball_inside(float x, float y)
 		(T1.Y - y) * (T1.Y - y) + (T1.X - x) * (T1.X - x) < CircleT1RadiusSq)
 	{
 		float flipperLR = AngleMax < 0.0f ? -1.0f : 1.0f;
-		vector_type testPoint{};
 		if (FlipperFlag == 1)
 			testPoint = AngleMax < 0.0f ? B1 : B2;
 		else if (FlipperFlag == 2)

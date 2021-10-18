@@ -58,7 +58,7 @@ int fullscrn::enableFullscreen()
 	if (!display_changed)
 	{
 		SDL_SetWindowFullscreen(winmain::MainWindow, SDL_WINDOW_FULLSCREEN_DESKTOP);
-		display_changed = 1; //!!
+		display_changed = 1;
 		if (display_changed)
 			return 1;
 	}

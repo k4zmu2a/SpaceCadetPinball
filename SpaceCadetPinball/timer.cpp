@@ -12,17 +12,10 @@ timer_struct* timer::TimerBuffer;
 
 int timer::init(int count)
 {
-	timer_struct* buf;
-	try
-	{
-		buf = new timer_struct[count];
-	}
-	catch (...)
-	{
-		TimerBuffer = nullptr;
-		return 1;
-	}
+	auto buf = new timer_struct[count];
 	TimerBuffer = buf;
+	if (!buf)
+		return 1;
 	Count = 0;
 	MaxCount = count;
 	SetCount = 1;

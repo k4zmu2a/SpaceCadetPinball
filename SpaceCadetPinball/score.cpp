@@ -18,15 +18,9 @@ int score::init()
 
 scoreStruct* score::create(LPCSTR fieldName, gdrv_bitmap8* renderBgBmp)
 {
-	scoreStruct* score;
-	try
-	{
-		score = new scoreStruct();
-	}
-	catch (...)
-	{
+	auto score = new scoreStruct();
+	if (!score)
 		return nullptr;
-	}
 	score->Score = -9999;
 	score->BackgroundBmp = renderBgBmp;
 

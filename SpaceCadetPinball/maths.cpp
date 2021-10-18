@@ -206,6 +206,9 @@ void maths::line_init(line_type* line, float x0, float y0, float x1, float y1)
 
 float maths::ray_intersect_line(ray_type* ray, line_type* line)
 {
+	bool v5;
+	bool v6;
+
 	float perpDot = line->PerpendicularL.Y * ray->Direction.Y + ray->Direction.X * line->PerpendicularL.X;
 	if (perpDot < 0.0f)
 	{
@@ -221,8 +224,8 @@ float maths::ray_intersect_line(ray_type* ray, line_type* line)
 			{
 				if (v4 >= line->OriginX)
 				{
-					bool v5 = v4 < line->OriginY;
-					bool v6 = v4 == line->OriginY;
+					v5 = v4 < line->OriginY;
+					v6 = v4 == line->OriginY;
 					if (v5 || v6)
 						return result;
 					return 1000000000.0;
@@ -231,8 +234,8 @@ float maths::ray_intersect_line(ray_type* ray, line_type* line)
 			else if (line->OriginX <= line->RayIntersect.X)
 			{
 				float v7 = line->RayIntersect.X;
-				bool v5 = v7 < line->OriginY;
-				bool v6 = v7 == line->OriginY;
+				v5 = v7 < line->OriginY;
+				v6 = v7 == line->OriginY;
 				if (v5 || v6)
 					return result;
 				return 1000000000.0;
@@ -296,7 +299,7 @@ float maths::basic_collision(TBall* ball, vector_type* nextPosition, vector_type
 	return projSpeed;
 }
 
-float maths::Distance_Squared(vector_type& vec1, vector_type& vec2)
+float maths::Distance_Squared(vector_type vec1, vector_type vec2)
 {
 	return (vec1.Y - vec2.Y) * (vec1.Y - vec2.Y) + (vec1.X - vec2.X) * (vec1.X - vec2.X);
 }

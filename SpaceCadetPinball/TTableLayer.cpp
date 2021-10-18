@@ -80,20 +80,13 @@ TTableLayer::TTableLayer(TPinballTable* table): TCollisionComponent(table, -1, f
 
 	for (auto visFloatArrCount = visual.FloatArrCount; visFloatArrCount > 0; visFloatArrCount--)
 	{
-		TLine* line = nullptr;
-		try
-		{
-			line = new TLine(this,
-							 &ActiveFlag,
-							 visual.CollisionGroup,
-							 visArrPtr[2],
-							 visArrPtr[3],
-							 visArrPtr[0],
-							 visArrPtr[1]);
-		}
-		catch (...)
-		{
-		}
+		auto line = new TLine(this,
+		                      &ActiveFlag,
+		                      visual.CollisionGroup,
+		                      visArrPtr[2],
+		                      visArrPtr[3],
+		                      visArrPtr[0],
+		                      visArrPtr[1]);
 		if (line)
 		{
 			line->place_in_grid();

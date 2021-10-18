@@ -10,14 +10,7 @@ TTextBoxMessage::TTextBoxMessage(const char* text, float time)
 	if (text)
 	{
 		const auto textLen = strlen(text) + 1;
-		Text = nullptr;
-		try
-		{
-			Text = new char[textLen];
-		}
-		catch (...)
-		{
-		}
+		Text = new char[textLen];
 		if (Text)
 			strncpy(Text, text, textLen);
 	}
