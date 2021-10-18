@@ -109,7 +109,6 @@ float TFlipperEdge::FindCollisionDistance(ray_type* ray)
 	{
 		if (FlipperFlag == 0)
 		{
-			EdgeCollisionFlag = 0;
 			CollisionFlag1 = 0;
 			CollisionFlag2 = 0;
 			set_control_points(ogRay->TimeNow);

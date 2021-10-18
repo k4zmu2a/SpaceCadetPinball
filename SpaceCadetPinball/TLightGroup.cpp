@@ -432,7 +432,7 @@ int TLightGroup::next_light_up()
 {
 	for (auto index = 0u; index < List.size(); ++index)
 	{
-		if (!List.at(index)->BmpIndex1)
+		if (!List[index]->BmpIndex1)
 			return static_cast<int>(index);
 	}
 	return -1;

@@ -3923,9 +3923,7 @@ void control::SelectMissionController(int code, TPinballComponent* caller)
 			if (light_on(&control_lite319_tag))
 				control_lite319_tag.Component->Message(20, 0.0);
 			if (!light_on(&control_lite317_tag))
-			{
 				control_lite317_tag.Component->Message(7, 0.0);
-			}
 		}
 		else
 		{
@@ -4158,6 +4156,7 @@ void control::TimeWarpPartTwoController(int code, TPinballComponent* caller)
 	control_lite317_tag.Component->Message(20, 0.0);
 	control_lite198_tag.Component->MessageField = 1;
 	MissionControl(66, nullptr);
+	// SpecialAddScore sets the score dirty flag. So next tick it will be redrawn.
 }
 
 void control::UnselectMissionController(int code, TPinballComponent* caller)

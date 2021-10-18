@@ -6,7 +6,7 @@
 #include "TBall.h"
 #include "TPinballTable.h"
 
-TTripwire::TTripwire(TPinballTable* table, int groupIndex) : TRollover(table, groupIndex, 1)
+TTripwire::TTripwire(TPinballTable* table, int groupIndex) : TRollover(table, groupIndex, true)
 {
 }
 
