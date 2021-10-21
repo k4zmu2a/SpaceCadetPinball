@@ -211,8 +211,7 @@ void TTextBox::Draw()
 				render::vscreen.XPosition + OffsetX,
 				render::vscreen.YPosition + OffsetY,
 				Width,
-				Height,
-				255);
+				Height);
 			return;
 		}
 

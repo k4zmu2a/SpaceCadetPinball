@@ -287,7 +287,7 @@ void gdrv::end_blit_sequence()
 	ReleaseDC(hwnd, sequence_hdc);
 }
 
-void gdrv::blit(gdrv_bitmap8* bmp, int xSrc, int ySrcOff, int xDest, int yDest, int DestWidth, int DestHeight)
+void gdrv::blit(gdrv_bitmap8* bmp, int xSrc, int ySrc, int xDest, int yDest, int DestWidth, int DestHeight)
 {
 	HDC dc = winmain::_GetDC(hwnd);
 	SetStretchBltMode(dc, stretchMode);
@@ -303,7 +303,7 @@ void gdrv::blit(gdrv_bitmap8* bmp, int xSrc, int ySrcOff, int xDest, int yDest, 
 				DestWidth,
 				DestHeight,
 				xSrc,
-				bmp->Height - ySrcOff - DestHeight,
+				bmp->Height - ySrc - DestHeight,
 				DestWidth,
 				DestHeight,
 				bmp,
@@ -413,11 +413,24 @@ void gdrv::copy_bitmap_w_transparency(gdrv_bitmap8* dstBmp, int width, int heigh
 }
 
 
-void gdrv::grtext_draw_ttext_in_box(LPCSTR text, int xOff, int yOff, int width, int height, int a6)
+void gdrv::grtext_draw_ttext_in_box(LPCSTR text, int xOff, int yOff, int width, int height)
 {
-	tagRECT rc{};
+	// Original font was 16 points, used with lowest table resolution
+	static const int fontSizes[3] =
+	{
+		16,
+		22,
+		28
+	};
+
+	xOff = static_cast<int>(xOff * fullscrn::ScaleX) + fullscrn::OffsetX;
+	yOff = static_cast<int>(yOff * fullscrn::ScaleY) + fullscrn::OffsetY;
+	width = static_cast<int>(width * fullscrn::ScaleX);
+	height = static_cast<int>(height * fullscrn::ScaleY);
+	auto fontSize = static_cast<int>(round(fontSizes[fullscrn::GetResolution()] * fullscrn::ScaleY));
 
 	HDC dc = GetDC(hwnd);
+	tagRECT rc{};
 	rc.left = xOff;
 	rc.right = width + xOff;
 	rc.top = yOff;
@@ -431,9 +444,18 @@ void gdrv::grtext_draw_ttext_in_box(LPCSTR text, int xOff, int yOff, int width, 
 		if (fontColor)
 			sscanf_s(fontColor, "%d %d %d", &grtext_red, &grtext_green, &grtext_blue);
 	}
-	int prevMode = SetBkMode(dc, 1);
+
+	// Default font does not scale well
+	auto hNewFont = CreateFont(fontSize, 0, 0, 0, FW_DONTCARE, FALSE, FALSE, FALSE,
+		ANSI_CHARSET, OUT_DEFAULT_PRECIS, CLIP_DEFAULT_PRECIS, DEFAULT_QUALITY, DEFAULT_PITCH | FF_SWISS, "Arial");
+	HFONT hOldFont = (HFONT)SelectObject(dc, hNewFont);
+	int prevMode = SetBkMode(dc, TRANSPARENT);
 	COLORREF color = SetTextColor(dc, grtext_red | grtext_green << 8 | grtext_blue << 16);
-	DrawTextA(dc, text, lstrlenA(text), &rc, 0x810u);
+
+	DrawTextA(dc, text, lstrlenA(text), &rc, DT_NOPREFIX | DT_WORDBREAK);
+
+	SelectObject(dc, hOldFont);
+	DeleteObject(hNewFont);
 	SetBkMode(dc, prevMode);
 	SetTextColor(dc, color);
 	ReleaseDC(hwnd, dc);
