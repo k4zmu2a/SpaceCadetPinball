@@ -87,7 +87,7 @@ public:
 	static float basic_collision(TBall* ball, vector_type* nextPosition, vector_type* direction, float elasticity,
 	                             float smoothness,
 	                             float threshold, float boost);
-	static float Distance_Squared(vector_type vec1, vector_type vec2);
+	static float Distance_Squared(vector_type& vec1, vector_type& vec2);
 	static float DotProduct(vector_type* vec1, vector_type* vec2);
 	static void vswap(vector_type* vec1, vector_type* vec2);
 	static float Distance(vector_type* vec1, vector_type* vec2);

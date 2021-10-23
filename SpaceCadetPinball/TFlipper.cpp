@@ -65,7 +65,7 @@ TFlipper::~TFlipper()
 
 int TFlipper::Message(int code, float value)
 {
-	if (code == 1 || code == 2 || code > 1008 && code <= 1011 || code == 1022)
+	if (code == 1 || code == 2 || (code > 1008 && code <= 1011) || code == 1022)
 	{
 		float timerTime;
 		int command = code;
