@@ -15,16 +15,16 @@ SDL_Renderer* winmain::Renderer = nullptr;
 ImGuiIO* winmain::ImIO = nullptr;
 
 int winmain::return_value = 0;
-int winmain::bQuit = 0;
-int winmain::activated;
+bool winmain::bQuit = false;
+bool winmain::activated = false;
 int winmain::DispFrameRate = 0;
 int winmain::DispGRhistory = 0;
-int winmain::single_step = 0;
-int winmain::has_focus = 1;
+bool winmain::single_step = false;
+bool winmain::has_focus = true;
 int winmain::last_mouse_x;
 int winmain::last_mouse_y;
 int winmain::mouse_down;
-int winmain::no_time_loss;
+bool winmain::no_time_loss = false;
 
 bool winmain::restart = false;
 
@@ -225,7 +225,7 @@ int winmain::WinMain(LPCSTR lpCmdLine)
 				//last_mouse_x = x;
 				//last_mouse_y = y;
 			}
-			if (!single_step)
+			if (!single_step && !no_time_loss)
 			{
 				auto dt = static_cast<float>(frameDuration.count());
 				auto dtWhole = static_cast<int>(std::round(dt));
@@ -243,6 +243,7 @@ int winmain::WinMain(LPCSTR lpCmdLine)
 				}
 				updateCounter++;
 			}
+			no_time_loss = false;
 
 			if (UpdateToFrameCounter >= UpdateToFrameRatio)
 			{
@@ -595,7 +596,7 @@ int winmain::event_handler(const SDL_Event* event)
 	{
 	case SDL_QUIT:
 		end_pause();
-		bQuit = 1;
+		bQuit = true;
 		fullscrn::shutdown();
 		return_value = 0;
 		return 0;
@@ -655,9 +656,9 @@ int winmain::event_handler(const SDL_Event* event)
 			pb::frame(10);
 			break;
 		case SDLK_F10:
-			single_step = (single_step == 0) ? 1 : 0;
-			if (single_step == 0)
-				no_time_loss = 1;
+			single_step ^= true;
+			if (!single_step)
+				no_time_loss = true;
 			break;
 		default:
 			break;
@@ -713,21 +714,21 @@ int winmain::event_handler(const SDL_Event* event)
 		case SDL_WINDOWEVENT_FOCUS_GAINED:
 		case SDL_WINDOWEVENT_TAKE_FOCUS:
 		case SDL_WINDOWEVENT_SHOWN:
-			activated = 1;
+			activated = true;
 			Sound::Activate();
 			if (Options.Music && !single_step)
 				midi::play_pb_theme();
-			no_time_loss = 1;
-			has_focus = 1;
+			no_time_loss = true;
+			has_focus = true;
 			break;
 		case SDL_WINDOWEVENT_FOCUS_LOST:
 		case SDL_WINDOWEVENT_HIDDEN:
-			activated = 0;
+			activated = false;
 			fullscrn::activate(0);
 			Options.FullScreen = false;
 			Sound::Deactivate();
 			midi::music_stop();
-			has_focus = 0;
+			has_focus = false;
 			pb::loose_focus();
 			break;
 		case SDL_WINDOWEVENT_SIZE_CHANGED:
@@ -846,7 +847,7 @@ void winmain::end_pause()
 	if (single_step)
 	{
 		pb::pause_continue();
-		no_time_loss = 1;
+		no_time_loss = true;
 	}
 }
 
@@ -859,7 +860,7 @@ void winmain::new_game()
 void winmain::pause()
 {
 	pb::pause_continue();
-	no_time_loss = 1;
+	no_time_loss = true;
 }
 
 void winmain::Restart()

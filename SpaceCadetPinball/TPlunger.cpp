@@ -94,7 +94,7 @@ int TPlunger::Message(int code, float value)
 			if (PullbackTimer_)
 				timer::kill(PullbackTimer_);
 			PullbackTimer_ = 0;
-			if (code == 1005) // intended that this can never be reached (same as original)
+			if (code == 1005)
 				loader::play_sound(SoundIndexP2);
 			auto bmp = ListBitmap->at(0);
 			auto zMap = ListZMap->at(0);

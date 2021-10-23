@@ -215,7 +215,7 @@ void pb::frame(float dtMilliSec)
 {
 	if (dtMilliSec > 100)
 		dtMilliSec = 100;
-	if (dtMilliSec < 0)
+	if (dtMilliSec <= 0)
 		return;
 	float dtSec = dtMilliSec * 0.001f;
 	if (!mode_countdown(dtMilliSec))
@@ -317,7 +317,7 @@ void pb::window_size(int* width, int* height)
 
 void pb::pause_continue()
 {
-	winmain::single_step = (winmain::single_step == 0) ? 1 : 0;
+	winmain::single_step ^= true;
 	pinball::InfoTextBox->Clear();
 	pinball::MissTextBox->Clear();
 	if (winmain::single_step)
@@ -532,7 +532,7 @@ void pb::end_game()
 
 	for (auto i = 0; i < playerCount; ++i)
 	{
-		for (auto j = i+1; j < playerCount; ++j)
+		for (auto j = i + 1; j < playerCount; ++j)
 		{
 			if (scores[j] > scores[i])
 			{

@@ -41,7 +41,7 @@ class winmain
 
 public:
 	static std::string DatFileName;
-	static int single_step;
+	static bool single_step;
 	static SDL_Window* MainWindow;
 	static SDL_Renderer* Renderer;
 	static ImGuiIO* ImIO;
@@ -62,8 +62,9 @@ public:
 	static bool RestartRequested() { return restart; }
 	static void UpdateFrameRate();
 private:
-	static int return_value, bQuit, DispFrameRate, DispGRhistory, activated;
-	static int has_focus, mouse_down, last_mouse_x, last_mouse_y, no_time_loss;
+	static int return_value, DispFrameRate, DispGRhistory;
+	static int mouse_down, last_mouse_x, last_mouse_y;
+	static bool no_time_loss, activated, bQuit, has_focus;
 	static gdrv_bitmap8* gfr_display;
 	static std::string FpsDetails;
 	static bool restart;
