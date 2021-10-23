@@ -81,7 +81,15 @@ void THole::Collision(TBall* ball, vector_type* nextPosition, vector_type* direc
 		ball->Position.X = Circle.Center.X;
 		ball->Position.Y = Circle.Center.Y;
 		ball->Acceleration.Z = 0.0;
-		Timer = timer::set(0.5f, this, TimerExpired);
+		/*Full Tilt hack - ball doesn't delay at the ramp hole*/
+		if (pb::FullTiltMode)
+		{
+			BallCapturedSecondStage = 1;
+		}
+		else
+		{
+			Timer = timer::set(0.5f, this, TimerExpired);
+		}
 		if (!PinballTable->TiltLockFlag)
 		{
 			loader::play_sound(HardHitSoundId);
