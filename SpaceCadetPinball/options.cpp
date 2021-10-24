@@ -204,6 +204,7 @@ void options::toggle(Menu1 uIDCheckItem)
 		return;
 	case Menu1::Show_Menu:
 		Options.ShowMenu = Options.ShowMenu == 0;
+		fullscrn::window_size_changed();
 		return;
 	case Menu1::Full_Screen:
 		Options.FullScreen ^= true;
