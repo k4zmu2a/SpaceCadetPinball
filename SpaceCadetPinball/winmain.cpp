@@ -342,10 +342,11 @@ void winmain::RenderUi()
 
 	if (ImGui::BeginMainMenuBar())
 	{
-		if (MainMenuHeight == 0)
+		int currentMenuHeight = static_cast<int>(ImGui::GetWindowSize().y);
+		if (MainMenuHeight != currentMenuHeight)
 		{
 			// Get the height of the main menu bar and update screen coordinates
-			MainMenuHeight = static_cast<int>(ImGui::GetWindowSize().y);
+			MainMenuHeight = currentMenuHeight;
 			fullscrn::window_size_changed();
 		}
 
