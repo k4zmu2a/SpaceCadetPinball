@@ -3,6 +3,7 @@
 
 #include "fullscrn.h"
 #include "midi.h"
+#include "render.h"
 #include "Sound.h"
 #include "winmain.h"
 
@@ -246,7 +247,7 @@ void options::toggle(Menu1 uIDCheckItem)
 		break;
 	case Menu1::WindowLinearFilter:
 		Options.LinearFiltering ^= true;
-		winmain::Restart();
+		render::recreate_screen_texture();
 		break;
 	default:
 		break;

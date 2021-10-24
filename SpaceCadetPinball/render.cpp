@@ -42,17 +42,7 @@ void render::init(gdrv_bitmap8* bmp, float zMin, float zScaler, int width, int h
 	else
 		gdrv::fill_bitmap(vscreen, vscreen->Width, vscreen->Height, 0, 0, 0);
 
-	{
-		UsingSdlHint hint{SDL_HINT_RENDER_SCALE_QUALITY, options::Options.LinearFiltering ? "linear" : "nearest"};
-		vScreenTex = SDL_CreateTexture
-		(
-			winmain::Renderer,
-			SDL_PIXELFORMAT_ARGB8888,
-			SDL_TEXTUREACCESS_STREAMING,
-			width, height
-		);
-		SDL_SetTextureBlendMode(vScreenTex, SDL_BLENDMODE_NONE);
-	}
+	recreate_screen_texture();
 }
 
 void render::uninit()
@@ -69,6 +59,25 @@ void render::uninit()
 	dirty_list.clear();
 	sprite_list.clear();
 	SDL_DestroyTexture(vScreenTex);
+	vScreenTex = nullptr;
+}
+
+void render::recreate_screen_texture()
+{
+	if (vScreenTex != nullptr)
+	{
+		SDL_DestroyTexture(vScreenTex);
+	}
+
+	UsingSdlHint hint{ SDL_HINT_RENDER_SCALE_QUALITY, options::Options.LinearFiltering ? "linear" : "nearest" };
+	vScreenTex = SDL_CreateTexture
+	(
+		winmain::Renderer,
+		SDL_PIXELFORMAT_ARGB8888,
+		SDL_TEXTUREACCESS_STREAMING,
+		vscreen_rect.Width, vscreen_rect.Height
+	);
+	SDL_SetTextureBlendMode(vScreenTex, SDL_BLENDMODE_NONE);
 }
 
 void render::update()
