@@ -37,6 +37,7 @@ bool winmain::LaunchBallEnabled = true;
 bool winmain::HighScoresEnabled = true;
 bool winmain::DemoActive = false;
 char* winmain::BasePath;
+int winmain::MainMenuHeight = 0; 
 std::string winmain::FpsDetails;
 double winmain::UpdateToFrameRatio;
 winmain::DurationMs winmain::TargetFrameTime;
@@ -341,6 +342,14 @@ void winmain::RenderUi()
 
 	if (ImGui::BeginMainMenuBar())
 	{
+		int currentMenuHeight = static_cast<int>(ImGui::GetWindowSize().y);
+		if (MainMenuHeight != currentMenuHeight)
+		{
+			// Get the height of the main menu bar and update screen coordinates
+			MainMenuHeight = currentMenuHeight;
+			fullscrn::window_size_changed();
+		}
+
 		if (ImGui::BeginMenu("Game"))
 		{
 			if (ImGui::MenuItem("New Game", "F2"))

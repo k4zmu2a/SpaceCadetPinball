@@ -49,6 +49,7 @@ public:
 	static bool HighScoresEnabled;
 	static bool DemoActive;
 	static char* BasePath;
+	static int MainMenuHeight;
 
 	static int WinMain(LPCSTR lpCmdLine);
 	static int event_handler(const SDL_Event* event);

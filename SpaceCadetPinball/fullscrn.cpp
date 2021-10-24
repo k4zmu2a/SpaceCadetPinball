@@ -110,6 +110,8 @@ void fullscrn::window_size_changed()
 {
 	int width, height;
 	SDL_GetRendererOutputSize(winmain::Renderer, &width, &height);
+	int menuHeight = options::Options.ShowMenu ? winmain::MainMenuHeight : 0;
+	height -= menuHeight;
 	auto res = &resolution_array[resolution];
 	ScaleX = static_cast<float>(width) / res->TableWidth;
 	ScaleY = static_cast<float>(height) / res->TableHeight;
@@ -124,7 +126,7 @@ void fullscrn::window_size_changed()
 
 	render::DestinationRect = SDL_Rect
 	{
-		OffsetX, OffsetY,
+		OffsetX, OffsetY + menuHeight,
 		width - OffsetX * 2, height - OffsetY * 2
 	};
 }
