@@ -1,6 +1,7 @@
 #include "pch.h"
 #include "render.h"
 
+#include "fullscrn.h"
 #include "GroupData.h"
 #include "options.h"
 #include "pb.h"
@@ -538,61 +539,7 @@ void render::BlitVScreen()
 	);
 	assertm(static_cast<unsigned>(pitch) == vscreen->Width * sizeof(ColorRgba), "Padding on vScreen texture");
 
-	if (offset_x == 0 && offset_y == 0)
-	{
-		// No offset - direct copy
-		std::memcpy(lockedPixels, vscreen->BmpBufPtr1, vscreen->Width * vscreen->Height * sizeof(ColorRgba));
-	}
-	else
-	{
-		// Copy offset table and fixed side bar
-		auto tableWidth = pb::MainTable->Width;
-		auto scoreWidth = vscreen->Width - pb::MainTable->Width;
-		auto tableStride = tableWidth * sizeof(ColorRgba);
-		auto scoreStride = scoreWidth * sizeof(ColorRgba);
-		auto srcScorePtr = &vscreen->BmpBufPtr1[tableWidth];
-
-		auto xSrc = 0, ySrc = 0, xDst = offset_x, yDst = offset_y, height = vscreen->Height;
-
-		// Negative dst == positive src offset
-		if (xDst < 0)
-		{
-			xSrc -= xDst;
-			xDst = 0;
-		}
-		if (yDst < 0)
-		{
-			ySrc -= yDst;
-			yDst = 0;
-		}
-
-		if (xSrc)
-		{
-			tableStride -= xSrc * sizeof(ColorRgba);
-		}
-		if (xDst)
-		{
-			tableStride -= xDst * sizeof(ColorRgba);
-			tableWidth -= xDst;
-			scoreWidth += xDst;
-		}
-		if (ySrc)
-			height -= ySrc;
-
-		auto srcBmpPtr = &vscreen->BmpBufPtr1[vscreen->Width * ySrc + xSrc];
-		auto dstPtr = &lockedPixels[vscreen->Width * yDst + xDst];
-		for (int y = height; y > 0; --y)
-		{
-			std::memcpy(dstPtr, srcBmpPtr, tableStride);
-			dstPtr += tableWidth;
-			std::memcpy(dstPtr, srcScorePtr, scoreStride);
-			dstPtr += scoreWidth;
-
-			srcBmpPtr += vscreen->Stride;
-			srcScorePtr += vscreen->Stride;
-		}
-	}
-
+	std::memcpy(lockedPixels, vscreen->BmpBufPtr1, vscreen->Width * vscreen->Height * sizeof(ColorRgba));
 
 	SDL_UnlockTexture(vScreenTex);
 }
@@ -600,5 +547,42 @@ void render::BlitVScreen()
 void render::PresentVScreen()
 {
 	BlitVScreen();
-	SDL_RenderCopy(winmain::Renderer, vScreenTex, nullptr, &DestinationRect);
+
+	if (offset_x == 0 && offset_y == 0)
+	{
+		SDL_RenderCopy(winmain::Renderer, vScreenTex, nullptr, &DestinationRect);
+	}
+	else
+	{
+		int32_t srcSeparationX = static_cast<int32_t>(vscreen->Width * 0.625f);
+
+		SDL_Rect srcBoardRect = SDL_Rect
+		{
+			0, 0,
+			srcSeparationX, vscreen->Height
+		};
+
+		SDL_Rect srcSidebarRect = SDL_Rect
+		{
+			srcSeparationX, 0,
+			vscreen->Width - srcSeparationX, vscreen->Height
+		};
+
+		int32_t dstSeparationX = static_cast<int32_t>(DestinationRect.w * 0.625f);
+
+		SDL_Rect dstBoardRect = SDL_Rect
+		{
+			DestinationRect.x + static_cast<int32_t>(offset_x * fullscrn::ScaleX), DestinationRect.y + static_cast<int32_t>(offset_y * fullscrn::ScaleY),
+			dstSeparationX, DestinationRect.h
+		};
+
+		SDL_Rect dstSidebarRect = SDL_Rect
+		{
+			DestinationRect.x + dstSeparationX, DestinationRect.y,
+			DestinationRect.w - dstSeparationX, DestinationRect.h
+		};
+
+		SDL_RenderCopy(winmain::Renderer, vScreenTex, &srcBoardRect, &dstBoardRect);
+		SDL_RenderCopy(winmain::Renderer, vScreenTex, &srcSidebarRect, &dstSidebarRect);
+	}
 }
