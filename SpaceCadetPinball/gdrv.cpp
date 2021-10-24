@@ -3,6 +3,7 @@
 
 #include "fullscrn.h"
 #include "memory.h"
+#include "options.h"
 #include "pinball.h"
 #include "winmain.h"
 
@@ -445,10 +446,24 @@ void gdrv::grtext_draw_ttext_in_box(LPCSTR text, int xOff, int yOff, int width, 
 			sscanf_s(fontColor, "%d %d %d", &grtext_red, &grtext_green, &grtext_blue);
 	}
 
+	// DEFAULT_CHARSET in unicode build.
+	int charset;
+	switch (options::Options.Language)
+	{
+	default:
+	case Languages::English:
+		charset = ANSI_CHARSET;
+		break;
+	case Languages::Russian:
+		charset = RUSSIAN_CHARSET;
+		break;
+	}
+
 	// Default font does not scale well
 	auto hNewFont = CreateFont(fontSize, 0, 0, 0, FW_DONTCARE, FALSE, FALSE, FALSE,
-		ANSI_CHARSET, OUT_DEFAULT_PRECIS, CLIP_DEFAULT_PRECIS, DEFAULT_QUALITY, DEFAULT_PITCH | FF_SWISS, "Arial");
-	HFONT hOldFont = (HFONT)SelectObject(dc, hNewFont);
+	                           charset, OUT_DEFAULT_PRECIS, CLIP_DEFAULT_PRECIS, DEFAULT_QUALITY,
+	                           DEFAULT_PITCH | FF_SWISS, "Arial");
+	HFONT hOldFont = static_cast<HFONT>(SelectObject(dc, hNewFont));
 	int prevMode = SetBkMode(dc, TRANSPARENT);
 	COLORREF color = SetTextColor(dc, grtext_red | grtext_green << 8 | grtext_blue << 16);
 

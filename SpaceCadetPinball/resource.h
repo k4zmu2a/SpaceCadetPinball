@@ -241,6 +241,8 @@
 #define DLG_HIGHSCORES_EditName4        604
 #define DLG_HIGHSCORES_EditName5        605
 #define Menu1_AlternativeRender         601
+#define Menu1_Language                  700
+#define Menu1_LanguageMax               702
 
 // Next default values for new objects
 // 

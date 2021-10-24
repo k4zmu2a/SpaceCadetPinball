@@ -1,4 +1,4 @@
-#include "pch.h"
+﻿#include "pch.h"
 #include "options.h"
 
 #include "fullscrn.h"
@@ -68,9 +68,14 @@ short options::vk_list[28]
 	-1
 };
 
-void options::init(HMENU menuHandle)
+LanguageMenuEntry options::LanguageMenu[]
 {
-	MenuHandle = menuHandle;
+	{L"English", Languages::English},
+	{L"Русский", Languages::Russian},
+};
+
+void options::ReadOptions()
+{
 	Options.Sounds = 1;
 	Options.Music = 0;
 	Options.FullScreen = 0;
@@ -110,6 +115,45 @@ void options::init(HMENU menuHandle)
 	Options.UniformScaling = get_int(nullptr, "Uniform scaling", true);
 	Options.AlternativeRender = get_int(nullptr, "Alternative Render", false);
 
+	auto defaultLanguage = Languages::English;
+	auto language = static_cast<Languages>(get_int(nullptr, "Language", static_cast<int>(defaultLanguage)));
+	bool languageDefined = false;
+	for (auto menuEntry : LanguageMenu)
+	{
+		if (menuEntry.Language == language)
+		{
+			languageDefined = true;
+			break;
+		}
+	}
+	if (!languageDefined)
+		language = defaultLanguage;
+	Options.Language = language;
+
+	// Alternative approaches: resource DLLs, single-language builds.
+	// SetThreadUILanguage does not work properly on Windows XP.	
+	bool winXp = false;
+	OSVERSIONINFO  version{};
+	version.dwOSVersionInfoSize = sizeof(OSVERSIONINFO);
+
+#pragma warning (disable : 4996) // XP has no versionhelpers.h
+	if (GetVersionEx(&version))
+#pragma warning (default : 4996)
+	{
+		if (version.dwMajorVersion < 6)
+			winXp = true;
+	}
+
+	if (winXp)
+		SetThreadLocale(MAKELCID(static_cast<LANGID>(Options.Language), SORT_DEFAULT));
+	else
+		SetThreadUILanguage(static_cast<LANGID>(Options.Language));
+}
+
+void options::init(HMENU menuHandle)
+{
+	MenuHandle = menuHandle;
+
 	menu_check(Menu1_Sounds, Options.Sounds);
 	Sound::Enable(0, 7, Options.Sounds);
 	menu_check(Menu1_Music, Options.Music);
@@ -136,6 +180,21 @@ void options::init(HMENU menuHandle)
 	}
 
 	update_resolution_menu();
+
+	// Add language menu from code to decouple it from rc.
+	// AppendMenuW works with A window
+	auto hSubmenu = CreatePopupMenu();
+	auto index = Menu1_Language;
+	for (auto menuEntry : LanguageMenu)
+	{
+		UINT flags = MF_STRING;
+		if (menuEntry.Language == Options.Language)
+			flags |= MF_CHECKED;
+		AppendMenuW(hSubmenu, flags, index++, menuEntry.Name);
+	}
+
+	auto optionsMenu = GetSubMenu(MenuHandle, 1);	
+	AppendMenu(optionsMenu, MF_STRING | MF_POPUP, reinterpret_cast<UINT_PTR>(hSubmenu), "Language");
 }
 
 void options::uninit()
@@ -153,6 +212,7 @@ void options::uninit()
 	set_int(nullptr, "Screen Resolution", Options.Resolution);
 	set_int(nullptr, "Uniform scaling", Options.UniformScaling);
 	set_int(nullptr, "Alternative Render", Options.AlternativeRender);
+	set_int(nullptr, "Language", static_cast<int>(Options.Language));
 }
 
 void options::path_init(LPCSTR regPath)
@@ -355,6 +415,13 @@ void options::toggle(UINT uIDCheckItem)
 		break;
 	default:
 		break;
+	}
+
+	if (uIDCheckItem >= Menu1_Language && uIDCheckItem < Menu1_LanguageMax)
+	{
+		auto languageId = uIDCheckItem - Menu1_Language;
+		Options.Language = LanguageMenu[languageId].Language;
+		winmain::Restart();
 	}
 }
 

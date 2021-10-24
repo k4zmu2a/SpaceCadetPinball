@@ -47,6 +47,7 @@ int winmain::WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLi
 	++memory::critical_allocation;
 	auto optionsRegPath = pinball::get_rc_string(165, 0);
 	options::path_init(optionsRegPath);
+	options::ReadOptions();
 	auto regSpaceCadet = pinball::get_rc_string(166, 0);
 
 	if (options::get_int(regSpaceCadet, "Table Version", 1) <= 1)
@@ -223,10 +224,10 @@ int winmain::WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLi
 					auto dt = static_cast<float>(curTime - prevTime) * 0.001f;
 					if (!options::Options.AlternativeRender)
 						sprintf_s(buf, "Frames/sec = %02.02f", 300.0f / dt);
-					else 
+					else
 					{
 						sprintf_s(buf, "Updates/sec = %02.02f Frames/sec = %02.02f",
-							300.0f / dt, pb::frameCounter / dt);
+						          300.0f / dt, pb::frameCounter / dt);
 						pb::frameCounter = 0;
 					}
 
@@ -665,6 +666,10 @@ LRESULT CALLBACK winmain::message_handler(HWND hWnd, UINT Msg, WPARAM wParam, LP
 		default:
 			break;
 		}
+
+		if (wParam >= Menu1_Language && wParam < Menu1_LanguageMax)
+			options::toggle(wParamI);
+
 		return DefWindowProcA(hWnd, Msg, wParam, lParam);
 	case WM_LBUTTONDOWN:
 		if (pb::game_mode)

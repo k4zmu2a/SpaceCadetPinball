@@ -3737,7 +3737,7 @@ void control::SecretMissionYellowController(int code, TPinballComponent* caller)
 
 void control::SelectMissionController(int code, TPinballComponent* caller)
 {
-	char Buffer[64];
+	char Buffer[128];
 
 	switch (code)
 	{

@@ -1,5 +1,18 @@
 #pragma once
 #include "pinball.h"
+#include "resource.h"
+
+enum class Languages
+{
+	English = MAKELANGID(LANG_ENGLISH, SUBLANG_ENGLISH_US),
+	Russian = MAKELANGID(LANG_RUSSIAN, SUBLANG_DEFAULT),
+};
+
+struct LanguageMenuEntry
+{
+	LPCWSTR Name;
+	Languages Language;
+};
 
 struct optionsStruct
 {
@@ -24,12 +37,14 @@ struct optionsStruct
 	int Resolution;
 	bool UniformScaling;
 	bool AlternativeRender;
+	Languages Language;
 };
 
 
 class options
 {
 public:
+	static void ReadOptions();
 	static void init(HMENU menuHandle);
 	static void uninit();
 	static void path_init(LPCSTR regPath);
@@ -57,4 +72,5 @@ private:
 	static HMENU MenuHandle;
 	static winhelp_entry keymap_help[18];
 	static short vk_list[28];
+	static LanguageMenuEntry LanguageMenu[Menu1_LanguageMax - Menu1_Language];
 };
