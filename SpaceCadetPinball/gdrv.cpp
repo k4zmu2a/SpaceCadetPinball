@@ -6,6 +6,7 @@
 #include "options.h"
 #include "pinball.h"
 #include "winmain.h"
+#include "string.h"
 
 HPALETTE gdrv::palette_handle = nullptr;
 HINSTANCE gdrv::hinst;
