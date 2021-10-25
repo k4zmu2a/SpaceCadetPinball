@@ -6,7 +6,7 @@
 #include "options.h"
 #include "pinball.h"
 #include "winmain.h"
-#include "string.h"
+#include <string>
 
 HPALETTE gdrv::palette_handle = nullptr;
 HINSTANCE gdrv::hinst;
@@ -447,24 +447,24 @@ void gdrv::grtext_draw_ttext_in_box(LPCSTR text, int xOff, int yOff, int width, 
 			sscanf_s(fontColor, "%d %d %d", &grtext_red, &grtext_green, &grtext_blue);
 	}
 
-	char font[30];
+	std::string font;
 	switch (options::Options.Language)
 	{
 	case Languages::TraditionalChinese:
-		strcpy_s(font, "Microsoft JhengHei");
+		font = "Microsoft JhengHei";
 		break;
 	case Languages::SimplifiedChinese:
-		strcpy_s(font, "Microsoft YaHei");
+		font = "Microsoft YaHei";
 		break;
 	default:
-		strcpy_s(font, "Arial");
+		font = "Arial";
 	}
 
 	// DEFAULT_CHARSET in unicode build.
 	// Default font does not scale well
 	auto hNewFont = CreateFont(fontSize, 0, 0, 0, FW_DONTCARE, FALSE, FALSE, FALSE,
 	                           DEFAULT_CHARSET, OUT_DEFAULT_PRECIS, CLIP_DEFAULT_PRECIS, DEFAULT_QUALITY,
-	                           DEFAULT_PITCH | FF_SWISS, font);
+	                           DEFAULT_PITCH | FF_SWISS, font.c_str());
 	HFONT hOldFont = static_cast<HFONT>(SelectObject(dc, hNewFont));
 	int prevMode = SetBkMode(dc, TRANSPARENT);
 	COLORREF color = SetTextColor(dc, grtext_red | grtext_green << 8 | grtext_blue << 16);
