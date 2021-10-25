@@ -77,4 +77,10 @@ inline float RandFloat()
 	return static_cast<float>(std::rand() / static_cast<double>(RAND_MAX));
 }
 
+template <typename T> constexpr
+int Sign(T val)
+{
+	return (T(0) < val) - (val < T(0));
+}
+
 #endif //PCH_H

@@ -563,29 +563,53 @@ void render::PresentVScreen()
 	}
 	else
 	{
-		int32_t srcSeparationX = static_cast<int32_t>(vscreen->Width * 0.625f);
-
-		SDL_Rect srcBoardRect = SDL_Rect
+		auto tableWidthCoef = static_cast<float>(pb::MainTable->Width) / vscreen->Width;
+		auto srcSeparationX = static_cast<int>(round(vscreen->Width * tableWidthCoef));
+		auto srcBoardRect = SDL_Rect
 		{
 			0, 0,
 			srcSeparationX, vscreen->Height
 		};
-
-		SDL_Rect srcSidebarRect = SDL_Rect
+		auto srcSidebarRect = SDL_Rect
 		{
 			srcSeparationX, 0,
 			vscreen->Width - srcSeparationX, vscreen->Height
 		};
 
-		int32_t dstSeparationX = static_cast<int32_t>(DestinationRect.w * 0.625f);
-
-		SDL_Rect dstBoardRect = SDL_Rect
+#if SDL_VERSION_ATLEAST(2, 0, 10)
+		// SDL_RenderCopyF was added in 2.0.10
+		auto dstSeparationX = DestinationRect.w * tableWidthCoef;
+		auto dstBoardRect = SDL_FRect
 		{
-			DestinationRect.x + static_cast<int32_t>(offset_x * fullscrn::ScaleX), DestinationRect.y + static_cast<int32_t>(offset_y * fullscrn::ScaleY),
-			dstSeparationX, DestinationRect.h
+			DestinationRect.x + offset_x * fullscrn::ScaleX,
+			DestinationRect.y + offset_y * fullscrn::ScaleY,
+			dstSeparationX, static_cast<float>(DestinationRect.h)
+		};
+		auto dstSidebarRect = SDL_FRect
+		{
+			DestinationRect.x + dstSeparationX, static_cast<float>(DestinationRect.y),
+			DestinationRect.w - dstSeparationX, static_cast<float>(DestinationRect.h)
 		};
 
-		SDL_Rect dstSidebarRect = SDL_Rect
+		SDL_RenderCopyF(winmain::Renderer, vScreenTex, &srcBoardRect, &dstBoardRect);
+		SDL_RenderCopyF(winmain::Renderer, vScreenTex, &srcSidebarRect, &dstSidebarRect);
+#else
+		// SDL_RenderCopy cannot express sub pixel offset.
+		// Vscreen shift is required for that.
+		auto dstSeparationX = static_cast<int>(DestinationRect.w * tableWidthCoef);
+		auto scaledOffX = static_cast<int>(round(offset_x * fullscrn::ScaleX));
+		if (offset_x != 0 && scaledOffX == 0)
+			scaledOffX = Sign(offset_x);
+		auto scaledOffY = static_cast<int>(round(offset_y * fullscrn::ScaleY));
+		if (offset_y != 0 && scaledOffX == 0)
+			scaledOffY = Sign(offset_y);
+
+		auto dstBoardRect = SDL_Rect
+		{
+			DestinationRect.x + scaledOffX, DestinationRect.y + scaledOffY,
+			dstSeparationX, DestinationRect.h
+		};
+		auto dstSidebarRect = SDL_Rect
 		{
 			DestinationRect.x + dstSeparationX, DestinationRect.y,
 			DestinationRect.w - dstSeparationX, DestinationRect.h
@@ -593,5 +617,6 @@ void render::PresentVScreen()
 
 		SDL_RenderCopy(winmain::Renderer, vScreenTex, &srcBoardRect, &dstBoardRect);
 		SDL_RenderCopy(winmain::Renderer, vScreenTex, &srcSidebarRect, &dstSidebarRect);
+#endif
 	}
 }
