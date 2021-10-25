@@ -457,6 +457,12 @@ void gdrv::grtext_draw_ttext_in_box(LPCSTR text, int xOff, int yOff, int width, 
 	case Languages::Russian:
 		charset = RUSSIAN_CHARSET;
 		break;
+	case Languages::TraditionalChinese:
+		charset = CHINESEBIG5_CHARSET;
+		break;
+	case Languages::SimplifiedChinese:
+		charset = GB2312_CHARSET;
+		break;
 	}
 
 	// Default font does not scale well
