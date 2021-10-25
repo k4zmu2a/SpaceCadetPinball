@@ -35,6 +35,7 @@ public:
 
 	static void init(gdrv_bitmap8* bmp, float zMin, float zScaler, int width, int height);
 	static void uninit();
+	static void recreate_screen_texture();
 	static void update();
 	static void sprite_modified(render_sprite_type_struct* sprite);
 	static render_sprite_type_struct* create_sprite(VisualTypes visualType, gdrv_bitmap8* bmp,
