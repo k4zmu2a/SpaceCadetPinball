@@ -45,7 +45,7 @@ int TComponentGroup::Message(int code, float value)
 		if (value > 0.0f)
 			this->Timer = timer::set(value, this, NotifyTimerExpired);
 	}
-	else if (code <= 1007 || code > 1011 && code != 1020 && code != 1022)
+	else if (code <= 1007 || (code > 1011 && code != 1020 && code != 1022))
 	{
 		for (auto component : List)
 		{
