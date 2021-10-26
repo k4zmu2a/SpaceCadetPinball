@@ -438,10 +438,10 @@ int TFlipperEdge::is_ball_inside(float x, float y)
 	vector_type testPoint{};
 	float dx = RotOrigin.X - x;
 	float dy = RotOrigin.Y - y;
-	if ((A2.X - A1.X) * (y - A1.Y) - (A2.Y - A1.Y) * (x - A1.X) >= 0.0f &&
+	if (((A2.X - A1.X) * (y - A1.Y) - (A2.Y - A1.Y) * (x - A1.X) >= 0.0f &&
 		(B1.X - A2.X) * (y - A2.Y) - (B1.Y - A2.Y) * (x - A2.X) >= 0.0f &&
 		(B2.X - B1.X) * (y - B1.Y) - (B2.Y - B1.Y) * (x - B1.X) >= 0.0f &&
-		(A1.X - B2.X) * (y - B2.Y) - (A1.Y - B2.Y) * (x - B2.X) >= 0.0f ||
+		(A1.X - B2.X) * (y - B2.Y) - (A1.Y - B2.Y) * (x - B2.X) >= 0.0f) ||
 		dy * dy + dx * dx <= CirclebaseRadiusSq ||
 		(T1.Y - y) * (T1.Y - y) + (T1.X - x) * (T1.X - x) < CircleT1RadiusSq)
 	{
