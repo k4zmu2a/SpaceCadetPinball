@@ -6,7 +6,6 @@
 #include "options.h"
 #include "pinball.h"
 #include "winmain.h"
-#include <string>
 
 HPALETTE gdrv::palette_handle = nullptr;
 HINSTANCE gdrv::hinst;
@@ -415,7 +414,7 @@ void gdrv::copy_bitmap_w_transparency(gdrv_bitmap8* dstBmp, int width, int heigh
 }
 
 
-void gdrv::grtext_draw_ttext_in_box(LPCSTR text, int xOff, int yOff, int width, int height)
+void gdrv::grtext_draw_ttext_in_box(LPCWSTR text, int xOff, int yOff, int width, int height)
 {
 	// Original font was 16 points, used with lowest table resolution
 	static const int fontSizes[3] =
@@ -447,7 +446,7 @@ void gdrv::grtext_draw_ttext_in_box(LPCSTR text, int xOff, int yOff, int width, 
 			sscanf_s(fontColor, "%d %d %d", &grtext_red, &grtext_green, &grtext_blue);
 	}
 
-	std::string font;
+	const char* font;
 	switch (options::Options.Language)
 	{
 	case Languages::TraditionalChinese:
@@ -460,16 +459,15 @@ void gdrv::grtext_draw_ttext_in_box(LPCSTR text, int xOff, int yOff, int width, 
 		font = "Arial";
 	}
 
-	// DEFAULT_CHARSET in unicode build.
 	// Default font does not scale well
 	auto hNewFont = CreateFont(fontSize, 0, 0, 0, FW_DONTCARE, FALSE, FALSE, FALSE,
 	                           DEFAULT_CHARSET, OUT_DEFAULT_PRECIS, CLIP_DEFAULT_PRECIS, DEFAULT_QUALITY,
-	                           DEFAULT_PITCH | FF_SWISS, font.c_str());
+	                           DEFAULT_PITCH | FF_SWISS, font);
 	HFONT hOldFont = static_cast<HFONT>(SelectObject(dc, hNewFont));
 	int prevMode = SetBkMode(dc, TRANSPARENT);
 	COLORREF color = SetTextColor(dc, grtext_red | grtext_green << 8 | grtext_blue << 16);
 
-	DrawTextA(dc, text, lstrlenA(text), &rc, DT_NOPREFIX | DT_WORDBREAK);
+	DrawTextW(dc, text, lstrlenW(text), &rc, DT_NOPREFIX | DT_WORDBREAK);
 
 	SelectObject(dc, hOldFont);
 	DeleteObject(hNewFont);

@@ -635,16 +635,16 @@ void control::pbctrl_bdoor_controller(char key)
 	// Buffer large enough for longest cheat + null
 	static char cheatBuffer[11 + 1]{};
 	static char* bufferEnd = &cheatBuffer[11];
-	static const char* quotes[8]
+	static const wchar_t* quotes[8]
 	{
-		"Hey, is that a screen saver?",
-		"I guess it has been a good week",
-		"She may already be a glue bottle",
-		"If you don't come in Saturday,\n...\n",
-		"don't even bother coming in Sunday.",
-		"Tomorrow already sucks",
-		"I knew it worked too good to be right.",
-		"World's most expensive flippers"
+		L"Hey, is that a screen saver?",
+		L"I guess it has been a good week",
+		L"She may already be a glue bottle",
+		L"If you don't come in Saturday,\n...\n",
+		L"don't even bother coming in Sunday.",
+		L"Tomorrow already sucks",
+		L"I knew it worked too good to be right.",
+		L"World's most expensive flippers"
 	};
 
 	if (control_lite198_tag.Component->MessageField)
@@ -695,28 +695,28 @@ void control::table_add_extra_ball(float count)
 {
 	++TableG->ExtraBalls;
 	control_soundwave28_tag.Component->Play();
-	auto msg = pinball::get_rc_string(9, 0);
+	auto msg = pinball::get_rc_Wstring(9, 0);
 	control_info_text_box_tag.Component->Display(msg, count);
 }
 
 void control::table_set_bonus_hold()
 {
 	control_lite58_tag.Component->Message(19, 0.0);
-	control_info_text_box_tag.Component->Display(pinball::get_rc_string(52, 0), 2.0);
+	control_info_text_box_tag.Component->Display(pinball::get_rc_Wstring(52, 0), 2.0);
 }
 
 void control::table_set_bonus()
 {
 	TableG->ScoreSpecial2Flag = 1;
 	control_lite59_tag.Component->Message(9, 60.0);
-	control_info_text_box_tag.Component->Display(pinball::get_rc_string(4, 0), 2.0);
+	control_info_text_box_tag.Component->Display(pinball::get_rc_Wstring(4, 0), 2.0);
 }
 
 void control::table_set_jackpot()
 {
 	TableG->ScoreSpecial3Flag = 1;
 	control_lite60_tag.Component->Message(9, 60.0);
-	control_info_text_box_tag.Component->Display(pinball::get_rc_string(15, 0), 2.0);
+	control_info_text_box_tag.Component->Display(pinball::get_rc_Wstring(15, 0), 2.0);
 }
 
 void control::table_set_flag_lights()
@@ -724,12 +724,12 @@ void control::table_set_flag_lights()
 	control_lite20_tag.Component->Message(9, 60.0);
 	control_lite19_tag.Component->Message(9, 60.0);
 	control_lite61_tag.Component->Message(9, 60.0);
-	control_info_text_box_tag.Component->Display(pinball::get_rc_string(51, 0), 2.0);
+	control_info_text_box_tag.Component->Display(pinball::get_rc_Wstring(51, 0), 2.0);
 }
 
 void control::table_set_multiball()
 {
-	control_info_text_box_tag.Component->Display(pinball::get_rc_string(16, 0), 2.0);
+	control_info_text_box_tag.Component->Display(pinball::get_rc_Wstring(16, 0), 2.0);
 }
 
 void control::table_bump_ball_sink_lock()
@@ -743,7 +743,7 @@ void control::table_bump_ball_sink_lock()
 	{
 		TableG->BallLockedCounter = TableG->BallLockedCounter + 1;
 		control_soundwave44_tag.Component->Play();
-		control_info_text_box_tag.Component->Display(pinball::get_rc_string(1, 0), 2.0);
+		control_info_text_box_tag.Component->Display(pinball::get_rc_Wstring(1, 0), 2.0);
 		TableG->Plunger->Message(1016, 0.0);
 	}
 }
@@ -751,19 +751,19 @@ void control::table_bump_ball_sink_lock()
 void control::table_set_replay(float value)
 {
 	control_lite199_tag.Component->Message(19, 0.0);
-	control_info_text_box_tag.Component->Display(pinball::get_rc_string(0, 0), value);
+	control_info_text_box_tag.Component->Display(pinball::get_rc_Wstring(0, 0), value);
 }
 
 void control::cheat_bump_rank()
 {
-	char Buffer[64]{};
+	wchar_t Buffer[64]{};
 
 	auto rank = control_middle_circle_tag.Component->Message(37, 0.0);
 	if (rank < 9)
 	{
 		control_middle_circle_tag.Component->Message(41, 2.0f);
-		auto rankText = pinball::get_rc_string(RankRcArray[rank], 1);
-		snprintf(Buffer, sizeof Buffer, pinball::get_rc_string(83, 0), rankText);
+		auto rankText = pinball::get_rc_Wstring(RankRcArray[rank], 1);
+		wsprintfW(Buffer, pinball::get_rc_Wstring(83, 0), rankText);
 		control_mission_text_box_tag.Component->Display(Buffer, 8.0);
 		control_soundwave10_tag.Component->Play();
 	}
@@ -793,7 +793,7 @@ int control::SpecialAddScore(int score)
 
 int control::AddRankProgress(int rank)
 {
-	char Buffer[64];
+	wchar_t Buffer[64];
 	int result = 0;
 
 	control_lite16_tag.Component->Message(19, 0.0);
@@ -815,8 +815,8 @@ int control::AddRankProgress(int rank)
 		if (midActiveCount < 9)
 		{
 			middleCircle->Message(41, 5.0);
-			auto rankText = pinball::get_rc_string(RankRcArray[midActiveCount], 1);
-			sprintf_s(Buffer, pinball::get_rc_string(83, 0), rankText);
+			auto rankText = pinball::get_rc_Wstring(RankRcArray[midActiveCount], 1);
+			wsprintfW(Buffer, pinball::get_rc_Wstring(83, 0), rankText);
 			control_mission_text_box_tag.Component->Display(Buffer, 8.0);
 			control_soundwave10_tag.Component->Play();
 		}
@@ -932,7 +932,7 @@ void control::RightKickerGateControl(int code, TPinballComponent* caller)
 
 void control::DeploymentChuteToEscapeChuteOneWayControl(int code, TPinballComponent* caller)
 {
-	char Buffer[64];
+	wchar_t Buffer[64];
 	if (code == 63)
 	{
 		int count = control_skill_shot_lights_tag.Component->Message(37, 0.0);
@@ -940,7 +940,7 @@ void control::DeploymentChuteToEscapeChuteOneWayControl(int code, TPinballCompon
 		{
 			control_soundwave3_tag.Component->Play();
 			int score = TableG->AddScore(caller->get_scoring(count - 1));
-			sprintf_s(Buffer, pinball::get_rc_string(21, 0), score);
+			wsprintfW(Buffer, pinball::get_rc_Wstring(21, 0), score);
 			control_info_text_box_tag.Component->Display(Buffer, 2.0);
 			if (!light_on(&control_lite56_tag))
 			{
@@ -994,7 +994,7 @@ void control::DrainBallBlockerControl(int code, TPinballComponent* caller)
 void control::LaunchRampControl(int code, TPinballComponent* caller)
 {
 	TSound* sound;
-	char Buffer[64];
+	wchar_t Buffer[64];
 
 	if (code == 63)
 	{
@@ -1003,7 +1003,7 @@ void control::LaunchRampControl(int code, TPinballComponent* caller)
 		{
 			someFlag = 1;
 			int addedScore = SpecialAddScore(TableG->ScoreSpecial1);
-			sprintf_s(Buffer, pinball::get_rc_string(10, 0), addedScore);
+			wsprintfW(Buffer, pinball::get_rc_Wstring(10, 0), addedScore);
 			control_info_text_box_tag.Component->Display(Buffer, 2.0);
 		}
 		if (light_on(&control_lite55_tag))
@@ -1089,7 +1089,7 @@ void control::ReentryLanesRolloverControl(int code, TPinballComponent* caller)
 					if (control_bump1_tag.Component->BmpIndex < 3)
 					{
 						control_attack_bump_tag.Component->Message(12, 0.0);
-						control_info_text_box_tag.Component->Display(pinball::get_rc_string(5, 0), 2.0);
+						control_info_text_box_tag.Component->Display(pinball::get_rc_Wstring(5, 0), 2.0);
 					}
 					control_attack_bump_tag.Component->Message(48, 60.0);
 				}
@@ -1145,7 +1145,7 @@ void control::LaunchLanesRolloverControl(int code, TPinballComponent* caller)
 					if (control_bump5_tag.Component->BmpIndex < 3)
 					{
 						control_launch_bump_tag.Component->Message(12, 0.0);
-						control_info_text_box_tag.Component->Display(pinball::get_rc_string(6, 0), 2.0);
+						control_info_text_box_tag.Component->Display(pinball::get_rc_Wstring(6, 0), 2.0);
 					}
 					control_launch_bump_tag.Component->Message(48, 60.0);
 				}
@@ -1236,14 +1236,14 @@ void control::ReturnLaneRolloverControl(int code, TPinballComponent* caller)
 
 void control::BonusLaneRolloverControl(int code, TPinballComponent* caller)
 {
-	char Buffer[64];
+	wchar_t Buffer[64];
 
 	if (code == 63)
 	{
 		if (light_on(&control_lite16_tag))
 		{
 			int addedScore = SpecialAddScore(TableG->ScoreSpecial2);
-			sprintf_s(Buffer, pinball::get_rc_string(3, 0), addedScore);
+			wsprintfW(Buffer, pinball::get_rc_Wstring(3, 0), addedScore);
 			control_info_text_box_tag.Component->Display(Buffer, 2.0);
 			control_lite16_tag.Component->Message(20, 0.0);
 			control_soundwave50_1_tag.Component->Play();
@@ -1252,7 +1252,7 @@ void control::BonusLaneRolloverControl(int code, TPinballComponent* caller)
 		{
 			TableG->AddScore(caller->get_scoring(0));
 			control_soundwave25_tag.Component->Play();
-			control_info_text_box_tag.Component->Display(pinball::get_rc_string(44, 0), 2.0);
+			control_info_text_box_tag.Component->Display(pinball::get_rc_Wstring(44, 0), 2.0);
 		}
 		control_fuel_bargraph_tag.Component->Message(45, 11.0);
 	}
@@ -1269,7 +1269,7 @@ void control::FuelRollover1Control(int code, TPinballComponent* caller)
 		else
 		{
 			control_fuel_bargraph_tag.Component->Message(45, 1.0);
-			control_info_text_box_tag.Component->Display(pinball::get_rc_string(44, 0), 2.0);
+			control_info_text_box_tag.Component->Display(pinball::get_rc_Wstring(44, 0), 2.0);
 		}
 		TableG->AddScore(caller->get_scoring(0));
 	}
@@ -1286,7 +1286,7 @@ void control::FuelRollover2Control(int code, TPinballComponent* caller)
 		else
 		{
 			control_fuel_bargraph_tag.Component->Message(45, 3.0);
-			control_info_text_box_tag.Component->Display(pinball::get_rc_string(44, 0), 2.0);
+			control_info_text_box_tag.Component->Display(pinball::get_rc_Wstring(44, 0), 2.0);
 		}
 		TableG->AddScore(caller->get_scoring(0));
 	}
@@ -1303,7 +1303,7 @@ void control::FuelRollover3Control(int code, TPinballComponent* caller)
 		else
 		{
 			control_fuel_bargraph_tag.Component->Message(45, 5.0);
-			control_info_text_box_tag.Component->Display(pinball::get_rc_string(44, 0), 2.0);
+			control_info_text_box_tag.Component->Display(pinball::get_rc_Wstring(44, 0), 2.0);
 		}
 		TableG->AddScore(caller->get_scoring(0));
 	}
@@ -1320,7 +1320,7 @@ void control::FuelRollover4Control(int code, TPinballComponent* caller)
 		else
 		{
 			control_fuel_bargraph_tag.Component->Message(45, 7.0);
-			control_info_text_box_tag.Component->Display(pinball::get_rc_string(44, 0), 2.0);
+			control_info_text_box_tag.Component->Display(pinball::get_rc_Wstring(44, 0), 2.0);
 		}
 		TableG->AddScore(caller->get_scoring(0));
 	}
@@ -1337,7 +1337,7 @@ void control::FuelRollover5Control(int code, TPinballComponent* caller)
 		else
 		{
 			control_fuel_bargraph_tag.Component->Message(45, 9.0);
-			control_info_text_box_tag.Component->Display(pinball::get_rc_string(44, 0), 2.0);
+			control_info_text_box_tag.Component->Display(pinball::get_rc_Wstring(44, 0), 2.0);
 		}
 		TableG->AddScore(caller->get_scoring(0));
 	}
@@ -1354,7 +1354,7 @@ void control::FuelRollover6Control(int code, TPinballComponent* caller)
 		else
 		{
 			control_fuel_bargraph_tag.Component->Message(45, 11.0);
-			control_info_text_box_tag.Component->Display(pinball::get_rc_string(44, 0), 2.0);
+			control_info_text_box_tag.Component->Display(pinball::get_rc_Wstring(44, 0), 2.0);
 		}
 		TableG->AddScore(caller->get_scoring(0));
 	}
@@ -1410,7 +1410,7 @@ void control::WormHoleControl(int code, TPinballComponent* caller)
 				}
 				else
 				{
-					control_info_text_box_tag.Component->Display(pinball::get_rc_string(49, 0), 2.0);
+					control_info_text_box_tag.Component->Display(pinball::get_rc_Wstring(49, 0), 2.0);
 					table_set_replay(4.0);
 					TableG->AddScore(sink->get_scoring(1));
 					wormhole_tag_array2[sinkFlag]->GetComponent()->Message(16, sink->TimerTime);
@@ -1433,7 +1433,7 @@ void control::WormHoleControl(int code, TPinballComponent* caller)
 		wormhole_tag_array3[sinkFlag2]->GetComponent()->Message(11, static_cast<float>(2 - sinkFlag2));
 		wormhole_tag_array3[sinkFlag2]->GetComponent()->Message(16, sink->TimerTime);
 		wormhole_tag_array1[sinkFlag2]->GetComponent()->Message(56, sink->TimerTime);
-		control_info_text_box_tag.Component->Display(pinball::get_rc_string(49, 0), 2.0);
+		control_info_text_box_tag.Component->Display(pinball::get_rc_Wstring(49, 0), 2.0);
 	}
 }
 
@@ -1573,7 +1573,7 @@ void control::MultiplierLightGroupControl(int code, TPinballComponent* caller)
 		TableG->ScoreMultiplier = 4;
 		caller->Message(19, 0.0);
 		caller->Message(43, 30.0);
-		control_info_text_box_tag.Component->Display(pinball::get_rc_string(59, 0), 2.0);
+		control_info_text_box_tag.Component->Display(pinball::get_rc_Wstring(59, 0), 2.0);
 		break;
 	case 65:
 		TableG->ScoreMultiplier = 0;
@@ -1608,7 +1608,7 @@ void control::FuelSpotTargetControl(int code, TPinballComponent* caller)
 			control_top_circle_tgt_lights_tag.Component->Message(16, 2.0);
 			control_fuel_bargraph_tag.Component->Message(45, 11.0);
 			control_soundwave25_tag.Component->Play();
-			control_info_text_box_tag.Component->Display(pinball::get_rc_string(44, 0), 2.0);
+			control_info_text_box_tag.Component->Display(pinball::get_rc_Wstring(44, 0), 2.0);
 		}
 		else
 		{
@@ -1732,7 +1732,7 @@ void control::WormHoleDestinationControl(int code, TPinballComponent* caller)
 		if (!light_on(&control_lite110_tag))
 		{
 			control_lite110_tag.Component->Message(15, 3.0);
-			control_info_text_box_tag.Component->Display(pinball::get_rc_string(93, 0), 2.0);
+			control_info_text_box_tag.Component->Display(pinball::get_rc_Wstring(93, 0), 2.0);
 		}
 		TableG->AddScore(caller->get_scoring(0));
 		AdvanceWormHoleDestination(1);
@@ -1741,12 +1741,12 @@ void control::WormHoleDestinationControl(int code, TPinballComponent* caller)
 
 void control::BlackHoleKickoutControl(int code, TPinballComponent* caller)
 {
-	char Buffer[64];
+	wchar_t Buffer[64];
 
 	if (code == 63)
 	{
 		int addedScore = TableG->AddScore(caller->get_scoring(0));
-		sprintf_s(Buffer, pinball::get_rc_string(80, 0), addedScore);
+		wsprintfW(Buffer, pinball::get_rc_Wstring(80, 0), addedScore);
 		control_info_text_box_tag.Component->Display(Buffer, 2.0);
 		caller->Message(55, -1.0);
 	}
@@ -1767,14 +1767,14 @@ void control::FlagControl(int code, TPinballComponent* caller)
 
 void control::GravityWellKickoutControl(int code, TPinballComponent* caller)
 {
-	char Buffer[64];
+	wchar_t Buffer[64];
 
 	switch (code)
 	{
 	case 63:
 		{
 			auto addedScore = TableG->AddScore(caller->get_scoring(0));
-			sprintf_s(Buffer, pinball::get_rc_string(81, 0), addedScore);
+			wsprintfW(Buffer, pinball::get_rc_Wstring(81, 0), addedScore);
 			control_info_text_box_tag.Component->Display(Buffer, 2.0);
 			control_lite62_tag.Component->Message(20, 0.0);
 			caller->ActiveFlag = 0;
@@ -1787,11 +1787,11 @@ void control::GravityWellKickoutControl(int code, TPinballComponent* caller)
 			auto score = reinterpret_cast<size_t>(caller);
 			if (score)
 			{
-				sprintf_s(Buffer, pinball::get_rc_string(82, 0), score);
+				wsprintfW(Buffer, pinball::get_rc_Wstring(82, 0), score);
 			}
 			else
 			{
-				sprintf_s(Buffer, pinball::get_rc_string(45, 0));
+				wsprintfW(Buffer, pinball::get_rc_Wstring(45, 0));
 			}
 			control_info_text_box_tag.Component->Display(Buffer, 2.0);
 			control_lite62_tag.Component->Message(4, 0.0);
@@ -1919,7 +1919,7 @@ void control::MissionControl(int code, TPinballComponent* caller)
 			control_l_trek_lights_tag.Component->Message(20, 0.0);
 			control_r_trek_lights_tag.Component->Message(34, 0.0);
 			control_r_trek_lights_tag.Component->Message(20, 0.0);
-			control_mission_text_box_tag.Component->Display(pinball::get_rc_string(109, 0), 4.0);
+			control_mission_text_box_tag.Component->Display(pinball::get_rc_Wstring(109, 0), 4.0);
 			control_lite198_tag.Component->MessageField = 1;
 			MissionControl(66, nullptr);
 		}
@@ -1929,7 +1929,7 @@ void control::MissionControl(int code, TPinballComponent* caller)
 		{
 			if (control_fuel_bargraph_tag.Component->Message(37, 0.0) == 1)
 			{
-				control_mission_text_box_tag.Component->Display(pinball::get_rc_string(116, 0), 4.0);
+				control_mission_text_box_tag.Component->Display(pinball::get_rc_Wstring(116, 0), 4.0);
 			}
 			break;
 		}
@@ -2049,7 +2049,7 @@ void control::MissionControl(int code, TPinballComponent* caller)
 
 void control::HyperspaceKickOutControl(int code, TPinballComponent* caller)
 {
-	char Buffer[64];
+	wchar_t Buffer[64];
 
 	if (code != 63)
 		return;
@@ -2061,14 +2061,14 @@ void control::HyperspaceKickOutControl(int code, TPinballComponent* caller)
 	case 0:
 		{
 			auto addedScore = TableG->AddScore(caller->get_scoring(0));
-			sprintf_s(Buffer, pinball::get_rc_string(12, 0), addedScore);
+			wsprintfW(Buffer, pinball::get_rc_Wstring(12, 0), addedScore);
 			control_info_text_box_tag.Component->Display(Buffer, 2.0);
 			break;
 		}
 	case 1:
 		{
 			auto addedScore = SpecialAddScore(TableG->ScoreSpecial3);
-			sprintf_s(Buffer, pinball::get_rc_string(14, 0), addedScore);
+			wsprintfW(Buffer, pinball::get_rc_Wstring(14, 0), addedScore);
 			control_info_text_box_tag.Component->Display(Buffer, 2.0);
 			TableG->ScoreSpecial3 = 20000;
 			break;
@@ -2077,7 +2077,7 @@ void control::HyperspaceKickOutControl(int code, TPinballComponent* caller)
 		{
 			DrainBallBlockerControl(52, control_block1_tag.Component);
 			auto addedScore = TableG->AddScore(caller->get_scoring(2));
-			sprintf_s(Buffer, pinball::get_rc_string(2, 0), addedScore);
+			wsprintfW(Buffer, pinball::get_rc_Wstring(2, 0), addedScore);
 			control_info_text_box_tag.Component->Display(Buffer, 2.0);
 			break;
 		}
@@ -2085,7 +2085,7 @@ void control::HyperspaceKickOutControl(int code, TPinballComponent* caller)
 		{
 			ExtraBallLightControl(19, nullptr);
 			auto addedScore = TableG->AddScore(caller->get_scoring(3));
-			sprintf_s(Buffer, pinball::get_rc_string(8, 0), addedScore);
+			wsprintfW(Buffer, pinball::get_rc_Wstring(8, 0), addedScore);
 			control_info_text_box_tag.Component->Display(Buffer, 2.0);
 			break;
 		}
@@ -2105,7 +2105,7 @@ void control::HyperspaceKickOutControl(int code, TPinballComponent* caller)
 	{
 		someFlag = 1;
 		auto addedScore = SpecialAddScore(TableG->ScoreSpecial1);
-		sprintf_s(Buffer, pinball::get_rc_string(10, 0), addedScore);
+		wsprintfW(Buffer, pinball::get_rc_Wstring(10, 0), addedScore);
 		control_info_text_box_tag.Component->Display(Buffer, 2.0);
 	}
 	if (light_on(&control_lite26_tag))
@@ -2227,20 +2227,20 @@ void control::MedalTargetControl(int code, TPinballComponent* caller)
 		{
 			MedalLightGroupControl(41, control_bumber_target_lights_tag.Component);
 			int activeCount = control_bumber_target_lights_tag.Component->Message(37, 0.0) - 1;
-			char* text;
+			wchar_t* text;
 			switch (activeCount)
 			{
 			case 0:
 				TableG->AddScore(caller->get_scoring(1));
-				text = pinball::get_rc_string(53, 0);
+				text = pinball::get_rc_Wstring(53, 0);
 				break;
 			case 1:
 				TableG->AddScore(caller->get_scoring(2));
-				text = pinball::get_rc_string(54, 0);
+				text = pinball::get_rc_Wstring(54, 0);
 				break;
 			default:
 				table_add_extra_ball(4.0);
-				text = pinball::get_rc_string(55, 0);
+				text = pinball::get_rc_Wstring(55, 0);
 				break;
 			}
 			control_info_text_box_tag.Component->Display(text, 2.0);
@@ -2268,24 +2268,24 @@ void control::MultiplierTargetControl(int code, TPinballComponent* caller)
 			TableG->AddScore(caller->get_scoring(1));
 			MultiplierLightGroupControl(41, control_top_target_lights_tag.Component);
 			int activeCount = control_top_target_lights_tag.Component->Message(37, 0.0);
-			char* text;
+			wchar_t* text;
 			switch (activeCount)
 			{
 			case 1:
 				TableG->ScoreMultiplier = 1;
-				text = pinball::get_rc_string(56, 0);
+				text = pinball::get_rc_Wstring(56, 0);
 				break;
 			case 2:
 				TableG->ScoreMultiplier = 2;
-				text = pinball::get_rc_string(57, 0);
+				text = pinball::get_rc_Wstring(57, 0);
 				break;
 			case 3:
 				TableG->ScoreMultiplier = 3;
-				text = pinball::get_rc_string(58, 0);
+				text = pinball::get_rc_Wstring(58, 0);
 				break;
 			default:
 				TableG->ScoreMultiplier = 4;
-				text = pinball::get_rc_string(59, 0);
+				text = pinball::get_rc_Wstring(59, 0);
 				break;
 			}
 
@@ -2306,7 +2306,7 @@ void control::MultiplierTargetControl(int code, TPinballComponent* caller)
 
 void control::BallDrainControl(int code, TPinballComponent* caller)
 {
-	char Buffer[64];
+	wchar_t Buffer[64];
 
 	if (code == 60)
 	{
@@ -2317,7 +2317,7 @@ void control::BallDrainControl(int code, TPinballComponent* caller)
 			{
 				control_soundwave3_tag.Component->Play();
 				TableG->LightGroup->Message(16, 3.0);
-				char* v11 = pinball::get_rc_string(177, 0);
+				auto v11 = pinball::get_rc_Wstring(177, 0);
 				control_mission_text_box_tag.Component->Display(v11, -1.0);
 			}
 		}
@@ -2344,7 +2344,7 @@ void control::BallDrainControl(int code, TPinballComponent* caller)
 			{
 				control_soundwave27_tag.Component->Play();
 				control_lite200_tag.Component->Message(19, 0.0);
-				control_info_text_box_tag.Component->Display(pinball::get_rc_string(96, 0), -1.0);
+				control_info_text_box_tag.Component->Display(pinball::get_rc_Wstring(96, 0), -1.0);
 				control_soundwave59_tag.Component->Play();
 			}
 			else if (light_on(&control_lite199_tag))
@@ -2352,7 +2352,7 @@ void control::BallDrainControl(int code, TPinballComponent* caller)
 				control_soundwave27_tag.Component->Play();
 				control_lite199_tag.Component->Message(20, 0.0);
 				control_lite200_tag.Component->Message(19, 0.0);
-				control_info_text_box_tag.Component->Display(pinball::get_rc_string(95, 0), 2.0);
+				control_info_text_box_tag.Component->Display(pinball::get_rc_Wstring(95, 0), 2.0);
 				control_soundwave59_tag.Component->Play();
 				--TableG->UnknownP78;
 			}
@@ -2366,29 +2366,29 @@ void control::BallDrainControl(int code, TPinballComponent* caller)
 				if (!TableG->TiltLockFlag)
 				{
 					int time = SpecialAddScore(TableG->ScoreSpecial2);
-					sprintf_s(Buffer, pinball::get_rc_string(94, 0), time);
+					wsprintfW(Buffer, pinball::get_rc_Wstring(94, 0), time);
 					control_info_text_box_tag.Component->Display(Buffer, 2.0);
 				}
 				if (TableG->ExtraBalls)
 				{
 					TableG->ExtraBalls--;
 
-					char* shootAgainText;
+					wchar_t* shootAgainText;
 					control_soundwave59_tag.Component->Play();
 					switch (TableG->CurrentPlayer)
 					{
 					case 0:
-						shootAgainText = pinball::get_rc_string(97, 0);
+						shootAgainText = pinball::get_rc_Wstring(97, 0);
 						break;
 					case 1:
-						shootAgainText = pinball::get_rc_string(98, 0);
+						shootAgainText = pinball::get_rc_Wstring(98, 0);
 						break;
 					case 2:
-						shootAgainText = pinball::get_rc_string(99, 0);
+						shootAgainText = pinball::get_rc_Wstring(99, 0);
 						break;
 					default:
 					case 3:
-						shootAgainText = pinball::get_rc_string(100, 0);
+						shootAgainText = pinball::get_rc_Wstring(100, 0);
 						break;
 					}
 					control_info_text_box_tag.Component->Display(shootAgainText, -1.0);
@@ -2517,7 +2517,7 @@ void control::AlienMenaceController(int code, TPinballComponent* caller)
 		{
 			return;
 		}
-		control_mission_text_box_tag.Component->Display(pinball::get_rc_string(175, 0), -1.0);
+		control_mission_text_box_tag.Component->Display(pinball::get_rc_Wstring(175, 0), -1.0);
 		return;
 	}
 	if (control_bump1_tag.Component == caller)
@@ -2533,7 +2533,7 @@ void control::AlienMenaceController(int code, TPinballComponent* caller)
 
 void control::AlienMenacePartTwoController(int code, TPinballComponent* caller)
 {
-	char Buffer[64];
+	wchar_t Buffer[64];
 
 	if (code != 63)
 	{
@@ -2551,7 +2551,7 @@ void control::AlienMenacePartTwoController(int code, TPinballComponent* caller)
 		{
 			return;
 		}
-		sprintf_s(Buffer, pinball::get_rc_string(107, 0),
+		wsprintfW(Buffer, pinball::get_rc_Wstring(107, 0),
 		          control_lite56_tag.Component->MessageField);
 		control_mission_text_box_tag.Component->Display(Buffer, -1.0);
 		return;
@@ -2572,9 +2572,9 @@ void control::AlienMenacePartTwoController(int code, TPinballComponent* caller)
 			control_lite311_tag.Component->Message(20, 0.0);
 			control_lite198_tag.Component->MessageField = 1;
 			MissionControl(66, nullptr);
-			control_mission_text_box_tag.Component->Display(pinball::get_rc_string(130, 0), 4.0);
+			control_mission_text_box_tag.Component->Display(pinball::get_rc_Wstring(130, 0), 4.0);
 			int addedScore = SpecialAddScore(750000);
-			sprintf_s(Buffer, pinball::get_rc_string(78, 0), addedScore);
+			wsprintfW(Buffer, pinball::get_rc_Wstring(78, 0), addedScore);
 			if (!AddRankProgress(7))
 			{
 				control_mission_text_box_tag.Component->Display(Buffer, 8.0);
@@ -2586,7 +2586,7 @@ void control::AlienMenacePartTwoController(int code, TPinballComponent* caller)
 
 void control::BlackHoleThreatController(int code, TPinballComponent* caller)
 {
-	char Buffer[64];
+	wchar_t Buffer[64];
 
 	if (code == 11)
 	{
@@ -2604,9 +2604,9 @@ void control::BlackHoleThreatController(int code, TPinballComponent* caller)
 				control_lite314_tag.Component->Message(20, 0.0);
 			control_lite198_tag.Component->MessageField = 1;
 			MissionControl(66, nullptr);
-			control_mission_text_box_tag.Component->Display(pinball::get_rc_string(124, 0), 4.0);
+			control_mission_text_box_tag.Component->Display(pinball::get_rc_Wstring(124, 0), 4.0);
 			int addedScore = SpecialAddScore(1000000);
-			sprintf_s(Buffer, pinball::get_rc_string(78, 0), addedScore);
+			wsprintfW(Buffer, pinball::get_rc_Wstring(78, 0), addedScore);
 			if (!AddRankProgress(8))
 			{
 				control_mission_text_box_tag.Component->Display(Buffer, 8.0);
@@ -2626,7 +2626,7 @@ void control::BlackHoleThreatController(int code, TPinballComponent* caller)
 		}
 		if (control_bump5_tag.Component->BmpIndex)
 		{
-			control_mission_text_box_tag.Component->Display(pinball::get_rc_string(123, 0), -1.0);
+			control_mission_text_box_tag.Component->Display(pinball::get_rc_Wstring(123, 0), -1.0);
 			if (light_on(&control_lite316_tag))
 				control_lite316_tag.Component->Message(20, 0.0);
 			if (!light_on(&control_lite314_tag))
@@ -2636,7 +2636,7 @@ void control::BlackHoleThreatController(int code, TPinballComponent* caller)
 		}
 		else
 		{
-			control_mission_text_box_tag.Component->Display(pinball::get_rc_string(122, 0), -1.0);
+			control_mission_text_box_tag.Component->Display(pinball::get_rc_Wstring(122, 0), -1.0);
 			if (light_on(&control_lite314_tag))
 				control_lite314_tag.Component->Message(20, 0.0);
 			if (!light_on(&control_lite316_tag))
@@ -2649,7 +2649,7 @@ void control::BlackHoleThreatController(int code, TPinballComponent* caller)
 
 void control::BugHuntController(int code, TPinballComponent* caller)
 {
-	char Buffer[64];
+	wchar_t Buffer[64];
 
 	if (code != 63)
 	{
@@ -2688,7 +2688,7 @@ void control::BugHuntController(int code, TPinballComponent* caller)
 		{
 			return;
 		}
-		sprintf_s(Buffer, pinball::get_rc_string(125, 0), control_lite56_tag.Component->MessageField);
+		wsprintfW(Buffer, pinball::get_rc_Wstring(125, 0), control_lite56_tag.Component->MessageField);
 		control_mission_text_box_tag.Component->Display(Buffer, -1.0);
 		return;
 	}
@@ -2729,9 +2729,9 @@ void control::BugHuntController(int code, TPinballComponent* caller)
 			control_lite319_tag.Component->Message(20, 0.0);
 			control_lite198_tag.Component->MessageField = 1;
 			MissionControl(66, nullptr);
-			control_mission_text_box_tag.Component->Display(pinball::get_rc_string(126, 0), 4.0);
+			control_mission_text_box_tag.Component->Display(pinball::get_rc_Wstring(126, 0), 4.0);
 			int addedScore = SpecialAddScore(750000);
-			sprintf_s(Buffer, pinball::get_rc_string(78, 0), addedScore);
+			wsprintfW(Buffer, pinball::get_rc_Wstring(78, 0), addedScore);
 			if (!AddRankProgress(7))
 			{
 				control_mission_text_box_tag.Component->Display(Buffer, 8.0);
@@ -2743,7 +2743,7 @@ void control::BugHuntController(int code, TPinballComponent* caller)
 
 void control::CosmicPlagueController(int code, TPinballComponent* caller)
 {
-	char Buffer[64];
+	wchar_t Buffer[64];
 
 	if (code != 63)
 	{
@@ -2759,7 +2759,7 @@ void control::CosmicPlagueController(int code, TPinballComponent* caller)
 		{
 			return;
 		}
-		sprintf_s(Buffer, pinball::get_rc_string(139, 0), control_lite56_tag.Component->MessageField);
+		wsprintfW(Buffer, pinball::get_rc_Wstring(139, 0), control_lite56_tag.Component->MessageField);
 		control_mission_text_box_tag.Component->Display(Buffer, -1.0);
 		return;
 	}
@@ -2784,7 +2784,7 @@ void control::CosmicPlagueController(int code, TPinballComponent* caller)
 
 void control::CosmicPlaguePartTwoController(int code, TPinballComponent* caller)
 {
-	char Buffer[64];
+	wchar_t Buffer[64];
 
 	if (code != 63)
 	{
@@ -2796,7 +2796,7 @@ void control::CosmicPlaguePartTwoController(int code, TPinballComponent* caller)
 		{
 			return;
 		}
-		control_mission_text_box_tag.Component->Display(pinball::get_rc_string(140, 0), -1.0);
+		control_mission_text_box_tag.Component->Display(pinball::get_rc_Wstring(140, 0), -1.0);
 		return;
 	}
 	if (control_roll9_tag.Component == caller)
@@ -2804,9 +2804,9 @@ void control::CosmicPlaguePartTwoController(int code, TPinballComponent* caller)
 		control_lite310_tag.Component->Message(20, 0.0);
 		control_lite198_tag.Component->MessageField = 1;
 		MissionControl(66, nullptr);
-		control_mission_text_box_tag.Component->Display(pinball::get_rc_string(141, 0), 4.0);
+		control_mission_text_box_tag.Component->Display(pinball::get_rc_Wstring(141, 0), 4.0);
 		int addedScore = SpecialAddScore(1750000);
-		sprintf_s(Buffer, pinball::get_rc_string(78, 0), addedScore);
+		wsprintfW(Buffer, pinball::get_rc_Wstring(78, 0), addedScore);
 		if (!AddRankProgress(11))
 		{
 			control_mission_text_box_tag.Component->Display(Buffer, 8.0);
@@ -2817,7 +2817,7 @@ void control::CosmicPlaguePartTwoController(int code, TPinballComponent* caller)
 
 void control::DoomsdayMachineController(int code, TPinballComponent* caller)
 {
-	char Buffer[64];
+	wchar_t Buffer[64];
 
 	if (code != 63)
 	{
@@ -2831,7 +2831,7 @@ void control::DoomsdayMachineController(int code, TPinballComponent* caller)
 		{
 			return;
 		}
-		sprintf_s(Buffer, pinball::get_rc_string(137, 0), control_lite56_tag.Component->MessageField);
+		wsprintfW(Buffer, pinball::get_rc_Wstring(137, 0), control_lite56_tag.Component->MessageField);
 		control_mission_text_box_tag.Component->Display(Buffer, -1.0);
 		return;
 	}
@@ -2848,9 +2848,9 @@ void control::DoomsdayMachineController(int code, TPinballComponent* caller)
 			control_lite320_tag.Component->Message(20, 0.0);
 			control_lite198_tag.Component->MessageField = 1;
 			MissionControl(66, nullptr);
-			control_mission_text_box_tag.Component->Display(pinball::get_rc_string(138, 0), 4.0);
+			control_mission_text_box_tag.Component->Display(pinball::get_rc_Wstring(138, 0), 4.0);
 			int addedScore = SpecialAddScore(1250000);
-			sprintf_s(Buffer, pinball::get_rc_string(78, 0), addedScore);
+			wsprintfW(Buffer, pinball::get_rc_Wstring(78, 0), addedScore);
 			if (!AddRankProgress(9))
 			{
 				control_mission_text_box_tag.Component->Display(Buffer, 8.0);
@@ -2862,7 +2862,7 @@ void control::DoomsdayMachineController(int code, TPinballComponent* caller)
 
 void control::GameoverController(int code, TPinballComponent* caller)
 {
-	char Buffer[128];
+	wchar_t Buffer[128];
 
 	if (code == 66)
 	{
@@ -2884,27 +2884,27 @@ void control::GameoverController(int code, TPinballComponent* caller)
 		auto nextPlayerId = playerId + 1;
 		if (playerScore >= 0)
 		{
-			const char* playerNScoreText = nullptr;
+			const wchar_t* playerNScoreText = nullptr;
 			switch (nextPlayerId)
 			{
 			case 1:
-				playerNScoreText = pinball::get_rc_string(180, 0);
+				playerNScoreText = pinball::get_rc_Wstring(180, 0);
 				break;
 			case 2:
-				playerNScoreText = pinball::get_rc_string(181, 0);
+				playerNScoreText = pinball::get_rc_Wstring(181, 0);
 				break;
 			case 3:
-				playerNScoreText = pinball::get_rc_string(182, 0);
+				playerNScoreText = pinball::get_rc_Wstring(182, 0);
 				break;
 			case 4:
-				playerNScoreText = pinball::get_rc_string(183, 0);
+				playerNScoreText = pinball::get_rc_Wstring(183, 0);
 				break;
 			default:
 				break;
 			}
 			if (playerNScoreText != nullptr)
 			{
-				sprintf_s(Buffer, playerNScoreText, playerScore);
+				wsprintfW(Buffer, playerNScoreText, playerScore);
 				control_mission_text_box_tag.Component->Display(Buffer, 3.0);
 				int msgField = nextPlayerId == TableG->PlayerCount ? 0x200 : nextPlayerId | 0x100;
 				control_mission_text_box_tag.Component->MessageField = msgField;
@@ -2921,30 +2921,30 @@ void control::GameoverController(int code, TPinballComponent* caller)
 		auto nextHidhscoreId = highscoreId + 1;
 		if (highScore > 0)
 		{
-			const char* highScoreNText = nullptr;
+			const wchar_t* highScoreNText = nullptr;
 			switch (nextHidhscoreId)
 			{
 			case 1:
-				highScoreNText = pinball::get_rc_string(184, 0);
+				highScoreNText = pinball::get_rc_Wstring(184, 0);
 				break;
 			case 2:
-				highScoreNText = pinball::get_rc_string(185, 0);
+				highScoreNText = pinball::get_rc_Wstring(185, 0);
 				break;
 			case 3:
-				highScoreNText = pinball::get_rc_string(186, 0);
+				highScoreNText = pinball::get_rc_Wstring(186, 0);
 				break;
 			case 4:
-				highScoreNText = pinball::get_rc_string(187, 0);
+				highScoreNText = pinball::get_rc_Wstring(187, 0);
 				break;
 			case 5:
-				highScoreNText = pinball::get_rc_string(188, 0);
+				highScoreNText = pinball::get_rc_Wstring(188, 0);
 				break;
 			default:
 				break;
 			}
 			if (highScoreNText != nullptr)
 			{
-				sprintf_s(Buffer, highScoreNText, highScore);
+				wsprintfW(Buffer, highScoreNText, highScore);
 				control_mission_text_box_tag.Component->Display(Buffer, 3.0);
 				int msgField = nextHidhscoreId == 5 ? 0 : nextHidhscoreId | 0x200;
 				control_mission_text_box_tag.Component->MessageField = msgField;
@@ -2954,12 +2954,12 @@ void control::GameoverController(int code, TPinballComponent* caller)
 	}
 
 	control_mission_text_box_tag.Component->MessageField = 0x100;
-	control_mission_text_box_tag.Component->Display(pinball::get_rc_string(172, 0), 10.0);
+	control_mission_text_box_tag.Component->Display(pinball::get_rc_Wstring(172, 0), 10.0);
 }
 
 void control::LaunchTrainingController(int code, TPinballComponent* caller)
 {
-	char Buffer[64];
+	wchar_t Buffer[64];
 
 	if (code != 63)
 	{
@@ -2972,7 +2972,7 @@ void control::LaunchTrainingController(int code, TPinballComponent* caller)
 		{
 			return;
 		}
-		sprintf_s(Buffer, pinball::get_rc_string(110, 0), control_lite56_tag.Component->MessageField);
+		wsprintfW(Buffer, pinball::get_rc_Wstring(110, 0), control_lite56_tag.Component->MessageField);
 		control_mission_text_box_tag.Component->Display(Buffer, -1.0);
 		return;
 	}
@@ -2988,9 +2988,9 @@ void control::LaunchTrainingController(int code, TPinballComponent* caller)
 			control_lite317_tag.Component->Message(20, 0.0);
 			control_lite198_tag.Component->MessageField = 1;
 			MissionControl(66, nullptr);
-			control_mission_text_box_tag.Component->Display(pinball::get_rc_string(111, 0), 4.0);
+			control_mission_text_box_tag.Component->Display(pinball::get_rc_Wstring(111, 0), 4.0);
 			int addedScore = SpecialAddScore(500000);
-			sprintf_s(Buffer, pinball::get_rc_string(78, 0), addedScore);
+			wsprintfW(Buffer, pinball::get_rc_Wstring(78, 0), addedScore);
 			if (!AddRankProgress(6))
 			{
 				control_mission_text_box_tag.Component->Display(Buffer, 8.0);
@@ -3002,7 +3002,7 @@ void control::LaunchTrainingController(int code, TPinballComponent* caller)
 
 void control::MaelstromController(int code, TPinballComponent* caller)
 {
-	char Buffer[64];
+	wchar_t Buffer[64];
 
 	if (code != 63)
 	{
@@ -3017,7 +3017,7 @@ void control::MaelstromController(int code, TPinballComponent* caller)
 		{
 			return;
 		}
-		sprintf_s(Buffer, pinball::get_rc_string(148, 0), control_lite56_tag.Component->MessageField);
+		wsprintfW(Buffer, pinball::get_rc_Wstring(148, 0), control_lite56_tag.Component->MessageField);
 		control_mission_text_box_tag.Component->Display(Buffer, -1.0);
 		return;
 	}
@@ -3049,7 +3049,7 @@ void control::MaelstromController(int code, TPinballComponent* caller)
 
 void control::MaelstromPartEightController(int code, TPinballComponent* caller)
 {
-	char Buffer[64];
+	wchar_t Buffer[64];
 
 	if (code != 63)
 	{
@@ -3062,7 +3062,7 @@ void control::MaelstromPartEightController(int code, TPinballComponent* caller)
 		{
 			return;
 		}
-		control_mission_text_box_tag.Component->Display(pinball::get_rc_string(155, 0), -1.0);
+		control_mission_text_box_tag.Component->Display(pinball::get_rc_Wstring(155, 0), -1.0);
 		return;
 	}
 	if (control_kickout2_tag.Component == caller)
@@ -3072,8 +3072,8 @@ void control::MaelstromPartEightController(int code, TPinballComponent* caller)
 		control_lite198_tag.Component->MessageField = 1;
 		MissionControl(66, nullptr);
 		int addedScore = SpecialAddScore(5000000);
-		sprintf_s(Buffer, pinball::get_rc_string(78, 0), addedScore);
-		control_info_text_box_tag.Component->Display(pinball::get_rc_string(48, 0), 4.0);
+		wsprintfW(Buffer, pinball::get_rc_Wstring(78, 0), addedScore);
+		control_info_text_box_tag.Component->Display(pinball::get_rc_Wstring(48, 0), 4.0);
 		if (!AddRankProgress(18))
 		{
 			control_mission_text_box_tag.Component->Display(Buffer, 8.0);
@@ -3094,7 +3094,7 @@ void control::MaelstromPartFiveController(int code, TPinballComponent* caller)
 		{
 			return;
 		}
-		control_mission_text_box_tag.Component->Display(pinball::get_rc_string(152, 0), -1.0);
+		control_mission_text_box_tag.Component->Display(pinball::get_rc_Wstring(152, 0), -1.0);
 		return;
 	}
 	if (control_ramp_tag.Component == caller)
@@ -3118,7 +3118,7 @@ void control::MaelstromPartFourController(int code, TPinballComponent* caller)
 		{
 			return;
 		}
-		control_mission_text_box_tag.Component->Display(pinball::get_rc_string(151, 0), -1.0);
+		control_mission_text_box_tag.Component->Display(pinball::get_rc_Wstring(151, 0), -1.0);
 		return;
 	}
 	if (control_roll184_tag.Component == caller)
@@ -3144,7 +3144,7 @@ void control::MaelstromPartSevenController(int code, TPinballComponent* caller)
 		{
 			return;
 		}
-		control_mission_text_box_tag.Component->Display(pinball::get_rc_string(154, 0), -1.0);
+		control_mission_text_box_tag.Component->Display(pinball::get_rc_Wstring(154, 0), -1.0);
 		return;
 	}
 	if (control_sink1_tag.Component == caller
@@ -3171,7 +3171,7 @@ void control::MaelstromPartSixController(int code, TPinballComponent* caller)
 		{
 			return;
 		}
-		control_mission_text_box_tag.Component->Display(pinball::get_rc_string(153, 0), -1.0);
+		control_mission_text_box_tag.Component->Display(pinball::get_rc_Wstring(153, 0), -1.0);
 		return;
 	}
 	if (control_flag1_tag.Component == caller || control_flag2_tag.Component == caller)
@@ -3187,7 +3187,7 @@ void control::MaelstromPartSixController(int code, TPinballComponent* caller)
 
 void control::MaelstromPartThreeController(int code, TPinballComponent* caller)
 {
-	char Buffer[64];
+	wchar_t Buffer[64];
 
 	if (code != 63)
 	{
@@ -3205,7 +3205,7 @@ void control::MaelstromPartThreeController(int code, TPinballComponent* caller)
 		{
 			return;
 		}
-		sprintf_s(Buffer, pinball::get_rc_string(150, 0), control_lite56_tag.Component->MessageField);
+		wsprintfW(Buffer, pinball::get_rc_Wstring(150, 0), control_lite56_tag.Component->MessageField);
 		control_mission_text_box_tag.Component->Display(Buffer, -1.0);
 		return;
 	}
@@ -3242,7 +3242,7 @@ void control::MaelstromPartThreeController(int code, TPinballComponent* caller)
 
 void control::MaelstromPartTwoController(int code, TPinballComponent* caller)
 {
-	char Buffer[64];
+	wchar_t Buffer[64];
 
 	if (code != 63)
 	{
@@ -3259,7 +3259,7 @@ void control::MaelstromPartTwoController(int code, TPinballComponent* caller)
 		{
 			return;
 		}
-		sprintf_s(Buffer, pinball::get_rc_string(149, 0), control_lite56_tag.Component->MessageField);
+		wsprintfW(Buffer, pinball::get_rc_Wstring(149, 0), control_lite56_tag.Component->MessageField);
 		control_mission_text_box_tag.Component->Display(Buffer, -1.0);
 		return;
 	}
@@ -3297,7 +3297,7 @@ void control::MaelstromPartTwoController(int code, TPinballComponent* caller)
 
 void control::PracticeMissionController(int code, TPinballComponent* caller)
 {
-	char Buffer[64];
+	wchar_t Buffer[64];
 
 	if (code != 63)
 	{
@@ -3311,7 +3311,7 @@ void control::PracticeMissionController(int code, TPinballComponent* caller)
 		{
 			return;
 		}
-		sprintf_s(Buffer, pinball::get_rc_string(107, 0), control_lite56_tag.Component->MessageField);
+		wsprintfW(Buffer, pinball::get_rc_Wstring(107, 0), control_lite56_tag.Component->MessageField);
 		control_mission_text_box_tag.Component->Display(Buffer, -1.0);
 		return;
 	}
@@ -3332,9 +3332,9 @@ void control::PracticeMissionController(int code, TPinballComponent* caller)
 			control_lite311_tag.Component->Message(20, 0.0);
 			control_lite198_tag.Component->MessageField = 1;
 			MissionControl(66, nullptr);
-			control_mission_text_box_tag.Component->Display(pinball::get_rc_string(108, 0), 4.0);
+			control_mission_text_box_tag.Component->Display(pinball::get_rc_Wstring(108, 0), 4.0);
 			int addedScore = SpecialAddScore(500000);
-			sprintf_s(Buffer, pinball::get_rc_string(78, 0), addedScore);
+			wsprintfW(Buffer, pinball::get_rc_Wstring(78, 0), addedScore);
 			if (!AddRankProgress(6))
 			{
 				control_mission_text_box_tag.Component->Display(Buffer, 8.0);
@@ -3346,7 +3346,7 @@ void control::PracticeMissionController(int code, TPinballComponent* caller)
 
 void control::ReconnaissanceController(int code, TPinballComponent* caller)
 {
-	char Buffer[64];
+	wchar_t Buffer[64];
 
 	if (code != 63)
 	{
@@ -3364,7 +3364,7 @@ void control::ReconnaissanceController(int code, TPinballComponent* caller)
 		{
 			return;
 		}
-		sprintf_s(Buffer, pinball::get_rc_string(134, 0), control_lite56_tag.Component->MessageField);
+		wsprintfW(Buffer, pinball::get_rc_Wstring(134, 0), control_lite56_tag.Component->MessageField);
 		control_mission_text_box_tag.Component->Display(Buffer, -1.0);
 		return;
 	}
@@ -3395,9 +3395,9 @@ void control::ReconnaissanceController(int code, TPinballComponent* caller)
 			control_lite321_tag.Component->Message(20, 0.0);
 			control_lite198_tag.Component->MessageField = 1;
 			MissionControl(66, nullptr);
-			control_mission_text_box_tag.Component->Display(pinball::get_rc_string(136, 0), 4.0);
+			control_mission_text_box_tag.Component->Display(pinball::get_rc_Wstring(136, 0), 4.0);
 			int addedScore = SpecialAddScore(1250000);
-			sprintf_s(Buffer, pinball::get_rc_string(78, 0), addedScore);
+			wsprintfW(Buffer, pinball::get_rc_Wstring(78, 0), addedScore);
 			if (!AddRankProgress(9))
 			{
 				control_mission_text_box_tag.Component->Display(Buffer, 8.0);
@@ -3409,7 +3409,7 @@ void control::ReconnaissanceController(int code, TPinballComponent* caller)
 
 void control::ReentryTrainingController(int code, TPinballComponent* caller)
 {
-	char Buffer[64];
+	wchar_t Buffer[64];
 
 	if (code != 63)
 	{
@@ -3428,7 +3428,7 @@ void control::ReentryTrainingController(int code, TPinballComponent* caller)
 		{
 			return;
 		}
-		sprintf_s(Buffer, pinball::get_rc_string(112, 0), control_lite56_tag.Component->MessageField);
+		wsprintfW(Buffer, pinball::get_rc_Wstring(112, 0), control_lite56_tag.Component->MessageField);
 		control_mission_text_box_tag.Component->Display(Buffer, -1.0);
 		return;
 	}
@@ -3446,9 +3446,9 @@ void control::ReentryTrainingController(int code, TPinballComponent* caller)
 			control_lite307_tag.Component->Message(20, 0.0);
 			control_lite198_tag.Component->MessageField = 1;
 			MissionControl(66, nullptr);
-			control_mission_text_box_tag.Component->Display(pinball::get_rc_string(113, 0), 4.0);
+			control_mission_text_box_tag.Component->Display(pinball::get_rc_Wstring(113, 0), 4.0);
 			int addedScore = SpecialAddScore(500000);
-			sprintf_s(Buffer, pinball::get_rc_string(78, 0), addedScore);
+			wsprintfW(Buffer, pinball::get_rc_Wstring(78, 0), addedScore);
 			if (!AddRankProgress(6))
 			{
 				control_mission_text_box_tag.Component->Display(Buffer, 8.0);
@@ -3460,7 +3460,7 @@ void control::ReentryTrainingController(int code, TPinballComponent* caller)
 
 void control::RescueMissionController(int code, TPinballComponent* caller)
 {
-	char Buffer[64];
+	wchar_t Buffer[64];
 
 	switch (code)
 	{
@@ -3487,9 +3487,9 @@ void control::RescueMissionController(int code, TPinballComponent* caller)
 				control_lite304_tag.Component->Message(20, 0.0);
 			control_lite198_tag.Component->MessageField = 1;
 			MissionControl(66, nullptr);
-			control_mission_text_box_tag.Component->Display(pinball::get_rc_string(129, 0), 4.0);
+			control_mission_text_box_tag.Component->Display(pinball::get_rc_Wstring(129, 0), 4.0);
 			int addedScore = SpecialAddScore(750000);
-			sprintf_s(Buffer, pinball::get_rc_string(78, 0), addedScore);
+			wsprintfW(Buffer, pinball::get_rc_Wstring(78, 0), addedScore);
 			if (!AddRankProgress(7))
 			{
 				control_mission_text_box_tag.Component->Display(Buffer, 8.0);
@@ -3505,7 +3505,7 @@ void control::RescueMissionController(int code, TPinballComponent* caller)
 	case 67:
 		if (light_on(&control_lite20_tag))
 		{
-			control_mission_text_box_tag.Component->Display(pinball::get_rc_string(128, 0), -1.0);
+			control_mission_text_box_tag.Component->Display(pinball::get_rc_Wstring(128, 0), -1.0);
 			if (light_on(&control_lite303_tag))
 				control_lite303_tag.Component->Message(20, 0.0);
 			if (!light_on(&control_lite304_tag))
@@ -3515,7 +3515,7 @@ void control::RescueMissionController(int code, TPinballComponent* caller)
 		}
 		else
 		{
-			control_mission_text_box_tag.Component->Display(pinball::get_rc_string(127, 0), -1.0);
+			control_mission_text_box_tag.Component->Display(pinball::get_rc_Wstring(127, 0), -1.0);
 			if (light_on(&control_lite304_tag))
 				control_lite304_tag.Component->Message(20, 0.0);
 			if (!light_on(&control_lite303_tag))
@@ -3531,7 +3531,7 @@ void control::RescueMissionController(int code, TPinballComponent* caller)
 
 void control::SatelliteController(int code, TPinballComponent* caller)
 {
-	char Buffer[64];
+	wchar_t Buffer[64];
 
 	if (code != 63)
 	{
@@ -3544,7 +3544,7 @@ void control::SatelliteController(int code, TPinballComponent* caller)
 		{
 			return;
 		}
-		sprintf_s(Buffer, pinball::get_rc_string(132, 0), control_lite56_tag.Component->MessageField);
+		wsprintfW(Buffer, pinball::get_rc_Wstring(132, 0), control_lite56_tag.Component->MessageField);
 		control_mission_text_box_tag.Component->Display(Buffer, -1.0);
 		return;
 	}
@@ -3560,9 +3560,9 @@ void control::SatelliteController(int code, TPinballComponent* caller)
 			control_lite308_tag.Component->Message(20, 0.0);
 			control_lite198_tag.Component->MessageField = 1;
 			MissionControl(66, nullptr);
-			control_mission_text_box_tag.Component->Display(pinball::get_rc_string(133, 0), 4.0);
+			control_mission_text_box_tag.Component->Display(pinball::get_rc_Wstring(133, 0), 4.0);
 			int addedScore = SpecialAddScore(1250000);
-			sprintf_s(Buffer, pinball::get_rc_string(78, 0), addedScore);
+			wsprintfW(Buffer, pinball::get_rc_Wstring(78, 0), addedScore);
 			if (!AddRankProgress(9))
 			{
 				control_mission_text_box_tag.Component->Display(Buffer, 8.0);
@@ -3574,7 +3574,7 @@ void control::SatelliteController(int code, TPinballComponent* caller)
 
 void control::ScienceMissionController(int code, TPinballComponent* caller)
 {
-	char Buffer[64];
+	wchar_t Buffer[64];
 
 	if (code != 63)
 	{
@@ -3607,7 +3607,7 @@ void control::ScienceMissionController(int code, TPinballComponent* caller)
 		{
 			return;
 		}
-		sprintf_s(Buffer, pinball::get_rc_string(114, 0), control_lite56_tag.Component->MessageField);
+		wsprintfW(Buffer, pinball::get_rc_Wstring(114, 0), control_lite56_tag.Component->MessageField);
 		control_mission_text_box_tag.Component->Display(Buffer, -1.0);
 		return;
 	}
@@ -3633,9 +3633,9 @@ void control::ScienceMissionController(int code, TPinballComponent* caller)
 			control_lite315_tag.Component->Message(20, 0.0);
 			control_lite198_tag.Component->MessageField = 1;
 			MissionControl(66, nullptr);
-			control_mission_text_box_tag.Component->Display(pinball::get_rc_string(115, 0), 4.0);
+			control_mission_text_box_tag.Component->Display(pinball::get_rc_Wstring(115, 0), 4.0);
 			int addedScore = SpecialAddScore(750000);
-			sprintf_s(Buffer, pinball::get_rc_string(78, 0), addedScore);
+			wsprintfW(Buffer, pinball::get_rc_Wstring(78, 0), addedScore);
 			if (!AddRankProgress(9))
 			{
 				control_mission_text_box_tag.Component->Display(Buffer, 8.0);
@@ -3647,7 +3647,7 @@ void control::ScienceMissionController(int code, TPinballComponent* caller)
 
 void control::SecretMissionGreenController(int code, TPinballComponent* caller)
 {
-	char Buffer[64];
+	wchar_t Buffer[64];
 
 	if (code != 63)
 	{
@@ -3662,7 +3662,7 @@ void control::SecretMissionGreenController(int code, TPinballComponent* caller)
 		{
 			return;
 		}
-		char* v2 = pinball::get_rc_string(144, 0);
+		auto v2 = pinball::get_rc_Wstring(144, 0);
 		control_mission_text_box_tag.Component->Display(v2, -1.0);
 		return;
 	}
@@ -3670,9 +3670,9 @@ void control::SecretMissionGreenController(int code, TPinballComponent* caller)
 	{
 		control_lite198_tag.Component->MessageField = 1;
 		MissionControl(66, nullptr);
-		control_mission_text_box_tag.Component->Display(pinball::get_rc_string(145, 0), 4.0);
+		control_mission_text_box_tag.Component->Display(pinball::get_rc_Wstring(145, 0), 4.0);
 		int addedScore = SpecialAddScore(1500000);
-		sprintf_s(Buffer, pinball::get_rc_string(78, 0), addedScore);
+		wsprintfW(Buffer, pinball::get_rc_Wstring(78, 0), addedScore);
 		if (!AddRankProgress(10))
 		{
 			control_mission_text_box_tag.Component->Display(Buffer, 8.0);
@@ -3696,7 +3696,7 @@ void control::SecretMissionRedController(int code, TPinballComponent* caller)
 		{
 			return;
 		}
-		control_mission_text_box_tag.Component->Display(pinball::get_rc_string(143, 0), -1.0);
+		control_mission_text_box_tag.Component->Display(pinball::get_rc_Wstring(143, 0), -1.0);
 		return;
 	}
 	if (control_sink1_tag.Component == caller)
@@ -3725,7 +3725,7 @@ void control::SecretMissionYellowController(int code, TPinballComponent* caller)
 		{
 			return;
 		}
-		control_mission_text_box_tag.Component->Display(pinball::get_rc_string(142, 0), -1.0);
+		control_mission_text_box_tag.Component->Display(pinball::get_rc_Wstring(142, 0), -1.0);
 		return;
 	}
 	if (control_sink3_tag.Component == caller)
@@ -3737,7 +3737,7 @@ void control::SecretMissionYellowController(int code, TPinballComponent* caller)
 
 void control::SelectMissionController(int code, TPinballComponent* caller)
 {
-	char Buffer[128];
+	wchar_t Buffer[128];
 
 	switch (code)
 	{
@@ -3775,7 +3775,7 @@ void control::SelectMissionController(int code, TPinballComponent* caller)
 					MissionControl(66, nullptr);
 					int addedScore = SpecialAddScore(
 						mission_select_scores[control_lite56_tag.Component->MessageField - 2]);
-					sprintf_s(Buffer, pinball::get_rc_string(77, 0), addedScore);
+					wsprintfW(Buffer, pinball::get_rc_Wstring(77, 0), addedScore);
 					control_mission_text_box_tag.Component->Display(Buffer, 4.0);
 				}
 				return;
@@ -3913,7 +3913,7 @@ void control::SelectMissionController(int code, TPinballComponent* caller)
 		{
 			auto missionText = pinball::
 				get_rc_string(MissionRcArray[control_lite56_tag.Component->MessageField - 2], 1);
-			sprintf_s(Buffer, pinball::get_rc_string(106, 0), missionText);
+			wsprintfW(Buffer, pinball::get_rc_Wstring(106, 0), missionText);
 			control_mission_text_box_tag.Component->Display(Buffer, -1.0);
 			if (light_on(&control_lite318_tag))
 				control_lite318_tag.Component->Message(20, 0.0);
@@ -3926,7 +3926,7 @@ void control::SelectMissionController(int code, TPinballComponent* caller)
 		}
 		else
 		{
-			control_mission_text_box_tag.Component->Display(pinball::get_rc_string(104, 0), -1.0);
+			control_mission_text_box_tag.Component->Display(pinball::get_rc_Wstring(104, 0), -1.0);
 			if (light_on(&control_lite317_tag))
 				control_lite317_tag.Component->Message(20, 0.0);
 			if (light_on(&control_lite318_tag))
@@ -3939,7 +3939,7 @@ void control::SelectMissionController(int code, TPinballComponent* caller)
 	}
 	else
 	{
-		control_mission_text_box_tag.Component->Display(pinball::get_rc_string(105, 0), -1.0);
+		control_mission_text_box_tag.Component->Display(pinball::get_rc_Wstring(105, 0), -1.0);
 		if (light_on(&control_lite317_tag))
 			control_lite317_tag.Component->Message(20, 0.0);
 		if (light_on(&control_lite319_tag))
@@ -3953,7 +3953,7 @@ void control::SelectMissionController(int code, TPinballComponent* caller)
 
 void control::SpaceRadiationController(int code, TPinballComponent* caller)
 {
-	char Buffer[64];
+	wchar_t Buffer[64];
 
 	if (code == 63)
 	{
@@ -3977,9 +3977,9 @@ void control::SpaceRadiationController(int code, TPinballComponent* caller)
 		{
 			control_lite198_tag.Component->MessageField = 1;
 			MissionControl(66, nullptr);
-			control_mission_text_box_tag.Component->Display(pinball::get_rc_string(121, 0), 4.0);
+			control_mission_text_box_tag.Component->Display(pinball::get_rc_Wstring(121, 0), 4.0);
 			int addedScore = SpecialAddScore(1000000);
-			sprintf_s(Buffer, pinball::get_rc_string(78, 0), addedScore);
+			wsprintfW(Buffer, pinball::get_rc_Wstring(78, 0), addedScore);
 			if (!AddRankProgress(8))
 			{
 				control_mission_text_box_tag.Component->Display(Buffer, 8.0);
@@ -3997,11 +3997,11 @@ void control::SpaceRadiationController(int code, TPinballComponent* caller)
 		}
 		else if (code == 67)
 		{
-			char* text;
+			wchar_t* text;
 			if (control_lite104_tag.Component->MessageField == 15)
-				text = pinball::get_rc_string(120, 0);
+				text = pinball::get_rc_Wstring(120, 0);
 			else
-				text = pinball::get_rc_string(176, 0);
+				text = pinball::get_rc_Wstring(176, 0);
 			control_mission_text_box_tag.Component->Display(text, -1.0);
 		}
 	}
@@ -4009,7 +4009,7 @@ void control::SpaceRadiationController(int code, TPinballComponent* caller)
 
 void control::StrayCometController(int code, TPinballComponent* caller)
 {
-	char Buffer[64];
+	wchar_t Buffer[64];
 
 	if (code == 63)
 	{
@@ -4030,9 +4030,9 @@ void control::StrayCometController(int code, TPinballComponent* caller)
 			control_lite304_tag.Component->Message(20, 0.0);
 			control_lite198_tag.Component->MessageField = 1;
 			MissionControl(66, nullptr);
-			control_mission_text_box_tag.Component->Display(pinball::get_rc_string(119, 0), 4.0);
+			control_mission_text_box_tag.Component->Display(pinball::get_rc_Wstring(119, 0), 4.0);
 			int addedScore = SpecialAddScore(1000000);
-			sprintf_s(Buffer, pinball::get_rc_string(78, 0), addedScore);
+			wsprintfW(Buffer, pinball::get_rc_Wstring(78, 0), addedScore);
 			if (!AddRankProgress(8))
 			{
 				control_mission_text_box_tag.Component->Display(Buffer, 8.0);
@@ -4050,11 +4050,11 @@ void control::StrayCometController(int code, TPinballComponent* caller)
 		}
 		else if (code == 67)
 		{
-			char* text;
+			wchar_t* text;
 			if (control_lite107_tag.Component->MessageField == 15)
-				text = pinball::get_rc_string(118, 0);
+				text = pinball::get_rc_Wstring(118, 0);
 			else
-				text = pinball::get_rc_string(117, 0);
+				text = pinball::get_rc_Wstring(117, 0);
 			control_mission_text_box_tag.Component->Display(text, -1.0);
 		}
 	}
@@ -4062,7 +4062,7 @@ void control::StrayCometController(int code, TPinballComponent* caller)
 
 void control::TimeWarpController(int code, TPinballComponent* caller)
 {
-	char Buffer[64];
+	wchar_t Buffer[64];
 
 	if (code != 63)
 	{
@@ -4076,7 +4076,7 @@ void control::TimeWarpController(int code, TPinballComponent* caller)
 		{
 			return;
 		}
-		sprintf_s(Buffer, pinball::get_rc_string(146, 0), control_lite56_tag.Component->MessageField);
+		wsprintfW(Buffer, pinball::get_rc_Wstring(146, 0), control_lite56_tag.Component->MessageField);
 		control_mission_text_box_tag.Component->Display(Buffer, -1.0);
 		return;
 	}
@@ -4102,7 +4102,7 @@ void control::TimeWarpController(int code, TPinballComponent* caller)
 
 void control::TimeWarpPartTwoController(int code, TPinballComponent* caller)
 {
-	char Buffer[64];
+	wchar_t Buffer[64];
 
 	if (code != 63)
 	{
@@ -4117,17 +4117,17 @@ void control::TimeWarpPartTwoController(int code, TPinballComponent* caller)
 		{
 			return;
 		}
-		control_mission_text_box_tag.Component->Display(pinball::get_rc_string(147, 0), -1.0);
+		control_mission_text_box_tag.Component->Display(pinball::get_rc_Wstring(147, 0), -1.0);
 		return;
 	}
 	if (control_kickout2_tag.Component == caller)
 	{
-		control_mission_text_box_tag.Component->Display(pinball::get_rc_string(47, 0), 4.0);
+		control_mission_text_box_tag.Component->Display(pinball::get_rc_Wstring(47, 0), 4.0);
 		if (control_middle_circle_tag.Component->Message(37, 0.0) > 1)
 		{
 			control_middle_circle_tag.Component->Message(33, 5.0);
 			int rank = control_middle_circle_tag.Component->Message(37, 0.0);
-			sprintf_s(Buffer, pinball::get_rc_string(174, 0), pinball::get_rc_string(RankRcArray[rank - 1], 1));
+			wsprintfW(Buffer, pinball::get_rc_Wstring(174, 0), pinball::get_rc_Wstring(RankRcArray[rank - 1], 1));
 			control_mission_text_box_tag.Component->Display(Buffer, 8.0);
 		}
 	}
@@ -4135,12 +4135,12 @@ void control::TimeWarpPartTwoController(int code, TPinballComponent* caller)
 	{
 		if (control_ramp_tag.Component != caller)
 			return;
-		control_mission_text_box_tag.Component->Display(pinball::get_rc_string(46, 0), 4.0);
+		control_mission_text_box_tag.Component->Display(pinball::get_rc_Wstring(46, 0), 4.0);
 		if (control_middle_circle_tag.Component->Message(37, 0.0) < 9)
 		{
 			int rank = control_middle_circle_tag.Component->Message(37, 0.0);
 			control_middle_circle_tag.Component->Message(41, 5.0);
-			sprintf_s(Buffer, pinball::get_rc_string(173, 0), pinball::get_rc_string(RankRcArray[rank], 1));
+			wsprintfW(Buffer, pinball::get_rc_Wstring(173, 0), pinball::get_rc_Wstring(RankRcArray[rank], 1));
 		}
 		if (!AddRankProgress(12))
 		{
@@ -4179,7 +4179,7 @@ void control::WaitingDeploymentController(int code, TPinballComponent* caller)
 		waiting_deployment_flag = 0;
 		break;
 	case 67:
-		control_mission_text_box_tag.Component->Display(pinball::get_rc_string(50, 0), -1.0);
+		control_mission_text_box_tag.Component->Display(pinball::get_rc_Wstring(50, 0), -1.0);
 		break;
 	default:
 		break;

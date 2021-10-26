@@ -8,7 +8,8 @@ int pinball::quickFlag = 0;
 TTextBox* pinball::InfoTextBox;
 TTextBox* pinball::MissTextBox;
 char pinball::getRcBuffer[6 * 256];
-int pinball::rc_string_slot = 0;
+wchar_t pinball::getRcWBuffer[256 * 6];
+int pinball::rc_string_slot = 0, pinball::rc_Wstring_slot = 0;
 int pinball::LeftShift = -1;
 int pinball::RightShift = -1;
 
@@ -19,6 +20,16 @@ char* pinball::get_rc_string(int uID, int a2)
 		*result = 0;
 	if (++rc_string_slot >= 6)
 		rc_string_slot = 0;
+	return result;
+}
+
+wchar_t* pinball::get_rc_Wstring(int uID, int a2)
+{
+	auto result = &getRcWBuffer[256 * rc_Wstring_slot];
+	if (!LoadStringW(winmain::hinst, uID, result, 255))
+		*result = 0;
+	if (++rc_Wstring_slot >= 6)
+		rc_Wstring_slot = 0;
 	return result;
 }
 

@@ -109,12 +109,12 @@ void TTextBox::Clear()
 	}
 }
 
-void TTextBox::Display(const char* text, float time)
+void TTextBox::Display(const wchar_t* text, float time)
 {
 	if (!text)
 		return;
 
-	if (Message1 && !strcmp(text, Message2->Text))
+	if (Message1 && !lstrcmpW(text, Message2->Text))
 	{
 		Message2->Refresh(time);
 		if (Message2 == Message1)
@@ -223,7 +223,7 @@ void TTextBox::Draw()
 				break;
 
 			auto totalWidth = 0;
-			char* textEndSpace = nullptr;
+			wchar_t* textEndSpace = nullptr;
 			auto textEnd = text;
 			while (true)
 			{

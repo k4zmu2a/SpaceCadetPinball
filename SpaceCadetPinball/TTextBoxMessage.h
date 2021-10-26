@@ -3,11 +3,11 @@ class TTextBoxMessage
 {
 public:
 	TTextBoxMessage* NextMessage;
-	char* Text;
+	wchar_t* Text;
 	float Time;
 	int EndTicks;
 
-	TTextBoxMessage(const char* text, float time);
+	TTextBoxMessage(const wchar_t* text, float time);
 	~TTextBoxMessage();
 	float TimeLeft() const;
 	void Refresh(float time);

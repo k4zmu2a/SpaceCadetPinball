@@ -3,17 +3,17 @@
 #include "memory.h"
 #include "pb.h"
 
-TTextBoxMessage::TTextBoxMessage(const char* text, float time)
+TTextBoxMessage::TTextBoxMessage(const wchar_t* text, float time)
 {
 	NextMessage = nullptr;
 	Time = time;
 	EndTicks = pb::time_ticks + static_cast<int>(time * 1000.0f);
 	if (text)
 	{
-		const auto textLen = strlen(text) + 1;
-		Text = memory::allocate(textLen);
+		const auto textLen = lstrlenW(text) + 1;
+		Text = memory::allocate<wchar_t>(textLen);
 		if (Text)
-			strcpy_s(Text, textLen, text);
+			lstrcpynW(Text, text, textLen);
 	}
 	else
 		Text = nullptr;
