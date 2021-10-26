@@ -1,5 +1,7 @@
 #pragma once
 
+#include "pch.h"
+
 enum class BitmapTypes : uint8_t
 {
 	None = 0,
