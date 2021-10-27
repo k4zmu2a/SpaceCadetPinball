@@ -20,7 +20,8 @@ Supports data files from Windows and Full Tilt versions of the game.
 | Nintendo Switch    | averne          | <https://github.com/averne/SpaceCadetPinball-NX>                                                           |
 | webOS TV           | mariotaku       | <https://github.com/webosbrew/SpaceCadetPinball>                                                           |
 | Android (WIP)      | Iscle           | https://github.com/Iscle/SpaceCadetPinball                                                                 |
-| Nintendo Wii (WIP) | MaikelChan      | https://github.com/MaikelChan/SpaceCadetPinball                                                            |
+| Nintendo Wii       | MaikelChan      | https://github.com/MaikelChan/SpaceCadetPinball                                                            |
+| Nintendo 3DS       | MaikelChan      | https://github.com/MaikelChan/SpaceCadetPinball/tree/3ds                                                   |
 | Nintendo Wii U     | IntriguingTiles | https://github.com/IntriguingTiles/SpaceCadetPinball-WiiU                                                  |
 
 Platforms covered by this project: desktop Windows, Linux and macOS.
