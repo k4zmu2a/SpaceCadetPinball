@@ -74,6 +74,7 @@ LanguageMenuEntry options::LanguageMenu[]
 	{L"Русский", Languages::Russian},
 	{L"简化字", Languages::SimplifiedChinese},
 	{L"正體字", Languages::TraditionalChinese},
+	{L"Polski", Languages::Polish},
 };
 
 void options::ReadOptions()

@@ -3912,7 +3912,7 @@ void control::SelectMissionController(int code, TPinballComponent* caller)
 		if (light_on(&control_lite56_tag))
 		{
 			auto missionText = pinball::
-				get_rc_string(MissionRcArray[control_lite56_tag.Component->MessageField - 2], 1);
+				get_rc_Wstring(MissionRcArray[control_lite56_tag.Component->MessageField - 2], 1);
 			wsprintfW(Buffer, pinball::get_rc_Wstring(106, 0), missionText);
 			control_mission_text_box_tag.Component->Display(Buffer, -1.0);
 			if (light_on(&control_lite318_tag))
