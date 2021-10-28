@@ -79,6 +79,38 @@ gdrv_bitmap8::~gdrv_bitmap8()
 	}
 }
 
+void gdrv_bitmap8::ScaleIndexed(float scaleX, float scaleY)
+{
+	if (!IndexedBmpPtr)
+	{
+		assertm(false, "Scaling non-indexed bitmap");
+		return;
+	}
+
+	int newWidht = static_cast<int>(Width * scaleX), newHeight = static_cast<int>(Height * scaleY);
+	if (Width == newWidht && Height == newHeight)
+		return;
+
+	auto newIndBuf = new char[newHeight * newWidht];
+	for (int dst = 0, y = 0; y < newHeight; y++)
+	{
+		for (int x = 0; x < newWidht; x++, dst++)
+		{
+			auto px = static_cast<int>(x / scaleX);
+			auto py = static_cast<int>(y / scaleY);
+			newIndBuf[dst] = IndexedBmpPtr[(py * IndexedStride) + px];
+		}
+	}
+
+	Stride = IndexedStride = Width = newWidht;
+	Height = newHeight;
+
+	delete IndexedBmpPtr;
+	IndexedBmpPtr = newIndBuf;
+	delete BmpBufPtr1;
+	BmpBufPtr1 = new ColorRgba[Stride * Height];
+}
+
 int gdrv::display_palette(ColorRgba* plt)
 {
 	const uint32_t sysPaletteColors[]
