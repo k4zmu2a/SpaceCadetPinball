@@ -77,6 +77,7 @@ LanguageMenuEntry options::LanguageMenu[]
 	{L"Polski", Languages::Polish},
 	{L"Deutsch", Languages::German},
 	{L"日本", Languages::Japanese},
+	{L"Français", Languages::French},
 };
 
 void options::ReadOptions()
