@@ -80,6 +80,7 @@ LanguageMenuEntry options::LanguageMenu[]
 	{L"Français", Languages::French},
 	{L"Italiano", Languages::Italian},
 	{L"Magyar", Languages::Hungarian},
+	{L"Portugues do Brasil", Languages::BrazilianPortuguese},
 };
 
 void options::ReadOptions()
