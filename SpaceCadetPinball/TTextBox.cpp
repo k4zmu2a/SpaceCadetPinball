@@ -153,7 +153,7 @@ void TTextBox::Display(const wchar_t* text, float time)
 	}
 }
 
-void TTextBox::Draw()
+void TTextBox::Draw(bool redraw)
 {
 	auto bmp = BgBmp;
 	if (bmp)
@@ -172,6 +172,12 @@ void TTextBox::Draw()
 	bool display = false;
 	while (Message1)
 	{
+		if (redraw)
+		{
+			display = true;
+			break;
+		}
+
 		if (Message1->Time == -1.0f)
 		{
 			if (!Message1->NextMessage)
@@ -183,6 +189,8 @@ void TTextBox::Draw()
 		}
 		else if (Message1->TimeLeft() >= -2.0f)
 		{
+			if (Timer > 0)
+				timer::kill(Timer);
 			Timer = timer::set(max(Message1->TimeLeft(), 0.25f), this, TimerExpired);
 			display = true;
 			break;

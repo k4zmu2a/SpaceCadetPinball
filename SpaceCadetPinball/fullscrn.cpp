@@ -377,7 +377,7 @@ void fullscrn::paint()
 			fillRect(WindowRect1.right, menuHeight + WindowRect1.bottom, 0, 0);
 		}
 	}
-	render::paint();
+	pb::paint();
 	fullscrn_flag1 = 0;
 }
 

@@ -135,6 +135,12 @@ void pb::firsttime_setup()
 void pb::paint()
 {
 	render::paint();
+	if (score::msg_fontp == nullptr)
+	{
+		// DrawText writes to screen directly, text gets overwritten by full vScreen blit.
+		pinball::InfoTextBox->Draw(true);
+		pinball::MissTextBox->Draw(true);
+	}
 }
 
 void pb::mode_change(int mode)

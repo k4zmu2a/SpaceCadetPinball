@@ -22,7 +22,7 @@ public:
 	int Message(int code, float value) override;
 	void Clear();
 	void Display(const wchar_t* text, float time);
-	void Draw();
+	void Draw(bool redraw = false);
 
 	static void TimerExpired(int timerId, void* tb);
 };
