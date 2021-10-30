@@ -37,7 +37,7 @@ bool winmain::LaunchBallEnabled = true;
 bool winmain::HighScoresEnabled = true;
 bool winmain::DemoActive = false;
 char* winmain::BasePath;
-int winmain::MainMenuHeight = 0; 
+int winmain::MainMenuHeight = 0;
 std::string winmain::FpsDetails;
 double winmain::UpdateToFrameRatio;
 winmain::DurationMs winmain::TargetFrameTime;
@@ -88,18 +88,25 @@ int winmain::WinMain(LPCSTR lpCmdLine)
 		return 1;
 	}
 
-	SDL_Renderer* renderer = SDL_CreateRenderer
-	(
-		window,
-		-1,
-		SDL_RENDERER_ACCELERATED
-	);
-	Renderer = renderer;
+	// If HW fails, fallback to SW SDL renderer.
+	SDL_Renderer* renderer = nullptr;
+	for (int i = 0; i < 2 && !renderer; i++)
+	{
+		Renderer = renderer = SDL_CreateRenderer
+		(
+			window,
+			-1,
+			i == 0 ? SDL_RENDERER_ACCELERATED : SDL_RENDERER_SOFTWARE
+		);
+	}
 	if (!renderer)
 	{
 		SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, "Could not create renderer", SDL_GetError(), window);
 		return 1;
 	}
+	SDL_RendererInfo rendererInfo{};
+	if (!SDL_GetRendererInfo(renderer, &rendererInfo))
+		printf("Using SDL renderer: %s\n", rendererInfo.name);
 	SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
 	SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, "nearest");
 
