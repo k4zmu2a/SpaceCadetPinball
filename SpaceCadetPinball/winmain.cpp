@@ -339,7 +339,6 @@ void winmain::RenderUi()
 		}
 		ImGui::End();
 		ImGui::PopStyleVar();
-		return;
 	}
 
 	// No demo window in release to save space
@@ -348,7 +347,7 @@ void winmain::RenderUi()
 		ImGui::ShowDemoWindow(&ShowImGuiDemo);
 #endif
 
-	if (ImGui::BeginMainMenuBar())
+	if (Options.ShowMenu && ImGui::BeginMainMenuBar())
 	{
 		int currentMenuHeight = static_cast<int>(ImGui::GetWindowSize().y);
 		if (MainMenuHeight != currentMenuHeight)
