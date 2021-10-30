@@ -77,10 +77,10 @@ Tested with: macOS Big Sur (Intel) with Xcode 13 & macOS Montery Beta (Apple Sil
 * ~~Decompile original game~~
 * ~~Resizable window, scaled graphics~~
 * ~~Loader for high-res sprites from CADET.DAT~~
+* ~~Cross-platform port using SDL2, SDL2_mixer, ImGui~~
 * Misc features of Full Tilt: 3 music tracks, multiball, centered textboxes, etc.
-* Cross-platform port
-  * Using SDL2, SDL2_mixer, ImGui
-  * Maybe: Android port
+* Maybe: Text translations
+* Maybe: Android port
 * Maybe x2: support for other two tables
   * Table specific BL (control interactions and missions) is hardcoded, othere parts might be also patched
 
