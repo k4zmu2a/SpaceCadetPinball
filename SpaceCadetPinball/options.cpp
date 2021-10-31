@@ -87,6 +87,7 @@ LanguageMenuEntry options::LanguageMenu[]
 	{L"עִברִית", Languages::Hebrew},
 	{L"اَلْعَرَبِيَّة", Languages::Arabic},
 	{L"Ελληνικά", Languages::Greek},
+	{L"Español", Languages::Spanish},
 };
 
 void options::ReadOptions()
