@@ -165,8 +165,18 @@ int winmain::WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLi
 	pinball::FindShiftKeys();
 	options::init_resolution();
 
+	// Some languages use RTL layout
+	DWORD dwExStyle;
+	switch (options::Options.Language)
+	{
+	case Languages::Hebrew:
+		dwExStyle = WS_EX_LAYOUTRTL;
+		break;
+	default:
+		dwExStyle = 0;
+	}
 	auto windowName = pinball::get_rc_Wstring(38, 0);
-	windowHandle = CreateWindowExW(0, windowClass, windowName,
+	windowHandle = CreateWindowExW(dwExStyle, windowClass, windowName,
 		WndStyle, 0, 0, 640, 480, nullptr, nullptr, hInstance, nullptr);
 
 	hwnd_frame = windowHandle;
@@ -600,9 +610,9 @@ LRESULT CALLBACK winmain::message_handler(HWND hWnd, UINT Msg, WPARAM wParam, LP
 						iHwnd * iHwnd * iHwnd * iHwnd * iHwnd * iHwnd * iHwnd);
 					if (static_cast<int>(WinExec(cmdLine, 5u)) < 32)
 					{
-						auto caption = pinball::get_rc_string(170, 0);
-						auto text = pinball::get_rc_string(171, 0);
-						MessageBoxA(hwnd_frame, text, caption, 0x2010u);
+						auto caption = pinball::get_rc_Wstring(170, 0);
+						auto text = pinball::get_rc_Wstring(171, 0);
+						MessageBoxW(hwnd_frame, text, caption, 0x2010u);
 					}
 					memory::free(tmpBuf);
 				}
@@ -774,9 +784,9 @@ void winmain::memalloc_failure()
 	midi::music_stop();
 	Sound::Close();
 	gdrv::uninit();
-	char* caption = pinball::get_rc_string(170, 0);
-	char* text = pinball::get_rc_string(179, 0);
-	MessageBoxA(nullptr, text, caption, 0x2030u);
+	auto caption = pinball::get_rc_Wstring(170, 0);
+	auto text = pinball::get_rc_Wstring(179, 0);
+	MessageBoxW(nullptr, text, caption, 0x2030u);
 	_exit(1);
 }
 

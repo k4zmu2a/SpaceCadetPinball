@@ -185,7 +185,6 @@ INT_PTR high_score::HighScore(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
 {
 	HWND parent;
 	int nIDDlgItem;
-	CHAR String1[256];
 	CHAR name[32];
 
 	switch (msg)
@@ -247,8 +246,8 @@ INT_PTR high_score::HighScore(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
 		case DLG_HIGHSCORES_Cancel:
 			break;
 		case DLG_HIGHSCORES_Clear:
-			lstrcpyA(String1, pinball::get_rc_string(41, 0));
-			if (MessageBoxA(hWnd, pinball::get_rc_string(40, 0), String1, MB_DEFBUTTON2 | MB_OKCANCEL) == 1)
+			if (MessageBoxW(hWnd, pinball::get_rc_Wstring(40, 0),
+			                pinball::get_rc_Wstring(41, 0), MB_DEFBUTTON2 | MB_OKCANCEL) == 1)
 			{
 				clear_table(dlg_hst);
 				if (dlg_enter_name)
