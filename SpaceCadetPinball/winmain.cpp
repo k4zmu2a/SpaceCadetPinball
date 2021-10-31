@@ -170,6 +170,7 @@ int winmain::WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLi
 	switch (options::Options.Language)
 	{
 	case Languages::Hebrew:
+	case Languages::Arabic:
 		dwExStyle = WS_EX_LAYOUTRTL;
 		break;
 	default:
