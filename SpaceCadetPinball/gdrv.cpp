@@ -458,6 +458,9 @@ void gdrv::grtext_draw_ttext_in_box(LPCWSTR text, int xOff, int yOff, int width,
 	case Languages::Japanese:
 		font = "MS UI Gothic";
 		break;
+	case Languages::Korean:
+		font = "Gulim";
+		break;
 	default:
 		font = "Arial";
 	}
