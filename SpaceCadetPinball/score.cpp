@@ -1,7 +1,6 @@
 #include "pch.h"
 #include "score.h"
 
-#include "EmbeddedData.h"
 #include "fullscrn.h"
 #include "loader.h"
 #include "GroupData.h"

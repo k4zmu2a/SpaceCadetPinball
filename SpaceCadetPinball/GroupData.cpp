@@ -2,7 +2,6 @@
 
 #include "GroupData.h"
 
-#include "EmbeddedData.h"
 #include "fullscrn.h"
 #include "gdrv.h"
 #include "pb.h"
@@ -281,6 +280,159 @@ zmap_header_type* DatFile::GetZMap(int groupIndex)
 	return group->GetZMap(fullscrn::GetResolution());
 }
 
+MsgFont *DatFile::ReadPEMsgFontResource(const std::string peName)
+{
+	auto file = pinball::make_path_name(peName);
+	auto fileHandle = fopen(file.c_str(), "rb");
+
+	if (fileHandle == nullptr)
+		return nullptr;
+
+	fseek(fileHandle, 0x3C, SEEK_SET);
+	constexpr uint8_t peHeaderSize = 0x18;
+	uint32_t peHeaderOffset;
+	fread(&peHeaderOffset, sizeof(uint32_t), 1, fileHandle);
+
+	fseek(fileHandle, peHeaderOffset + 0x6, SEEK_SET);
+	uint16_t numberOfSections;
+	fread(&numberOfSections, sizeof(uint16_t), 1, fileHandle);
+
+	if (numberOfSections != 3)
+	{
+		fclose(fileHandle);
+		return nullptr;
+	}
+
+	fseek(fileHandle, peHeaderOffset + 0x14, SEEK_SET);
+	uint16_t sizeOfOptionalHeader;
+	fread(&sizeOfOptionalHeader, sizeof(uint16_t), 1, fileHandle);
+
+	constexpr uint8_t sizeOfSectionHeader = 0x28;
+	uint32_t sectionHeadersOffset = peHeaderOffset + peHeaderSize + sizeOfOptionalHeader;
+	uint32_t thirdSectionHeaderOffset = sectionHeadersOffset + sizeOfSectionHeader * 2;
+	fseek(fileHandle, thirdSectionHeaderOffset, SEEK_SET);
+
+	char sectionName[0x8] = {};
+	fread(sectionName, sizeof(char), 0x8, fileHandle);
+
+	if (strcmp(sectionName, ".rsrc\0") != 0)
+	{
+		fclose(fileHandle);
+		return nullptr;
+	}
+
+	fseek(fileHandle, thirdSectionHeaderOffset + 0xc, SEEK_SET);
+	uint32_t rsrcSectionVirtualAddress;
+	fread(&rsrcSectionVirtualAddress, sizeof(uint32_t), 1, fileHandle);
+
+	fseek(fileHandle, thirdSectionHeaderOffset + 0x14, SEEK_SET);
+	uint32_t rsrcSectionDataOffset;
+	fread(&rsrcSectionDataOffset, sizeof(uint32_t), 1, fileHandle);
+
+	fseek(fileHandle, rsrcSectionDataOffset + 0xe, SEEK_SET);
+	uint16_t numberOfIDEntries;
+	fread(&numberOfIDEntries, sizeof(uint16_t), 1, fileHandle);
+
+	if (numberOfIDEntries == 0)
+	{
+		fclose(fileHandle);
+		return nullptr;
+	}
+
+	uint32_t subdirectoryOffset = 0;
+
+	for (uint16_t e = 0; e < numberOfIDEntries; e++)
+	{
+		fseek(fileHandle, rsrcSectionDataOffset + 0x10 + (0x8 * e), SEEK_SET);
+		int32_t entryIntegerID;
+		fread(&entryIntegerID, sizeof(int32_t), 1, fileHandle);
+
+		if (entryIntegerID == 0xa) // RCDATA
+		{
+			fread(&subdirectoryOffset, sizeof(uint32_t), 1, fileHandle);
+			subdirectoryOffset &= 0x7fffffff;
+			subdirectoryOffset += rsrcSectionDataOffset;
+			break;
+		}
+	}
+
+	if (subdirectoryOffset == 0)
+	{
+		fclose(fileHandle);
+		return nullptr;
+	}
+
+	fseek(fileHandle, subdirectoryOffset + 0xc, SEEK_SET);
+	uint16_t numberOfNameEntries;
+	fread(&numberOfNameEntries, sizeof(uint16_t), 1, fileHandle);
+
+	if (numberOfNameEntries == 0)
+	{
+		fclose(fileHandle);
+		return nullptr;
+	}
+
+	fseek(fileHandle, subdirectoryOffset + 0x10, SEEK_SET);
+
+	uint32_t nameOffset;
+	fread(&nameOffset, sizeof(uint32_t), 1, fileHandle);
+	nameOffset &= 0x7fffffff;
+	nameOffset += rsrcSectionDataOffset;
+
+	fread(&subdirectoryOffset, sizeof(uint32_t), 1, fileHandle);
+	subdirectoryOffset &= 0x7fffffff;
+	subdirectoryOffset += rsrcSectionDataOffset;
+
+	fseek(fileHandle, nameOffset, SEEK_SET);
+	uint16_t expectedName[9] = {0x08, 0x50, 0x42, 0x4d, 0x53, 0x47, 0x5f, 0x46, 0x54}; // PBMSG_FT
+	uint16_t name[9];
+	fread(name, sizeof(uint16_t), 9, fileHandle);
+
+	for (int n = 0; n < 9; n++)
+	{
+		if (name[n] != expectedName[n])
+		{
+			fclose(fileHandle);
+			return nullptr;
+		}
+	}
+
+	fseek(fileHandle, subdirectoryOffset + 0xe, SEEK_SET);
+	fread(&numberOfIDEntries, sizeof(uint16_t), 1, fileHandle);
+
+	if (numberOfIDEntries == 0)
+	{
+		fclose(fileHandle);
+		return nullptr;
+	}
+
+	// If the user has some pinball.exe in a language other than English,
+	// or multiple languages, there would be one IDEntry for each language here.
+
+	/*fseek(fileHandle, subdirectoryOffset + 0x10, SEEK_SET);
+	uint32_t languageID;
+	fread(&languageID, sizeof(uint32_t), 1, fileHandle);*/
+
+	fseek(fileHandle, subdirectoryOffset + 0x14, SEEK_SET);
+	uint32_t dataEntryOffset;
+	fread(&dataEntryOffset, sizeof(uint32_t), 1, fileHandle);
+	dataEntryOffset &= 0x7fffffff;
+	dataEntryOffset += rsrcSectionDataOffset;
+
+	fseek(fileHandle, dataEntryOffset, SEEK_SET);
+	uint32_t dataOffset, dataSize;
+	fread(&dataOffset, sizeof(uint32_t), 1, fileHandle);
+	fread(&dataSize, sizeof(uint32_t), 1, fileHandle);
+
+	fseek(fileHandle, (rsrcSectionDataOffset - rsrcSectionVirtualAddress) + dataOffset, SEEK_SET);
+	MsgFont *msgFont = reinterpret_cast<MsgFont *>(new uint8_t[dataSize]);
+	fread(msgFont, 1, dataSize, fileHandle);
+
+	fclose(fileHandle);
+
+	return msgFont;
+}
+
 void DatFile::Finalize()
 {
 	if (!pb::FullTiltMode)
@@ -288,27 +440,34 @@ void DatFile::Finalize()
 		int groupIndex = record_labeled("pbmsg_ft");
 		assertm(groupIndex < 0, "DatFile: pbmsg_ft is already in .dat");
 
-		// Load 3DPB font into dat to simplify pipeline
-		auto rcData = reinterpret_cast<MsgFont*>(ImFontAtlas::DecompressCompressedBase85Data(
-			EmbeddedData::PB_MSGFT_bin_compressed_data_base85));
-		AddMsgFont(rcData, "pbmsg_ft");
-		IM_FREE(rcData);
+		MsgFont *rcData = ReadPEMsgFontResource("pinball.exe");
 
-		// PINBALL2.MID is an alternative font provided in 3DPB data
-		// Scaled down because it is too large for top text box
-		/*auto file = pinball::make_path_name("PINBALL2.MID");
-		auto fileHandle = fopen(file.c_str(), "rb");
-		fseek(fileHandle, 0, SEEK_END);
-		auto fileSize = static_cast<uint32_t>(ftell(fileHandle));
-		auto rcData = reinterpret_cast<MsgFont*>(new uint8_t[fileSize]);
-		fseek(fileHandle, 0, SEEK_SET);
-		fread(rcData, 1, fileSize, fileHandle);
-		fclose(fileHandle);
-		auto groupId = Groups.back()->GroupId + 1u;
-		AddMsgFont(rcData, "pbmsg_ft");
+		if (rcData != nullptr)
+		{
+			AddMsgFont(rcData, "pbmsg_ft", false);
+		}
+		else
+		{
+			// PINBALL2.MID is an alternative font provided in 3DPB data
+			// Scaled down because it is too large for top text box
+
+			auto file = pinball::make_path_name("PINBALL2.MID");
+			auto fileHandle = fopen(file.c_str(), "rb");
+			fseek(fileHandle, 0, SEEK_END);
+			auto fileSize = static_cast<uint32_t>(ftell(fileHandle));
+			rcData = reinterpret_cast<MsgFont *>(new uint8_t[fileSize]);
+			fseek(fileHandle, 0, SEEK_SET);
+			fread(rcData, 1, fileSize, fileHandle);
+			fclose(fileHandle);
+
+			auto groupId = Groups.back()->GroupId + 1u;
+			AddMsgFont(rcData, "pbmsg_ft", true);
+
+			for (auto i = groupId; i < Groups.size(); i++)
+				Groups[i]->GetBitmap(0)->ScaleIndexed(0.84f, 0.84f);
+		}
+
 		delete[] rcData;
-		for (auto i = groupId; i < Groups.size(); i++)
-			Groups[i]->GetBitmap(0)->ScaleIndexed(0.84f, 0.84f);*/
 	}
 
 	for (auto group : Groups)
@@ -317,7 +476,7 @@ void DatFile::Finalize()
 	}
 }
 
-void DatFile::AddMsgFont(MsgFont* font, const std::string& fontName)
+void DatFile::AddMsgFont(MsgFont* font, const std::string& fontName, const bool changePaletteIndices)
 {
 	auto groupId = Groups.back()->GroupId + 1;
 	auto ptrToData = reinterpret_cast<char*>(font->Data);
@@ -325,6 +484,19 @@ void DatFile::AddMsgFont(MsgFont* font, const std::string& fontName)
 	{
 		auto curChar = reinterpret_cast<MsgFontChar*>(ptrToData);
 		assertm(curChar->Width == font->CharWidths[charInd], "Score: mismatched font width");
+
+		if (changePaletteIndices)
+		{
+			// The alternate font in PINBALL2.MID is hard to read due to having dark colors.
+			// Modify the pixels so it matches the other font.
+
+			for (int i = 0; i < curChar->Width * font->Height; i++)
+			{
+				if (curChar->Data[i] == 0x50) curChar->Data[i] = 0x30;
+				if (curChar->Data[i] == 0x69) curChar->Data[i] = 0x64;
+			}
+		}
+
 		ptrToData += curChar->Width * font->Height + 1;
 
 		auto bmp = new gdrv_bitmap8(curChar->Width, font->Height, true);
