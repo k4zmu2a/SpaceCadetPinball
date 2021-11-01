@@ -776,7 +776,14 @@ int winmain::event_handler(const SDL_Event* event)
 		case SDL_CONTROLLER_BUTTON_START:
 			pause();
 			break;
-		default: ;
+		case SDL_CONTROLLER_BUTTON_BACK:
+			if (single_step)
+			{
+				SDL_Event event{ SDL_QUIT };
+				SDL_PushEvent(&event);
+			}
+			break;
+		default:;
 		}
 		break;
 	case SDL_CONTROLLERBUTTONUP:
