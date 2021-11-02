@@ -92,6 +92,7 @@ LanguageMenuEntry options::LanguageMenu[]
 	{L"한국어", Languages::Korean},
 	{L"Nederlands", Languages::Dutch},
 	{L"Norsk", Languages::Norwegian},
+	{L"Svenska", Languages::Swedish},
 };
 
 void options::ReadOptions()
