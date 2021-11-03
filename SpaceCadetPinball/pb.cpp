@@ -502,8 +502,8 @@ void pb::keydown(int key)
 			ball->Acceleration.X = 0.0;
 			break;
 		case 'H':
-			char String1[200];
-			lstrcpyA(String1, pinball::get_rc_string(26, 0));
+			wchar_t String1[200];
+			lstrcpyW(String1, pinball::get_rc_Wstring(26, 0));
 			high_score::show_and_set_high_score_dialog(highscore_table, 1000000000, 1, String1);
 			break;
 		case 'M':
@@ -556,7 +556,7 @@ void pb::end_game()
 {
 	int scores[4]{};
 	int scoreIndex[4]{};
-	char String1[200];
+	wchar_t String1[200];
 
 	mode_change(2);
 	int playerCount = MainTable->PlayerCount;
@@ -593,7 +593,7 @@ void pb::end_game()
 			int position = high_score::get_score_position(highscore_table, scores[i]);
 			if (position >= 0)
 			{
-				lstrcpyA(String1, pinball::get_rc_string(scoreIndex[i] + 26, 0));
+				lstrcpyW(String1, pinball::get_rc_Wstring(scoreIndex[i] + 26, 0));
 				high_score::show_and_set_high_score_dialog(highscore_table, scores[i], position, String1);
 			}
 		}

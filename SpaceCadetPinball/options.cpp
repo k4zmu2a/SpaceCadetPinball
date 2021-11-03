@@ -351,6 +351,43 @@ void options::set_string(LPCSTR optPath, LPCSTR lpValueName, LPCSTR value)
 	path_free();
 }
 
+void options::get_string(LPCSTR optPath, LPCWSTR lpValueName, LPWSTR dst, LPCWSTR defaultValue, int iMaxLength)
+{
+	DWORD dwDisposition;
+	HKEY hKey;
+
+	lstrcpynW(dst, defaultValue, iMaxLength);
+	if (!OptionsRegPath)
+		return;
+
+	auto regPath = path(optPath);
+	if (!RegCreateKeyExA(HKEY_CURRENT_USER, regPath, 0, nullptr, 0, KEY_ALL_ACCESS, nullptr, &hKey, &dwDisposition))
+	{
+		DWORD bufferSize = iMaxLength * sizeof(wchar_t);
+		RegQueryValueExW(hKey, lpValueName, nullptr, nullptr, reinterpret_cast<LPBYTE>(dst), &bufferSize);
+		RegCloseKey(hKey);
+	}
+	path_free();
+}
+
+void options::set_string(LPCSTR optPath, LPCWSTR lpValueName, LPCWSTR value)
+{
+	DWORD dwDisposition;
+	HKEY hKey;
+
+	if (!OptionsRegPath)
+		return;
+
+	auto regPath = path(optPath);
+	if (!RegCreateKeyExA(HKEY_CURRENT_USER, regPath, 0, nullptr, 0, KEY_ALL_ACCESS, nullptr, &hKey, &dwDisposition))
+	{
+		DWORD bufferSize = (lstrlenW(value) + 1) * sizeof(wchar_t);
+		RegSetValueExW(hKey, lpValueName, 0, 1u, LPBYTE(value), bufferSize);
+		RegCloseKey(hKey);
+	}
+	path_free();
+}
+
 
 void options::menu_check(UINT uIDCheckItem, int check)
 {

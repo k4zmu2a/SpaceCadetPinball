@@ -75,6 +75,8 @@ public:
 	static void set_int(LPCSTR optPath, LPCSTR lpValueName, int data);
 	static void get_string(LPCSTR optPath, LPCSTR lpValueName, LPSTR dst, LPCSTR defaultValue, int iMaxLength);
 	static void set_string(LPCSTR optPath, LPCSTR lpValueName, LPCSTR value);
+	static void get_string(LPCSTR optPath, LPCWSTR lpValueName, LPWSTR dst, LPCWSTR defaultValue, int iMaxLength);
+	static void set_string(LPCSTR optPath, LPCWSTR lpValueName, LPCWSTR value);
 	static void menu_check(UINT uIDCheckItem, int check);
 	static void menu_set(UINT uIDEnableItem, int enable);
 	static void toggle(UINT uIDCheckItem);
