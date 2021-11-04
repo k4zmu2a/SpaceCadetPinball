@@ -3775,9 +3775,9 @@ void control::SelectMissionController(int code, TPinballComponent* caller)
 					if (light_on(&control_lite319_tag))
 						control_lite319_tag.Component->Message(20, 0.0);
 					control_lite198_tag.Component->MessageField = control_lite56_tag.Component->MessageField;
+					auto scoreId = control_lite56_tag.Component->MessageField - 2;
 					MissionControl(66, nullptr);
-					int addedScore = SpecialAddScore(
-						mission_select_scores[control_lite56_tag.Component->MessageField - 2]);
+					int addedScore = SpecialAddScore(mission_select_scores[scoreId]);
 					snprintf(Buffer, sizeof Buffer, pinball::get_rc_string(77, 0), addedScore);
 					control_mission_text_box_tag.Component->Display(Buffer, 4.0);
 				}
