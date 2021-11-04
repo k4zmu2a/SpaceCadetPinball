@@ -37,7 +37,6 @@ TBall::TBall(TPinballTable* table) : TPinballComponent(table, -1, false)
 	if (pb::FullTiltMode)
 		ballGroupName[4] = '0' + fullscrn::GetResolution();
 	auto groupIndex = loader::query_handle(ballGroupName);
-
 	Offset = *loader::query_float_attribute(groupIndex, 0, 500);
 	auto visualCount = loader::query_visual_states(groupIndex);
 	auto index = 0;

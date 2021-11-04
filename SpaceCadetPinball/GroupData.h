@@ -39,6 +39,7 @@ enum class FieldTypes : int16_t
 
 	// Sprite depth map, 16bpp, unsigned
 	Bitmap16bit = 12,
+	Debug = 13,
 };
 
 struct EntryData
