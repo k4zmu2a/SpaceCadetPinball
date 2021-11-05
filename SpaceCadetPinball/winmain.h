@@ -48,7 +48,7 @@ public:
 	static bool LaunchBallEnabled;
 	static bool HighScoresEnabled;
 	static bool DemoActive;
-	static char* BasePath;
+	static std::string BasePath;
 	static int MainMenuHeight;
 
 	static int WinMain(LPCSTR lpCmdLine);
