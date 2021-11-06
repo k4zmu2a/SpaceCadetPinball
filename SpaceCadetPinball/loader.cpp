@@ -158,7 +158,7 @@ int loader::get_sound_id(int groupIndex)
 				}
 
 				auto filePath = pinball::make_path_name(fileName);
-				auto file = fopen(filePath.c_str(), "rb");
+				auto file = fopenu(filePath.c_str(), "rb");
 				if (file)
 				{
 					fread(&wavHeader, 1, sizeof wavHeader, file);

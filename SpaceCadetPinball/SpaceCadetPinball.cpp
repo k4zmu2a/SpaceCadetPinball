@@ -34,6 +34,25 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 {
 	return MainActual(lpCmdLine);
 }
+
+// fopen to _wfopen adapter, for UTF-8 paths
+FILE* fopenu(const char* path, const char* opt)
+{
+	wchar_t* wideArgs[2]{};
+	for (auto& arg : wideArgs)
+	{
+		auto src = wideArgs[0] ? opt : path;
+		auto length = MultiByteToWideChar(CP_UTF8, 0, src, -1, nullptr, 0);
+		arg = new wchar_t[length];
+		MultiByteToWideChar(CP_UTF8, 0, src, -1, arg, length);
+	}
+
+	auto fileHandle = _wfopen(wideArgs[0], wideArgs[1]);
+	for (auto arg : wideArgs)
+		delete[] arg;
+
+	return fileHandle;
+}
 #endif
 
 // Run program: Ctrl + F5 or Debug > Start Without Debugging menu

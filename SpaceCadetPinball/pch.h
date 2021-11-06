@@ -83,4 +83,14 @@ int Sign(T val)
 	return (T(0) < val) - (val < T(0));
 }
 
+// UTF-8 path adapter for fopen on Windows, implemented in SpaceCadetPinball.cpp
+#ifdef _WIN32
+extern FILE* fopenu(const char* path, const char* opt);
+#else
+inline FILE* fopenu(const char* path, const char* opt)
+{
+	return fopen(path, opt);
+}
+#endif
+
 #endif //PCH_H

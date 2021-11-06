@@ -82,7 +82,7 @@ int winmain::WinMain(LPCSTR lpCmdLine)
 			{
 				auto datFileName = datFileNames[i];
 				auto datFilePath = pinball::make_path_name(datFileName);
-				auto datFile = fopen(datFilePath.c_str(), "r");
+				auto datFile = fopenu(datFilePath.c_str(), "r");
 				if (datFile)
 				{
 					fclose(datFile);

@@ -101,11 +101,12 @@ Mix_Music* midi::load_track(std::string fileName)
 		if (i == 0)
 		{
 			auto filePath = basePath + ".MID";
-			auto fileHandle = fopen(filePath.c_str(), "rb");
+			auto fileHandle = fopenu(filePath.c_str(), "rb");
 			if (fileHandle)
 			{
 				fclose(fileHandle);
-				audio = Mix_LoadMUS(filePath.c_str());
+				auto rw = SDL_RWFromFile(filePath.c_str(), "rb");
+				audio = Mix_LoadMUS_RW(rw, 1);
 			}
 		}
 		else
@@ -115,7 +116,7 @@ Mix_Music* midi::load_track(std::string fileName)
 			{
 				// Dump converted MIDI file
 				/*auto filePath = basePath + ".midi";
-				FILE* fileHandle = fopen(filePath.c_str(), "wb");
+				FILE* fileHandle = fopenu(filePath.c_str(), "wb");
 				fwrite(midi->data(), 1, midi->size(), fileHandle);
 				fclose(fileHandle);*/
 
@@ -164,7 +165,7 @@ bool midi::play_track(Mix_Music* midi)
 /// <returns>Vector that contains MIDI file</returns>
 std::vector<uint8_t>* midi::MdsToMidi(std::string file)
 {
-	auto fileHandle = fopen(file.c_str(), "rb");
+	auto fileHandle = fopenu(file.c_str(), "rb");
 	if (!fileHandle)
 		return nullptr;
 

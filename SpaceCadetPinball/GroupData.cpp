@@ -297,7 +297,7 @@ void DatFile::Finalize()
 		// PINBALL2.MID is an alternative font provided in 3DPB data
 		// Scaled down because it is too large for top text box
 		/*auto file = pinball::make_path_name("PINBALL2.MID");
-		auto fileHandle = fopen(file.c_str(), "rb");
+		auto fileHandle = fopenu(file.c_str(), "rb");
 		fseek(fileHandle, 0, SEEK_END);
 		auto fileSize = static_cast<uint32_t>(ftell(fileHandle));
 		auto rcData = reinterpret_cast<MsgFont*>(new uint8_t[fileSize]);

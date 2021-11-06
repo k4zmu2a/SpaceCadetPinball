@@ -16,7 +16,7 @@ DatFile* partman::load_records(LPCSTR lpFileName, bool fullTiltMode)
 	dat8BitBmpHeader bmpHeader{};
 	dat16BitBmpHeader zMapHeader{};
 
-	auto fileHandle = fopen(lpFileName, "rb");
+	auto fileHandle = fopenu(lpFileName, "rb");
 	if (fileHandle == nullptr)
 		return nullptr;
 

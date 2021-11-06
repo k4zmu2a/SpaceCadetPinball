@@ -57,7 +57,7 @@ void Sound::PlaySound(Mix_Chunk* wavePtr, int time)
 
 Mix_Chunk* Sound::LoadWaveFile(const std::string& lpName)
 {
-	auto wavFile = fopen(lpName.c_str(), "r");
+	auto wavFile = fopenu(lpName.c_str(), "r");
 	if (!wavFile)
 		return nullptr;
 	fclose(wavFile);
