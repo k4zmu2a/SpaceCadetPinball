@@ -8,7 +8,6 @@
 #if __BYTE_ORDER__ == __ORDER_BIG_ENDIAN__
 #	if defined(__GNUC__) && defined(linux)
 #		include <byteswap.h>
-#		define scp_bswap64(x) __bswap_64(x)
 #		define scp_bswap32(x) __bswap_32(x)
 #		define scp_bswap16(x) __bswap_16(x)
 #	endif //__GNUC__ && linux
