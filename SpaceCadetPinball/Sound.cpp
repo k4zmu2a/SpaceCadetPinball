@@ -114,10 +114,10 @@ void Sound::Enable(int channelFrom, int channelTo, int enableFlag)
 	}
 }
 
-void Sound::Idle()
+void Sound::Idle(bool performCleanup)
 {
 	if (pMem)
-		WaveMix::Pump();
+		WaveMix::Pump(performCleanup);
 }
 
 void Sound::Activate()

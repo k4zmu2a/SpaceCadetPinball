@@ -550,7 +550,7 @@ int WaveMix::Activate(HANDLE hMixSession, bool fActivate)
 	return 0;
 }
 
-void WaveMix::Pump()
+void WaveMix::Pump(bool performCleanup)
 {
 	Globals = GlobalsActive;
 	if (GlobalsActive)
@@ -567,7 +567,8 @@ void WaveMix::Pump()
 			else
 				xHDR = xHDR->QNext;
 		}
-		FreePlayedBlocks();
+		if (performCleanup)
+			FreePlayedBlocks();
 		while (MixerPlay(GetWaveBlock(), 1));
 	}
 }
@@ -1382,12 +1383,12 @@ int WaveMix::GetConfig(HANDLE hMixSession, MIXCONFIG* lpConfig)
 
 unsigned WaveMix::MyWaveOutGetPosition(HWAVEOUT hWaveOut, int fGoodGetPos)
 {
-	mmtime_tag pmmt{};
+	MMTIME pmmt{};
 
 	if (!fGoodGetPos)
 		return (timeGetTime() - Globals->dwBaseTime) * Globals->PCM.wf.nAvgBytesPerSec / 0x3E8 & 0xFFFFFFF8;
 	pmmt.wType = TIME_BYTES;
-	waveOutGetPosition(hWaveOut, &pmmt, 0xCu);
+	waveOutGetPosition(hWaveOut, &pmmt, sizeof(MMTIME));
 	return Globals->pfnSampleAdjust(pmmt.u.ms, Globals->dwWaveOutPos);
 }
 
