@@ -9,6 +9,13 @@
 #include "pinball.h"
 #include "zdrv.h"
 
+#if __BYTE_ORDER__ == __ORDER_BIG_ENDIAN__
+#	if defined(__GNUC__) && defined(linux)
+#		include <byteswap.h>
+#		define scp_bswap32(x) __bswap_32(x)
+#		define scp_bswap16(x) __bswap_16(x)
+#	endif //__GNUC__ && linux
+#endif
 
 EntryData::~EntryData()
 {
@@ -291,6 +298,11 @@ void DatFile::Finalize()
 		// Load 3DPB font into dat to simplify pipeline
 		auto rcData = reinterpret_cast<MsgFont*>(ImFontAtlas::DecompressCompressedBase85Data(
 			EmbeddedData::PB_MSGFT_bin_compressed_data_base85));
+#if __BYTE_ORDER__ == __ORDER_BIG_ENDIAN__
+		rcData->GapWidth = scp_bswap16(rcData->GapWidth);
+		rcData->Unknown1 = scp_bswap16(rcData->Unknown1);
+		rcData->Height = scp_bswap16(rcData->Height);
+#endif //__BIG_ENDIAN__
 		AddMsgFont(rcData, "pbmsg_ft");
 		IM_FREE(rcData);
 

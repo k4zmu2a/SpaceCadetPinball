@@ -5,6 +5,14 @@
 #include "GroupData.h"
 #include "zdrv.h"
 
+#if __BYTE_ORDER__ == __ORDER_BIG_ENDIAN__
+#	if defined(__GNUC__) && defined(linux)
+#		include <byteswap.h>
+#		define scp_bswap32(x) __bswap_32(x)
+#		define scp_bswap16(x) __bswap_16(x)
+#	endif //__GNUC__ && linux
+#endif
+
 short partman::_field_size[] =
 {
 	2, -1, 2, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 0
@@ -21,6 +29,12 @@ DatFile* partman::load_records(LPCSTR lpFileName, bool fullTiltMode)
 		return nullptr;
 
 	fread(&header, 1, sizeof header, fileHandle);
+#if __BYTE_ORDER__ == __ORDER_BIG_ENDIAN__
+	header.FileSize = scp_bswap32(header.FileSize);
+	header.NumberOfGroups = scp_bswap16(header.NumberOfGroups);
+	header.SizeOfBody = scp_bswap32(header.SizeOfBody);
+	header.Unknown = scp_bswap16(header.Unknown);
+#endif
 	if (strcmp("PARTOUT(4.0)RESOURCE", header.FileSignature) != 0)
 	{
 		fclose(fileHandle);
@@ -65,12 +79,26 @@ DatFile* partman::load_records(LPCSTR lpFileName, bool fullTiltMode)
 			entryData->EntryType = entryType;
 
 			int fixedSize = _field_size[static_cast<int>(entryType)];
-			size_t fieldSize = fixedSize >= 0 ? fixedSize : LRead<uint32_t>(fileHandle);
+			size_t fieldSize;
+			if(fixedSize >= 0) fieldSize = fixedSize;
+			else {
+				fieldSize = LRead<uint32_t>(fileHandle);
+#if __BYTE_ORDER__ == __ORDER_BIG_ENDIAN__
+				fieldSize = scp_bswap32(fieldSize);
+#endif //__BIG_ENDIAN
+			}
 			entryData->FieldSize = static_cast<int>(fieldSize);
 
 			if (entryType == FieldTypes::Bitmap8bit)
 			{
 				fread(&bmpHeader, 1, sizeof(dat8BitBmpHeader), fileHandle);
+#if __BYTE_ORDER__ == __ORDER_BIG_ENDIAN__
+				bmpHeader.Width = scp_bswap16(bmpHeader.Width);
+				bmpHeader.Height = scp_bswap16(bmpHeader.Height);
+				bmpHeader.XPosition = scp_bswap16(bmpHeader.XPosition);
+				bmpHeader.YPosition = scp_bswap16(bmpHeader.YPosition);
+				bmpHeader.Size = scp_bswap32(bmpHeader.Size);
+#endif //__BIG_ENDIAN__
 				assertm(bmpHeader.Size + sizeof(dat8BitBmpHeader) == fieldSize, "partman: Wrong bitmap field size");
 				assertm(bmpHeader.Resolution <= 2, "partman: bitmap resolution out of bounds");
 
@@ -90,6 +118,14 @@ DatFile* partman::load_records(LPCSTR lpFileName, bool fullTiltMode)
 				}
 
 				fread(&zMapHeader, 1, sizeof(dat16BitBmpHeader), fileHandle);
+#if __BYTE_ORDER__ == __ORDER_BIG_ENDIAN__
+				zMapHeader.Width = scp_bswap16(zMapHeader.Width);
+				zMapHeader.Height = scp_bswap16(zMapHeader.Height);
+				zMapHeader.Stride = scp_bswap16(zMapHeader.Stride);
+				zMapHeader.Unknown0 = scp_bswap32(zMapHeader.Unknown0);
+				zMapHeader.Unknown1_0 = scp_bswap16(zMapHeader.Unknown1_0);
+				zMapHeader.Unknown1_1 = scp_bswap16(zMapHeader.Unknown1_1);
+#endif //__BIG_ENDIAN__
 				auto length = fieldSize - sizeof(dat16BitBmpHeader);
 
 				auto zMap = new zmap_header_type(zMapHeader.Width, zMapHeader.Height, zMapHeader.Stride);
@@ -97,6 +133,12 @@ DatFile* partman::load_records(LPCSTR lpFileName, bool fullTiltMode)
 				if (zMapHeader.Stride * zMapHeader.Height * 2u == length)
 				{
 					fread(zMap->ZPtr1, 1, length, fileHandle);
+#if __BYTE_ORDER__ == __ORDER_BIG_ENDIAN__
+					int16_t * temporaryPointer = (int16_t *)zMap->ZPtr1;
+					for(size_t temporaryCounter = 0; temporaryCounter < length/2; ++temporaryCounter) {
+						temporaryPointer[temporaryCounter] = scp_bswap16(temporaryPointer[temporaryCounter]);
+					}
+#endif
 				}
 				else
 				{
@@ -115,6 +157,29 @@ DatFile* partman::load_records(LPCSTR lpFileName, bool fullTiltMode)
 					break;
 				}
 				fread(entryBuffer, 1, fieldSize, fileHandle);
+#if __BYTE_ORDER__ == __ORDER_BIG_ENDIAN__
+				if(entryType == FieldTypes::ShortValue) {
+					*((int16_t*)entryBuffer) = scp_bswap16(*((int16_t*)entryBuffer));
+				}
+				if(entryType == FieldTypes::Palette) {
+					int32_t * temporaryPointer = (int32_t *)entryBuffer;
+					for(int16_t pixelCounter = 0; pixelCounter < 256; ++pixelCounter) {
+						temporaryPointer[pixelCounter] = scp_bswap32(temporaryPointer[pixelCounter]);
+					}
+				}
+				if(entryType == FieldTypes::ShortArray) {
+					int16_t * temporaryPointer = (int16_t *)entryBuffer;
+					for(size_t temporaryCounter = 0; temporaryCounter < fieldSize/2; ++temporaryCounter) {
+						temporaryPointer[temporaryCounter] = scp_bswap16(temporaryPointer[temporaryCounter]);
+					}
+				}
+				if(entryType == FieldTypes::FloatArray) {
+					int32_t * temporaryPointer = (int32_t *)entryBuffer;
+					for(size_t temporaryCounter = 0; temporaryCounter < fieldSize/4; ++temporaryCounter) {
+						temporaryPointer[temporaryCounter] = scp_bswap32(temporaryPointer[temporaryCounter]);
+					}
+				}
+#endif
 			}
 
 			groupData->AddEntry(entryData);
