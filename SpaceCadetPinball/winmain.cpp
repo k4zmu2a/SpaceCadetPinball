@@ -10,6 +10,7 @@
 #include "Sound.h"
 #include "resource.h"
 #include "splash.h"
+#include "render.h"
 
 HINSTANCE winmain::hinst = nullptr;
 HWND winmain::hwnd_frame = nullptr;
@@ -243,32 +244,6 @@ int winmain::WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLi
 					}
 
 					SetWindowTextA(hwnd_frame, buf);
-
-					if (DispGRhistory)
-					{
-						if (!gfr_display.BmpBufPtr1)
-						{
-							auto plt = static_cast<PALETTEENTRY*>(malloc(1024u));
-							auto pltPtr = &plt[10];
-							for (int i1 = 0, i2 = 0; i1 < 256 - 10; ++i1, i2 += 8)
-							{
-								unsigned char blue = i2, redGreen = i2;
-								if (i2 > 255)
-								{
-									blue = 255;
-									redGreen = i1;
-								}
-
-								*pltPtr++ = {redGreen, redGreen, blue};
-							}
-							gdrv::display_palette(plt);
-							free(plt);
-							gdrv::create_bitmap(&gfr_display, 400, 15);
-						}
-
-						gdrv::blit(&gfr_display, 0, 0, 0, 0, 300, 10);
-						gdrv::fill_bitmap(&gfr_display, 300, 10, 0, 0, 0);
-					}
 				}
 				prevTime = curTime;
 			}
@@ -301,30 +276,48 @@ int winmain::WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLi
 			}
 			if (!single_step)
 			{
-				auto curTime = timeGetTime();
-				now = curTime;
+				now = timeGetTime();
 				if (no_time_loss)
 				{
-					then = curTime;
+					then = now;
 					no_time_loss = 0;
 				}
 
-				if (curTime == then)
+				if (now == then)
 				{
 					Sleep(8u);
 				}
-				else if (pb::frame(curTime - then))
+				else
 				{
-					if (gfr_display.BmpBufPtr1)
+					auto dt = now - then;
+					pb::frame(dt);
+
+					if (DispGRhistory)
 					{
-						auto deltaT = now - then + 10;
-						auto fillChar = static_cast<char>(deltaT);
-						if (deltaT > 236)
+						auto width = render::vscreen.Width / 2;
+						auto height = 64;
+						if (!gfr_display.BmpBufPtr1)
 						{
-							fillChar = -7;
+							gdrv::create_bitmap(&gfr_display, width, height);
 						}
-						gdrv::fill_bitmap(&gfr_display, 1, 10, 299 - someTimeCounter, 0, fillChar);
+
+						gdrv::ScrollBitmapHorizontal(&gfr_display, -1);
+												
+						auto target = 8.0f;
+						auto scale = height / target / 2;
+						gdrv::fill_bitmap(&gfr_display, 1, height, width - 1, 0, 0); // Background
+
+						auto targetVal = dt < target ? dt : target;
+						auto targetHeight = min(static_cast<int>(std::round(targetVal * scale)), height);
+						gdrv::fill_bitmap(&gfr_display, 1, targetHeight, width - 1, height - targetHeight, -1); // Target
+
+						auto diffVal = dt < target ? target - dt : dt - target;
+						auto diffHeight = min(static_cast<int>(std::round(diffVal * scale)), height);
+						gdrv::fill_bitmap(&gfr_display, 1, diffHeight, width - 1, height - targetHeight - diffHeight, 1); // Target diff
+
+						gdrv::blit(&gfr_display, 0, 0, render::vscreen.Width - width, 0, width, height);
 					}
+
 					--someTimeCounter;
 					then = now;
 				}
@@ -537,13 +530,32 @@ LRESULT CALLBACK winmain::message_handler(HWND hWnd, UINT Msg, WPARAM wParam, LP
 			return DefWindowProcW(hWnd, Msg, wParam, lParam);
 		switch (wParam)
 		{
-		case 'H':
-			DispGRhistory = 1;
+		case 'G':
+			DispGRhistory ^= 1;
 			return DefWindowProcW(hWnd, Msg, wParam, lParam);
 		case 'Y':
 			SetWindowTextA(hWnd, "Pinball");
 			DispFrameRate = DispFrameRate == 0;
 			return DefWindowProcW(hWnd, Msg, wParam, lParam);
+		case 'O':
+			{
+				auto plt = static_cast<PALETTEENTRY*>(malloc(1024u));
+				auto pltPtr = &plt[10];
+				for (int i1 = 0, i2 = 0; i1 < 256 - 10; ++i1, i2 += 8)
+				{
+					unsigned char blue = i2, redGreen = i2;
+					if (i2 > 255)
+					{
+						blue = 255;
+						redGreen = i1;
+					}
+
+					*pltPtr++ = { redGreen, redGreen, blue };
+				}
+				gdrv::display_palette(plt);
+				free(plt);
+			}
+			break;
 		case VK_F1:
 			pb::frame(10);
 			return DefWindowProcW(hWnd, Msg, wParam, lParam);

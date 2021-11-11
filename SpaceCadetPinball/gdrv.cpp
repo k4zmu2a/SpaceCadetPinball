@@ -413,6 +413,19 @@ void gdrv::copy_bitmap_w_transparency(gdrv_bitmap8* dstBmp, int width, int heigh
 	}
 }
 
+void gdrv::ScrollBitmapHorizontal(gdrv_bitmap8* bmp, int xStart)
+{
+	auto srcPtr = bmp->BmpBufPtr1;
+	auto startOffset = xStart >= 0 ? 0 : -xStart;
+	auto endOffset = xStart >= 0 ? xStart : 0;
+	auto length = bmp->Width - std::abs(xStart);
+	for (int y = bmp->Height; y > 0; --y)
+	{
+		std::memmove(srcPtr + endOffset, srcPtr + startOffset, length);
+		srcPtr += bmp->Stride;
+	}
+}
+
 
 void gdrv::grtext_draw_ttext_in_box(LPCWSTR text, int xOff, int yOff, int width, int height)
 {
