@@ -16,7 +16,6 @@ float render::zscaler, render::zmin, render::zmax;
 rectangle_type render::vscreen_rect;
 gdrv_bitmap8 *render::vscreen, *render::background_bitmap, *render::ball_bitmap[20];
 zmap_header_type* render::zscreen;
-SDL_Texture* render::vScreenTex = nullptr;
 SDL_Rect render::DestinationRect{};
 
 void render::init(gdrv_bitmap8* bmp, float zMin, float zScaler, int width, int height)
@@ -58,26 +57,11 @@ void render::uninit()
 	ball_list.clear();
 	dirty_list.clear();
 	sprite_list.clear();
-	SDL_DestroyTexture(vScreenTex);
-	vScreenTex = nullptr;
 }
 
 void render::recreate_screen_texture()
 {
-	if (vScreenTex != nullptr)
-	{
-		SDL_DestroyTexture(vScreenTex);
-	}
-
-	UsingSdlHint hint{ SDL_HINT_RENDER_SCALE_QUALITY, options::Options.LinearFiltering ? "linear" : "nearest" };
-	vScreenTex = SDL_CreateTexture
-	(
-		winmain::Renderer,
-		SDL_PIXELFORMAT_ARGB8888,
-		SDL_TEXTUREACCESS_STREAMING,
-		vscreen_rect.Width, vscreen_rect.Height
-	);
-	SDL_SetTextureBlendMode(vScreenTex, SDL_BLENDMODE_NONE);
+	vscreen->CreateTexture(options::Options.LinearFiltering ? "linear" : "nearest", SDL_TEXTUREACCESS_STREAMING);
 }
 
 void render::update()
@@ -535,31 +519,13 @@ void render::SpriteViewer(bool* show)
 	ImGui::End();
 }
 
-void render::BlitVScreen()
-{
-	int pitch = 0;
-	ColorRgba* lockedPixels;
-	SDL_LockTexture
-	(
-		vScreenTex,
-		nullptr,
-		reinterpret_cast<void**>(&lockedPixels),
-		&pitch
-	);
-	assertm(static_cast<unsigned>(pitch) == vscreen->Width * sizeof(ColorRgba), "Padding on vScreen texture");
-
-	std::memcpy(lockedPixels, vscreen->BmpBufPtr1, vscreen->Width * vscreen->Height * sizeof(ColorRgba));
-
-	SDL_UnlockTexture(vScreenTex);
-}
-
 void render::PresentVScreen()
 {
-	BlitVScreen();
+	vscreen->BlitToTexture();
 
 	if (offset_x == 0 && offset_y == 0)
 	{
-		SDL_RenderCopy(winmain::Renderer, vScreenTex, nullptr, &DestinationRect);
+		SDL_RenderCopy(winmain::Renderer, vscreen->Texture, nullptr, &DestinationRect);
 	}
 	else
 	{
@@ -591,8 +557,8 @@ void render::PresentVScreen()
 			DestinationRect.w - dstSeparationX, static_cast<float>(DestinationRect.h)
 		};
 
-		SDL_RenderCopyF(winmain::Renderer, vScreenTex, &srcBoardRect, &dstBoardRect);
-		SDL_RenderCopyF(winmain::Renderer, vScreenTex, &srcSidebarRect, &dstSidebarRect);
+		SDL_RenderCopyF(winmain::Renderer, vscreen->Texture, &srcBoardRect, &dstBoardRect);
+		SDL_RenderCopyF(winmain::Renderer, vscreen->Texture, &srcSidebarRect, &dstSidebarRect);
 #else
 		// SDL_RenderCopy cannot express sub pixel offset.
 		// Vscreen shift is required for that.
@@ -615,8 +581,8 @@ void render::PresentVScreen()
 			DestinationRect.w - dstSeparationX, DestinationRect.h
 		};
 
-		SDL_RenderCopy(winmain::Renderer, vScreenTex, &srcBoardRect, &dstBoardRect);
-		SDL_RenderCopy(winmain::Renderer, vScreenTex, &srcSidebarRect, &dstSidebarRect);
+		SDL_RenderCopy(winmain::Renderer, vscreen->Texture, &srcBoardRect, &dstBoardRect);
+		SDL_RenderCopy(winmain::Renderer, vscreen->Texture, &srcSidebarRect, &dstSidebarRect);
 #endif
 	}
 }

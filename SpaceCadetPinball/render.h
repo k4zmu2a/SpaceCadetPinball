@@ -60,10 +60,8 @@ private:
 	static rectangle_type vscreen_rect;
 	static gdrv_bitmap8 *ball_bitmap[20];
 	static zmap_header_type* zscreen;
-	static SDL_Texture* vScreenTex;
 
 	static void repaint(struct render_sprite_type_struct* sprite);
 	static void paint_balls();
 	static void unpaint_balls();
-	static void BlitVScreen();
 };

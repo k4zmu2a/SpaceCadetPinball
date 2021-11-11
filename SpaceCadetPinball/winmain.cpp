@@ -18,7 +18,7 @@ int winmain::return_value = 0;
 bool winmain::bQuit = false;
 bool winmain::activated = false;
 int winmain::DispFrameRate = 0;
-int winmain::DispGRhistory = 0;
+bool winmain::DispGRhistory = false;
 bool winmain::single_step = false;
 bool winmain::has_focus = true;
 int winmain::last_mouse_x;
@@ -185,7 +185,7 @@ int winmain::WinMain(LPCSTR lpCmdLine)
 	else
 		pb::replay_level(0);
 
-	unsigned dtHistoryCounter = 300u, updateCounter = 0, frameCounter = 0;
+	unsigned updateCounter = 0, frameCounter = 0;
 
 	auto frameStart = Clock::now();
 	double UpdateToFrameCounter = 0;
@@ -206,36 +206,6 @@ int winmain::WinMain(LPCSTR lpCmdLine)
 				FpsDetails = buf;
 				frameCounter = updateCounter = 0;
 				prevTime = curTime;
-			}
-		}
-
-		if (DispGRhistory)
-		{
-			if (!gfr_display)
-			{
-				auto plt = static_cast<ColorRgba*>(malloc(1024u));
-				auto pltPtr = &plt[10]; // first 10 entries are system colors hardcoded in display_palette()
-				for (int i1 = 0, i2 = 0; i1 < 256 - 10; ++i1, i2 += 8)
-				{
-					unsigned char blue = i2, redGreen = i2;
-					if (i2 > 255)
-					{
-						blue = 255;
-						redGreen = i1;
-					}
-
-					*pltPtr++ = ColorRgba{Rgba{redGreen, redGreen, blue, 0}};
-				}
-				gdrv::display_palette(plt);
-				free(plt);
-				gfr_display = new gdrv_bitmap8(400, 15, false);
-			}
-
-			if (!dtHistoryCounter)
-			{
-				dtHistoryCounter = 300;
-				gdrv::copy_bitmap(render::vscreen, 300, 10, 0, 30, gfr_display, 0, 0);
-				gdrv::fill_bitmap(gfr_display, 300, 10, 0, 0, 0);
 			}
 		}
 
@@ -262,18 +232,30 @@ int winmain::WinMain(LPCSTR lpCmdLine)
 			if (!single_step && !no_time_loss)
 			{
 				auto dt = static_cast<float>(frameDuration.count());
-				auto dtWhole = static_cast<int>(std::round(dt));
 				pb::frame(dt);
-				if (gfr_display)
+				if (DispGRhistory)
 				{
-					auto deltaTPal = dtWhole + 10;
-					auto fillChar = static_cast<uint8_t>(deltaTPal);
-					if (deltaTPal > 236)
+					auto width = 300;
+					auto height = 64;
+					if (!gfr_display)
 					{
-						fillChar = 1;
+						gfr_display = new gdrv_bitmap8(width, height, false);
+						gfr_display->CreateTexture("nearest", SDL_TEXTUREACCESS_STREAMING);
 					}
-					gdrv::fill_bitmap(gfr_display, 1, 10, 300 - dtHistoryCounter, 0, fillChar);
-					--dtHistoryCounter;
+
+					gdrv::ScrollBitmapHorizontal(gfr_display, -1);
+
+					auto target = static_cast<float>(TargetFrameTime.count());
+					auto scale = height / target / 2;
+					gdrv::fill_bitmap(gfr_display, 1, height, width - 1, 0, ColorRgba::Black()); // Background
+
+					auto targetVal = dt < target ? dt : target;
+					auto targetHeight = std::min(static_cast<int>(std::round(targetVal * scale)), width);
+					gdrv::fill_bitmap(gfr_display, 1, targetHeight, width - 1, height - targetHeight, ColorRgba::White()); // Target
+
+					auto diffVal = dt < target ? target - dt : dt - target;
+					auto diffHeight = std::min(static_cast<int>(std::round(diffVal * scale)), width);
+					gdrv::fill_bitmap(gfr_display, 1, diffHeight, width - 1, height - targetHeight - diffHeight, ColorRgba::Red()); // Target diff
 				}
 				updateCounter++;
 			}
@@ -327,6 +309,7 @@ int winmain::WinMain(LPCSTR lpCmdLine)
 	}
 
 	delete gfr_display;
+	gfr_display = nullptr;
 	options::uninit();
 	midi::music_shutdown();
 	pb::uninit();
@@ -561,6 +544,10 @@ void winmain::RenderUi()
 					pause();
 				ShowSpriteViewer ^= true;
 			}
+			if (pb::cheat_mode && ImGui::MenuItem("Frame Times", nullptr, DispGRhistory))
+			{
+				DispGRhistory ^= true;
+			}
 			if (ImGui::BeginMenu("Cheats"))
 			{
 				if (ImGui::MenuItem("hidden test", nullptr, pb::cheat_mode))
@@ -599,6 +586,8 @@ void winmain::RenderUi()
 	if (ShowSpriteViewer)
 		render::SpriteViewer(&ShowSpriteViewer);
 	options::RenderControlDialog();
+	if (DispGRhistory)
+		RenderFrameTimeDialog();
 }
 
 int winmain::event_handler(const SDL_Event* event)
@@ -687,7 +676,26 @@ int winmain::event_handler(const SDL_Event* event)
 		switch (event->key.keysym.sym)
 		{
 		case SDLK_g:
-			DispGRhistory = 1;
+			DispGRhistory ^= true;
+			break;
+		case SDLK_o:
+			{
+				auto plt = new ColorRgba[4 * 256];
+				auto pltPtr = &plt[10]; // first 10 entries are system colors hardcoded in display_palette()
+				for (int i1 = 0, i2 = 0; i1 < 256 - 10; ++i1, i2 += 8)
+				{
+					unsigned char blue = i2, redGreen = i2;
+					if (i2 > 255)
+					{
+						blue = 255;
+						redGreen = i1;
+					}
+
+					*pltPtr++ = ColorRgba{ Rgba{redGreen, redGreen, blue, 0} };
+				}
+				gdrv::display_palette(plt);
+				delete[] plt;
+			}
 			break;
 		case SDLK_y:
 			SDL_SetWindowTitle(MainWindow, "Pinball");
@@ -924,4 +932,24 @@ void winmain::UpdateFrameRate()
 	auto fps = Options.FramesPerSecond, ups = Options.UpdatesPerSecond;
 	UpdateToFrameRatio = static_cast<double>(ups) / fps;
 	TargetFrameTime = DurationMs(1000.0 / ups);
+}
+
+void winmain::RenderFrameTimeDialog()
+{
+	if (!gfr_display)
+		return;
+
+	ImGui::PushStyleVar(ImGuiStyleVar_WindowMinSize, ImVec2{ 300, 70 });
+	if (ImGui::Begin("Frame Times", &DispGRhistory, ImGuiWindowFlags_NoScrollbar))
+	{
+		auto target = static_cast<float>(TargetFrameTime.count());
+		auto scale = 1 / (64 / 2 / target);
+
+		ImGui::Text("Target frame time:%03.04fms, 1px:%03.04fms", target, scale);
+		gfr_display->BlitToTexture();
+		auto region = ImGui::GetContentRegionAvail();
+		ImGui::Image(gfr_display->Texture, region);
+	}
+	ImGui::End();
+	ImGui::PopStyleVar();
 }

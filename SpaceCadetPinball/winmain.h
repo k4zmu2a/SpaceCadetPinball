@@ -63,9 +63,9 @@ public:
 	static bool RestartRequested() { return restart; }
 	static void UpdateFrameRate();
 private:
-	static int return_value, DispFrameRate, DispGRhistory;
+	static int return_value, DispFrameRate;
 	static int mouse_down, last_mouse_x, last_mouse_y;
-	static bool no_time_loss, activated, bQuit, has_focus;
+	static bool no_time_loss, activated, bQuit, has_focus, DispGRhistory;
 	static gdrv_bitmap8* gfr_display;
 	static std::string FpsDetails;
 	static bool restart;
@@ -77,4 +77,5 @@ private:
 	static struct optionsStruct& Options;
 
 	static void RenderUi();
+	static void RenderFrameTimeDialog();
 };
