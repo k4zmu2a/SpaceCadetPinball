@@ -225,12 +225,15 @@ void pb::ballset(int x, int y)
 	ball->Speed = maths::normalize_2d(&ball->Acceleration);
 }
 
-int pb::frame(int time)
+void pb::frame(int time)
 {
 	static int frameTime = 0;
 
 	if (time > 100)
 		time = 100;
+	if (time <= 0)
+		return;
+
 	float timeMul = time * 0.001f;
 	if (!mode_countdown(time))
 	{
@@ -284,7 +287,6 @@ int pb::frame(int time)
 				MainTable->tilt(time_now);
 		}
 	}
-	return 1;
 }
 
 void pb::timed_frame(float timeNow, float timeDelta, bool drawBalls)

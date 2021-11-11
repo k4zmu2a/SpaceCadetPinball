@@ -12,6 +12,8 @@
 #include "splash.h"
 #include "render.h"
 
+const int TargetFrameTime = 8;
+
 HINSTANCE winmain::hinst = nullptr;
 HWND winmain::hwnd_frame = nullptr;
 HCURSOR winmain::mouse_hsave;
@@ -28,8 +30,6 @@ int winmain::last_mouse_y;
 int winmain::mouse_down;
 int winmain::no_time_loss;
 
-DWORD winmain::then;
-DWORD winmain::now;
 UINT winmain::iFrostUniqueMsg;
 bool winmain::restart = false;
 
@@ -50,6 +50,10 @@ int winmain::WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLi
 	options::path_init(optionsRegPath);
 	options::ReadOptions();
 	auto regSpaceCadet = pinball::get_rc_string(166, 0);
+
+	// Needed for sub 16ms sleep
+	if (timeBeginPeriod(1) == TIMERR_NOERROR)
+		atexit(ResetTimer);
 
 	if (options::get_int(regSpaceCadet, "Table Version", 1) <= 1)
 	{
@@ -221,7 +225,7 @@ int winmain::WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLi
 		pb::replay_level(0);
 
 	DWORD someTimeCounter = 300u, prevTime = 0u;
-	then = timeGetTime();
+	int sleepRemainder = 0, frameDuration = TargetFrameTime;
 	while (true)
 	{
 		if (!someTimeCounter)
@@ -259,68 +263,64 @@ int winmain::WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLi
 
 		if (has_focus)
 		{
-			if (mouse_down)
+			if (mouse_down && frameDuration >= 2)
 			{
-				now = timeGetTime();
-				if (now - then >= 2)
-				{
-					/*last_mouse_n is in client coordinates*/
-					POINT Point;
-					GetCursorPos(&Point);
-					ScreenToClient(hwnd_frame, &Point);
-					pb::ballset(last_mouse_x - Point.x, Point.y - last_mouse_y);
-					Point = POINT{last_mouse_x, last_mouse_y};
-					ClientToScreen(hwnd_frame, &Point);
-					SetCursorPos(Point.x, Point.y);
-				}
+				/*last_mouse_n is in client coordinates*/
+				POINT Point;
+				GetCursorPos(&Point);
+				ScreenToClient(hwnd_frame, &Point);
+				pb::ballset(last_mouse_x - Point.x, Point.y - last_mouse_y);
+				Point = POINT{ last_mouse_x, last_mouse_y };
+				ClientToScreen(hwnd_frame, &Point);
+				SetCursorPos(Point.x, Point.y);
 			}
+
 			if (!single_step)
 			{
-				now = timeGetTime();
-				if (no_time_loss)
-				{
-					then = now;
-					no_time_loss = 0;
-				}
-
-				if (now == then)
-				{
-					Sleep(8u);
-				}
-				else
-				{
-					auto dt = now - then;
+				auto frameStart = timeGetTime();
+				auto dt = frameDuration;
+				if (!no_time_loss)
 					pb::frame(dt);
+				else
+					no_time_loss = 0;
 
-					if (DispGRhistory)
+				if (DispGRhistory)
+				{
+					auto width = render::vscreen.Width / 2;
+					auto height = 64;
+					if (!gfr_display.BmpBufPtr1)
 					{
-						auto width = render::vscreen.Width / 2;
-						auto height = 64;
-						if (!gfr_display.BmpBufPtr1)
-						{
-							gdrv::create_bitmap(&gfr_display, width, height);
-						}
-
-						gdrv::ScrollBitmapHorizontal(&gfr_display, -1);
-												
-						auto target = 8.0f;
-						auto scale = height / target / 2;
-						gdrv::fill_bitmap(&gfr_display, 1, height, width - 1, 0, 0); // Background
-
-						auto targetVal = dt < target ? dt : target;
-						auto targetHeight = min(static_cast<int>(std::round(targetVal * scale)), height);
-						gdrv::fill_bitmap(&gfr_display, 1, targetHeight, width - 1, height - targetHeight, -1); // Target
-
-						auto diffVal = dt < target ? target - dt : dt - target;
-						auto diffHeight = min(static_cast<int>(std::round(diffVal * scale)), height);
-						gdrv::fill_bitmap(&gfr_display, 1, diffHeight, width - 1, height - targetHeight - diffHeight, 1); // Target diff
-
-						gdrv::blit(&gfr_display, 0, 0, render::vscreen.Width - width, 0, width, height);
+						gdrv::create_bitmap(&gfr_display, width, height);
 					}
 
-					--someTimeCounter;
-					then = now;
+					gdrv::ScrollBitmapHorizontal(&gfr_display, -1);
+
+					float target = TargetFrameTime;
+					auto scale = height / target / 2;
+					gdrv::fill_bitmap(&gfr_display, 1, height, width - 1, 0, 0); // Background
+
+					auto targetVal = dt < target ? dt : target;
+					auto targetHeight = min(static_cast<int>(std::round(targetVal * scale)), height);
+					gdrv::fill_bitmap(&gfr_display, 1, targetHeight, width - 1, height - targetHeight, -1); // Target
+
+					auto diffVal = dt < target ? target - dt : dt - target;
+					auto diffHeight = min(static_cast<int>(std::round(diffVal * scale)), height);
+					gdrv::fill_bitmap(&gfr_display, 1, diffHeight, width - 1, height - targetHeight - diffHeight, 1); // Target diff
+
+					gdrv::blit(&gfr_display, 0, 0, render::vscreen.Width - width, 0, width, height);
 				}
+
+				auto updateEnd = timeGetTime();
+				auto sleepDuration = TargetFrameTime - (int)(updateEnd - frameStart) - sleepRemainder;
+
+				if (sleepDuration > 0)
+					Sleep(sleepDuration);
+
+				auto frameEnd = timeGetTime();
+				sleepRemainder = (frameEnd - updateEnd) - sleepDuration;
+				frameDuration = min(frameEnd - frameStart, TargetFrameTime * 2);
+
+				--someTimeCounter;
 			}
 		}
 	}
