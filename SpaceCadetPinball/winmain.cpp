@@ -224,7 +224,7 @@ int winmain::WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLi
 	else
 		pb::replay_level(0);
 
-	DWORD someTimeCounter = 300u, prevTime = 0u;
+	DWORD someTimeCounter = 300u, prevTime = 0u, frameStart = timeGetTime();
 	int sleepRemainder = 0, frameDuration = TargetFrameTime;
 	while (true)
 	{
@@ -277,7 +277,6 @@ int winmain::WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLi
 
 			if (!single_step)
 			{
-				auto frameStart = timeGetTime();
 				auto dt = frameDuration;
 				if (!no_time_loss)
 					pb::frame(dt);
@@ -313,12 +312,21 @@ int winmain::WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLi
 				auto updateEnd = timeGetTime();
 				auto sleepDuration = TargetFrameTime - (int)(updateEnd - frameStart) - sleepRemainder;
 
+				DWORD frameEnd;
 				if (sleepDuration > 0)
+				{
 					Sleep(sleepDuration);
+					frameEnd = timeGetTime();
+					sleepRemainder = (frameEnd - updateEnd) - sleepDuration;
+				}
+				else
+				{
+					frameEnd = updateEnd;
+					sleepRemainder = 0;
+				}
 
-				auto frameEnd = timeGetTime();
-				sleepRemainder = (frameEnd - updateEnd) - sleepDuration;
 				frameDuration = min(frameEnd - frameStart, TargetFrameTime * 2);
+				frameStart = frameEnd;
 
 				--someTimeCounter;
 			}
