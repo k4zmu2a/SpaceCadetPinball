@@ -1640,7 +1640,7 @@ void control::MissionSpotTargetControl(int code, TPinballComponent* caller)
 		lite->Message(15, 2.0);
 
 		TSound* sound;
-		if (!light_on(&control_lite198_tag) || control_lite198_tag.Component->FlasherActive)
+		if (pb::FullTiltMode && (!light_on(&control_lite198_tag) || control_lite198_tag.Component->FlasherActive))
 		{
 			sound = control_soundwave52_tag.Component;
 		}
