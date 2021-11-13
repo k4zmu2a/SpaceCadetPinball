@@ -290,25 +290,20 @@ int winmain::WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLi
 				if (DispGRhistory)
 				{
 					auto width = render::vscreen.Width / 2;
-					auto height = 64;
+					auto height = 64, halfHeight = height / 2;
 					if (!gfr_display.BmpBufPtr1)
 					{
 						gdrv::create_bitmap(&gfr_display, width, height);
 					}
 
 					gdrv::ScrollBitmapHorizontal(&gfr_display, -1);
+					gdrv::fill_bitmap(&gfr_display, 1, halfHeight, width - 1, 0, 0); // Background
+					gdrv::fill_bitmap(&gfr_display, 1, halfHeight, width - 1, halfHeight, -1); // Target					
 
-					float target = TargetFrameTime;
-					auto scale = height / target / 2;
-					gdrv::fill_bitmap(&gfr_display, 1, height, width - 1, 0, 0); // Background
-
-					auto targetVal = dt < target ? dt : target;
-					auto targetHeight = min(static_cast<int>(std::floor(targetVal * scale)), height);
-					gdrv::fill_bitmap(&gfr_display, 1, targetHeight, width - 1, height - targetHeight, -1); // Target
-
-					auto diffVal = dt < target ? target - dt : dt - target;
-					auto diffHeight = min(static_cast<int>(std::floor(diffVal * scale)), height);
-					gdrv::fill_bitmap(&gfr_display, 1, diffHeight, width - 1, height - targetHeight - diffHeight, 1); // Target diff
+					auto scale = halfHeight / TargetFrameTime;
+					auto diffHeight = min(static_cast<int>(std::round(std::abs(TargetFrameTime - dt) * scale)), halfHeight);
+					auto yOffset = dt < TargetFrameTime ? halfHeight : halfHeight - diffHeight;
+					gdrv::fill_bitmap(&gfr_display, 1, diffHeight, width - 1, yOffset, 1); // Target diff
 
 					gdrv::blit(&gfr_display, 0, 0, render::vscreen.Width - width, 0, width, height);
 				}
