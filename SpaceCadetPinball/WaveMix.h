@@ -151,7 +151,7 @@ public:
 	static MIXWAVE* OpenWave(HANDLE hMixSession, LPCSTR szWaveFilename, HINSTANCE hInst, unsigned int dwFlags);
 	static int FreeWave(HANDLE hMixSession, MIXWAVE* lpMixWave);
 	static int Activate(HANDLE hMixSession, bool fActivate);
-	static void Pump();
+	static void Pump(bool performCleanup = true);
 	static int Play(MIXPLAYPARAMS* lpMixPlayParams);
 
 private:

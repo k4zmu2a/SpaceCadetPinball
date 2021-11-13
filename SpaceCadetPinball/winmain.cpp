@@ -228,9 +228,10 @@ int winmain::WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLi
 	float sleepRemainder = 0, frameDuration = TargetFrameTime;
 	while (true)
 	{
-		if (!someTimeCounter)
+		if (someTimeCounter == 0)
 		{
 			someTimeCounter = 300;
+
 			if (DispFrameRate)
 			{
 				auto curTime = timeGetTime();
@@ -257,7 +258,10 @@ int winmain::WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLi
 			}
 		}
 
-		Sound::Idle();
+		// Don't look for and free already played blocks at every single frame,
+		// as it is quite costly to look up. Only do that "sometimes".
+		bool performSoundCleanup = someTimeCounter == 300;
+		Sound::Idle(performSoundCleanup);
 		if (!ProcessWindowMessages() || bQuit)
 			break;
 

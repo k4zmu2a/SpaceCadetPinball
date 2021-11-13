@@ -6,7 +6,7 @@ class Sound
 public:
 	static int Init(HINSTANCE hInstance, int voices, void (* someFuncPtr)(int, MIXWAVE*, int));
 	static void Enable(int channelFrom, int channelTo, int enableFlag);
-	static void Idle();
+	static void Idle(bool performCleanup = true);
 	static void Activate();
 	static void Deactivate();
 	static void Close();
