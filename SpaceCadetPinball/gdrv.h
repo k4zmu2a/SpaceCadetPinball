@@ -8,22 +8,15 @@ enum class BitmapTypes : uint8_t
 	Spliced = 3,
 };
 
-
-struct Rgba
+struct ColorRgba
 {
-	uint8_t Blue;
-	uint8_t Green;
-	uint8_t Red;
-	uint8_t Alpha;
-};
+	static constexpr ColorRgba Black() { return ColorRgba{ 0, 0, 0, 255 }; }
+	static constexpr ColorRgba White() { return ColorRgba{ 255, 255, 255, 255 }; }
+	static constexpr ColorRgba Red() { return ColorRgba{ 255, 0, 0, 255 }; }
+	static constexpr ColorRgba Green() { return ColorRgba{ 0, 255,0, 255 }; }
+	static constexpr ColorRgba Blue() { return ColorRgba{ 0, 0, 255, 255 }; }
 
-union ColorRgba
-{
-	static constexpr ColorRgba Black() { return ColorRgba{ Rgba{0, 0, 0, 255} }; }
-	static constexpr ColorRgba White() { return ColorRgba{ Rgba{255, 255, 255, 255} }; }
-	static constexpr ColorRgba Red() { return ColorRgba{ Rgba{0, 0, 255, 255} }; }
-	static constexpr ColorRgba Green() { return ColorRgba{ Rgba{0, 255,0, 255} }; }
-	static constexpr ColorRgba Blue() { return ColorRgba{ Rgba{255, 0, 0, 255} }; }
+	uint32_t Color;
 
 	ColorRgba() = default;
 
@@ -32,13 +25,22 @@ union ColorRgba
 	{
 	}
 
-	explicit constexpr ColorRgba(Rgba rgba)
-		: rgba(rgba)
+	explicit constexpr ColorRgba(uint8_t red, uint8_t green, uint8_t blue, uint8_t alpha)
+		: Color(alpha << alphaOffset | red << redOffset | green << greenOffset | blue << blueOffset)
 	{
 	}
 
-	uint32_t Color;
-	Rgba rgba;
+	uint8_t GetAlpha() const { return (Color >> alphaOffset) & 0xffu; }
+	uint8_t GetRed() const { return (Color >> redOffset) & 0xffu; }
+	uint8_t GetGreen() const { return (Color >> greenOffset) & 0xffu; }
+	uint8_t GetBlue() const { return (Color >> blueOffset) & 0xffu; }
+	void SetAlpha(uint8_t val) { Color = (Color & (~(0xffu << alphaOffset))) | (val << alphaOffset); }
+	void SetRed(uint8_t val) { Color = (Color & (~(0xffu << redOffset))) | (val << redOffset); }
+	void SetGreen(uint8_t val) { Color = (Color & (~(0xffu << greenOffset))) | (val << greenOffset); }
+	void SetBlue(uint8_t val) { Color = (Color & (~(0xffu << blueOffset))) | (val << blueOffset); }
+
+private:
+	static const unsigned alphaOffset = 3 * 8, redOffset = 2 * 8, greenOffset = 1 * 8, blueOffset = 0 * 8;
 };
 
 static_assert(sizeof(ColorRgba) == 4, "Wrong size of RGBA color");

@@ -1,50 +1,13 @@
-<?xml version="1.0" encoding="utf-8"?> 
+<?xml version="1.0" encoding="utf-8"?>
 <AutoVisualizer xmlns="http://schemas.microsoft.com/vstudio/debugger/natvis/2010">
-  <Type Name="objlist_class">
-    <DisplayString>{{ size={ListPtr->Count} }}</DisplayString>
-    <Expand>
-      <Item Name="[size]" ExcludeView="simple">ListPtr->Count</Item>
-      <Item Name="[capacity]" ExcludeView="simple">ListPtr->Size</Item>
-      <ArrayItems>
-        <Size>ListPtr->Size</Size>
-        <ValuePointer>ListPtr->Array</ValuePointer>
-      </ArrayItems>
-    </Expand>
-  </Type>
-
-  <Type Name="objlist_struct1">
-    <DisplayString>{{ size={Count} }}</DisplayString>
-    <Expand>
-      <Item Name="[size]" ExcludeView="simple">Count</Item>
-      <Item Name="[capacity]" ExcludeView="simple">Size</Item>
-      <ArrayItems>
-        <Size>Size</Size>
-        <ValuePointer>Array</ValuePointer>
-      </ArrayItems>
-    </Expand>
-  </Type>
-
-  <Type Name="datFileStruct">
-    <DisplayString>{{ NumberOfGroups={NumberOfGroups} }}</DisplayString>
-    <Expand>
-      <Item Name="[NumberOfGroups]" ExcludeView="simple">NumberOfGroups</Item>
-      <Item Name="[Description]" ExcludeView="simple">Description</Item>
-      <ArrayItems>
-        <Size>NumberOfGroups</Size>
-        <ValuePointer>GroupData</ValuePointer>
-      </ArrayItems>
-    </Expand>
-  </Type>
-  <Type Name="datGroupData">
-    <DisplayString>{{ EntryCount={EntryCount} }}</DisplayString>
-    <Expand>
-      <Item Name="[EntryCount]" ExcludeView="simple">EntryCount</Item>
-      <ArrayItems>
-        <Size>EntryCount</Size>
-        <ValuePointer>Entries</ValuePointer>
-      </ArrayItems>
-    </Expand>
-  </Type>
-
-
+	<Type Name="ColorRgba">
+		<DisplayString>{{ Color:{Color} }}</DisplayString>
+		<Expand>
+			<Item Name="[Alpha]" ExcludeView="simple">Color>>alphaOffset &amp; 255</Item>
+			<Item Name="[Red]" ExcludeView="simple">Color>>redOffset &amp; 255</Item>
+			<Item Name="[Green]" ExcludeView="simple">Color>>greenOffset &amp; 255</Item>
+			<Item Name="[Blue]" ExcludeView="simple">Color>>blueOffset &amp; 255</Item>
+			<Item Name="[Color]" ExcludeView="simple">Color</Item>
+		</Expand>
+	</Type>
 </AutoVisualizer>

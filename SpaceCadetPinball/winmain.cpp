@@ -250,11 +250,11 @@ int winmain::WinMain(LPCSTR lpCmdLine)
 					gdrv::fill_bitmap(gfr_display, 1, height, width - 1, 0, ColorRgba::Black()); // Background
 
 					auto targetVal = dt < target ? dt : target;
-					auto targetHeight = std::min(static_cast<int>(std::round(targetVal * scale)), width);
+					auto targetHeight = std::min(static_cast<int>(std::round(targetVal * scale)), height);
 					gdrv::fill_bitmap(gfr_display, 1, targetHeight, width - 1, height - targetHeight, ColorRgba::White()); // Target
 
 					auto diffVal = dt < target ? target - dt : dt - target;
-					auto diffHeight = std::min(static_cast<int>(std::round(diffVal * scale)), width);
+					auto diffHeight = std::min(static_cast<int>(std::round(diffVal * scale)), height);
 					gdrv::fill_bitmap(gfr_display, 1, diffHeight, width - 1, height - targetHeight - diffHeight, ColorRgba::Red()); // Target diff
 				}
 				updateCounter++;
@@ -691,7 +691,7 @@ int winmain::event_handler(const SDL_Event* event)
 						redGreen = i1;
 					}
 
-					*pltPtr++ = ColorRgba{ Rgba{redGreen, redGreen, blue, 0} };
+					*pltPtr++ = ColorRgba{ blue, redGreen, redGreen, 0 };
 				}
 				gdrv::display_palette(plt);
 				delete[] plt;

@@ -112,7 +112,6 @@ void zdrv::CreatePreview(zmap_header_type& zMap)
 
 	auto tmpBuff = new ColorRgba[zMap.Width * zMap.Height];
 
-	ColorRgba color{};
 	auto dst = tmpBuff;
 	auto src = zMap.ZPtr1;
 	for (auto y = 0; y < zMap.Height; y++)
@@ -120,10 +119,7 @@ void zdrv::CreatePreview(zmap_header_type& zMap)
 		for (auto x = 0; x < zMap.Width; x++)
 		{
 			auto depth = static_cast<uint8_t>((0xffff - *src++) / 0xff);
-			color.rgba.Blue = depth;
-			color.rgba.Green = depth;
-			color.rgba.Red = depth;
-			*dst++ = color;
+			*dst++ = ColorRgba{ depth, depth, depth, 0xff };
 		}
 		src += zMap.Stride - zMap.Width;
 	}

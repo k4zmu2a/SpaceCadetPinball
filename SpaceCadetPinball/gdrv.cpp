@@ -122,7 +122,7 @@ void gdrv_bitmap8::CreateTexture(const char* scaleHint, int access)
 	Texture = SDL_CreateTexture
 	(
 		winmain::Renderer,
-		SDL_PIXELFORMAT_ARGB8888,
+		SDL_PIXELFORMAT_BGRA32,
 		access,
 		Width, Height
 	);
@@ -151,43 +151,33 @@ void gdrv_bitmap8::BlitToTexture()
 
 int gdrv::display_palette(ColorRgba* plt)
 {
-	const uint32_t sysPaletteColors[]
+	// Colors from Windows system palette
+	const ColorRgba sysPaletteColors[10]
 	{
-		0xff000000, // Color 0: transparent
-		0xff000080,
-		0xff008000,
-		0xff008080,
-		0xff800000,
-		0xff800080,
-		0xff808000,
-		0xffC0C0C0,
-		0xffC0DCC0,
-		0xffF0CAA6
+		ColorRgba{0, 0, 0, 0}, // Color 0: transparent
+		ColorRgba{0x80, 0, 0, 0xff},
+		ColorRgba{0, 0x80, 0, 0xff},
+		ColorRgba{0x80, 0x80, 0, 0xff},
+		ColorRgba{0, 0, 0x80, 0xff},
+		ColorRgba{0x80, 0, 0x80, 0xff},
+		ColorRgba{0, 0x80, 0x80, 0xff},
+		ColorRgba{0xC0, 0xC0, 0xC0, 0xff},
+		ColorRgba{0xC0, 0xDC, 0xC0, 0xff},
+		ColorRgba{0xA6, 0xCA, 0xF0, 0xff},
 	};
 
-	memcpy(current_palette, sysPaletteColors, sizeof sysPaletteColors);
+	std::memset(current_palette, 0, sizeof current_palette);
+	std::memcpy(current_palette, sysPaletteColors, sizeof sysPaletteColors);	
 
-	for (int i = 0; i < 256; i++)
+	for (int index = 10; plt && index < 246; index++)
 	{
-		current_palette[i].rgba.Alpha = 0;
+		auto srcClr = plt[index];
+		srcClr.SetAlpha(0xff);		
+		current_palette[index] = ColorRgba{ srcClr };
+		current_palette[index].SetAlpha(2);
 	}
 
-	auto pltSrc = &plt[10];
-	auto pltDst = &current_palette[10];
-	for (int index = 236; index > 0; --index)
-	{
-		if (plt)
-		{
-			pltDst->rgba.Blue = pltSrc->rgba.Blue;
-			pltDst->rgba.Green = pltSrc->rgba.Green;
-			pltDst->rgba.Red = pltSrc->rgba.Red;
-		}
-		pltDst->rgba.Alpha = 0xFF;
-		pltSrc++;
-		pltDst++;
-	}
-
-	current_palette[255].Color = 0xffFFFFFF;
+	current_palette[255] = ColorRgba::White();
 
 	for (const auto group : pb::record_table->Groups)
 	{
