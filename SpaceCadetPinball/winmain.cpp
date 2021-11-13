@@ -12,7 +12,7 @@
 #include "splash.h"
 #include "render.h"
 
-const int TargetFrameTime = 8;
+const float TargetUPS = 120, TargetFrameTime = 1000 / TargetUPS;
 
 HINSTANCE winmain::hinst = nullptr;
 HWND winmain::hwnd_frame = nullptr;
@@ -225,7 +225,7 @@ int winmain::WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLi
 		pb::replay_level(0);
 
 	DWORD someTimeCounter = 300u, prevTime = 0u, frameStart = timeGetTime();
-	int sleepRemainder = 0, frameDuration = TargetFrameTime;
+	float sleepRemainder = 0, frameDuration = TargetFrameTime;
 	while (true)
 	{
 		if (!someTimeCounter)
@@ -299,11 +299,11 @@ int winmain::WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLi
 					gdrv::fill_bitmap(&gfr_display, 1, height, width - 1, 0, 0); // Background
 
 					auto targetVal = dt < target ? dt : target;
-					auto targetHeight = min(static_cast<int>(std::round(targetVal * scale)), height);
+					auto targetHeight = min(static_cast<int>(std::floor(targetVal * scale)), height);
 					gdrv::fill_bitmap(&gfr_display, 1, targetHeight, width - 1, height - targetHeight, -1); // Target
 
 					auto diffVal = dt < target ? target - dt : dt - target;
-					auto diffHeight = min(static_cast<int>(std::round(diffVal * scale)), height);
+					auto diffHeight = min(static_cast<int>(std::floor(diffVal * scale)), height);
 					gdrv::fill_bitmap(&gfr_display, 1, diffHeight, width - 1, height - targetHeight - diffHeight, 1); // Target diff
 
 					gdrv::blit(&gfr_display, 0, 0, render::vscreen.Width - width, 0, width, height);
@@ -311,21 +311,21 @@ int winmain::WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLi
 
 				auto updateEnd = timeGetTime();
 				auto sleepDuration = TargetFrameTime - (int)(updateEnd - frameStart) - sleepRemainder;
+				auto intSleepDuration = static_cast<int>(sleepDuration);
 
 				DWORD frameEnd;
-				if (sleepDuration > 0)
+				if (intSleepDuration > 0)
 				{
-					Sleep(sleepDuration);
+					Sleep(intSleepDuration);
 					frameEnd = timeGetTime();
-					sleepRemainder = (frameEnd - updateEnd) - sleepDuration;
 				}
 				else
 				{
 					frameEnd = updateEnd;
-					sleepRemainder = 0;
 				}
 
-				frameDuration = min(frameEnd - frameStart, TargetFrameTime * 2);
+				sleepRemainder = max(min((int)(frameEnd - updateEnd) - sleepDuration, TargetFrameTime), -TargetFrameTime);
+				frameDuration = min((frameEnd - frameStart), TargetFrameTime * 2);
 				frameStart = frameEnd;
 
 				--someTimeCounter;

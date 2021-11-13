@@ -26,14 +26,14 @@ public:
 	static void toggle_demo();
 	static void replay_level(int demoMode);
 	static void ballset(int x, int y);
-	static void frame(int time);
+	static void frame(float dtMilliSec);
 	static void timed_frame(float timeNow, float timeDelta, bool drawBalls);
 	static void window_size(int* width, int* height);
 	static void pause_continue();
 	static void loose_focus();
 	static void keyup(int key);
 	static void keydown(int key);
-	static int mode_countdown(int time);
+	static int mode_countdown(float dtMilliSec);
 	static void launch_ball();
 	static void end_game();
 	static void high_scores();
@@ -41,6 +41,7 @@ public:
 	static bool chk_highscore();
 	static float collide(float timeNow, float timeDelta, TBall* ball);
 private:
-	static int demo_mode, mode_countdown_;
+	static int demo_mode;
 	static int state;
+	static float mode_countdown_, time_ticks_remainder;
 };

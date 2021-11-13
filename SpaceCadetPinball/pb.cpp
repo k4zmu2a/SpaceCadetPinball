@@ -26,8 +26,8 @@
 
 TPinballTable* pb::MainTable = nullptr;
 datFileStruct* pb::record_table = nullptr;
-int pb::time_ticks = 0, pb::demo_mode = 0, pb::game_mode = 2, pb::mode_countdown_, pb::state, pb::frameCounter = 0;
-float pb::time_now, pb::time_next, pb::ball_speed_limit;
+int pb::time_ticks = 0, pb::demo_mode = 0, pb::game_mode = 2, pb::state, pb::frameCounter = 0;
+float pb::time_now, pb::time_next, pb::ball_speed_limit, pb::mode_countdown_, pb::time_ticks_remainder = 0;
 high_score_struct pb::highscore_table[5];
 bool pb::FullTiltMode = false, pb::cheat_mode = false;
 
@@ -225,29 +225,34 @@ void pb::ballset(int x, int y)
 	ball->Speed = maths::normalize_2d(&ball->Acceleration);
 }
 
-void pb::frame(int time)
+void pb::frame(float dtMilliSec)
 {
-	static int frameTime = 0;
+	static float frameTime = 0;
 
-	if (time > 100)
-		time = 100;
-	if (time <= 0)
+	if (dtMilliSec > 100)
+		dtMilliSec = 100;
+	if (dtMilliSec <= 0)
 		return;
 
-	float timeMul = time * 0.001f;
-	if (!mode_countdown(time))
+	auto dtSec = dtMilliSec * 0.001f;
+	if (!mode_countdown(dtMilliSec))
 	{
-		time_next = time_now + timeMul;
-		timed_frame(time_now, timeMul, true);
+		time_next = time_now + dtSec;
+		timed_frame(time_now, dtSec, true);
 		time_now = time_next;
-		time_ticks += time;
+
+		auto dtMilliSecComp = dtMilliSec + time_ticks_remainder;
+		auto dtWhole = static_cast<int>(dtMilliSecComp);
+		time_ticks_remainder = dtMilliSecComp - static_cast<float>(dtWhole);
+		time_ticks += dtWhole;
+
 		if (nudge::nudged_left || nudge::nudged_right || nudge::nudged_up)
 		{
-			nudge::nudge_count = timeMul * 4.0f + nudge::nudge_count;
+			nudge::nudge_count = dtSec * 4.0f + nudge::nudge_count;
 		}
 		else
 		{
-			auto nudgeDec = nudge::nudge_count - timeMul;
+			auto nudgeDec = nudge::nudge_count - dtSec;
 			if (nudgeDec <= 0.0f)
 				nudgeDec = 0.0;
 			nudge::nudge_count = nudgeDec;
@@ -265,9 +270,9 @@ void pb::frame(int time)
 			// Retained render prevents frame skip. The next best thing - complete refresh at fixed rate. 
 			render::update(false);
 
-			// Frame time at 60 FPS = 16.(6) ms = (16 + 17 + 17) / 3
-			auto targetTime = frameCounter % 3 == 0 ? 16 : 17;
-			frameTime += time;
+			// Frame time at 60 FPS = 16.(6) ms
+			auto targetTime = 1000 / 60.0f;
+			frameTime += dtMilliSec;
 			if (frameTime >= targetTime)
 			{
 				frameTime = min(frameTime - targetTime, 100);
@@ -526,7 +531,7 @@ void pb::keydown(int key)
 	}
 }
 
-int pb::mode_countdown(int time)
+int pb::mode_countdown(float dtMilliSec)
 {
 	if (!game_mode || game_mode <= 0)
 		return 1;
@@ -534,14 +539,14 @@ int pb::mode_countdown(int time)
 	{
 		if (game_mode == 3)
 		{
-			mode_countdown_ -= time;
-			if (mode_countdown_ < 0 || time < 0)
+			mode_countdown_ -= dtMilliSec;
+			if (mode_countdown_ < 0.0f || dtMilliSec < 0.0f)
 				mode_change(4);
 		}
 		else if (game_mode == 4)
 		{
-			mode_countdown_ -= time;
-			if (mode_countdown_ < 0 || time < 0)
+			mode_countdown_ -= dtMilliSec;
+			if (mode_countdown_ < 0.0f || dtMilliSec < 0.0f)
 				mode_change(1);
 		}
 		return 1;
