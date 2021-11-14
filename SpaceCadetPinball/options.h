@@ -59,6 +59,7 @@ struct optionsStruct
 	int Resolution;
 	bool UniformScaling;
 	bool AlternativeRender;
+	int TargetUps;
 	Languages Language;
 };
 
