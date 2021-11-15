@@ -144,6 +144,7 @@ int winmain::WinMain(LPCSTR lpCmdLine)
 	ImIO = &io;
 	// ImGui_ImplSDL2_Init is private, we are not actually using ImGui OpenGl backend
 	ImGui_ImplSDL2_InitForOpenGL(window, nullptr);
+	io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard | ImGuiConfigFlags_NavEnableGamepad;
 
 	auto prefPath = SDL_GetPrefPath(nullptr, "SpaceCadetPinball");
 	auto iniPath = std::string(prefPath) + "imgui_pb.ini";
@@ -334,7 +335,7 @@ void winmain::RenderUi()
 		if (ImGui::Begin("main", nullptr,
 		                 ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoBackground |
 		                 ImGuiWindowFlags_AlwaysAutoResize |
-		                 ImGuiWindowFlags_NoMove))
+		                 ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoFocusOnAppearing))
 		{
 			ImGui::PushID(1);
 			ImGui::PushStyleColor(ImGuiCol_Button, ImVec4{});
@@ -347,6 +348,10 @@ void winmain::RenderUi()
 		}
 		ImGui::End();
 		ImGui::PopStyleVar();
+
+		// This window can not loose nav focus for some reason, clear it manually.
+		if (ImGui::IsNavInputDown(ImGuiNavInput_Cancel))
+			ImGui::FocusWindow(NULL);
 	}
 
 	// No demo window in release to save space
@@ -611,12 +616,14 @@ int winmain::event_handler(const SDL_Event* event)
 		default: ;
 		}
 	}
-	if (ImIO->WantCaptureKeyboard)
+	if (ImIO->WantCaptureKeyboard && !options::WaitingForInput())
 	{
 		switch (event->type)
 		{
 		case SDL_KEYDOWN:
 		case SDL_KEYUP:
+		case SDL_CONTROLLERBUTTONDOWN:
+		case SDL_CONTROLLERBUTTONUP:
 			return 1;
 		default: ;
 		}

@@ -379,7 +379,9 @@ static void ImGui_ImplSDL2_UpdateGamepads()
         return;
 
     // Get gamepad
-    SDL_GameController* game_controller = SDL_GameControllerOpen(0);
+    SDL_GameController* game_controller = nullptr;
+    if (SDL_NumJoysticks() > 0 && SDL_IsGameController(0))
+        game_controller = SDL_GameControllerOpen(0);
     if (!game_controller)
     {
         io.BackendFlags &= ~ImGuiBackendFlags_HasGamepad;
