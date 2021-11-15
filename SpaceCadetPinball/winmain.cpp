@@ -12,6 +12,8 @@
 #include "splash.h"
 #include "render.h"
 
+#pragma comment(lib, "imm32.lib")
+
 const float TargetUPS = 120, TargetFrameTime = 1000 / TargetUPS;
 
 HINSTANCE winmain::hinst = nullptr;
@@ -191,6 +193,8 @@ int winmain::WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLi
 		PostQuitMessage(0);
 		return 0;
 	}
+
+	HIMC hImc = ImmAssociateContext(hwnd_frame, NULL);
 
 	auto menuHandle = GetMenu(windowHandle);
 	options::init(menuHandle);
