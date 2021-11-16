@@ -12,8 +12,6 @@
 #include "splash.h"
 #include "render.h"
 
-#pragma comment(lib, "imm32.lib")
-
 const float TargetUPS = 120, TargetFrameTime = 1000 / TargetUPS;
 
 HINSTANCE winmain::hinst = nullptr;
