@@ -441,7 +441,6 @@ void gdrv::grtext_draw_ttext_in_box(LPCWSTR text, int xOff, int yOff, int width,
 	yOff = static_cast<int>(yOff * fullscrn::ScaleY) + fullscrn::OffsetY;
 	width = static_cast<int>(width * fullscrn::ScaleX);
 	height = static_cast<int>(height * fullscrn::ScaleY);
-	auto fontSize = static_cast<int>(round(fontSizes[fullscrn::GetResolution()] * fullscrn::ScaleY));
 
 	HDC dc = GetDC(hwnd);
 	tagRECT rc{};
@@ -460,23 +459,29 @@ void gdrv::grtext_draw_ttext_in_box(LPCWSTR text, int xOff, int yOff, int width,
 	}
 
 	const char* font;
+	int fontSizeChange = 0;
 	switch (options::Options.Language)
 	{
 	case Languages::TraditionalChinese:
 		font = "Microsoft JhengHei";
+		fontSizeChange = 4;
 		break;
 	case Languages::SimplifiedChinese:
 		font = "Microsoft YaHei";
+		fontSizeChange = 4;
 		break;
 	case Languages::Japanese:
 		font = "MS UI Gothic";
 		break;
 	case Languages::Korean:
 		font = "Gulim";
+		fontSizeChange = 4;
 		break;
 	default:
 		font = "Arial";
 	}
+
+	auto fontSize = static_cast<int>(round((fontSizes[fullscrn::GetResolution()] + fontSizeChange) * fullscrn::ScaleY));
 
 	// Default font does not scale well
 	auto hNewFont = CreateFont(fontSize, 0, 0, 0, FW_DONTCARE, FALSE, FALSE, FALSE,
