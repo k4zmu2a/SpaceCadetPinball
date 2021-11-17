@@ -192,6 +192,8 @@ int winmain::WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLi
 		return 0;
 	}
 
+	HIMC hImc = ImmAssociateContext(hwnd_frame, NULL);
+
 	auto menuHandle = GetMenu(windowHandle);
 	options::init(menuHandle);
 	pb::reset_table();
