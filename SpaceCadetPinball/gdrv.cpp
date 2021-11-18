@@ -480,7 +480,7 @@ void gdrv::grtext_draw_ttext_in_box(LPCWSTR text, int xOff, int yOff, int width,
 		font = "MS UI Gothic";
 		break;
 	case Languages::Korean:
-		font = "Gulim";
+		font = "Malgun Gothic";
 		selectedFontSizes = fontSizes_EastAsian;
 		break;
 	}
