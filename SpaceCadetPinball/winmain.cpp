@@ -237,7 +237,7 @@ int winmain::WinMain(LPCSTR lpCmdLine)
 				if (DispGRhistory)
 				{
 					auto width = 300;
-					auto height = 64;
+					auto height = 64, halfHeight = height / 2;
 					if (!gfr_display)
 					{
 						gfr_display = new gdrv_bitmap8(width, height, false);
@@ -245,18 +245,14 @@ int winmain::WinMain(LPCSTR lpCmdLine)
 					}
 
 					gdrv::ScrollBitmapHorizontal(gfr_display, -1);
+					gdrv::fill_bitmap(gfr_display, 1, halfHeight, width - 1, 0, ColorRgba::Black()); // Background
+					gdrv::fill_bitmap(gfr_display, 1, halfHeight, width - 1, halfHeight, ColorRgba::White()); // Target					
 
 					auto target = static_cast<float>(TargetFrameTime.count());
-					auto scale = height / target / 2;
-					gdrv::fill_bitmap(gfr_display, 1, height, width - 1, 0, ColorRgba::Black()); // Background
-
-					auto targetVal = dt < target ? dt : target;
-					auto targetHeight = std::min(static_cast<int>(std::round(targetVal * scale)), height);
-					gdrv::fill_bitmap(gfr_display, 1, targetHeight, width - 1, height - targetHeight, ColorRgba::White()); // Target
-
-					auto diffVal = dt < target ? target - dt : dt - target;
-					auto diffHeight = std::min(static_cast<int>(std::round(diffVal * scale)), height);
-					gdrv::fill_bitmap(gfr_display, 1, diffHeight, width - 1, height - targetHeight - diffHeight, ColorRgba::Red()); // Target diff
+					auto scale = halfHeight / target;
+					auto diffHeight = std::min(static_cast<int>(std::round(std::abs(target - dt) * scale)), halfHeight);
+					auto yOffset = dt < target ? halfHeight : halfHeight - diffHeight;
+					gdrv::fill_bitmap(gfr_display, 1, diffHeight, width - 1, yOffset, ColorRgba::Red()); // Target diff
 				}
 				updateCounter++;
 			}
@@ -294,15 +290,14 @@ int winmain::WinMain(LPCSTR lpCmdLine)
 			{
 				std::this_thread::sleep_for(targetTimeDelta);
 				frameEnd = Clock::now();
-				sleepRemainder = DurationMs(frameEnd - updateEnd) - targetTimeDelta;
 			}
 			else
 			{
 				frameEnd = updateEnd;
-				sleepRemainder = DurationMs(0);
 			}
 
 			// Limit duration to 2 * target time
+			sleepRemainder = std::max(std::min(DurationMs(frameEnd - updateEnd) - targetTimeDelta, TargetFrameTime), -TargetFrameTime);
 			frameDuration = std::min<DurationMs>(DurationMs(frameEnd - frameStart), 2 * TargetFrameTime);
 			frameStart = frameEnd;
 			UpdateToFrameCounter++;
