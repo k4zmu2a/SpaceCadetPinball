@@ -436,6 +436,12 @@ void gdrv::grtext_draw_ttext_in_box(LPCWSTR text, int xOff, int yOff, int width,
 		22,
 		28
 	};
+	static const int fontSizes_EastAsian[3] =
+	{
+		22,
+		27,
+		32
+	};
 
 	xOff = static_cast<int>(xOff * fullscrn::ScaleX) + fullscrn::OffsetX;
 	yOff = static_cast<int>(yOff * fullscrn::ScaleY) + fullscrn::OffsetY;
@@ -458,30 +464,28 @@ void gdrv::grtext_draw_ttext_in_box(LPCWSTR text, int xOff, int yOff, int width,
 			sscanf_s(fontColor, "%d %d %d", &grtext_red, &grtext_green, &grtext_blue);
 	}
 
-	const char* font;
-	int fontSizeChange = 0;
+	const char* font = "Arial";
+	const int* selectedFontSizes = fontSizes;
 	switch (options::Options.Language)
 	{
 	case Languages::TraditionalChinese:
 		font = "Microsoft JhengHei";
-		fontSizeChange = 4;
+		selectedFontSizes = fontSizes_EastAsian;
 		break;
 	case Languages::SimplifiedChinese:
 		font = "Microsoft YaHei";
-		fontSizeChange = 4;
+		selectedFontSizes = fontSizes_EastAsian;
 		break;
 	case Languages::Japanese:
 		font = "MS UI Gothic";
 		break;
 	case Languages::Korean:
 		font = "Gulim";
-		fontSizeChange = 4;
+		selectedFontSizes = fontSizes_EastAsian;
 		break;
-	default:
-		font = "Arial";
 	}
 
-	auto fontSize = static_cast<int>(round((fontSizes[fullscrn::GetResolution()] + fontSizeChange) * fullscrn::ScaleY));
+	auto fontSize = static_cast<int>(round(selectedFontSizes[fullscrn::GetResolution()] * fullscrn::ScaleY));
 
 	// Default font does not scale well
 	auto hNewFont = CreateFont(fontSize, 0, 0, 0, FW_DONTCARE, FALSE, FALSE, FALSE,
