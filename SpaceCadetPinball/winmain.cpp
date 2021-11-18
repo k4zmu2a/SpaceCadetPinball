@@ -42,6 +42,8 @@ std::string winmain::FpsDetails;
 double winmain::UpdateToFrameRatio;
 winmain::DurationMs winmain::TargetFrameTime;
 optionsStruct& winmain::Options = options::Options;
+winmain::DurationMs winmain::SpinThreshold = DurationMs(0.005);
+WelfordState winmain::SleepState{};
 
 int winmain::WinMain(LPCSTR lpCmdLine)
 {
@@ -115,7 +117,8 @@ int winmain::WinMain(LPCSTR lpCmdLine)
 
 	// If HW fails, fallback to SW SDL renderer.
 	SDL_Renderer* renderer = nullptr;
-	for (int i = 0; i < 2 && !renderer; i++)
+	auto swOffset = strstr(lpCmdLine, "-sw") != nullptr ? 1 : 0;
+	for (int i = swOffset; i < 2 && !renderer; i++)
 	{
 		Renderer = renderer = SDL_CreateRenderer
 		(
@@ -288,7 +291,10 @@ int winmain::WinMain(LPCSTR lpCmdLine)
 			TimePoint frameEnd;
 			if (targetTimeDelta > DurationMs::zero() && !Options.UncappedUpdatesPerSecond)
 			{
-				std::this_thread::sleep_for(targetTimeDelta);
+				if (Options.HybridSleep)
+					HybridSleep(targetTimeDelta);
+				else
+					std::this_thread::sleep_for(targetTimeDelta);
 				frameEnd = Clock::now();
 			}
 			else
@@ -518,6 +524,12 @@ void winmain::RenderUi()
 				if (ImGui::MenuItem(buffer, nullptr, Options.UncappedUpdatesPerSecond))
 				{
 					Options.UncappedUpdatesPerSecond ^= true;
+				}
+				if (ImGui::MenuItem("Precise Sleep", nullptr, Options.HybridSleep))
+				{
+					Options.HybridSleep ^= true;
+					SleepState = WelfordState{};
+					SpinThreshold = DurationMs::zero();
 				}
 
 				if (changed)
@@ -947,11 +959,38 @@ void winmain::RenderFrameTimeDialog()
 		auto target = static_cast<float>(TargetFrameTime.count());
 		auto scale = 1 / (64 / 2 / target);
 
-		ImGui::Text("Target frame time:%03.04fms, 1px:%03.04fms", target, scale);
+		auto spin = Options.HybridSleep ? static_cast<float>(SpinThreshold.count()) : 0;
+		ImGui::Text("Target frame time:%03.04fms, 1px:%03.04fms, SpinThreshold:%03.04fms",
+			target, scale, spin);
 		gfr_display->BlitToTexture();
 		auto region = ImGui::GetContentRegionAvail();
 		ImGui::Image(gfr_display->Texture, region);
 	}
 	ImGui::End();
 	ImGui::PopStyleVar();
+}
+
+void winmain::HybridSleep(DurationMs sleepTarget)
+{	
+	static constexpr double StdDevFactor = 0.5;
+
+	// This nice concept is from https://blat-blatnik.github.io/computerBear/making-accurate-sleep-function/
+	// Sacrifices some CPU time for smaller frame time jitter
+	while (sleepTarget > SpinThreshold)
+	{
+		auto start = Clock::now();
+		std::this_thread::sleep_for(DurationMs(1));
+		auto end = Clock::now();
+
+		auto actualDuration = DurationMs(end - start);
+		sleepTarget -= actualDuration;
+
+		// Update expected sleep duration using Welford's online algorithm
+		// With bad timer, this will run away to 100% spin
+		SleepState.Advance(actualDuration.count());
+		SpinThreshold = DurationMs(SleepState.mean + SleepState.GetStdDev() * StdDevFactor);
+	}
+
+	// spin lock
+	for (auto start = Clock::now(); DurationMs(Clock::now() - start) < sleepTarget;);
 }

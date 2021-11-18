@@ -73,6 +73,7 @@ struct optionsStruct
 	bool ShowMenu;
 	bool UncappedUpdatesPerSecond;
 	int SoundChannels;
+	bool HybridSleep;
 };
 
 struct ControlRef

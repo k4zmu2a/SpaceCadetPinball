@@ -99,6 +99,7 @@ void options::init()
 	Options.UncappedUpdatesPerSecond = get_int("Uncapped Updates Per Second", false);
 	Options.SoundChannels = get_int("Sound Channels", DefSoundChannels);
 	Options.SoundChannels = std::min(MaxSoundChannels, std::max(MinSoundChannels, Options.SoundChannels));
+	Options.HybridSleep = get_int("HybridSleep", false);
 
 	winmain::UpdateFrameRate();
 
@@ -130,6 +131,7 @@ void options::uninit()
 	set_int("ShowMenu", Options.ShowMenu);
 	set_int("Uncapped Updates Per Second", Options.UncappedUpdatesPerSecond);
 	set_int("Sound Channels", Options.SoundChannels);
+	set_int("HybridSleep", Options.HybridSleep);
 }
 
 

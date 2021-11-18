@@ -33,6 +33,31 @@ struct SdlPerformanceClock
 	}
 };
 
+struct WelfordState
+{
+	double mean;
+	double M2;
+	int64_t count;
+
+	WelfordState() : mean(0.005), M2(0), count(1)
+	{
+
+	}
+
+	void Advance(double newValue)
+	{
+		++count;
+		auto delta = newValue - mean;
+		mean += delta / count;
+		M2 += delta * (newValue - mean); //M2n = M2n-1 + (Xn - AvgXn-1) * (Xn - AvgXn)
+	}
+
+	double GetStdDev() const
+	{
+		return std::sqrt(M2 / (count - 1)); // Sn^2 = M2n / (n - 1)
+	}
+};
+
 class winmain
 {
 	using Clock = SdlPerformanceClock; // Or std::chrono::steady_clock.
@@ -75,7 +100,10 @@ private:
 	static double UpdateToFrameRatio;
 	static DurationMs TargetFrameTime;
 	static struct optionsStruct& Options;
+	static DurationMs SpinThreshold;
+	static WelfordState SleepState;
 
 	static void RenderUi();
 	static void RenderFrameTimeDialog();
+	static void HybridSleep(DurationMs seconds);
 };
