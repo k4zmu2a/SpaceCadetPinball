@@ -22,7 +22,16 @@ public:
 	int Message(int code, float value) override;
 	void Clear();
 	void Display(const char* text, float time);
-	void Draw();
 
-	static void TimerExpired(int timerId, void* tb);
+private:
+	struct LayoutResult
+	{
+		char *Start, *End;
+		int Width;
+	};
+
+	static void TimerExpired(int timerId, void* caller);
+
+	void Draw();
+	LayoutResult LayoutTextLine(char* textStart) const;
 };
