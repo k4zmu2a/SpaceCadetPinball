@@ -65,7 +65,6 @@ class winmain
 	using TimePoint = std::chrono::time_point<Clock>;
 
 public:
-	static std::string DatFileName;
 	static bool single_step;
 	static SDL_Window* MainWindow;
 	static SDL_Renderer* Renderer;
@@ -73,7 +72,6 @@ public:
 	static bool LaunchBallEnabled;
 	static bool HighScoresEnabled;
 	static bool DemoActive;
-	static std::string BasePath;
 	static int MainMenuHeight;
 
 	static int WinMain(LPCSTR lpCmdLine);

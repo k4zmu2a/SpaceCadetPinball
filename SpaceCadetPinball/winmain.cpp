@@ -29,14 +29,12 @@ bool winmain::no_time_loss = false;
 bool winmain::restart = false;
 
 gdrv_bitmap8* winmain::gfr_display = nullptr;
-std::string winmain::DatFileName;
 bool winmain::ShowAboutDialog = false;
 bool winmain::ShowImGuiDemo = false;
 bool winmain::ShowSpriteViewer = false;
 bool winmain::LaunchBallEnabled = true;
 bool winmain::HighScoresEnabled = true;
 bool winmain::DemoActive = false;
-std::string winmain::BasePath;
 int winmain::MainMenuHeight = 0;
 std::string winmain::FpsDetails;
 double winmain::UpdateToFrameRatio;
@@ -62,43 +60,6 @@ int winmain::WinMain(LPCSTR lpCmdLine)
 	}
 
 	pinball::quickFlag = strstr(lpCmdLine, "-quick") != nullptr;
-
-	// Search for game data in: game folder, user folder
-	// Game data test order: CADET.DAT, PINBALL.DAT
-	char* dataSearchPaths[2]
-	{
-		 SDL_GetBasePath(),
-		 SDL_GetPrefPath(nullptr, "SpaceCadetPinball")
-	};
-	std::string datFileNames[2]
-	{
-		"CADET.DAT",
-		options::get_string("Pinball Data", pinball::get_rc_string(168, 0))
-	};
-	for (auto path : dataSearchPaths)
-	{
-		if (DatFileName.empty() && path)
-		{
-			BasePath = path;
-			for (int i = 0; i < 2; i++)
-			{
-				auto datFileName = datFileNames[i];
-				auto datFilePath = pinball::make_path_name(datFileName);
-				auto datFile = fopenu(datFilePath.c_str(), "r");
-				if (datFile)
-				{
-					fclose(datFile);
-					DatFileName = datFileName;
-					if (i == 0)
-						pb::FullTiltMode = true;
-					printf("Loading game from: %s\n", datFilePath.c_str());
-					break;
-				}
-			}
-		}
-
-		SDL_free(path);
-	}
 
 	// SDL window
 	SDL_Window* window = SDL_CreateWindow
@@ -152,26 +113,31 @@ int winmain::WinMain(LPCSTR lpCmdLine)
 	auto prefPath = SDL_GetPrefPath(nullptr, "SpaceCadetPinball");
 	auto iniPath = std::string(prefPath) + "imgui_pb.ini";
 	io.IniFilename = iniPath.c_str();
-	SDL_free(prefPath);
 
-	// PB init from message handler
+	// First step: just load the options, second: run updates depending on FullTiltMode
+	options::InitPrimary();
+	auto basePath = SDL_GetBasePath();
+	pb::SelectDatFile(std::array<char*, 2>
 	{
-		options::init();
-		if (!Sound::Init(Options.SoundChannels, Options.Sounds))
-			Options.Sounds = false;
+		basePath,
+		prefPath
+	});
+	options::InitSecondary();
 
-		if (!pinball::quickFlag && !midi::music_init())
-			Options.Music = false;
+	if (!Sound::Init(Options.SoundChannels, Options.Sounds))
+		Options.Sounds = false;
 
-		if (pb::init())
-		{
-			SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, "Could not load game data",
-			                         "The .dat file is missing", window);
-			return 1;
-		}
+	if (!pinball::quickFlag && !midi::music_init())
+		Options.Music = false;
 
-		fullscrn::init();
+	if (pb::init())
+	{
+		SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, "Could not load game data",
+		                         "The .dat file is missing", window);
+		return 1;
 	}
+
+	fullscrn::init();
 
 	pb::reset_table();
 	pb::firsttime_setup();
@@ -249,7 +215,8 @@ int winmain::WinMain(LPCSTR lpCmdLine)
 
 					gdrv::ScrollBitmapHorizontal(gfr_display, -1);
 					gdrv::fill_bitmap(gfr_display, 1, halfHeight, width - 1, 0, ColorRgba::Black()); // Background
-					gdrv::fill_bitmap(gfr_display, 1, halfHeight, width - 1, halfHeight, ColorRgba::White()); // Target					
+					// Target	
+					gdrv::fill_bitmap(gfr_display, 1, halfHeight, width - 1, halfHeight, ColorRgba::White());
 
 					auto target = static_cast<float>(TargetFrameTime.count());
 					auto scale = halfHeight / target;
@@ -303,13 +270,16 @@ int winmain::WinMain(LPCSTR lpCmdLine)
 			}
 
 			// Limit duration to 2 * target time
-			sleepRemainder = std::max(std::min(DurationMs(frameEnd - updateEnd) - targetTimeDelta, TargetFrameTime), -TargetFrameTime);
+			sleepRemainder = std::max(std::min(DurationMs(frameEnd - updateEnd) - targetTimeDelta, TargetFrameTime),
+			                          -TargetFrameTime);
 			frameDuration = std::min<DurationMs>(DurationMs(frameEnd - frameStart), 2 * TargetFrameTime);
 			frameStart = frameEnd;
 			UpdateToFrameCounter++;
 		}
 	}
 
+	SDL_free(basePath);
+	SDL_free(prefPath);
 	delete gfr_display;
 	gfr_display = nullptr;
 	options::uninit();
@@ -352,7 +322,7 @@ void winmain::RenderUi()
 
 		// This window can not loose nav focus for some reason, clear it manually.
 		if (ImGui::IsNavInputDown(ImGuiNavInput_Cancel))
-			ImGui::FocusWindow(NULL);
+			ImGui::FocusWindow(nullptr);
 	}
 
 	// No demo window in release to save space
@@ -539,6 +509,15 @@ void winmain::RenderUi()
 
 				ImGui::EndMenu();
 			}
+
+			if (ImGui::BeginMenu("Game Data"))
+			{
+				if (ImGui::MenuItem("Prefer 3DPB Data", nullptr, Options.Prefer3DPBGameData))
+				{
+					options::toggle(Menu1::Prefer3DPBGameData);
+				}
+				ImGui::EndMenu();
+			}
 			ImGui::EndMenu();
 		}
 
@@ -705,7 +684,7 @@ int winmain::event_handler(const SDL_Event* event)
 						redGreen = i1;
 					}
 
-					*pltPtr++ = ColorRgba{ blue, redGreen, redGreen, 0 };
+					*pltPtr++ = ColorRgba{blue, redGreen, redGreen, 0};
 				}
 				gdrv::display_palette(plt);
 				delete[] plt;
@@ -826,11 +805,11 @@ int winmain::event_handler(const SDL_Event* event)
 		case SDL_CONTROLLER_BUTTON_BACK:
 			if (single_step)
 			{
-				SDL_Event event{ SDL_QUIT };
+				SDL_Event event{SDL_QUIT};
 				SDL_PushEvent(&event);
 			}
 			break;
-		default:;
+		default: ;
 		}
 		break;
 	case SDL_CONTROLLERBUTTONUP:
@@ -953,15 +932,15 @@ void winmain::RenderFrameTimeDialog()
 	if (!gfr_display)
 		return;
 
-	ImGui::PushStyleVar(ImGuiStyleVar_WindowMinSize, ImVec2{ 300, 70 });
+	ImGui::PushStyleVar(ImGuiStyleVar_WindowMinSize, ImVec2{300, 70});
 	if (ImGui::Begin("Frame Times", &DispGRhistory, ImGuiWindowFlags_NoScrollbar))
 	{
 		auto target = static_cast<float>(TargetFrameTime.count());
-		auto scale = 1 / (64 / 2 / target);
+		auto scale = 1 / (gfr_display->Height / 2 / target);
 
 		auto spin = Options.HybridSleep ? static_cast<float>(SpinThreshold.count()) : 0;
 		ImGui::Text("Target frame time:%03.04fms, 1px:%03.04fms, SpinThreshold:%03.04fms",
-			target, scale, spin);
+		            target, scale, spin);
 		gfr_display->BlitToTexture();
 		auto region = ImGui::GetContentRegionAvail();
 		ImGui::Image(gfr_display->Texture, region);
@@ -971,7 +950,7 @@ void winmain::RenderFrameTimeDialog()
 }
 
 void winmain::HybridSleep(DurationMs sleepTarget)
-{	
+{
 	static constexpr double StdDevFactor = 0.5;
 
 	// This nice concept is from https://blat-blatnik.github.io/computerBear/making-accurate-sleep-function/

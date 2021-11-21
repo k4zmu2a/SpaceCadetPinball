@@ -26,7 +26,7 @@ const ControlRef options::Controls[6]
 };
 
 
-void options::init()
+void options::InitPrimary()
 {
 	auto imContext = ImGui::GetCurrentContext();
 	ImGuiSettingsHandler ini_handler;
@@ -100,7 +100,11 @@ void options::init()
 	Options.SoundChannels = get_int("Sound Channels", DefSoundChannels);
 	Options.SoundChannels = std::min(MaxSoundChannels, std::max(MinSoundChannels, Options.SoundChannels));
 	Options.HybridSleep = get_int("HybridSleep", false);
+	Options.Prefer3DPBGameData = get_int("Prefer 3DPB Game Data", false);
+}
 
+void options::InitSecondary()
+{
 	winmain::UpdateFrameRate();
 
 	auto maxRes = fullscrn::GetMaxResolution();
@@ -132,6 +136,7 @@ void options::uninit()
 	set_int("Uncapped Updates Per Second", Options.UncappedUpdatesPerSecond);
 	set_int("Sound Channels", Options.SoundChannels);
 	set_int("HybridSleep", Options.HybridSleep);
+	set_int("Prefer 3DPB Game Data", Options.Prefer3DPBGameData);
 }
 
 
@@ -250,6 +255,10 @@ void options::toggle(Menu1 uIDCheckItem)
 	case Menu1::WindowLinearFilter:
 		Options.LinearFiltering ^= true;
 		render::recreate_screen_texture();
+		break;
+	case Menu1::Prefer3DPBGameData:
+		Options.Prefer3DPBGameData ^= true;
+		winmain::Restart();
 		break;
 	default:
 		break;

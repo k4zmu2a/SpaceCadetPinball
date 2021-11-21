@@ -33,15 +33,16 @@ int pb::time_ticks = 0, pb::demo_mode = 0, pb::game_mode = 2;
 float pb::mode_countdown_, pb::time_now = 0, pb::time_next = 0, pb::ball_speed_limit, pb::time_ticks_remainder = 0;
 high_score_struct pb::highscore_table[5];
 bool pb::FullTiltMode = false, pb::cheat_mode = false;
+std::string pb::DatFileName;
 
 
 int pb::init()
 {
 	float projMat[12], zMin = 0, zScaler = 0;
 
-	if (winmain::DatFileName.empty())
+	if (DatFileName.empty())
 		return 1;
-	auto dataFilePath = pinball::make_path_name(winmain::DatFileName);
+	auto dataFilePath = pinball::make_path_name(DatFileName);
 	record_table = partman::load_records(dataFilePath.c_str(), FullTiltMode);
 
 	auto useBmpFont = 0;
@@ -115,6 +116,42 @@ int pb::uninit()
 	timer::uninit();
 	render::uninit();
 	return 0;
+}
+
+void pb::SelectDatFile(std::array<char*, 2> dataSearchPaths)
+{
+	DatFileName.clear();
+	
+	std::string datFileNames[2]
+	{
+		"CADET.DAT",
+		options::get_string("Pinball Data", pinball::get_rc_string(168, 0))
+	};
+
+	// Default game data test order: CADET.DAT, PINBALL.DAT
+	if (options::Options.Prefer3DPBGameData)
+		std::swap(datFileNames[0], datFileNames[1]);
+	for (auto path : dataSearchPaths)
+	{
+		if (DatFileName.empty() && path)
+		{
+			pinball::BasePath = path;
+			for (int i = 0; i < 2; i++)
+			{
+				auto datFileName = datFileNames[i];
+				auto datFilePath = pinball::make_path_name(datFileName);
+				auto datFile = fopenu(datFilePath.c_str(), "r");
+				if (datFile)
+				{
+					fclose(datFile);
+					DatFileName = datFileName;
+					FullTiltMode = datFileName == "CADET.DAT";
+					printf("Loading game from: %s\n", datFilePath.c_str());
+					break;
+				}
+			}
+		}
+	}
 }
 
 void pb::reset_table()
