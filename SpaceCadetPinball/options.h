@@ -26,6 +26,7 @@ enum class Menu1:int
 	R1024x768 = 503,
 	WindowUniformScale = 600,
 	WindowLinearFilter = 601,
+	WindowIntegerScale = 602,
 	Prefer3DPBGameData = 700,
 };
 
@@ -76,6 +77,7 @@ struct optionsStruct
 	int SoundChannels;
 	bool HybridSleep;
 	bool Prefer3DPBGameData;
+	bool IntegerScaling;
 };
 
 struct ControlRef

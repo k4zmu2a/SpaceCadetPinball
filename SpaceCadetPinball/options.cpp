@@ -101,6 +101,7 @@ void options::InitPrimary()
 	Options.SoundChannels = std::min(MaxSoundChannels, std::max(MinSoundChannels, Options.SoundChannels));
 	Options.HybridSleep = get_int("HybridSleep", false);
 	Options.Prefer3DPBGameData = get_int("Prefer 3DPB Game Data", false);
+	Options.IntegerScaling = get_int("Integer Scaling", false);
 }
 
 void options::InitSecondary()
@@ -137,6 +138,7 @@ void options::uninit()
 	set_int("Sound Channels", Options.SoundChannels);
 	set_int("HybridSleep", Options.HybridSleep);
 	set_int("Prefer 3DPB Game Data", Options.Prefer3DPBGameData);
+	set_int("Integer Scaling", Options.IntegerScaling);
 }
 
 
@@ -259,6 +261,10 @@ void options::toggle(Menu1 uIDCheckItem)
 	case Menu1::Prefer3DPBGameData:
 		Options.Prefer3DPBGameData ^= true;
 		winmain::Restart();
+		break;
+	case Menu1::WindowIntegerScale:
+		Options.IntegerScaling ^= true;
+		fullscrn::window_size_changed();
 		break;
 	default:
 		break;

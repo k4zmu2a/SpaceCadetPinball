@@ -116,17 +116,27 @@ void fullscrn::window_size_changed()
 	ScaleX = static_cast<float>(width) / res->TableWidth;
 	ScaleY = static_cast<float>(height) / res->TableHeight;
 	OffsetX = OffsetY = 0;
+	auto offset2X = 0, offset2Y = 0;
+
+	if (options::Options.IntegerScaling)
+	{
+		ScaleX = ScaleX < 1 ? ScaleX : std::floor(ScaleX);
+		ScaleY = ScaleY < 1 ? ScaleY : std::floor(ScaleY);
+	}
 
 	if (options::Options.UniformScaling)
 	{
 		ScaleY = ScaleX = std::min(ScaleX, ScaleY);
-		OffsetX = static_cast<int>(floor((width - res->TableWidth * ScaleX) / 2));
-		OffsetY = static_cast<int>(floor((height - res->TableHeight * ScaleY) / 2));
 	}
+
+	offset2X = static_cast<int>(floor(width - res->TableWidth * ScaleX));
+	offset2Y = static_cast<int>(floor(height - res->TableHeight * ScaleY));
+	OffsetX = offset2X / 2;
+	OffsetY = offset2Y / 2;
 
 	render::DestinationRect = SDL_Rect
 	{
 		OffsetX, OffsetY + menuHeight,
-		width - OffsetX * 2, height - OffsetY * 2
+		width - offset2X, height - offset2Y
 	};
 }

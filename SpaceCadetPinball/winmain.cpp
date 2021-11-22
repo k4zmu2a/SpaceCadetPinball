@@ -466,6 +466,10 @@ void winmain::RenderUi()
 				{
 					options::toggle(Menu1::WindowLinearFilter);
 				}
+				if (ImGui::MenuItem("Integer Scaling", nullptr, Options.IntegerScaling))
+				{
+					options::toggle(Menu1::WindowIntegerScale);
+				}
 				ImGui::DragFloat("UI Scale", &ImIO->FontGlobalScale, 0.005f, 0.8f, 5,
 				                 "%.2f", ImGuiSliderFlags_AlwaysClamp);
 				ImGui::Separator();
