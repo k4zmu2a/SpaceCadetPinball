@@ -24,5 +24,15 @@ public:
 	void Display(const wchar_t* text, float time);
 	void Draw(bool redraw = false);
 
-	static void TimerExpired(int timerId, void* tb);
+private:
+	struct LayoutResult
+	{
+		wchar_t *Start, *End;
+		int Width;
+	};
+
+	static void TimerExpired(int timerId, void* caller);
+
+	
+	LayoutResult LayoutTextLine(wchar_t* textStart) const;
 };

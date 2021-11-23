@@ -427,7 +427,7 @@ void gdrv::ScrollBitmapHorizontal(gdrv_bitmap8* bmp, int xStart)
 }
 
 
-void gdrv::grtext_draw_ttext_in_box(LPCWSTR text, int xOff, int yOff, int width, int height)
+void gdrv::grtext_draw_ttext_in_box(LPCWSTR text, int xOff, int yOff, int width, int height, bool centered)
 {
 	// Original font was 16 points, used with lowest table resolution
 	static const int fontSizes[3] =
@@ -495,7 +495,8 @@ void gdrv::grtext_draw_ttext_in_box(LPCWSTR text, int xOff, int yOff, int width,
 	int prevMode = SetBkMode(dc, TRANSPARENT);
 	COLORREF color = SetTextColor(dc, grtext_red | grtext_green << 8 | grtext_blue << 16);
 
-	DrawTextW(dc, text, lstrlenW(text), &rc, DT_NOPREFIX | DT_WORDBREAK);
+	auto textFormat = DT_NOPREFIX | DT_WORDBREAK | (centered ? DT_CENTER : 0);
+	DrawTextW(dc, text, lstrlenW(text), &rc, textFormat);
 
 	SelectObject(dc, hOldFont);
 	DeleteObject(hNewFont);

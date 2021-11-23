@@ -155,6 +155,8 @@ void TTextBox::Display(const wchar_t* text, float time)
 
 void TTextBox::Draw(bool redraw)
 {
+	LayoutResult lines[5];
+
 	auto bmp = BgBmp;
 	if (bmp)
 		gdrv::copy_bitmap(
@@ -203,8 +205,7 @@ void TTextBox::Draw(bool redraw)
 
 	if (display)
 	{
-		auto font = Font;
-		if (!font)
+		if (!Font)
 		{
 			gdrv::blit(
 				&render::vscreen,
@@ -219,68 +220,50 @@ void TTextBox::Draw(bool redraw)
 				render::vscreen.XPosition + OffsetX,
 				render::vscreen.YPosition + OffsetY,
 				Width,
-				Height);
+				Height,
+				pb::FullTiltMode);
 			return;
 		}
 
-		auto text = Message1->Text;
-		for (auto y = OffsetY; ; y += font->Height)
+		auto textHeight = 0, lineCount = 0;
+		for (auto text = Message1->Text; lineCount < 10; textHeight += Font->Height, lineCount++)
 		{
-			auto curChar = *text;
-			if (!curChar || y + font->Height > OffsetY + Height)
+			if (!text[0] || textHeight + Font->Height > Height)
 				break;
 
-			auto totalWidth = 0;
-			wchar_t* textEndSpace = nullptr;
-			auto textEnd = text;
-			while (true)
-			{
-				auto maskedChar = curChar & 0x7F;
-				if (!maskedChar || maskedChar == '\n')
-					break;
-				auto charBmp = font->Chars[maskedChar];
-				if (charBmp)
-				{
-					auto width = charBmp->Width + font->GapWidth + totalWidth;
-					if (width > Width)
-					{
-						if (textEndSpace)
-							textEnd = textEndSpace;
-						break;
-					}
-					if (*textEnd == ' ')
-						textEndSpace = textEnd;
-					curChar = *(textEnd + 1);
-					totalWidth = width;
-					++textEnd;
-				}
-				else
-				{
-					curChar = *textEnd;
-				}
-			}
+			auto line = LayoutTextLine(text);
+			if (line.Start == line.End)
+				break;
+			lines[lineCount] = line;
+			text = line.End;
+		}
 
+		// Textboxes in FT display texts centered
+		auto offY = OffsetY;
+		if (pb::FullTiltMode)
+			offY += (Height - textHeight) / 2;
+		for (auto i = 0; i < lineCount; i++)
+		{
+			auto line = lines[i];
 			auto offX = OffsetX;
-			while (text < textEnd)
+			if (pb::FullTiltMode)
+				offX += (Width - line.Width) / 2;
+			for (auto text = line.Start; text < line.End; text++)
 			{
-				auto charBmp = font->Chars[*text++ & 0x7F];
+				auto charBmp = Font->Chars[*text & 0x7F];
 				if (charBmp)
 				{
 					auto height = charBmp->Height;
 					auto width = charBmp->Width;
 					if (render::background_bitmap)
-						gdrv::copy_bitmap_w_transparency(&render::vscreen, width, height, offX, y, charBmp, 0,
+						gdrv::copy_bitmap_w_transparency(&render::vscreen, width, height, offX, offY, charBmp, 0,
 						                                 0);
 					else
-						gdrv::copy_bitmap(&render::vscreen, width, height, offX, y, charBmp, 0, 0);
-					font = Font;
-					offX += charBmp->Width + font->GapWidth;
+						gdrv::copy_bitmap(&render::vscreen, width, height, offX, offY, charBmp, 0, 0);
+					offX += charBmp->Width + Font->GapWidth;
 				}
 			}
-			while ((*text & 0x7F) == ' ')
-				++text;
-			if ((*text & 0x7F) == '\n')
-				++text;
+			offY += Font->Height;
 		}
 	}
 
@@ -292,4 +275,43 @@ void TTextBox::Draw(bool redraw)
 		OffsetY + render::vscreen.YPosition,
 		Width,
 		Height);
+}
+
+TTextBox::LayoutResult TTextBox::LayoutTextLine(wchar_t* textStart) const
+{
+	auto lineWidth = 0, wordWidth = 0;
+	wchar_t *wordBoundary = nullptr, *textEnd;
+	for (textEnd = textStart; ; ++textEnd)
+	{
+		auto maskedChar = textEnd[0] & 0x7F;
+		if (!maskedChar || maskedChar == '\n')
+			break;
+
+		auto charBmp = Font->Chars[maskedChar];
+		if (!charBmp)
+			continue;
+
+		auto width = lineWidth + charBmp->Width + Font->GapWidth;
+		if (width > Width)
+		{
+			if (wordBoundary)
+			{
+				textEnd = wordBoundary;
+				lineWidth = wordWidth;
+			}
+			break;
+		}
+		if (maskedChar == ' ')
+		{
+			wordBoundary = textEnd;
+			wordWidth = width;
+		}
+		lineWidth = width;
+	}
+
+	while ((*textEnd & 0x7F) == ' ')
+		++textEnd;
+	if ((*textEnd & 0x7F) == '\n')
+		++textEnd;
+	return LayoutResult{textStart, textEnd, lineWidth};
 }
