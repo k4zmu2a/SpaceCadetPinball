@@ -45,7 +45,7 @@ TKickout::TKickout(TPinballTable* table, int groupIndex, bool someFlag): TCollis
 
 	Circle.RadiusSq = visual.FloatArr[2] * visual.FloatArr[2];
 	auto zAttr = loader::query_float_attribute(groupIndex, 0, 408);
-	CollisionBallSetZ = pb::FullTiltMode ? zAttr[3] : zAttr[2];
+	CollisionBallSetZ = pb::FullTiltMode && !pb::FullTiltDemoMode ? zAttr[3] : zAttr[2];
 	ThrowSpeedMult2 = visual.Kicker.ThrowBallMult * 0.01f;
 	BallAcceleration = visual.Kicker.ThrowBallAcceleration;
 	ThrowAngleMult = visual.Kicker.ThrowBallAngleMult;
