@@ -86,6 +86,11 @@ DatFile* partman::load_records(LPCSTR lpFileName, bool fullTiltMode)
 				{
 					zMapResolution = LRead<uint8_t>(fileHandle);
 					fieldSize--;
+
+					// -1 means universal resolution, maybe. FT demo .006 is the only known user.	
+					if (zMapResolution == 0xff)
+						zMapResolution = 0;
+
 					assertm(zMapResolution <= 2, "partman: zMap resolution out of bounds");
 				}
 

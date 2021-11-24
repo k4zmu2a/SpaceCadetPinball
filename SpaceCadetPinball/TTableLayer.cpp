@@ -54,11 +54,13 @@ TTableLayer::TTableLayer(TPinballTable* table): TCollisionComponent(table, -1, f
 
 	GraityDirX = cos(PinballTable->GravityAnglY) * sin(PinballTable->GravityAngleX) * PinballTable->GravityDirVectMult;
 	GraityDirY = sin(PinballTable->GravityAnglY) * sin(PinballTable->GravityAngleX) * PinballTable->GravityDirVectMult;
-	auto angleMultArr = loader::query_float_attribute(groupIndex, 0, 701);
 
 	/*Full tilt hack - GraityMult should be 0.2*/
-	if (angleMultArr && !pb::FullTiltMode)
+	if (!pb::FullTiltMode && !pb::FullTiltDemoMode)
+	{
+		auto angleMultArr = loader::query_float_attribute(groupIndex, 0, 701);
 		GraityMult = *angleMultArr;
+	}
 	else
 		GraityMult = 0.2f;
 

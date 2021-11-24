@@ -34,9 +34,12 @@ TBall::TBall(TPinballTable* table) : TPinballComponent(table, -1, false)
 	ListBitmap = new std::vector<gdrv_bitmap8*>();
 
 	/*Full tilt: ball is ballN, where N[0,2] resolution*/
-	if (pb::FullTiltMode)
-		ballGroupName[4] = '0' + fullscrn::GetResolution();
 	auto groupIndex = loader::query_handle(ballGroupName);
+	if (groupIndex < 0)
+	{
+		ballGroupName[4] = '0' + fullscrn::GetResolution();
+		groupIndex = loader::query_handle(ballGroupName);
+	}
 
 	Offset = *loader::query_float_attribute(groupIndex, 0, 500);
 

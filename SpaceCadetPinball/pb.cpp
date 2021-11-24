@@ -32,7 +32,7 @@ DatFile* pb::record_table = nullptr;
 int pb::time_ticks = 0, pb::demo_mode = 0, pb::game_mode = 2;
 float pb::mode_countdown_, pb::time_now = 0, pb::time_next = 0, pb::ball_speed_limit, pb::time_ticks_remainder = 0;
 high_score_struct pb::highscore_table[5];
-bool pb::FullTiltMode = false, pb::cheat_mode = false;
+bool pb::FullTiltMode = false, pb::FullTiltDemoMode = false, pb::cheat_mode = false;
 std::string pb::DatFileName;
 
 
@@ -121,14 +121,16 @@ int pb::uninit()
 void pb::SelectDatFile(std::array<char*, 2> dataSearchPaths)
 {
 	DatFileName.clear();
+	FullTiltDemoMode = FullTiltMode = false;
 	
-	std::string datFileNames[2]
+	std::string datFileNames[3]
 	{
 		"CADET.DAT",
-		options::get_string("Pinball Data", pinball::get_rc_string(168, 0))
+		options::get_string("Pinball Data", pinball::get_rc_string(168, 0)),
+		"DEMO.DAT",
 	};
 
-	// Default game data test order: CADET.DAT, PINBALL.DAT
+	// Default game data test order: CADET.DAT, PINBALL.DAT, DEMO.DAT
 	if (options::Options.Prefer3DPBGameData)
 		std::swap(datFileNames[0], datFileNames[1]);
 	for (auto path : dataSearchPaths)
@@ -136,16 +138,19 @@ void pb::SelectDatFile(std::array<char*, 2> dataSearchPaths)
 		if (DatFileName.empty() && path)
 		{
 			pinball::BasePath = path;
-			for (int i = 0; i < 2; i++)
+			for (auto datFileName : datFileNames)
 			{
-				auto datFileName = datFileNames[i];
 				auto datFilePath = pinball::make_path_name(datFileName);
 				auto datFile = fopenu(datFilePath.c_str(), "r");
 				if (datFile)
 				{
 					fclose(datFile);
 					DatFileName = datFileName;
-					FullTiltMode = datFileName == "CADET.DAT";
+					if (datFileName == "CADET.DAT")
+						FullTiltMode = true;
+					if (datFileName == "DEMO.DAT")
+						FullTiltDemoMode = FullTiltMode = true;
+
 					printf("Loading game from: %s\n", datFilePath.c_str());
 					break;
 				}

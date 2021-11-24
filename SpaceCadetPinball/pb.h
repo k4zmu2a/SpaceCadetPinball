@@ -40,7 +40,7 @@ public:
 	static DatFile* record_table;
 	static TPinballTable* MainTable;
 	static high_score_struct highscore_table[5];
-	static bool FullTiltMode;
+	static bool FullTiltMode, FullTiltDemoMode;
 	static std::string DatFileName;
 
 	static int init();

@@ -56,6 +56,10 @@ int midi::music_init()
 		track1 = load_track("TABA1");
 		track2 = load_track("TABA2");
 		track3 = load_track("TABA3");
+
+		// FT demo .006 has only one music track, but it is nearly 9 min. long
+		if (!track1 && pb::FullTiltDemoMode)
+			track1 = load_track("DEMO");
 	}
 	else
 	{
@@ -271,8 +275,7 @@ std::vector<uint8_t>* midi::MdsToMidi(std::string file)
 			// Delta time is in variable quantity, Big Endian
 			uint32_t deltaVarLen;
 			auto count = ToVariableLen(delta, deltaVarLen);
-			deltaVarLen = SwapByteOrderInt(deltaVarLen);
-			auto deltaData = reinterpret_cast<const uint8_t*>(&deltaVarLen) + 4 - count;
+			auto deltaData = reinterpret_cast<const uint8_t*>(&deltaVarLen);
 			midiBytes.insert(midiBytes.end(), deltaData, deltaData + count);
 
 			switch (event.iEvent >> 24)
