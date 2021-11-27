@@ -59,7 +59,11 @@ class options
 public:
 	// Original does ~120 updates per second.
 	static constexpr int MaxUps = 360, MaxFps = MaxUps, MinUps = 60, MinFps = MinUps,
+#ifdef __EMSCRIPTEN__
+	                     DefUps = 60, DefFps = 60; // the game is choppy on emscripten at 120ups, but 60 seems fine.
+#else
 	                     DefUps = 120, DefFps = 60;
+#endif
 	static optionsStruct Options;
 
 	static void init();
