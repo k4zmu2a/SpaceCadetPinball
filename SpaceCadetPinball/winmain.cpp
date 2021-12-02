@@ -352,7 +352,7 @@ void winmain::RenderUi()
 				end_pause();
 				pb::launch_ball();
 			}
-			if (ImGui::MenuItem("Pause/ Resume Game", "F3"))
+			if (ImGui::MenuItem("Pause/Resume Game", "F3"))
 			{
 				pause();
 			}
