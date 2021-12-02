@@ -217,3 +217,14 @@ if(WIN32)
         COMMAND ${CMAKE_COMMAND} -E copy_if_different "${SDL2_MIXER_DLL_PATH}/SDL2_mixer.dll" $<TARGET_FILE_DIR:SpaceCadetPinball>
         )
 endif()
+
+if(UNIX AND NOT APPLE)
+	install(TARGETS "${PROJECT_NAME}" RUNTIME)
+	install(FILES "${PROJECT_NAME}.desktop" DESTINATION "share/applications")
+	install(FILES "${PROJECT_NAME}/Icon_16x16.png" DESTINATION
+		"share/icons/hicolor/16x16/apps" RENAME "${PROJECT_NAME}.png")
+	install(FILES "${PROJECT_NAME}/Icon_32x32.png" DESTINATION
+		"share/icons/hicolor/32x32/apps" RENAME "${PROJECT_NAME}.png")
+	install(FILES "${PROJECT_NAME}/Icon_48x48.png" DESTINATION
+		"share/icons/hicolor/48x48/apps" RENAME "${PROJECT_NAME}.png")
+endif()
