@@ -45,7 +45,7 @@ public:
 
 	static int init();
 	static int uninit();
-	static void SelectDatFile(std::array<char*, 2> dataSearchPaths);
+	static void SelectDatFile(const std::vector<const char*>& dataSearchPaths);
 	static void reset_table();
 	static void firsttime_setup();
 	static void mode_change(int mode);

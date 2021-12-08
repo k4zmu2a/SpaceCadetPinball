@@ -29,7 +29,7 @@
 #include <string>
 #include <thread>
 #include <map>
-#include <array>
+//#include <array>
 
 #define SDL_MAIN_HANDLED
 #include "SDL.h"
@@ -93,5 +93,16 @@ inline FILE* fopenu(const char* path, const char* opt)
 	return fopen(path, opt);
 }
 #endif
+
+// Platform specific data paths not found in SDL
+constexpr const char* PlatformDataPaths[2] = 
+{
+	#ifdef _WIN32
+	nullptr
+	#else
+	"/usr/local/share/SpaceCadetPinball/",
+	"/usr/share/SpaceCadetPinball/"
+	#endif
+};
 
 #endif //PCH_H
