@@ -118,7 +118,7 @@ int pb::uninit()
 	return 0;
 }
 
-void pb::SelectDatFile(std::array<char*, 2> dataSearchPaths)
+void pb::SelectDatFile(const std::vector<const char*>& dataSearchPaths)
 {
 	DatFileName.clear();
 	FullTiltDemoMode = FullTiltMode = false;

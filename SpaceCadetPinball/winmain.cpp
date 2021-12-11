@@ -114,14 +114,23 @@ int winmain::WinMain(LPCSTR lpCmdLine)
 	auto iniPath = std::string(prefPath) + "imgui_pb.ini";
 	io.IniFilename = iniPath.c_str();
 
-	// First step: just load the options, second: run updates depending on FullTiltMode
+	// First step: just load the options
 	options::InitPrimary();
+
+	// Data search order: WD, executable path, user pref path, platform specific paths.
 	auto basePath = SDL_GetBasePath();
-	pb::SelectDatFile(std::array<char*, 2>
+	std::vector<const char*> searchPaths
 	{
-		basePath,
-		prefPath
-	});
+		{
+			"",
+			basePath,
+			prefPath
+		}
+	};
+	searchPaths.insert(searchPaths.end(), std::begin(PlatformDataPaths), std::end(PlatformDataPaths));
+	pb::SelectDatFile(searchPaths);
+
+	// Second step: run updates depending on FullTiltMode
 	options::InitSecondary();
 
 	if (!Sound::Init(Options.SoundChannels, Options.Sounds))
@@ -132,8 +141,17 @@ int winmain::WinMain(LPCSTR lpCmdLine)
 
 	if (pb::init())
 	{
+		std::string message = "The .dat file is missing.\n"
+			"Make sure that the game data is present in any of the following locations:\n";
+		for (auto path : searchPaths)
+		{
+			if (path)
+			{
+				message = message + (path[0] ? path : "working directory") + "\n";
+			}
+		}
 		SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, "Could not load game data",
-		                         "The .dat file is missing", window);
+		                         message.c_str(), window);
 		return 1;
 	}
 
