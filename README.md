@@ -57,15 +57,13 @@ Download and unpack devel packages for `SDL2` and `SDL2_mixer`.\
 Set paths to them in `CMakeLists.txt`, see suggested placement in `/Libs`.\
 Compile with Visual Studio; tested with 2019.
 
-<a href="https://repology.org/project/spacecadetpinball/versions">
-    <img src="https://repology.org/badge/vertical-allrepos/spacecadetpinball.svg" alt="Packaging status" align="right">
-</a>
-
 ### On Linux
 
 Install devel packages for `SDL2` and `SDL2_mixer`.\
 Compile with CMake; tested with GCC 10, Clang 11.\
 To cross-compile for Windows, install a 64-bit version of mingw and its `SDL2` and `SDL2_mixer` distributions, then use the `mingwcc.cmake` toolchain.
+
+[![Packaging status](https://repology.org/badge/tiny-repos/spacecadetpinball.svg)](https://repology.org/project/spacecadetpinball/versions) 
 
 Some distributions provide a package in their repository. You can use those for easier dependency management and updates.
 
