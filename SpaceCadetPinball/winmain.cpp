@@ -839,7 +839,7 @@ int winmain::a_dialog(HINSTANCE hInstance, HWND hWnd)
 	PCWSTR appName = pinball::get_rc_Wstring(38, 0);
 	PWSTR szOtherStuff = pinball::get_rc_Wstring(102, 0);
 
-	lstrcatW(szOtherStuff, L" Decompilation version 1.1.2");
+	lstrcatW(szOtherStuff, L" Decompilation version 1.2");
 	auto icon = LoadIconW(hInstance, L"ICON_1");
 	return ShellAboutW(hWnd, appName, szOtherStuff, icon);
 }
