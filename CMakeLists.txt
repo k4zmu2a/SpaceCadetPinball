@@ -219,7 +219,8 @@ if(WIN32)
 endif()
 
 if(UNIX AND NOT APPLE)
-	install(TARGETS "${PROJECT_NAME}" RUNTIME)
+	include(GNUInstallDirs)
+	install(TARGETS "${PROJECT_NAME}" RUNTIME DESTINATION "${CMAKE_INSTALL_BINDIR}")
 	install(FILES "${PROJECT_NAME}.desktop" DESTINATION "share/applications")
 	install(FILES "${PROJECT_NAME}/Icon_16x16.png" DESTINATION
 		"share/icons/hicolor/16x16/apps" RENAME "${PROJECT_NAME}.png")
