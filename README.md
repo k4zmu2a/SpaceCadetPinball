@@ -87,9 +87,11 @@ ninja
 Some distributions provide a package in their repository. You can use those for easier dependency management and updates.
 
 **Fixing the audio issue**: To make music work, you need to export the following envar before launching the game:
-`SDL_SOUNDFONT=/path/to/soundfont`
-On Fedora: `SDL_SOUNDFONT=/usr/share/soundfonts/FluidR3_GM.sf2`
-On Ubuntu/Debian: `SDL_SOUNDFONT=/usr/share/sounds/sf2/FluidR3_GM.sf2`
+`export SDL_SOUNDFONT=/path/to/your/soundfont`
+
+Fluidsynth will install a default soundfont in this path:
+On Fedora: `/usr/share/soundfonts/FluidR3_GM.sf2`
+On Ubuntu/Debian: `/usr/share/sounds/sf2/FluidR3_GM.sf2`
 
 ### On macOS
 
