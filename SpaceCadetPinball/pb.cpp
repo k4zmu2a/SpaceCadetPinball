@@ -241,7 +241,10 @@ void pb::replay_level(int demoMode)
 	demo_mode = demoMode;
 	mode_change(1);
 	if (options::Options.Music)
+	{
+		midi::music_init();
 		midi::play_pb_theme();
+	}
 	MainTable->Message(1014, static_cast<float>(options::Options.Players));
 }
 

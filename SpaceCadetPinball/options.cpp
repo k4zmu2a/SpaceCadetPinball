@@ -210,7 +210,10 @@ void options::toggle(Menu1 uIDCheckItem)
 		if (!Options.Music)
 			midi::music_stop();
 		else
+		{
+			midi::music_init();
 			midi::play_pb_theme();
+		}
 		return;
 	case Menu1::Show_Menu:
 		Options.ShowMenu = Options.ShowMenu == 0;
