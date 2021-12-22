@@ -18,7 +18,7 @@
         <category>Game</category>
         <category>ArcadeGame</category>
     </categories>
-    <launchable type="desktop-id">com.github.k4zmu2a.spacecadetpinball.desktop</launchable>
+    <launchable type="desktop-id">SpaceCadetPinball.desktop</launchable>
     <provides>
         <binary>SpaceCadetPinball</binary>
     </provides>
