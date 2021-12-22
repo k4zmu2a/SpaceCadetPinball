@@ -1,15 +1,21 @@
 <!-- markdownlint-disable-file MD033 -->
 
-# SpaceCadetPinball
+# 3D Pinball for Windows – Space Cadet
 
 ## Summary
 
 Reverse engineering of `3D Pinball for Windows – Space Cadet`, a game bundled with Windows.
 
+## About the original game
+
+3D Pinball for Windows – Space Cadet is a pinball video game developed by Cinematronics and published by Maxis in 1995. It features pre-rendered 3D graphics and three tables—Space Cadet, Skullduggery, and Dragon's Keep. On each table, there are displays on the side that show the players' score, ball number, player number, a display for various information and a table-specific image.
+
 ## How to play
 
 Place compiled executable into a folder containing original game resources (not included).\
 Supports data files from Windows and Full Tilt versions of the game.
+
+Use your keyboard or mouse to control the flipper
 
 ## Known source ports
 
@@ -60,8 +66,21 @@ Compile with Visual Studio; tested with 2019.
 ### On Linux
 
 Install devel packages for `SDL2` and `SDL2_mixer`.\
+
 Compile with CMake; tested with GCC 10, Clang 11.\
 To cross-compile for Windows, install a 64-bit version of mingw and its `SDL2` and `SDL2_mixer` distributions, then use the `mingwcc.cmake` toolchain.
+
+```bash
+# On Debian and Ubuntu
+sudo apt install cmake build-essential ninja libsdl2-dev libsdl2-mixer-dev libsdl2-mixer-2.0-0  libsdl2-2.0-0
+
+# On Fedora
+sudo dnf install TBD
+
+# Build
+cmake -GNinja .
+ninja
+```
 
 [![Packaging status](https://repology.org/badge/tiny-repos/spacecadetpinball.svg)](https://repology.org/project/spacecadetpinball/versions) 
 
