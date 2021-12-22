@@ -19,16 +19,16 @@ Use your keyboard or mouse to control the flipper
 
 ## Known source ports
 
-| Platform           | Author          | URL                                                                                                        |
-| ------------------ | --------------- | ---------------------------------------------------------------------------------------------------------- |
-| PS Vita            | Axiom           | <https://github.com/suicvne/SpaceCadetPinball_Vita>                                                        |
-| Emscripten         | alula           | <https://github.com/alula/SpaceCadetPinball> <br> Play online: <https://alula.github.io/SpaceCadetPinball> |
-| Nintendo Switch    | averne          | <https://github.com/averne/SpaceCadetPinball-NX>                                                           |
-| webOS TV           | mariotaku       | <https://github.com/webosbrew/SpaceCadetPinball>                                                           |
-| Android (WIP)      | Iscle           | https://github.com/Iscle/SpaceCadetPinball                                                                 |
-| Nintendo Wii       | MaikelChan      | https://github.com/MaikelChan/SpaceCadetPinball                                                            |
-| Nintendo 3DS       | MaikelChan      | https://github.com/MaikelChan/SpaceCadetPinball/tree/3ds                                                   |
-| Nintendo Wii U     | IntriguingTiles | https://github.com/IntriguingTiles/SpaceCadetPinball-WiiU                                                  |
+| Platform        | Author          | URL                                                                                                        |
+| --------------- | --------------- | ---------------------------------------------------------------------------------------------------------- |
+| PS Vita         | Axiom           | <https://github.com/suicvne/SpaceCadetPinball_Vita>                                                        |
+| Emscripten      | alula           | <https://github.com/alula/SpaceCadetPinball> <br> Play online: <https://alula.github.io/SpaceCadetPinball> |
+| Nintendo Switch | averne          | <https://github.com/averne/SpaceCadetPinball-NX>                                                           |
+| webOS TV        | mariotaku       | <https://github.com/webosbrew/SpaceCadetPinball>                                                           |
+| Android (WIP)   | Iscle           | https://github.com/Iscle/SpaceCadetPinball                                                                 |
+| Nintendo Wii    | MaikelChan      | https://github.com/MaikelChan/SpaceCadetPinball                                                            |
+| Nintendo 3DS    | MaikelChan      | https://github.com/MaikelChan/SpaceCadetPinball/tree/3ds                                                   |
+| Nintendo Wii U  | IntriguingTiles | https://github.com/IntriguingTiles/SpaceCadetPinball-WiiU                                                  |
 
 Platforms covered by this project: desktop Windows, Linux and macOS.
 
@@ -72,19 +72,24 @@ To cross-compile for Windows, install a 64-bit version of mingw and its `SDL2` a
 
 ```bash
 # On Debian and Ubuntu
-sudo apt install cmake build-essential ninja libsdl2-dev libsdl2-mixer-dev libsdl2-mixer-2.0-0  libsdl2-2.0-0
+sudo apt install cmake build-essential ninja-build libsdl2-dev libsdl2-mixer-dev libsdl2-mixer-2.0-0 libsdl2-2.0-0 fluidsynth
 
 # On Fedora
-sudo dnf install TBD
+sudo dnf install cmake ninja-build SDL2 SDL2-devel SDL2_mixer SDL2_mixer-devel fluidsynth fluidsynth-libs mscore-fonts g++
 
 # Build
 cmake -GNinja .
 ninja
 ```
 
-[![Packaging status](https://repology.org/badge/tiny-repos/spacecadetpinball.svg)](https://repology.org/project/spacecadetpinball/versions) 
+[![Packaging status](https://repology.org/badge/tiny-repos/spacecadetpinball.svg)](https://repology.org/project/spacecadetpinball/versions)
 
 Some distributions provide a package in their repository. You can use those for easier dependency management and updates.
+
+**Fixing the audio issue**: To make music work, you need to export the following envar before launching the game:
+`SDL_SOUNDFONT=/path/to/soundfont`
+On Fedora: `SDL_SOUNDFONT=/usr/share/soundfonts/FluidR3_GM.sf2`
+On Ubuntu/Debian: `SDL_SOUNDFONT=/usr/share/sounds/sf2/FluidR3_GM.sf2`
 
 ### On macOS
 
