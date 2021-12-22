@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component type="desktop-application">
+    <id>com.github.k4zmu2a.spacecadetpinball</id>
+    <name>3D Pinball for Windows – Space Cadet</name>
+    <display_name>Pinball</display_name>
+    <summary>Reverse engineering of 3D Pinball for Windows – Space Cadet, a game bundled with Windows.</summary>
+    <url type="homepage">https://github.com/k4zmu2a/SpaceCadetPinball</url>
+    <url type="bugtracker">https://github.com/k4zmu2a/SpaceCadetPinball/issues</url>
+    <description>
+        <p>
+            Reverse engineering of 3D Pinball for Windows – Space Cadet, a game bundled with Windows.
+            3D Pinball for Windows – Space Cadet was a pinball video game developed by Cinematronics and published by Maxis in 1995.
+        </p>
+    </description>
+    <categories>
+        <category>Game</category>
+        <category>ArcadeGame</category>
+    </categories>
+    <launchable type="desktop-id">com.github.k4zmu2a.spacecadetpinball.desktop</launchable>
+    <provides>
+        <binary>SpaceCadetPinball</binary>
+    </provides>
+    <screenshots>
+        <screenshot type="default">
+            <image>https://github.com/kowalski7cc/com.github.k4zmu2a.spacecadetpinball/blob/main/screenshots/screenshot-1.png?raw=true</image>
+        </screenshot>
+        <screenshot>
+            <image>https://github.com/kowalski7cc/com.github.k4zmu2a.spacecadetpinball/blob/main/screenshots/screenshot-2.png?raw=true</image>
+        </screenshot>
+        <screenshot>
+            <image>https://github.com/kowalski7cc/com.github.k4zmu2a.spacecadetpinball/blob/main/screenshots/screenshot-3.png?raw=true</image>
+        </screenshot>
+    </screenshots>
+    <releases>
+        <release version="2.0.0" date="2021-10-30">
+            <description>
+                <h1>V2.0</h1>
+                <p>First release of cross-platform port.</p>
+                <p>Main highlights:</p>
+                <ul>
+                    <li>Windows dependencies removed.</li>
+                    <li>Graphics and sounds rendered with SDL.</li>
+                    <li>Dear ImGui GUI.</li>
+                    <li>CMake build script, compiles on a lot of platforms.</li>
+                    <li>A number of 3rd party source ports.</li>
+                </ul>
+                <p>All features of v1.x are present, except for text translations.</p>
+                <p>
+                    Development and releases of v1.x will continue, don’t confuse the two.
+                    All source ports are technically v2.0RC, not v1.x.
+                </p>
+
+                <p>There are no Linux or macOS binaries attached, compile them yourself.</p>
+
+                <p>
+                    This release was made better with the help of contributors.
+                    I thank them for their interest in the project.
+                </p>
+            </description>
+        </release>
+    </releases>
+    <metadata_license>CC0-1.0</metadata_license>
+    <developer_name>Andrey Muzychenko</developer_name>
+    <project_license>MIT</project_license>
+    <keywords>
+        <keyword>pinball</keyword>
+        <keyword>space</keyword>
+        <keyword>cadet</keyword>
+    </keywords>
+    <content_rating type="oars-1.1" />
+</component>

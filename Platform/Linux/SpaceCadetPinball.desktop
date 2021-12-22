@@ -1,0 +1,10 @@
+[Desktop Entry]
+Version=1.0
+Name=Pinball
+Comment=Begins a game of 3-D Pinball.
+Exec=SpaceCadetPinball
+StartupNotify=true
+Terminal=false
+Icon=SpaceCadetPinball
+Type=Application
+Categories=Game;ArcadeGame;
