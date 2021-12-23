@@ -1,21 +1,17 @@
 <!-- markdownlint-disable-file MD033 -->
 
-# 3D Pinball for Windows – Space Cadet
+# SpaceCadetPinball
 
 ## Summary
 
-Reverse engineering of `3D Pinball for Windows – Space Cadet`, a game bundled with Windows.
+Reverse engineering of `3D Pinball for Windows - Space Cadet`, a game bundled with Windows.
 
-## About the original game
-
-3D Pinball for Windows – Space Cadet is a pinball video game developed by Cinematronics and published by Maxis in 1995. It features pre-rendered 3D graphics and three tables—Space Cadet, Skullduggery, and Dragon's Keep. On each table, there are displays on the side that show the players' score, ball number, player number, a display for various information and a table-specific image.
+3D Pinball for Windows - Space Cadet was a pinball video game developed by Cinematronics and published by Maxis in 1995.
 
 ## How to play
 
 Place compiled executable into a folder containing original game resources (not included).\
 Supports data files from Windows and Full Tilt versions of the game.
-
-Use your keyboard or mouse to control the flipper
 
 ## Known source ports
 
@@ -86,10 +82,10 @@ ninja
 
 Some distributions provide a package in their repository. You can use those for easier dependency management and updates.
 
-**Fixing the audio issue**: To make music work, you need to export the following envar before launching the game:
+**If you can't hear the background music**: You need to export the following variable before launching the game like this:
 `export SDL_SOUNDFONT=/path/to/your/soundfont`
 
-Fluidsynth will install a default soundfont in this path:
+Fluidsynth will install a default soundfont in the following path:
 On Fedora: `/usr/share/soundfonts/FluidR3_GM.sf2`
 On Ubuntu/Debian: `/usr/share/sounds/sf2/FluidR3_GM.sf2`
 
