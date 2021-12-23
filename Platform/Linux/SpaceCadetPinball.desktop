@@ -1,7 +1,7 @@
 [Desktop Entry]
 Version=1.0
 Name=Space Cadet Pinball
-Comment=Begins a game of 3-D Pinball.
+Comment=Decompilation of 3D Pinball for Windows - Space Cadet
 Exec=SpaceCadetPinball
 StartupNotify=true
 Terminal=false
