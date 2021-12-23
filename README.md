@@ -4,9 +4,7 @@
 
 ## Summary
 
-Reverse engineering of `3D Pinball for Windows - Space Cadet`, a game bundled with Windows.
-
-3D Pinball for Windows - Space Cadet was a pinball video game developed by Cinematronics and published by Maxis in 1995.
+Reverse engineering of `3D Pinball for Windows – Space Cadet`, a game bundled with Windows.
 
 ## How to play
 
@@ -15,16 +13,16 @@ Supports data files from Windows and Full Tilt versions of the game.
 
 ## Known source ports
 
-| Platform        | Author          | URL                                                                                                        |
-| --------------- | --------------- | ---------------------------------------------------------------------------------------------------------- |
-| PS Vita         | Axiom           | <https://github.com/suicvne/SpaceCadetPinball_Vita>                                                        |
-| Emscripten      | alula           | <https://github.com/alula/SpaceCadetPinball> <br> Play online: <https://alula.github.io/SpaceCadetPinball> |
-| Nintendo Switch | averne          | <https://github.com/averne/SpaceCadetPinball-NX>                                                           |
-| webOS TV        | mariotaku       | <https://github.com/webosbrew/SpaceCadetPinball>                                                           |
-| Android (WIP)   | Iscle           | https://github.com/Iscle/SpaceCadetPinball                                                                 |
-| Nintendo Wii    | MaikelChan      | https://github.com/MaikelChan/SpaceCadetPinball                                                            |
-| Nintendo 3DS    | MaikelChan      | https://github.com/MaikelChan/SpaceCadetPinball/tree/3ds                                                   |
-| Nintendo Wii U  | IntriguingTiles | https://github.com/IntriguingTiles/SpaceCadetPinball-WiiU                                                  |
+| Platform           | Author          | URL                                                                                                        |
+| ------------------ | --------------- | ---------------------------------------------------------------------------------------------------------- |
+| PS Vita            | Axiom           | <https://github.com/suicvne/SpaceCadetPinball_Vita>                                                        |
+| Emscripten         | alula           | <https://github.com/alula/SpaceCadetPinball> <br> Play online: <https://alula.github.io/SpaceCadetPinball> |
+| Nintendo Switch    | averne          | <https://github.com/averne/SpaceCadetPinball-NX>                                                           |
+| webOS TV           | mariotaku       | <https://github.com/webosbrew/SpaceCadetPinball>                                                           |
+| Android (WIP)      | Iscle           | https://github.com/Iscle/SpaceCadetPinball                                                                 |
+| Nintendo Wii       | MaikelChan      | https://github.com/MaikelChan/SpaceCadetPinball                                                            |
+| Nintendo 3DS       | MaikelChan      | https://github.com/MaikelChan/SpaceCadetPinball/tree/3ds                                                   |
+| Nintendo Wii U     | IntriguingTiles | https://github.com/IntriguingTiles/SpaceCadetPinball-WiiU                                                  |
 
 Platforms covered by this project: desktop Windows, Linux and macOS.
 
