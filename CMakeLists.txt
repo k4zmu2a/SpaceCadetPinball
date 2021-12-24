@@ -221,11 +221,14 @@ endif()
 if(UNIX AND NOT APPLE)
 	include(GNUInstallDirs)
 	install(TARGETS "${PROJECT_NAME}" RUNTIME DESTINATION "${CMAKE_INSTALL_BINDIR}")
-	install(FILES "${PROJECT_NAME}.desktop" DESTINATION "share/applications")
+	install(FILES "/Platform/Linux/${PROJECT_NAME}.desktop" DESTINATION "share/applications")
+    install(FILES "/Platform/Linux/${PROJECT_NAME}.metainfo.xml" DESTINATION "share/metainfo")
 	install(FILES "${PROJECT_NAME}/Icon_16x16.png" DESTINATION
 		"share/icons/hicolor/16x16/apps" RENAME "${PROJECT_NAME}.png")
 	install(FILES "${PROJECT_NAME}/Icon_32x32.png" DESTINATION
 		"share/icons/hicolor/32x32/apps" RENAME "${PROJECT_NAME}.png")
 	install(FILES "${PROJECT_NAME}/Icon_48x48.png" DESTINATION
 		"share/icons/hicolor/48x48/apps" RENAME "${PROJECT_NAME}.png")
+    install(FILES "${PROJECT_NAME}/Icon_192x192.png" DESTINATION
+		"share/icons/hicolor/192x192/apps" RENAME "${PROJECT_NAME}.png")
 endif()

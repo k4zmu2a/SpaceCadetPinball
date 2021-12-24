@@ -4,7 +4,7 @@
 
 ## Summary
 
-Reverse engineering of `3D Pinball for Windows – Space Cadet`, a game bundled with Windows.
+Reverse engineering of `3D Pinball for Windows - Space Cadet`, a game bundled with Windows.
 
 ## How to play
 
