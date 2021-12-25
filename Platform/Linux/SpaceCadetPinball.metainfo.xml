@@ -21,7 +21,10 @@
     </provides>
     <screenshots>
         <screenshot type="default">
-            <image>https://raw.githubusercontent.com/k4zmu2a/SpaceCadetPinball/master/Screenshots/screenshot-1.png</image>
+            <image>https://raw.githubusercontent.com/k4zmu2a/SpaceCadetPinball/master/Screenshots/screenshot-1.jpg</image>
+        </screenshot>
+        <screenshot>
+            <image>https://raw.githubusercontent.com/k4zmu2a/SpaceCadetPinball/master/Screenshots/screenshot-2.jpg</image>
         </screenshot>
     </screenshots>
     <releases>
