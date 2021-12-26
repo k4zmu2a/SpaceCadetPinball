@@ -21,13 +21,10 @@
     </provides>
     <screenshots>
         <screenshot type="default">
-            <image>https://github.com/kowalski7cc/com.github.k4zmu2a.spacecadetpinball/blob/main/screenshots/screenshot-1.png?raw=true</image>
+            <image>https://raw.githubusercontent.com/k4zmu2a/SpaceCadetPinball/master/Screenshots/screenshot-1.jpg</image>
         </screenshot>
         <screenshot>
-            <image>https://github.com/kowalski7cc/com.github.k4zmu2a.spacecadetpinball/blob/main/screenshots/screenshot-2.png?raw=true</image>
-        </screenshot>
-        <screenshot>
-            <image>https://github.com/kowalski7cc/com.github.k4zmu2a.spacecadetpinball/blob/main/screenshots/screenshot-3.png?raw=true</image>
+            <image>https://raw.githubusercontent.com/k4zmu2a/SpaceCadetPinball/master/Screenshots/screenshot-2.jpg</image>
         </screenshot>
     </screenshots>
     <releases>

@@ -229,6 +229,8 @@ if(UNIX AND NOT APPLE)
 		"share/icons/hicolor/32x32/apps" RENAME "${PROJECT_NAME}.png")
 	install(FILES "${PROJECT_NAME}/Icon_48x48.png" DESTINATION
 		"share/icons/hicolor/48x48/apps" RENAME "${PROJECT_NAME}.png")
+    install(FILES "${PROJECT_NAME}/Icon_128x128.png" DESTINATION
+		"share/icons/hicolor/128x128/apps" RENAME "${PROJECT_NAME}.png")
     install(FILES "${PROJECT_NAME}/Icon_192x192.png" DESTINATION
 		"share/icons/hicolor/192x192/apps" RENAME "${PROJECT_NAME}.png")
 endif()
