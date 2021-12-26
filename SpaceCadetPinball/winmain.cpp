@@ -253,6 +253,9 @@ int winmain::WinMain(LPCSTR lpCmdLine)
 				RenderUi();
 
 				SDL_RenderClear(renderer);
+				// Alternative clear hack, clear might fail on some systems
+				// Todo: remove original clear, if save for all platforms
+				SDL_RenderFillRect(renderer, nullptr);
 				render::PresentVScreen();
 
 				ImGui::Render();
