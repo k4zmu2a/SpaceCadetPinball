@@ -898,7 +898,7 @@ void winmain::a_dialog()
 		ImGui::Separator();
 
 		ImGui::TextUnformatted("Decompiled -> Ported to SDL");
-		ImGui::TextUnformatted("Version 2.0");
+		ImGui::TextUnformatted("Version 2.0.1");
 		if (ImGui::SmallButton("Project home: https://github.com/k4zmu2a/SpaceCadetPinball"))
 		{
 #if SDL_VERSION_ATLEAST(2, 0, 14)

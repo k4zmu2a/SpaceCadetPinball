@@ -67,6 +67,8 @@ To cross-compile for Windows, install a 64-bit version of mingw and its `SDL2` a
 
 Some distributions provide a package in their repository. You can use those for easier dependency management and updates.
 
+This project is available as Flatpak on [Flathub](https://flathub.org/apps/details/com.github.k4zmu2a.spacecadetpinball).
+
 ### On macOS
 
 * **Homebrew**: Install the `SDL2`, `SDL2_mixer` homebrew packages.
