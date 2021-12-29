@@ -28,6 +28,21 @@
         </screenshot>
     </screenshots>
     <releases>
+        <release version="2.0.1" date="2021-12-29">
+            <description>
+                <p>First bug fix release of cross-platform port.</p>
+                <p>Main highlights:</p>
+                <ul>
+                    <li>Improved Linux support: install target, icons, desktop shortcut, alternative data paths.</li>
+                    <li>Improved game controller support.</li>
+                    <li>High precision sleep mode for ~0 frame time jitter.</li>
+                    <li>Integer image scaling mode.</li>
+                    <li>3DPB &lt;-&gt; FT data switch option, for easier data-set changes when both are available.</li>
+                    <li>FT demo data support.</li>
+                    <li>Bug fixes.</li>
+                </ul>
+            </description>
+        </release>
         <release version="2.0.0" date="2021-10-30">
             <description>
                 <p>First release of cross-platform port.</p>
