@@ -18,9 +18,9 @@ public:
 	static int check_expiration_date();
 	static HDC _GetDC(HWND hWnd);
 	static int a_dialog(HINSTANCE hInstance, HWND hWnd);
-	static void end_pause();
+	static void end_pause(bool explicitResume = false);
 	static void new_game();
-	static void pause();
+	static void pause(bool autoResume = true);
 	static void help_introduction(HINSTANCE a1, HWND a2);
 	static void Restart();
 private:
@@ -30,6 +30,7 @@ private:
 	static gdrv_bitmap8 gfr_display;
 	static HCURSOR mouse_hsave;
 	static bool restart;
+	static bool explicitPaused;
 
 	static HDC _BeginPaint(HWND hWnd, LPPAINTSTRUCT lpPaint);
 	static void ResetTimer()

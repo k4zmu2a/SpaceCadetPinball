@@ -32,6 +32,7 @@ int winmain::no_time_loss;
 
 UINT winmain::iFrostUniqueMsg;
 bool winmain::restart = false;
+bool winmain::explicitPaused = false;
 
 gdrv_bitmap8 winmain::gfr_display{};
 char winmain::DatFileName[300]{};
@@ -522,7 +523,7 @@ LRESULT CALLBACK winmain::message_handler(HWND hWnd, UINT Msg, WPARAM wParam, LP
 			new_game();
 			break;
 		case VK_F3:
-			pause();
+			pause(false);
 			break;
 		case VK_F4:
 			options::toggle(0x193u);
@@ -602,14 +603,14 @@ LRESULT CALLBACK winmain::message_handler(HWND hWnd, UINT Msg, WPARAM wParam, LP
 		switch (wParam)
 		{
 		case Menu1_Launch_Ball:
-			end_pause();
+			end_pause(true);
 			pb::launch_ball();
 			break;
 		case Menu1_Pause_Resume_Game:
-			pause();
+			pause(false);
 			break;
 		case Menu1_Demo:
-			end_pause();
+			end_pause(true);
 			pb::toggle_demo();
 			break;
 		case Menu1_Select_Table:
@@ -844,10 +845,14 @@ int winmain::a_dialog(HINSTANCE hInstance, HWND hWnd)
 	return ShellAboutW(hWnd, appName, szOtherStuff, icon);
 }
 
-void winmain::end_pause()
+void winmain::end_pause(bool explicitResume)
 {
 	if (single_step)
 	{
+		if (explicitPaused && !explicitResume)
+			return;
+
+		explicitPaused = false;
 		if (fullscrn::screen_mode)
 			fullscrn::set_menu_mode(0);
 		pb::pause_continue();
@@ -857,14 +862,17 @@ void winmain::end_pause()
 
 void winmain::new_game()
 {
-	end_pause();
+	end_pause(true);
 	HCURSOR prevCursor = SetCursor(LoadCursorA(nullptr, IDC_WAIT));
 	pb::replay_level(0);
 	SetCursor(prevCursor);
 }
 
-void winmain::pause()
+void winmain::pause(bool autoResume)
 {
+	if (!autoResume)
+		winmain::explicitPaused = true;
+
 	if (fullscrn::screen_mode)
 	{
 		if (single_step)
