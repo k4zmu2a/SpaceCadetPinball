@@ -139,6 +139,7 @@ void options::ReadOptions()
 	Options.TargetUps = get_int(nullptr, "Target UPS", 120);
 	Options.TargetUps = max(60, Options.TargetUps);
 	Options.TargetUps = min(Options.TargetUps, 360);
+	Options.SystemFont = get_int(nullptr, "System Font", false);
 
 	auto defaultLanguage = Languages::English;
 	auto language = static_cast<Languages>(get_int(nullptr, "Language", static_cast<int>(defaultLanguage)));
@@ -237,6 +238,7 @@ void options::uninit()
 	set_int(nullptr, "Screen Resolution", Options.Resolution);
 	set_int(nullptr, "Uniform scaling", Options.UniformScaling);
 	set_int(nullptr, "Alternative Render", Options.AlternativeRender);
+	set_int(nullptr, "System Font", Options.SystemFont);
 	set_int(nullptr, "Language", static_cast<int>(Options.Language));
 	set_int(nullptr, "Target UPS", Options.TargetUps);
 }

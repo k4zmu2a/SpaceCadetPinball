@@ -60,6 +60,7 @@ struct optionsStruct
 	bool UniformScaling;
 	bool AlternativeRender;
 	int TargetUps;
+	bool SystemFont;
 	Languages Language;
 };
 

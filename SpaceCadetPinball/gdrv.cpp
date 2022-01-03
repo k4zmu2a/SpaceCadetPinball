@@ -16,7 +16,10 @@ int gdrv::use_wing = 0;
 int gdrv::grtext_blue = 0;
 int gdrv::grtext_green = 0;
 int gdrv::grtext_red = -1;
-
+std::string gdrv::fontFamily;
+std::string gdrv::fontFilename;
+const int* gdrv::fontSizes = nullptr;
+int gdrv::fontCharset = DEFAULT_CHARSET;
 
 int gdrv::init(HINSTANCE hInst, HWND hWnd)
 {
@@ -26,6 +29,9 @@ int gdrv::init(HINSTANCE hInst, HWND hWnd)
 	hwnd = hWnd;
 	if (!palette_handle)
 		palette_handle = CreatePalette(&current_palette);
+
+	choose_font();
+
 	return 0;
 }
 
@@ -33,6 +39,10 @@ int gdrv::uninit()
 {
 	if (palette_handle)
 		DeleteObject(palette_handle);
+
+	if (!fontFilename.empty())
+		RemoveFontResourceExA(fontFilename.c_str(), FR_PRIVATE, 0);
+
 	return 0;
 }
 
@@ -426,23 +436,125 @@ void gdrv::ScrollBitmapHorizontal(gdrv_bitmap8* bmp, int xStart)
 	}
 }
 
+int CALLBACK gdrv_find_font_func(
+       ENUMLOGFONTEXA *lpelfe,
+       NEWTEXTMETRICEXA *lpntme,
+       DWORD FontType,
+       LPARAM lParam
+)
+{
+       auto* params = reinterpret_cast<EnumFindFont*>(lParam);
+       if (strcmp(reinterpret_cast<const char*>(lpelfe->elfFullName), params->name) == 0)
+               params->found = true;
+       return 1; // continue enumeration
+}
+
+bool gdrv::find_font(const char* fontName)
+{
+       EnumFindFont params;
+       params.name = fontName;
+       params.found = false;
+
+       LOGFONTA lf{};
+       strcpy_s(lf.lfFaceName, fontName);
+
+       HDC hDC = GetDC(NULL);
+       EnumFontFamiliesExA(hDC, &lf, (FONTENUMPROCA)&gdrv_find_font_func, reinterpret_cast<LPARAM>(&params), 0);
+       ReleaseDC(NULL, hDC);
+       return params.found;
+}
+
+void gdrv::choose_font()
+{
+	// Original font was 16 points, used with lowest table resolution
+	static const int fontSizes_Arial[3] = { 16, 22, 28 };
+	static const int fontSizes_EastAsian[3] = { 22, 27, 32 };
+	static const int fontSizes_System[3] = { 17, 21, 29 };
+	static const int fontSizes_WinMenu[3] = { 17, 21, 27 };
+
+	const char* system_font_filename = nullptr;
+	fontCharset = DEFAULT_CHARSET;
+
+	switch (options::Options.Language)
+	{
+	case Languages::TraditionalChinese:
+		fontFamily = "Microsoft JhengHei";
+		fontSizes = fontSizes_EastAsian;
+		break;
+	case Languages::SimplifiedChinese:
+		fontFamily = "Microsoft YaHei";
+		fontSizes = fontSizes_EastAsian;
+		break;
+	case Languages::Japanese:
+		fontFamily = "MS UI Gothic";
+		fontSizes = fontSizes_Arial; // we need feedback for this
+		break;
+	case Languages::Korean:
+		fontFamily = "Gulim";
+		fontSizes = fontSizes_EastAsian;
+		break;
+	case Languages::Greek:
+		system_font_filename = "vgasysg.fon";
+		fontCharset = GREEK_CHARSET;
+		break;
+	case Languages::Russian:
+		system_font_filename = "vgasysr.fon";
+		fontCharset = RUSSIAN_CHARSET;
+		break;
+	case Languages::Turkish:
+		system_font_filename = "vgasyst.fon";
+		fontCharset = TURKISH_CHARSET;
+		break;
+	case Languages::Danish:
+	case Languages::Dutch:
+	case Languages::Norwegian:
+	case Languages::Swedish:
+		system_font_filename = "vgasys.fon";
+		fontCharset = DEFAULT_CHARSET;
+		break;
+	case Languages::Czech:
+	case Languages::Hungarian:
+	case Languages::Polish:
+		system_font_filename = "vgasyse.fon";
+		fontCharset = EASTEUROPE_CHARSET;
+		break;
+	default:
+		system_font_filename = "vgasys.fon";
+		break;
+	}
+
+	if (fontFamily.empty()) // no font chosen yet
+	{
+		if (!options::Options.SystemFont)
+		{
+			fontFamily = "Arial";
+			fontSizes = fontSizes_Arial;
+		}
+		else if (options::Options.SystemFontName[0] != '\0' && find_font(options::Options.SystemFontName))
+		{
+			fontFamily = options::Options.SystemFontName;
+			fontSizes = fontSizes_WinMenu;
+		}
+		else
+		{
+			fontFamily = "System";
+			fontSizes = fontSizes_System;
+
+			std::string windir(MAX_PATH, '\0');
+			DWORD result = GetEnvironmentVariableA("WINDIR", &windir[0], MAX_PATH);
+			if (result == 0 || result > MAX_PATH) // fails or doesn't fit
+				windir = "C:\\Windows";
+			else
+				windir.resize(result);
+
+			fontFilename = windir + "\\Fonts\\" + system_font_filename;
+			AddFontResourceExA(fontFilename.c_str(), FR_PRIVATE, 0);
+		}
+	}
+}
 
 void gdrv::grtext_draw_ttext_in_box(LPCWSTR text, int xOff, int yOff, int width, int height, bool centered)
 {
-	// Original font was 16 points, used with lowest table resolution
-	static const int fontSizes[3] =
-	{
-		16,
-		22,
-		28
-	};
-	static const int fontSizes_EastAsian[3] =
-	{
-		22,
-		27,
-		32
-	};
-
 	xOff = static_cast<int>(xOff * fullscrn::ScaleX) + fullscrn::OffsetX;
 	yOff = static_cast<int>(yOff * fullscrn::ScaleY) + fullscrn::OffsetY;
 	width = static_cast<int>(width * fullscrn::ScaleX);
@@ -464,33 +576,12 @@ void gdrv::grtext_draw_ttext_in_box(LPCWSTR text, int xOff, int yOff, int width,
 			sscanf_s(fontColor, "%d %d %d", &grtext_red, &grtext_green, &grtext_blue);
 	}
 
-	const char* font = "Arial";
-	const int* selectedFontSizes = fontSizes;
-	switch (options::Options.Language)
-	{
-	case Languages::TraditionalChinese:
-		font = "Microsoft JhengHei";
-		selectedFontSizes = fontSizes_EastAsian;
-		break;
-	case Languages::SimplifiedChinese:
-		font = "Microsoft YaHei";
-		selectedFontSizes = fontSizes_EastAsian;
-		break;
-	case Languages::Japanese:
-		font = "MS UI Gothic";
-		break;
-	case Languages::Korean:
-		font = "Malgun Gothic";
-		selectedFontSizes = fontSizes_EastAsian;
-		break;
-	}
-
-	auto fontSize = static_cast<int>(round(selectedFontSizes[fullscrn::GetResolution()] * fullscrn::ScaleY));
+	auto fontSize = static_cast<int>(round(fontSizes[fullscrn::GetResolution()] * fullscrn::ScaleY));
 
 	// Default font does not scale well
-	auto hNewFont = CreateFont(fontSize, 0, 0, 0, FW_DONTCARE, FALSE, FALSE, FALSE,
-	                           DEFAULT_CHARSET, OUT_DEFAULT_PRECIS, CLIP_DEFAULT_PRECIS, DEFAULT_QUALITY,
-	                           DEFAULT_PITCH | FF_SWISS, font);
+	auto hNewFont = CreateFontA(fontSize, 0, 0, 0, FW_DONTCARE, FALSE, FALSE, FALSE,
+	                           fontCharset, OUT_DEFAULT_PRECIS, CLIP_DEFAULT_PRECIS, DEFAULT_QUALITY,
+	                           DEFAULT_PITCH | FF_SWISS, fontFamily.c_str());
 	HFONT hOldFont = static_cast<HFONT>(SelectObject(dc, hNewFont));
 	int prevMode = SetBkMode(dc, TRANSPARENT);
 	COLORREF color = SetTextColor(dc, grtext_red | grtext_green << 8 | grtext_blue << 16);
