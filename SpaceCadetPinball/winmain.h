@@ -81,7 +81,7 @@ public:
 	static void a_dialog();
 	static void end_pause();
 	static void new_game();
-	static void pause();
+	static void pause(bool toggle = true);
 	static void Restart();
 	static bool RestartRequested() { return restart; }
 	static void UpdateFrameRate();

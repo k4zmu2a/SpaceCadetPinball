@@ -197,7 +197,7 @@ void TDemo::FlipLeft(int timerId, void* caller)
 void TDemo::NewGameRestartTimer(int timerId, void* caller)
 {
 	auto demo = static_cast<TDemo*>(caller);
-	pb::replay_level(1);
+	pb::replay_level(true);
 	demo->PinballTable->Message(1014, static_cast<float>(demo->PinballTable->PlayerCount));
 	demo->RestartGameTimer = 0;
 }

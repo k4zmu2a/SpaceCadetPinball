@@ -171,7 +171,7 @@ int winmain::WinMain(LPCSTR lpCmdLine)
 	if (strstr(lpCmdLine, "-demo"))
 		pb::toggle_demo();
 	else
-		pb::replay_level(0);
+		pb::replay_level(false);
 
 	unsigned updateCounter = 0, frameCounter = 0;
 
@@ -381,8 +381,7 @@ void winmain::RenderUi()
 
 			if (ImGui::MenuItem("High Scores...", nullptr, false, HighScoresEnabled))
 			{
-				if (!single_step)
-					pause();
+				pause(false);
 				pb::high_scores();
 			}
 			if (ImGui::MenuItem("Demo", nullptr, DemoActive))
@@ -454,8 +453,7 @@ void winmain::RenderUi()
 
 			if (ImGui::MenuItem("Player Controls...", "F8"))
 			{
-				if (!single_step)
-					pause();
+				pause(false);
 				options::ShowControlDialog();
 			}
 			if (ImGui::BeginMenu("Table Resolution"))
@@ -556,8 +554,8 @@ void winmain::RenderUi()
 #endif
 			if (ImGui::MenuItem("Sprite Viewer", nullptr, ShowSpriteViewer))
 			{
-				if (!ShowSpriteViewer && !single_step)
-					pause();
+				if (!ShowSpriteViewer)
+					pause(false);
 				ShowSpriteViewer ^= true;
 			}
 			if (pb::cheat_mode && ImGui::MenuItem("Frame Times", nullptr, DispGRhistory))
@@ -585,8 +583,7 @@ void winmain::RenderUi()
 
 			if (ImGui::MenuItem("About Pinball"))
 			{
-				if (!single_step)
-					pause();
+				pause(false);
 				ShowAboutDialog = true;
 			}
 			ImGui::EndMenu();
@@ -677,8 +674,7 @@ int winmain::event_handler(const SDL_Event* event)
 			options::toggle(Menu1::Music);
 			break;
 		case SDLK_F8:
-			if (!single_step)
-				pause();
+			pause(false);
 			options::ShowControlDialog();
 			break;
 		case SDLK_F9:
@@ -928,13 +924,16 @@ void winmain::end_pause()
 void winmain::new_game()
 {
 	end_pause();
-	pb::replay_level(0);
+	pb::replay_level(false);
 }
 
-void winmain::pause()
+void winmain::pause(bool toggle)
 {
-	pb::pause_continue();
-	no_time_loss = true;
+	if (toggle || !single_step)
+	{
+		pb::pause_continue();
+		no_time_loss = true;
+	}
 }
 
 void winmain::Restart()

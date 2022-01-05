@@ -29,10 +29,11 @@
 
 TPinballTable* pb::MainTable = nullptr;
 DatFile* pb::record_table = nullptr;
-int pb::time_ticks = 0, pb::demo_mode = 0, pb::game_mode = 2;
-float pb::mode_countdown_, pb::time_now = 0, pb::time_next = 0, pb::ball_speed_limit, pb::time_ticks_remainder = 0;
+int pb::time_ticks = 0;
+GameModes pb::game_mode = GameModes::GameOver;
+float pb::time_now = 0, pb::time_next = 0, pb::ball_speed_limit, pb::time_ticks_remainder = 0;
 high_score_struct pb::highscore_table[5];
-bool pb::FullTiltMode = false, pb::FullTiltDemoMode = false, pb::cheat_mode = false;
+bool pb::FullTiltMode = false, pb::FullTiltDemoMode = false, pb::cheat_mode = false, pb::demo_mode = false;
 std::string pb::DatFileName;
 
 
@@ -89,10 +90,7 @@ int pb::init()
 
 	loader::loadfrom(record_table);
 
-	if (pinball::quickFlag)
-		mode_change(1);
-	else
-		mode_change(3);
+	mode_change(GameModes::InGame);
 
 	time_ticks = 0;
 	timer::init(150);
@@ -122,7 +120,7 @@ void pb::SelectDatFile(const std::vector<const char*>& dataSearchPaths)
 {
 	DatFileName.clear();
 	FullTiltDemoMode = FullTiltMode = false;
-	
+
 	std::string datFileNames[3]
 	{
 		"CADET.DAT",
@@ -171,11 +169,11 @@ void pb::firsttime_setup()
 	render::update();
 }
 
-void pb::mode_change(int mode)
+void pb::mode_change(GameModes mode)
 {
 	switch (mode)
 	{
-	case 1:
+	case GameModes::InGame:
 		if (demo_mode)
 		{
 			winmain::LaunchBallEnabled = false;
@@ -199,7 +197,7 @@ void pb::mode_change(int mode)
 			}
 		}
 		break;
-	case 2:
+	case GameModes::GameOver:
 		winmain::LaunchBallEnabled = false;
 		if (!demo_mode)
 		{
@@ -209,12 +207,6 @@ void pb::mode_change(int mode)
 		if (MainTable && MainTable->LightGroup)
 			MainTable->LightGroup->Message(29, 1.4f);
 		break;
-	case 3:
-	case 4:
-		winmain::LaunchBallEnabled = false;
-		winmain::HighScoresEnabled = false;
-		mode_countdown_ = 5000.f;
-		break;
 	}
 	game_mode = mode;
 }
@@ -223,23 +215,23 @@ void pb::toggle_demo()
 {
 	if (demo_mode)
 	{
-		demo_mode = 0;
+		demo_mode = false;
 		MainTable->Message(1024, 0.0);
-		mode_change(2);
+		mode_change(GameModes::GameOver);
 		pinball::MissTextBox->Clear();
 		auto text = pinball::get_rc_string(24, 0);
 		pinball::InfoTextBox->Display(text, -1.0);
 	}
 	else
 	{
-		replay_level(1);
+		replay_level(true);
 	}
 }
 
-void pb::replay_level(int demoMode)
+void pb::replay_level(bool demoMode)
 {
 	demo_mode = demoMode;
-	mode_change(1);
+	mode_change(GameModes::InGame);
 	if (options::Options.Music)
 		midi::play_pb_theme();
 	MainTable->Message(1014, static_cast<float>(options::Options.Players));
@@ -261,41 +253,39 @@ void pb::frame(float dtMilliSec)
 		dtMilliSec = 100;
 	if (dtMilliSec <= 0)
 		return;
+
 	float dtSec = dtMilliSec * 0.001f;
-	if (!mode_countdown(dtMilliSec))
+	time_next = time_now + dtSec;
+	timed_frame(time_now, dtSec, true);
+	time_now = time_next;
+
+	dtMilliSec += time_ticks_remainder;
+	auto dtWhole = static_cast<int>(dtMilliSec);
+	time_ticks_remainder = dtMilliSec - static_cast<float>(dtWhole);
+	time_ticks += dtWhole;
+
+	if (nudge::nudged_left || nudge::nudged_right || nudge::nudged_up)
 	{
-		time_next = time_now + dtSec;
-		timed_frame(time_now, dtSec, true);
-		time_now = time_next;
-
-		dtMilliSec += time_ticks_remainder;
-		auto dtWhole = static_cast<int>(dtMilliSec);
-		time_ticks_remainder = dtMilliSec - static_cast<float>(dtWhole);
-		time_ticks += dtWhole;
-
-		if (nudge::nudged_left || nudge::nudged_right || nudge::nudged_up)
+		nudge::nudge_count = dtSec * 4.0f + nudge::nudge_count;
+	}
+	else
+	{
+		auto nudgeDec = nudge::nudge_count - dtSec;
+		if (nudgeDec <= 0.0f)
+			nudgeDec = 0.0;
+		nudge::nudge_count = nudgeDec;
+	}
+	timer::check();
+	render::update();
+	score::update(MainTable->CurScoreStruct);
+	if (!MainTable->TiltLockFlag)
+	{
+		if (nudge::nudge_count > 0.5f)
 		{
-			nudge::nudge_count = dtSec * 4.0f + nudge::nudge_count;
+			pinball::InfoTextBox->Display(pinball::get_rc_string(25, 0), 2.0);
 		}
-		else
-		{
-			auto nudgeDec = nudge::nudge_count - dtSec;
-			if (nudgeDec <= 0.0f)
-				nudgeDec = 0.0;
-			nudge::nudge_count = nudgeDec;
-		}
-		timer::check();
-		render::update();
-		score::update(MainTable->CurScoreStruct);
-		if (!MainTable->TiltLockFlag)
-		{
-			if (nudge::nudge_count > 0.5f)
-			{
-				pinball::InfoTextBox->Display(pinball::get_rc_string(25, 0), 2.0);
-			}
-			if (nudge::nudge_count > 1.0f)
-				MainTable->tilt(time_now);
-		}
+		if (nudge::nudge_count > 1.0f)
+			MainTable->tilt(time_now);
 	}
 }
 
@@ -380,7 +370,7 @@ void pb::pause_continue()
 		{
 			char* text;
 			float textTime;
-			if (game_mode == 2)
+			if (game_mode == GameModes::GameOver)
 			{
 				textTime = -1.0;
 				text = pinball::get_rc_string(24, 0);
@@ -406,7 +396,7 @@ void pb::loose_focus()
 
 void pb::InputUp(GameInput input)
 {
-	if (game_mode != 1 || winmain::single_step || demo_mode)
+	if (game_mode != GameModes::InGame || winmain::single_step || demo_mode)
 		return;
 
 	if (AnyBindingMatchesInput(options::Options.Key.LeftFlipper, input))
@@ -438,14 +428,8 @@ void pb::InputUp(GameInput input)
 void pb::InputDown(GameInput input)
 {
 	options::InputDown(input);
-	if (winmain::single_step || demo_mode)
+	if (game_mode != GameModes::InGame || winmain::single_step || demo_mode)
 		return;
-
-	if (game_mode != 1)
-	{
-		mode_countdown(-1.f);
-		return;
-	}
 
 	if (input.Type == InputTypes::Keyboard)
 		control::pbctrl_bdoor_controller(static_cast<char>(input.Value));
@@ -529,29 +513,6 @@ void pb::InputDown(GameInput input)
 	}
 }
 
-int pb::mode_countdown(float time)
-{
-	if (!game_mode || game_mode <= 0)
-		return 1;
-	if (game_mode > 2)
-	{
-		if (game_mode == 3)
-		{
-			mode_countdown_ -= time;
-			if (mode_countdown_ < 0.f || time < 0.f)
-				mode_change(4);
-		}
-		else if (game_mode == 4)
-		{
-			mode_countdown_ -= time;
-			if (mode_countdown_ < 0.f || time < 0.f)
-				mode_change(1);
-		}
-		return 1;
-	}
-	return 0;
-}
-
 void pb::launch_ball()
 {
 	MainTable->Plunger->Message(1017, 0.0f);
@@ -563,7 +524,7 @@ void pb::end_game()
 	int scoreIndex[4]{};
 	char String1[200];
 
-	mode_change(2);
+	mode_change(GameModes::GameOver);
 	int playerCount = MainTable->PlayerCount;
 
 	score_struct_super* scorePtr = MainTable->PlayerScores;

@@ -6,6 +6,12 @@ class TPinballTable;
 class DatFile;
 class TBall;
 
+enum class GameModes
+{
+	InGame = 1,
+	GameOver = 2,
+};
+
 class UsingSdlHint
 {
 public:
@@ -35,7 +41,7 @@ class pb
 public:
 	static int time_ticks;
 	static float ball_speed_limit, time_now, time_next, time_ticks_remainder;
-	static int game_mode;
+	static GameModes game_mode;
 	static bool cheat_mode;
 	static DatFile* record_table;
 	static TPinballTable* MainTable;
@@ -48,9 +54,9 @@ public:
 	static void SelectDatFile(const std::vector<const char*>& dataSearchPaths);
 	static void reset_table();
 	static void firsttime_setup();
-	static void mode_change(int mode);
+	static void mode_change(GameModes mode);
 	static void toggle_demo();
-	static void replay_level(int demoMode);
+	static void replay_level(bool demoMode);
 	static void ballset(float dx, float dy);
 	static void frame(float dtMilliSec);
 	static void timed_frame(float timeNow, float timeDelta, bool drawBalls);
@@ -59,7 +65,6 @@ public:
 	static void loose_focus();
 	static void InputUp(GameInput input);
 	static void InputDown(GameInput input);
-	static int mode_countdown(float time);
 	static void launch_ball();
 	static void end_game();
 	static void high_scores();
@@ -68,8 +73,7 @@ public:
 	static float collide(float timeNow, float timeDelta, TBall* ball);
 	static void PushCheat(const std::string& cheat);
 private:
-	static int demo_mode;
-	static float mode_countdown_;
+	static bool demo_mode;
 
 	static bool AnyBindingMatchesInput(GameInput (&options)[3], GameInput key);
 };

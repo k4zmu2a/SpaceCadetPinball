@@ -381,7 +381,7 @@ int TPinballTable::Message(int code, float value)
 		{
 			timer::kill(EndGameTimeoutTimer);
 			EndGame_timeout(0, this);
-			pb::mode_change(1);
+			pb::mode_change(GameModes::InGame);
 		}
 		if (LightShowTimer)
 		{

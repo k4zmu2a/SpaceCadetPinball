@@ -2870,7 +2870,7 @@ void control::GameoverController(int code, TPinballComponent* caller)
 	if (code == 66)
 	{
 		control_goal_lights_tag.Component->Message(20, 0.0);
-		pb::mode_change(2);
+		pb::mode_change(GameModes::GameOver);
 		control_flip1_tag.Component->Message(1022, 0.0);
 		control_flip2_tag.Component->Message(1022, 0.0);
 		control_mission_text_box_tag.Component->MessageField = 0;
