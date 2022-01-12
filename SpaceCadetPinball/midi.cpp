@@ -9,6 +9,7 @@
 std::vector<Mix_Music*> midi::LoadedTracks{};
 Mix_Music *midi::track1, *midi::track2, *midi::track3, *midi::active_track, *midi::NextTrack;
 bool midi::SetNextTrackFlag;
+int midi::Volume = MIX_MAX_VOLUME;
 
 constexpr uint32_t FOURCC(uint8_t a, uint8_t b, uint8_t c, uint8_t d)
 {
@@ -47,8 +48,9 @@ int midi::music_stop()
 	return true;
 }
 
-int midi::music_init()
+int midi::music_init(int volume)
 {
+	SetVolume(volume);
 	active_track = nullptr;
 
 	if (pb::FullTiltMode)
@@ -85,6 +87,12 @@ void midi::music_shutdown()
 	}
 	active_track = nullptr;
 	LoadedTracks.clear();
+}
+
+void midi::SetVolume(int volume)
+{
+	Volume = volume;
+	Mix_VolumeMusic(volume);
 }
 
 Mix_Music* midi::load_track(std::string fileName)
@@ -157,6 +165,9 @@ bool midi::play_track(Mix_Music* midi)
 		return false;
 	}
 
+	// On Windows, MIDI volume can only be set during playback.
+	// And it changes application master volume for some reason.
+	SetVolume(Volume);
 	active_track = midi;
 	return true;
 }

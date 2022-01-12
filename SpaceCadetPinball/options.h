@@ -78,6 +78,8 @@ struct optionsStruct
 	bool HybridSleep;
 	bool Prefer3DPBGameData;
 	bool IntegerScaling;
+	int SoundVolume;
+	int MusicVolume;
 };
 
 struct ControlRef
@@ -95,6 +97,7 @@ public:
 	                     DefUps = 120, DefFps = 60;
 	// Original uses 8 sound channels
 	static constexpr int MaxSoundChannels = 32, MinSoundChannels = 1, DefSoundChannels = 8;
+	static constexpr int MaxVolume = MIX_MAX_VOLUME, MinVolume = 0, DefVolume = MaxVolume;
 	static optionsStruct Options;
 
 	static void InitPrimary();

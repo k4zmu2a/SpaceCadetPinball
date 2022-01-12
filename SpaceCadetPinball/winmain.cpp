@@ -133,10 +133,10 @@ int winmain::WinMain(LPCSTR lpCmdLine)
 	// Second step: run updates depending on FullTiltMode
 	options::InitSecondary();
 
-	if (!Sound::Init(Options.SoundChannels, Options.Sounds))
+	if (!Sound::Init(Options.SoundChannels, Options.Sounds, Options.SoundVolume))
 		Options.Sounds = false;
 
-	if (!pinball::quickFlag && !midi::music_init())
+	if (!pinball::quickFlag && !midi::music_init(Options.MusicVolume))
 		Options.Music = false;
 
 	if (pb::init())
@@ -291,8 +291,7 @@ int winmain::WinMain(LPCSTR lpCmdLine)
 			}
 
 			// Limit duration to 2 * target time
-			sleepRemainder = std::max(std::min(DurationMs(frameEnd - updateEnd) - targetTimeDelta, TargetFrameTime),
-			                          -TargetFrameTime);
+			sleepRemainder = Clamp(DurationMs(frameEnd - updateEnd) - targetTimeDelta, -TargetFrameTime, TargetFrameTime);
 			frameDuration = std::min<DurationMs>(DurationMs(frameEnd - frameStart), 2 * TargetFrameTime);
 			frameStart = frameEnd;
 			UpdateToFrameCounter++;
@@ -431,50 +430,46 @@ void winmain::RenderUi()
 				}
 				ImGui::EndMenu();
 			}
-			ImGui::Separator();
-
-			if (ImGui::MenuItem("Sound", "F5", Options.Sounds))
-			{
-				options::toggle(Menu1::Sounds);
-			}
-			if (ImGui::MenuItem("Music", "F6", Options.Music))
-			{
-				options::toggle(Menu1::Music);
-			}
-			ImGui::TextUnformatted("Sound Channels");
-			if (ImGui::SliderInt("##Sound Channels", &Options.SoundChannels, options::MinSoundChannels,
-			                     options::MaxSoundChannels, "%d", ImGuiSliderFlags_AlwaysClamp))
-			{
-				Options.SoundChannels = std::min(options::MaxSoundChannels,
-				                                 std::max(options::MinSoundChannels, Options.SoundChannels));
-				Sound::SetChannels(Options.SoundChannels);
-			}
-			ImGui::Separator();
-
 			if (ImGui::MenuItem("Player Controls...", "F8"))
 			{
 				pause(false);
 				options::ShowControlDialog();
 			}
-			if (ImGui::BeginMenu("Table Resolution"))
+			ImGui::Separator();
+
+			if (ImGui::BeginMenu("Audio"))
 			{
-				char buffer[20]{};
-				auto maxResText = pinball::get_rc_string(fullscrn::GetMaxResolution() + 2030, 0);
-				if (ImGui::MenuItem(maxResText, nullptr, Options.Resolution == -1))
+				if (ImGui::MenuItem("Sound", "F5", Options.Sounds))
 				{
-					options::toggle(Menu1::MaximumResolution);
+					options::toggle(Menu1::Sounds);
 				}
-				for (auto i = 0; i <= fullscrn::GetMaxResolution(); i++)
+				ImGui::TextUnformatted("Sound Volume");
+				if (ImGui::SliderInt("##Sound Volume", &Options.SoundVolume, options::MinVolume, options::MaxVolume, "%d",
+					ImGuiSliderFlags_AlwaysClamp))
 				{
-					auto& res = fullscrn::resolution_array[i];
-					snprintf(buffer, sizeof buffer - 1, "%d x %d", res.ScreenWidth, res.ScreenHeight);
-					if (ImGui::MenuItem(buffer, nullptr, Options.Resolution == i))
-					{
-						options::toggle(static_cast<Menu1>(static_cast<int>(Menu1::R640x480) + i));
-					}
+					Sound::SetVolume(Options.SoundVolume);
+				}
+				ImGui::TextUnformatted("Sound Channels");
+				if (ImGui::SliderInt("##Sound Channels", &Options.SoundChannels, options::MinSoundChannels,
+					options::MaxSoundChannels, "%d", ImGuiSliderFlags_AlwaysClamp))
+				{
+					Sound::SetChannels(Options.SoundChannels);
+				}
+				ImGui::Separator();
+
+				if (ImGui::MenuItem("Music", "F6", Options.Music))
+				{
+					options::toggle(Menu1::Music);
+				}
+				ImGui::TextUnformatted("Music Volume");
+				if (ImGui::SliderInt("##Music Volume", &Options.MusicVolume, options::MinVolume, options::MaxVolume, "%d",
+					ImGuiSliderFlags_AlwaysClamp))
+				{
+					midi::SetVolume(Options.MusicVolume);
 				}
 				ImGui::EndMenu();
 			}
+
 			if (ImGui::BeginMenu("Graphics"))
 			{
 				if (ImGui::MenuItem("Uniform Scaling", nullptr, Options.UniformScaling))
@@ -530,6 +525,26 @@ void winmain::RenderUi()
 					UpdateFrameRate();
 				}
 
+				ImGui::EndMenu();
+			}
+
+			if (ImGui::BeginMenu("Table Resolution"))
+			{
+				char buffer[20]{};
+				auto maxResText = pinball::get_rc_string(fullscrn::GetMaxResolution() + 2030, 0);
+				if (ImGui::MenuItem(maxResText, nullptr, Options.Resolution == -1))
+				{
+					options::toggle(Menu1::MaximumResolution);
+				}
+				for (auto i = 0; i <= fullscrn::GetMaxResolution(); i++)
+				{
+					auto& res = fullscrn::resolution_array[i];
+					snprintf(buffer, sizeof buffer - 1, "%d x %d", res.ScreenWidth, res.ScreenHeight);
+					if (ImGui::MenuItem(buffer, nullptr, Options.Resolution == i))
+					{
+						options::toggle(static_cast<Menu1>(static_cast<int>(Menu1::R640x480) + i));
+					}
+				}
 				ImGui::EndMenu();
 			}
 

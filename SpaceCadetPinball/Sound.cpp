@@ -4,9 +4,11 @@
 int Sound::num_channels;
 bool Sound::enabled_flag = false;
 int* Sound::TimeStamps = nullptr;
+int Sound::Volume = MIX_MAX_VOLUME;
 
-bool Sound::Init(int channels, bool enableFlag)
+bool Sound::Init(int channels, bool enableFlag, int volume)
 {
+	Volume = volume;
 	Mix_Init(MIX_INIT_MID_Proxy);
 	auto result = Mix_OpenAudio(MIX_DEFAULT_FREQUENCY, MIX_DEFAULT_FORMAT, 2, 1024);
 	SetChannels(channels);
@@ -80,4 +82,11 @@ void Sound::SetChannels(int channels)
 	delete[] TimeStamps;
 	TimeStamps = new int[num_channels]();
 	Mix_AllocateChannels(num_channels);
+	SetVolume(Volume);
+}
+
+void Sound::SetVolume(int volume)
+{
+	Volume = volume;
+	Mix_Volume(-1, volume);
 }

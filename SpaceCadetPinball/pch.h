@@ -78,10 +78,16 @@ inline float RandFloat()
 	return static_cast<float>(std::rand() / static_cast<double>(RAND_MAX));
 }
 
-template <typename T> constexpr
-int Sign(T val)
+template <typename T>
+constexpr int Sign(T val)
 {
 	return (T(0) < val) - (val < T(0));
+}
+
+template <typename T>
+const T& Clamp(const T& n, const T& lower, const T& upper)
+{
+	return std::max(lower, std::min(n, upper));
 }
 
 // UTF-8 path adapter for fopen on Windows, implemented in SpaceCadetPinball.cpp
