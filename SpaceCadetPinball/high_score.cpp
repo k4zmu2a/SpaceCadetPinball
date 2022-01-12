@@ -154,7 +154,7 @@ void high_score::RenderHighScoreDialog()
 	bool unused_open = true;
 	if (ImGui::BeginPopupModal("High Scores", &unused_open, ImGuiWindowFlags_AlwaysAutoResize))
 	{
-		if (ImGui::BeginTable("table1", 3, 0))
+		if (ImGui::BeginTable("table1", 3, ImGuiTableFlags_Borders))
 		{
 			char buf[36];
 			ImGui::TableSetupColumn("Rank");
@@ -166,7 +166,7 @@ void high_score::RenderHighScoreDialog()
 			{
 				ImGui::TableNextRow();
 				ImGui::TableNextColumn();
-				snprintf(buf, sizeof buf, "%d", row);
+				snprintf(buf, sizeof buf, "%d", row + 1);
 				ImGui::TextUnformatted(buf);
 
 				auto currentRow = &dlg_hst[row + offset];
@@ -190,7 +190,6 @@ void high_score::RenderHighScoreDialog()
 			}
 			ImGui::EndTable();
 		}
-		ImGui::Separator();
 
 		if (ImGui::Button("Ok"))
 		{
