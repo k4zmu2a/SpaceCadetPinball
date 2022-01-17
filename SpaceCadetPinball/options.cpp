@@ -140,6 +140,7 @@ void options::ReadOptions()
 	Options.TargetUps = max(60, Options.TargetUps);
 	Options.TargetUps = min(Options.TargetUps, 360);
 	Options.SystemFont = get_int(nullptr, "System Font", false);
+	get_string(nullptr, "System Font Name", Options.SystemFontName, "", LF_FACESIZE);
 
 	auto defaultLanguage = Languages::English;
 	auto language = static_cast<Languages>(get_int(nullptr, "Language", static_cast<int>(defaultLanguage)));
@@ -239,6 +240,7 @@ void options::uninit()
 	set_int(nullptr, "Uniform scaling", Options.UniformScaling);
 	set_int(nullptr, "Alternative Render", Options.AlternativeRender);
 	set_int(nullptr, "System Font", Options.SystemFont);
+	set_string(nullptr, "System Font Name", Options.SystemFontName);
 	set_int(nullptr, "Language", static_cast<int>(Options.Language));
 	set_int(nullptr, "Target UPS", Options.TargetUps);
 }

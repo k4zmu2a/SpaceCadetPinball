@@ -473,7 +473,9 @@ void gdrv::choose_font()
 	static const int fontSizes_WinMenu[3] = { 17, 21, 27 };
 
 	const char* system_font_filename = nullptr;
-	fontCharset = DEFAULT_CHARSET;
+	// Only System font requires non-default charset,
+	// and custom charsets may break other fonts (like WinMenu).
+	int systemFontCharset = DEFAULT_CHARSET;
 
 	switch (options::Options.Language)
 	{
@@ -495,28 +497,28 @@ void gdrv::choose_font()
 		break;
 	case Languages::Greek:
 		system_font_filename = "vgasysg.fon";
-		fontCharset = GREEK_CHARSET;
+		systemFontCharset = GREEK_CHARSET;
 		break;
 	case Languages::Russian:
 		system_font_filename = "vgasysr.fon";
-		fontCharset = RUSSIAN_CHARSET;
+		systemFontCharset = RUSSIAN_CHARSET;
 		break;
 	case Languages::Turkish:
 		system_font_filename = "vgasyst.fon";
-		fontCharset = TURKISH_CHARSET;
+		systemFontCharset = TURKISH_CHARSET;
 		break;
 	case Languages::Danish:
 	case Languages::Dutch:
 	case Languages::Norwegian:
 	case Languages::Swedish:
 		system_font_filename = "vgasys.fon";
-		fontCharset = DEFAULT_CHARSET;
+		systemFontCharset = DEFAULT_CHARSET;
 		break;
 	case Languages::Czech:
 	case Languages::Hungarian:
 	case Languages::Polish:
 		system_font_filename = "vgasyse.fon";
-		fontCharset = EASTEUROPE_CHARSET;
+		systemFontCharset = EASTEUROPE_CHARSET;
 		break;
 	default:
 		system_font_filename = "vgasys.fon";
@@ -539,6 +541,7 @@ void gdrv::choose_font()
 		{
 			fontFamily = "System";
 			fontSizes = fontSizes_System;
+			fontCharset = systemFontCharset;
 
 			std::string windir(MAX_PATH, '\0');
 			DWORD result = GetEnvironmentVariableA("WINDIR", &windir[0], MAX_PATH);

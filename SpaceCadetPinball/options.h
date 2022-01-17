@@ -61,6 +61,7 @@ struct optionsStruct
 	bool AlternativeRender;
 	int TargetUps;
 	bool SystemFont;
+	char SystemFontName[LF_FACESIZE];
 	Languages Language;
 };
 
