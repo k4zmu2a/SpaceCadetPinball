@@ -7,5 +7,5 @@ No source ports in main repository.\
 I have no way to test and maintain most of them.\
 The best I can do is to add a link.
 
-There is no guaranty that any particular PR will be accepted.\
+There is no guarantee that any particular PR will be accepted.\
 If you are unsure, ask first, make PR second.
