@@ -136,6 +136,9 @@ void options::ReadOptions()
 	Options.BottomTableBumpKey = get_int(nullptr, "Bottom Table Bump key", Options.BottomTableBumpKey);
 	Options.UniformScaling = get_int(nullptr, "Uniform scaling", true);
 	Options.AlternativeRender = get_int(nullptr, "Alternative Render", false);
+	Options.TargetUps = get_int(nullptr, "Target UPS", 120);
+	Options.TargetUps = max(60, Options.TargetUps);
+	Options.TargetUps = min(Options.TargetUps, 360);
 
 	auto defaultLanguage = Languages::English;
 	auto language = static_cast<Languages>(get_int(nullptr, "Language", static_cast<int>(defaultLanguage)));
@@ -235,6 +238,7 @@ void options::uninit()
 	set_int(nullptr, "Uniform scaling", Options.UniformScaling);
 	set_int(nullptr, "Alternative Render", Options.AlternativeRender);
 	set_int(nullptr, "Language", static_cast<int>(Options.Language));
+	set_int(nullptr, "Target UPS", Options.TargetUps);
 }
 
 void options::path_init(LPCSTR regPath)
