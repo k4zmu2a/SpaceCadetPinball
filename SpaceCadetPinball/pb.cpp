@@ -270,10 +270,10 @@ void pb::frame(float dtMilliSec)
 			// Retained render prevents frame skip. The next best thing - complete refresh at fixed rate. 
 			render::update(false);
 
+			// Redraw is slower, as a compromise it is done at FPS = UPS / 2
 			auto targetFps = options::Options.TargetUps / 2.0f;
 			targetFps = max(targetFps, 60.0f); // at least 60
 
-			// Frame time at 60 FPS = 16.(6) ms
 			auto targetTime = 1000.0f / targetFps;
 			frameTime += dtMilliSec;
 

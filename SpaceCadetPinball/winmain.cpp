@@ -224,12 +224,8 @@ int winmain::WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLi
 		pb::toggle_demo();
 	else
 		pb::replay_level(0);
-	
-	// To have a smooth display, Updates Per Sec (UPS) should be fps*2.
-	// Defaulted to 125 UPS, to leave some time for rendering.
-	float TargetFrameTime = 1000.0f / options::Options.TargetUps;
-	TargetFrameTime = max(TargetFrameTime, 1);
 
+	float TargetFrameTime = 1000.0f / options::Options.TargetUps;
 	DWORD someTimeCounter = 300u, prevTime = 0u, frameStart = timeGetTime();
 	float sleepRemainder = 0, frameDuration = TargetFrameTime;
 	while (true)
