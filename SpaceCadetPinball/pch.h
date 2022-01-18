@@ -19,6 +19,7 @@
 #include <cstdint>
 #include <type_traits> /*For control template*/
 //#include <cstdlib>
+#include <string>
 
 /*Use (void) to silent unused warnings.*/
 #define assertm(exp, msg) assert(((void)msg, exp))
