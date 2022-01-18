@@ -436,7 +436,7 @@ void gdrv::ScrollBitmapHorizontal(gdrv_bitmap8* bmp, int xStart)
 	}
 }
 
-int CALLBACK gdrv_find_font_func(
+int CALLBACK gdrv::find_font_func(
        ENUMLOGFONTEXA *lpelfe,
        NEWTEXTMETRICEXA *lpntme,
        DWORD FontType,
@@ -459,7 +459,7 @@ bool gdrv::find_font(const char* fontName)
        strcpy_s(lf.lfFaceName, fontName);
 
        HDC hDC = GetDC(NULL);
-       EnumFontFamiliesExA(hDC, &lf, (FONTENUMPROCA)&gdrv_find_font_func, reinterpret_cast<LPARAM>(&params), 0);
+       EnumFontFamiliesExA(hDC, &lf, (FONTENUMPROCA)&find_font_func, reinterpret_cast<LPARAM>(&params), 0);
        ReleaseDC(NULL, hDC);
        return params.found;
 }
@@ -472,11 +472,9 @@ void gdrv::choose_font()
 	static const int fontSizes_System[3] = { 17, 21, 29 };
 	static const int fontSizes_WinMenu[3] = { 17, 21, 27 };
 
-	const char* system_font_filename = nullptr;
-	// Only System font requires non-default charset,
-	// and custom charsets may break other fonts (like WinMenu).
-	int systemFontCharset = DEFAULT_CHARSET;
-
+	// Default path: scalable TTF font with AA.
+	fontCharset = DEFAULT_CHARSET;
+	auto specialFont = true;
 	switch (options::Options.Language)
 	{
 	case Languages::TraditionalChinese:
@@ -489,70 +487,80 @@ void gdrv::choose_font()
 		break;
 	case Languages::Japanese:
 		fontFamily = "MS UI Gothic";
-		fontSizes = fontSizes_Arial; // we need feedback for this
+		fontSizes = fontSizes_EastAsian;
 		break;
 	case Languages::Korean:
 		fontFamily = "Gulim";
 		fontSizes = fontSizes_EastAsian;
 		break;
-	case Languages::Greek:
-		system_font_filename = "vgasysg.fon";
-		systemFontCharset = GREEK_CHARSET;
-		break;
-	case Languages::Russian:
-		system_font_filename = "vgasysr.fon";
-		systemFontCharset = RUSSIAN_CHARSET;
-		break;
-	case Languages::Turkish:
-		system_font_filename = "vgasyst.fon";
-		systemFontCharset = TURKISH_CHARSET;
-		break;
-	case Languages::Danish:
-	case Languages::Dutch:
-	case Languages::Norwegian:
-	case Languages::Swedish:
-		system_font_filename = "vgasys.fon";
-		systemFontCharset = DEFAULT_CHARSET;
-		break;
-	case Languages::Czech:
-	case Languages::Hungarian:
-	case Languages::Polish:
-		system_font_filename = "vgasyse.fon";
-		systemFontCharset = EASTEUROPE_CHARSET;
-		break;
 	default:
-		system_font_filename = "vgasys.fon";
-		break;
+		fontFamily = "Arial";
+		fontSizes = fontSizes_Arial;
+		specialFont = false;
 	}
 
-	if (fontFamily.empty()) // no font chosen yet
+	// System font does not support some languages.
+	if (!options::Options.SystemFont || specialFont)
+		return;
+
+	// Alternative path: user defined font or System font.
+	auto userFont = options::Options.SystemFontName;
+	if (userFont[0] != '\0' && find_font(userFont))
 	{
-		if (!options::Options.SystemFont)
+		fontFamily = userFont;
+		fontSizes = fontSizes_WinMenu;
+	}
+	else
+	{
+		// Original game does no font setup, so it ends up with default System font.
+		// System is a bitmap font with no AA and limited scaling support.
+		// Specific .fon selection is needed for improved language support.
+		fontFamily = "System";
+		fontSizes = fontSizes_System;
+		const char* system_font_filename = nullptr;
+		switch (options::Options.Language)
 		{
-			fontFamily = "Arial";
-			fontSizes = fontSizes_Arial;
+		case Languages::Greek:
+			system_font_filename = "vgasysg.fon";
+			fontCharset = GREEK_CHARSET;
+			break;
+		case Languages::Russian:
+			system_font_filename = "vgasysr.fon";
+			fontCharset = RUSSIAN_CHARSET;
+			break;
+		case Languages::Turkish:
+			system_font_filename = "vgasyst.fon";
+			fontCharset = TURKISH_CHARSET;
+			break;
+		case Languages::Danish:
+		case Languages::Dutch:
+		case Languages::Norwegian:
+		case Languages::Swedish:
+			system_font_filename = "vgasys.fon";
+			fontCharset = DEFAULT_CHARSET;
+			break;
+		case Languages::Czech:
+		case Languages::Hungarian:
+		case Languages::Polish:
+		case Languages::Finnish:
+			system_font_filename = "vgasyse.fon";
+			fontCharset = EASTEUROPE_CHARSET;
+			break;
+		default:
+			system_font_filename = "vgasys.fon";
+			fontCharset = DEFAULT_CHARSET;
+			break;
 		}
-		else if (options::Options.SystemFontName[0] != '\0' && find_font(options::Options.SystemFontName))
-		{
-			fontFamily = options::Options.SystemFontName;
-			fontSizes = fontSizes_WinMenu;
-		}
+
+		std::string windir(MAX_PATH, '\0');
+		DWORD result = GetEnvironmentVariableA("WINDIR", &windir[0], MAX_PATH);
+		if (result == 0 || result > MAX_PATH) // fails or doesn't fit
+			windir = "C:\\Windows";
 		else
-		{
-			fontFamily = "System";
-			fontSizes = fontSizes_System;
-			fontCharset = systemFontCharset;
+			windir.resize(result);
 
-			std::string windir(MAX_PATH, '\0');
-			DWORD result = GetEnvironmentVariableA("WINDIR", &windir[0], MAX_PATH);
-			if (result == 0 || result > MAX_PATH) // fails or doesn't fit
-				windir = "C:\\Windows";
-			else
-				windir.resize(result);
-
-			fontFilename = windir + "\\Fonts\\" + system_font_filename;
-			AddFontResourceExA(fontFilename.c_str(), FR_PRIVATE, 0);
-		}
+		fontFilename = windir + "\\Fonts\\" + system_font_filename;
+		AddFontResourceExA(fontFilename.c_str(), FR_PRIVATE, 0);
 	}
 }
 

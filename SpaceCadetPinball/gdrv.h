@@ -70,8 +70,6 @@ public:
 	static void copy_bitmap_w_transparency(gdrv_bitmap8* dstBmp, int width, int height, int xOff, int yOff,
 	                                       gdrv_bitmap8* srcBmp, int srcXOff, int srcYOff);
 	static void ScrollBitmapHorizontal(gdrv_bitmap8* bmp, int xStart);
-	static bool find_font(const char* fontName);
-	static void choose_font();
 	static void grtext_draw_ttext_in_box(LPCWSTR text, int xOff, int yOff, int width, int height, bool centered);
 private:
 	/*COLORONCOLOR or HALFTONE*/
@@ -89,4 +87,7 @@ private:
 	static int StretchDIBitsScaled(HDC hdc, int xDest, int yDest, int DestWidth, int DestHeight, int xSrc, int ySrc,
 	                               int SrcWidth, int SrcHeight, gdrv_bitmap8* bmp, UINT iUsage,
 	                               DWORD rop);
+	static bool find_font(const char* fontName);
+	static int CALLBACK find_font_func(ENUMLOGFONTEXA* lpelfe, NEWTEXTMETRICEXA* lpntme, DWORD FontType, LPARAM lParam);
+	static void choose_font();
 };
