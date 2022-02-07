@@ -3903,6 +3903,8 @@ void control::SelectMissionController(int code, TPinballComponent* caller)
 		control_r_trek_lights_tag.Component->Message(34, 0.0);
 		control_r_trek_lights_tag.Component->Message(20, 0.0);
 		control_goal_lights_tag.Component->Message(20, 0.0);
+		control_worm_hole_lights_tag.Component->Message(20, 0.0);
+		control_bsink_arrow_lights_tag.Component->Message(20, 0.0);
 		break;
 	case 67:
 		break;
