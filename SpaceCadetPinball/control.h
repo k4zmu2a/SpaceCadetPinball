@@ -26,9 +26,8 @@ struct component_tag : component_tag_base
 	static_assert(std::is_base_of<TPinballComponent, T>::value, "T must inherit from TPinballComponent");
 	T* Component;
 
-	component_tag(LPCSTR name, TPinballComponent* component): component_tag_base(name), Component(nullptr)
+	component_tag(LPCSTR name) : component_tag_base(name), Component(nullptr)
 	{
-		component_tag::SetComponent(component);
 	}
 
 	TPinballComponent* GetComponent() override
@@ -54,7 +53,7 @@ struct component_control
 
 struct component_info
 {
-	component_tag_base* Tag;
+	component_tag_base& Tag;
 	component_control Control;
 };
 
@@ -72,7 +71,7 @@ public:
 
 	static void make_links(TPinballTable* table);
 	static void ClearLinks();
-	static TPinballComponent* make_component_link(component_tag_base* tag);
+	static TPinballComponent* make_component_link(component_tag_base& tag);
 	static void handler(int code, TPinballComponent* cmp);
 	static void pbctrl_bdoor_controller(char key);
 	static void table_add_extra_ball(float count);

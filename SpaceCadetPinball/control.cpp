@@ -55,329 +55,562 @@ int control_kickout_score2[1] = {20000};
 int control_kickout_score3[1] = {50000};
 
 
-component_tag<TComponentGroup> control_attack_bump_tag = {"attack_bumpers", nullptr};
-component_tag<TComponentGroup> control_launch_bump_tag = {"launch_bumpers", nullptr};
-component_tag<TBlocker> control_block1_tag = {"v_bloc1", nullptr};
-component_tag<TBumper> control_bump1_tag = {"a_bump1", nullptr};
-component_tag<TBumper> control_bump2_tag = {"a_bump2", nullptr};
-component_tag<TBumper> control_bump3_tag = {"a_bump3", nullptr};
-component_tag<TBumper> control_bump4_tag = {"a_bump4", nullptr};
-component_tag<TBumper> control_bump5_tag = {"a_bump5", nullptr};
-component_tag<TBumper> control_bump6_tag = {"a_bump6", nullptr};
-component_tag<TBumper> control_bump7_tag = {"a_bump7", nullptr};
-component_tag<TDrain> control_drain_tag = {"drain", nullptr};
-component_tag<TFlagSpinner> control_flag1_tag = {"a_flag1", nullptr};
-component_tag<TFlagSpinner> control_flag2_tag = {"a_flag2", nullptr};
-component_tag<TFlipper> control_flip1_tag = {"a_flip1", nullptr};
-component_tag<TFlipper> control_flip2_tag = {"a_flip2", nullptr};
-component_tag<TLightBargraph> control_fuel_bargraph_tag = {"fuel_bargraph", nullptr};
-component_tag<TGate> control_gate1_tag = {"v_gate1", nullptr};
-component_tag<TGate> control_gate2_tag = {"v_gate2", nullptr};
-component_tag<TTextBox> control_info_text_box_tag = {"info_text_box", nullptr};
-component_tag<TKickback> control_kicker1_tag = {"a_kick1", nullptr};
-component_tag<TKickback> control_kicker2_tag = {"a_kick2", nullptr};
-component_tag<TKickout> control_kickout1_tag = {"a_kout1", nullptr};
-component_tag<TKickout> control_kickout2_tag = {"a_kout2", nullptr};
-component_tag<TKickout> control_kickout3_tag = {"a_kout3", nullptr};
-component_tag<TLight> control_lite1_tag = {"lite1", nullptr};
-component_tag<TLight> control_lite2_tag = {"lite2", nullptr};
-component_tag<TLight> control_lite3_tag = {"lite3", nullptr};
-component_tag<TLight> control_lite4_tag = {"lite4", nullptr};
-component_tag<TLight> control_lite5_tag = {"lite5", nullptr};
-component_tag<TLight> control_lite6_tag = {"lite6", nullptr};
-component_tag<TLight> control_lite7_tag = {"lite7", nullptr};
-component_tag<TLight> control_lite8_tag = {"lite8", nullptr};
-component_tag<TLight> control_lite9_tag = {"lite9", nullptr};
-component_tag<TLight> control_lite10_tag = {"lite10", nullptr};
-component_tag<TLight> control_lite11_tag = {"lite11", nullptr};
-component_tag<TLight> control_lite12_tag = {"lite12", nullptr};
-component_tag<TLight> control_lite13_tag = {"lite13", nullptr};
-component_tag<TLight> control_lite16_tag = {"lite16", nullptr};
-component_tag<TLight> control_lite17_tag = {"lite17", nullptr};
-component_tag<TLight> control_lite18_tag = {"lite18", nullptr};
-component_tag<TLight> control_lite19_tag = {"lite19", nullptr};
-component_tag<TLight> control_lite20_tag = {"lite20", nullptr};
-component_tag<TLight> control_lite21_tag = {"lite21", nullptr};
-component_tag<TLight> control_lite22_tag = {"lite22", nullptr};
-component_tag<TLight> control_lite23_tag = {"lite23", nullptr};
-component_tag<TLight> control_lite24_tag = {"lite24", nullptr};
-component_tag<TLight> control_lite25_tag = {"lite25", nullptr};
-component_tag<TLight> control_lite26_tag = {"lite26", nullptr};
-component_tag<TLight> control_lite27_tag = {"lite27", nullptr};
-component_tag<TLight> control_lite28_tag = {"lite28", nullptr};
-component_tag<TLight> control_lite29_tag = {"lite29", nullptr};
-component_tag<TLight> control_lite30_tag = {"lite30", nullptr};
-component_tag<TLight> control_lite54_tag = {"lite54", nullptr};
-component_tag<TLight> control_lite55_tag = {"lite55", nullptr};
-component_tag<TLight> control_lite56_tag = {"lite56", nullptr};
-component_tag<TLight> control_lite58_tag = {"lite58", nullptr};
-component_tag<TLight> control_lite59_tag = {"lite59", nullptr};
-component_tag<TLight> control_lite60_tag = {"lite60", nullptr};
-component_tag<TLight> control_lite61_tag = {"lite61", nullptr};
-component_tag<TLight> control_lite62_tag = {"lite62", nullptr};
-component_tag<TLight> control_lite67_tag = {"lite67", nullptr};
-component_tag<TLight> control_lite68_tag = {"lite68", nullptr};
-component_tag<TLight> control_lite69_tag = {"lite69", nullptr};
-component_tag<TLight> control_lite70_tag = {"lite70", nullptr};
-component_tag<TLight> control_lite71_tag = {"lite71", nullptr};
-component_tag<TLight> control_lite72_tag = {"lite72", nullptr};
-component_tag<TLight> control_lite77_tag = {"lite77", nullptr};
-component_tag<TLight> control_lite84_tag = {"lite84", nullptr};
-component_tag<TLight> control_lite85_tag = {"lite85", nullptr};
-component_tag<TLight> control_lite101_tag = {"lite101", nullptr};
-component_tag<TLight> control_lite102_tag = {"lite102", nullptr};
-component_tag<TLight> control_lite103_tag = {"lite103", nullptr};
-component_tag<TLight> control_lite104_tag = {"lite104", nullptr};
-component_tag<TLight> control_lite105_tag = {"lite105", nullptr};
-component_tag<TLight> control_lite106_tag = {"lite106", nullptr};
-component_tag<TLight> control_lite107_tag = {"lite107", nullptr};
-component_tag<TLight> control_lite108_tag = {"lite108", nullptr};
-component_tag<TLight> control_lite109_tag = {"lite109", nullptr};
-component_tag<TLight> control_lite110_tag = {"lite110", nullptr};
-component_tag<TLight> control_lite130_tag = {"lite130", nullptr};
-component_tag<TLight> control_lite131_tag = {"lite131", nullptr};
-component_tag<TLight> control_lite132_tag = {"lite132", nullptr};
-component_tag<TLight> control_lite133_tag = {"lite133", nullptr};
-component_tag<TLight> control_lite169_tag = {"lite169", nullptr};
-component_tag<TLight> control_lite170_tag = {"lite170", nullptr};
-component_tag<TLight> control_lite171_tag = {"lite171", nullptr};
-component_tag<TLight> control_lite195_tag = {"lite195", nullptr};
-component_tag<TLight> control_lite196_tag = {"lite196", nullptr};
-component_tag<TLight> control_lite198_tag = {"lite198", nullptr};
-component_tag<TLight> control_lite199_tag = {"lite199", nullptr};
-component_tag<TLight> control_lite200_tag = {"lite200", nullptr};
-component_tag<TLight> control_lite300_tag = {"lite300", nullptr};
-component_tag<TLight> control_lite301_tag = {"lite301", nullptr};
-component_tag<TLight> control_lite302_tag = {"lite302", nullptr};
-component_tag<TLight> control_lite303_tag = {"lite303", nullptr};
-component_tag<TLight> control_lite304_tag = {"lite304", nullptr};
-component_tag<TLight> control_lite305_tag = {"lite305", nullptr};
-component_tag<TLight> control_lite306_tag = {"lite306", nullptr};
-component_tag<TLight> control_lite307_tag = {"lite307", nullptr};
-component_tag<TLight> control_lite308_tag = {"lite308", nullptr};
-component_tag<TLight> control_lite309_tag = {"lite309", nullptr};
-component_tag<TLight> control_lite310_tag = {"lite310", nullptr};
-component_tag<TLight> control_lite311_tag = {"lite311", nullptr};
-component_tag<TLight> control_lite312_tag = {"lite312", nullptr};
-component_tag<TLight> control_lite313_tag = {"lite313", nullptr};
-component_tag<TLight> control_lite314_tag = {"lite314", nullptr};
-component_tag<TLight> control_lite315_tag = {"lite315", nullptr};
-component_tag<TLight> control_lite316_tag = {"lite316", nullptr};
-component_tag<TLight> control_lite317_tag = {"lite317", nullptr};
-component_tag<TLight> control_lite318_tag = {"lite318", nullptr};
-component_tag<TLight> control_lite319_tag = {"lite319", nullptr};
-component_tag<TLight> control_lite320_tag = {"lite320", nullptr};
-component_tag<TLight> control_lite321_tag = {"lite321", nullptr};
-component_tag<TLight> control_lite322_tag = {"lite322", nullptr};
-component_tag<TLight> control_literoll179_tag = {"literoll179", nullptr};
-component_tag<TLight> control_literoll180_tag = {"literoll180", nullptr};
-component_tag<TLight> control_literoll181_tag = {"literoll181", nullptr};
-component_tag<TLight> control_literoll182_tag = {"literoll182", nullptr};
-component_tag<TLight> control_literoll183_tag = {"literoll183", nullptr};
-component_tag<TLight> control_literoll184_tag = {"literoll184", nullptr};
-component_tag<TLightGroup> control_middle_circle_tag = {"middle_circle", nullptr};
-component_tag<TLightGroup> control_lchute_tgt_lights_tag = {"lchute_tgt_lights", nullptr};
-component_tag<TLightGroup> control_l_trek_lights_tag = {"l_trek_lights", nullptr};
-component_tag<TLightGroup> control_goal_lights_tag = {"goal_lights", nullptr};
-component_tag<TLightGroup> control_hyper_lights_tag = {"hyperspace_lights", nullptr};
-component_tag<TLightGroup> control_bmpr_inc_lights_tag = {"bmpr_inc_lights", nullptr};
-component_tag<TLightGroup> control_bpr_solotgt_lights_tag = {"bpr_solotgt_lights", nullptr};
-component_tag<TLightGroup> control_bsink_arrow_lights_tag = {"bsink_arrow_lights", nullptr};
-component_tag<TLightGroup> control_bumber_target_lights_tag = {"bumper_target_lights", nullptr};
-component_tag<TLightGroup> control_outer_circle_tag = {"outer_circle", nullptr};
-component_tag<TLightGroup> control_r_trek_lights_tag = {"r_trek_lights", nullptr};
-component_tag<TLightGroup> control_ramp_bmpr_inc_lights_tag = {"ramp_bmpr_inc_lights", nullptr};
-component_tag<TLightGroup> control_ramp_tgt_lights_tag = {"ramp_tgt_lights", nullptr};
-component_tag<TLightGroup> control_skill_shot_lights_tag = {"skill_shot_lights", nullptr};
-component_tag<TLightGroup> control_top_circle_tgt_lights_tag = {"top_circle_tgt_lights", nullptr};
-component_tag<TLightGroup> control_top_target_lights_tag = {"top_target_lights", nullptr};
-component_tag<TLightGroup> control_worm_hole_lights_tag = {"worm_hole_lights", nullptr};
-component_tag<TTextBox> control_mission_text_box_tag = {"mission_text_box", nullptr};
-component_tag<TOneway> control_oneway1_tag = {"s_onewy1", nullptr};
-component_tag<TOneway> control_oneway4_tag = {"s_onewy4", nullptr};
-component_tag<TOneway> control_oneway10_tag = {"s_onewy10", nullptr};
-component_tag<TPlunger> control_plunger_tag = {"plunger", nullptr};
-component_tag<THole> control_ramp_hole_tag = {"ramp_hole", nullptr};
-component_tag<TRamp> control_ramp_tag = {"ramp", nullptr};
-component_tag<TWall> control_rebo1_tag = {"v_rebo1", nullptr};
-component_tag<TWall> control_rebo2_tag = {"v_rebo2", nullptr};
-component_tag<TWall> control_rebo3_tag = {"v_rebo3", nullptr};
-component_tag<TWall> control_rebo4_tag = {"v_rebo4", nullptr};
-component_tag<TRollover> control_roll1_tag = {"a_roll1", nullptr};
-component_tag<TRollover> control_roll2_tag = {"a_roll2", nullptr};
-component_tag<TRollover> control_roll3_tag = {"a_roll3", nullptr};
-component_tag<TRollover> control_roll4_tag = {"a_roll4", nullptr};
-component_tag<TRollover> control_roll5_tag = {"a_roll5", nullptr};
-component_tag<TRollover> control_roll6_tag = {"a_roll6", nullptr};
-component_tag<TRollover> control_roll7_tag = {"a_roll7", nullptr};
-component_tag<TRollover> control_roll8_tag = {"a_roll8", nullptr};
-component_tag<TLightRollover> control_roll9_tag = {"a_roll9", nullptr};
-component_tag<TRollover> control_roll110_tag = {"a_roll110", nullptr};
-component_tag<TRollover> control_roll111_tag = {"a_roll111", nullptr};
-component_tag<TRollover> control_roll112_tag = {"a_roll112", nullptr};
-component_tag<TRollover> control_roll179_tag = {"a_roll179", nullptr};
-component_tag<TRollover> control_roll180_tag = {"a_roll180", nullptr};
-component_tag<TRollover> control_roll181_tag = {"a_roll181", nullptr};
-component_tag<TRollover> control_roll182_tag = {"a_roll182", nullptr};
-component_tag<TRollover> control_roll183_tag = {"a_roll183", nullptr};
-component_tag<TRollover> control_roll184_tag = {"a_roll184", nullptr};
-component_tag<TSink> control_sink1_tag = {"v_sink1", nullptr};
-component_tag<TSink> control_sink2_tag = {"v_sink2", nullptr};
-component_tag<TSink> control_sink3_tag = {"v_sink3", nullptr};
-component_tag<TSink> control_sink7_tag = {"v_sink7", nullptr};
-component_tag<TSound> control_soundwave3_tag = {"soundwave3", nullptr};
-component_tag<TSound> control_soundwave7_tag = {"soundwave7", nullptr};
-component_tag<TSound> control_soundwave8_tag = {"soundwave8", nullptr};
-component_tag<TSound> control_soundwave9_tag = {"soundwave9", nullptr};
-component_tag<TSound> control_soundwave10_tag = {"soundwave10", nullptr};
-component_tag<TSound> control_soundwave14_1_tag = {"soundwave14", nullptr};
-component_tag<TSound> control_soundwave14_2_tag = {"soundwave14", nullptr};
-component_tag<TSound> control_soundwave21_tag = {"soundwave21", nullptr};
-component_tag<TSound> control_soundwave23_tag = {"soundwave23", nullptr};
-component_tag<TSound> control_soundwave24_tag = {"soundwave24", nullptr};
-component_tag<TSound> control_soundwave25_tag = {"soundwave25", nullptr};
-component_tag<TSound> control_soundwave26_tag = {"soundwave26", nullptr};
-component_tag<TSound> control_soundwave27_tag = {"soundwave27", nullptr};
-component_tag<TSound> control_soundwave28_tag = {"soundwave28", nullptr};
-component_tag<TSound> control_soundwave30_tag = {"soundwave30", nullptr};
-component_tag<TSound> control_soundwave35_1_tag = {"soundwave35", nullptr};
-component_tag<TSound> control_soundwave35_2_tag = {"soundwave35", nullptr};
-component_tag<TSound> control_soundwave36_1_tag = {"soundwave36", nullptr};
-component_tag<TSound> control_soundwave36_2_tag = {"soundwave36", nullptr};
-component_tag<TSound> control_soundwave38_tag = {"soundwave38", nullptr};
-component_tag<TSound> control_soundwave39_tag = {"soundwave39", nullptr};
-component_tag<TSound> control_soundwave40_tag = {"soundwave40", nullptr};
-component_tag<TSound> control_soundwave41_tag = {"soundwave41", nullptr};
-component_tag<TSound> control_soundwave44_tag = {"soundwave44", nullptr};
-component_tag<TSound> control_soundwave45_tag = {"soundwave45", nullptr};
-component_tag<TSound> control_soundwave46_tag = {"soundwave46", nullptr};
-component_tag<TSound> control_soundwave47_tag = {"soundwave47", nullptr};
-component_tag<TSound> control_soundwave48_tag = {"soundwave48", nullptr};
-component_tag<TSound> control_soundwave49D_tag = {"soundwave49D", nullptr};
-component_tag<TSound> control_soundwave50_1_tag = {"soundwave50", nullptr};
-component_tag<TSound> control_soundwave50_2_tag = {"soundwave50", nullptr};
-component_tag<TSound> control_soundwave52_tag = {"soundwave52", nullptr};
-component_tag<TSound> control_soundwave59_tag = {"soundwave59", nullptr};
-component_tag<TPopupTarget> control_target1_tag = {"a_targ1", nullptr};
-component_tag<TPopupTarget> control_target2_tag = {"a_targ2", nullptr};
-component_tag<TPopupTarget> control_target3_tag = {"a_targ3", nullptr};
-component_tag<TPopupTarget> control_target4_tag = {"a_targ4", nullptr};
-component_tag<TPopupTarget> control_target5_tag = {"a_targ5", nullptr};
-component_tag<TPopupTarget> control_target6_tag = {"a_targ6", nullptr};
-component_tag<TPopupTarget> control_target7_tag = {"a_targ7", nullptr};
-component_tag<TPopupTarget> control_target8_tag = {"a_targ8", nullptr};
-component_tag<TPopupTarget> control_target9_tag = {"a_targ9", nullptr};
-component_tag<TSoloTarget> control_target10_tag = {"a_targ10", nullptr};
-component_tag<TSoloTarget> control_target11_tag = {"a_targ11", nullptr};
-component_tag<TSoloTarget> control_target12_tag = {"a_targ12", nullptr};
-component_tag<TSoloTarget> control_target13_tag = {"a_targ13", nullptr};
-component_tag<TSoloTarget> control_target14_tag = {"a_targ14", nullptr};
-component_tag<TSoloTarget> control_target15_tag = {"a_targ15", nullptr};
-component_tag<TSoloTarget> control_target16_tag = {"a_targ16", nullptr};
-component_tag<TSoloTarget> control_target17_tag = {"a_targ17", nullptr};
-component_tag<TSoloTarget> control_target18_tag = {"a_targ18", nullptr};
-component_tag<TSoloTarget> control_target19_tag = {"a_targ19", nullptr};
-component_tag<TSoloTarget> control_target20_tag = {"a_targ20", nullptr};
-component_tag<TSoloTarget> control_target21_tag = {"a_targ21", nullptr};
-component_tag<TSoloTarget> control_target22_tag = {"a_targ22", nullptr};
-component_tag<TTripwire> control_trip1_tag = {"s_trip1", nullptr};
-component_tag<TTripwire> control_trip2_tag = {"s_trip2", nullptr};
-component_tag<TTripwire> control_trip3_tag = {"s_trip3", nullptr};
-component_tag<TTripwire> control_trip4_tag = {"s_trip4", nullptr};
-component_tag<TTripwire> control_trip5_tag = {"s_trip5", nullptr};
+component_tag<TComponentGroup> control_attack_bump_tag = {"attack_bumpers"};
+component_tag<TComponentGroup> control_launch_bump_tag = {"launch_bumpers"};
+component_tag<TBlocker> control_block1_tag = {"v_bloc1"};
+component_tag<TBumper> control_bump1_tag = {"a_bump1"};
+component_tag<TBumper> control_bump2_tag = {"a_bump2"};
+component_tag<TBumper> control_bump3_tag = {"a_bump3"};
+component_tag<TBumper> control_bump4_tag = {"a_bump4"};
+component_tag<TBumper> control_bump5_tag = {"a_bump5"};
+component_tag<TBumper> control_bump6_tag = {"a_bump6"};
+component_tag<TBumper> control_bump7_tag = {"a_bump7"};
+component_tag<TDrain> control_drain_tag = {"drain"};
+component_tag<TFlagSpinner> control_flag1_tag = {"a_flag1"};
+component_tag<TFlagSpinner> control_flag2_tag = {"a_flag2"};
+component_tag<TFlipper> control_flip1_tag = {"a_flip1"};
+component_tag<TFlipper> control_flip2_tag = {"a_flip2"};
+component_tag<TLightBargraph> control_fuel_bargraph_tag = {"fuel_bargraph"};
+component_tag<TGate> control_gate1_tag = {"v_gate1"};
+component_tag<TGate> control_gate2_tag = {"v_gate2"};
+component_tag<TTextBox> control_info_text_box_tag = {"info_text_box"};
+component_tag<TKickback> control_kicker1_tag = {"a_kick1"};
+component_tag<TKickback> control_kicker2_tag = {"a_kick2"};
+component_tag<TKickout> control_kickout1_tag = {"a_kout1"};
+component_tag<TKickout> control_kickout2_tag = {"a_kout2"};
+component_tag<TKickout> control_kickout3_tag = {"a_kout3"};
+component_tag<TLight> control_lite1_tag = {"lite1"};
+component_tag<TLight> control_lite2_tag = {"lite2"};
+component_tag<TLight> control_lite3_tag = {"lite3"};
+component_tag<TLight> control_lite4_tag = {"lite4"};
+component_tag<TLight> control_lite5_tag = {"lite5"};
+component_tag<TLight> control_lite6_tag = {"lite6"};
+component_tag<TLight> control_lite7_tag = {"lite7"};
+component_tag<TLight> control_lite8_tag = {"lite8"};
+component_tag<TLight> control_lite9_tag = {"lite9"};
+component_tag<TLight> control_lite10_tag = {"lite10"};
+component_tag<TLight> control_lite11_tag = {"lite11"};
+component_tag<TLight> control_lite12_tag = {"lite12"};
+component_tag<TLight> control_lite13_tag = {"lite13"};
+component_tag<TLight> control_lite16_tag = {"lite16"};
+component_tag<TLight> control_lite17_tag = {"lite17"};
+component_tag<TLight> control_lite18_tag = {"lite18"};
+component_tag<TLight> control_lite19_tag = {"lite19"};
+component_tag<TLight> control_lite20_tag = {"lite20"};
+component_tag<TLight> control_lite21_tag = {"lite21"};
+component_tag<TLight> control_lite22_tag = {"lite22"};
+component_tag<TLight> control_lite23_tag = {"lite23"};
+component_tag<TLight> control_lite24_tag = {"lite24"};
+component_tag<TLight> control_lite25_tag = {"lite25"};
+component_tag<TLight> control_lite26_tag = {"lite26"};
+component_tag<TLight> control_lite27_tag = {"lite27"};
+component_tag<TLight> control_lite28_tag = {"lite28"};
+component_tag<TLight> control_lite29_tag = {"lite29"};
+component_tag<TLight> control_lite30_tag = {"lite30"};
+component_tag<TLight> control_lite54_tag = {"lite54"};
+component_tag<TLight> control_lite55_tag = {"lite55"};
+component_tag<TLight> control_lite56_tag = {"lite56"};
+component_tag<TLight> control_lite58_tag = {"lite58"};
+component_tag<TLight> control_lite59_tag = {"lite59"};
+component_tag<TLight> control_lite60_tag = {"lite60"};
+component_tag<TLight> control_lite61_tag = {"lite61"};
+component_tag<TLight> control_lite62_tag = {"lite62"};
+component_tag<TLight> control_lite67_tag = {"lite67"};
+component_tag<TLight> control_lite68_tag = {"lite68"};
+component_tag<TLight> control_lite69_tag = {"lite69"};
+component_tag<TLight> control_lite70_tag = {"lite70"};
+component_tag<TLight> control_lite71_tag = {"lite71"};
+component_tag<TLight> control_lite72_tag = {"lite72"};
+component_tag<TLight> control_lite77_tag = {"lite77"};
+component_tag<TLight> control_lite84_tag = {"lite84"};
+component_tag<TLight> control_lite85_tag = {"lite85"};
+component_tag<TLight> control_lite101_tag = {"lite101"};
+component_tag<TLight> control_lite102_tag = {"lite102"};
+component_tag<TLight> control_lite103_tag = {"lite103"};
+component_tag<TLight> control_lite104_tag = {"lite104"};
+component_tag<TLight> control_lite105_tag = {"lite105"};
+component_tag<TLight> control_lite106_tag = {"lite106"};
+component_tag<TLight> control_lite107_tag = {"lite107"};
+component_tag<TLight> control_lite108_tag = {"lite108"};
+component_tag<TLight> control_lite109_tag = {"lite109"};
+component_tag<TLight> control_lite110_tag = {"lite110"};
+component_tag<TLight> control_lite130_tag = {"lite130"};
+component_tag<TLight> control_lite131_tag = {"lite131"};
+component_tag<TLight> control_lite132_tag = {"lite132"};
+component_tag<TLight> control_lite133_tag = {"lite133"};
+component_tag<TLight> control_lite169_tag = {"lite169"};
+component_tag<TLight> control_lite170_tag = {"lite170"};
+component_tag<TLight> control_lite171_tag = {"lite171"};
+component_tag<TLight> control_lite195_tag = {"lite195"};
+component_tag<TLight> control_lite196_tag = {"lite196"};
+component_tag<TLight> control_lite198_tag = {"lite198"};
+component_tag<TLight> control_lite199_tag = {"lite199"};
+component_tag<TLight> control_lite200_tag = {"lite200"};
+component_tag<TLight> control_lite300_tag = {"lite300"};
+component_tag<TLight> control_lite301_tag = {"lite301"};
+component_tag<TLight> control_lite302_tag = {"lite302"};
+component_tag<TLight> control_lite303_tag = {"lite303"};
+component_tag<TLight> control_lite304_tag = {"lite304"};
+component_tag<TLight> control_lite305_tag = {"lite305"};
+component_tag<TLight> control_lite306_tag = {"lite306"};
+component_tag<TLight> control_lite307_tag = {"lite307"};
+component_tag<TLight> control_lite308_tag = {"lite308"};
+component_tag<TLight> control_lite309_tag = {"lite309"};
+component_tag<TLight> control_lite310_tag = {"lite310"};
+component_tag<TLight> control_lite311_tag = {"lite311"};
+component_tag<TLight> control_lite312_tag = {"lite312"};
+component_tag<TLight> control_lite313_tag = {"lite313"};
+component_tag<TLight> control_lite314_tag = {"lite314"};
+component_tag<TLight> control_lite315_tag = {"lite315"};
+component_tag<TLight> control_lite316_tag = {"lite316"};
+component_tag<TLight> control_lite317_tag = {"lite317"};
+component_tag<TLight> control_lite318_tag = {"lite318"};
+component_tag<TLight> control_lite319_tag = {"lite319"};
+component_tag<TLight> control_lite320_tag = {"lite320"};
+component_tag<TLight> control_lite321_tag = {"lite321"};
+component_tag<TLight> control_lite322_tag = {"lite322"};
+component_tag<TLight> control_literoll179_tag = {"literoll179"};
+component_tag<TLight> control_literoll180_tag = {"literoll180"};
+component_tag<TLight> control_literoll181_tag = {"literoll181"};
+component_tag<TLight> control_literoll182_tag = {"literoll182"};
+component_tag<TLight> control_literoll183_tag = {"literoll183"};
+component_tag<TLight> control_literoll184_tag = {"literoll184"};
+component_tag<TLightGroup> control_middle_circle_tag = {"middle_circle"};
+component_tag<TLightGroup> control_lchute_tgt_lights_tag = {"lchute_tgt_lights"};
+component_tag<TLightGroup> control_l_trek_lights_tag = {"l_trek_lights"};
+component_tag<TLightGroup> control_goal_lights_tag = {"goal_lights"};
+component_tag<TLightGroup> control_hyper_lights_tag = {"hyperspace_lights"};
+component_tag<TLightGroup> control_bmpr_inc_lights_tag = {"bmpr_inc_lights"};
+component_tag<TLightGroup> control_bpr_solotgt_lights_tag = {"bpr_solotgt_lights"};
+component_tag<TLightGroup> control_bsink_arrow_lights_tag = {"bsink_arrow_lights"};
+component_tag<TLightGroup> control_bumber_target_lights_tag = {"bumper_target_lights"};
+component_tag<TLightGroup> control_outer_circle_tag = {"outer_circle"};
+component_tag<TLightGroup> control_r_trek_lights_tag = {"r_trek_lights"};
+component_tag<TLightGroup> control_ramp_bmpr_inc_lights_tag = {"ramp_bmpr_inc_lights"};
+component_tag<TLightGroup> control_ramp_tgt_lights_tag = {"ramp_tgt_lights"};
+component_tag<TLightGroup> control_skill_shot_lights_tag = {"skill_shot_lights"};
+component_tag<TLightGroup> control_top_circle_tgt_lights_tag = {"top_circle_tgt_lights"};
+component_tag<TLightGroup> control_top_target_lights_tag = {"top_target_lights"};
+component_tag<TLightGroup> control_worm_hole_lights_tag = {"worm_hole_lights"};
+component_tag<TTextBox> control_mission_text_box_tag = {"mission_text_box"};
+component_tag<TOneway> control_oneway1_tag = {"s_onewy1"};
+component_tag<TOneway> control_oneway4_tag = {"s_onewy4"};
+component_tag<TOneway> control_oneway10_tag = {"s_onewy10"};
+component_tag<TPlunger> control_plunger_tag = {"plunger"};
+component_tag<THole> control_ramp_hole_tag = {"ramp_hole"};
+component_tag<TRamp> control_ramp_tag = {"ramp"};
+component_tag<TWall> control_rebo1_tag = {"v_rebo1"};
+component_tag<TWall> control_rebo2_tag = {"v_rebo2"};
+component_tag<TWall> control_rebo3_tag = {"v_rebo3"};
+component_tag<TWall> control_rebo4_tag = {"v_rebo4"};
+component_tag<TRollover> control_roll1_tag = {"a_roll1"};
+component_tag<TRollover> control_roll2_tag = {"a_roll2"};
+component_tag<TRollover> control_roll3_tag = {"a_roll3"};
+component_tag<TRollover> control_roll4_tag = {"a_roll4"};
+component_tag<TRollover> control_roll5_tag = {"a_roll5"};
+component_tag<TRollover> control_roll6_tag = {"a_roll6"};
+component_tag<TRollover> control_roll7_tag = {"a_roll7"};
+component_tag<TRollover> control_roll8_tag = {"a_roll8"};
+component_tag<TLightRollover> control_roll9_tag = {"a_roll9"};
+component_tag<TRollover> control_roll110_tag = {"a_roll110"};
+component_tag<TRollover> control_roll111_tag = {"a_roll111"};
+component_tag<TRollover> control_roll112_tag = {"a_roll112"};
+component_tag<TRollover> control_roll179_tag = {"a_roll179"};
+component_tag<TRollover> control_roll180_tag = {"a_roll180"};
+component_tag<TRollover> control_roll181_tag = {"a_roll181"};
+component_tag<TRollover> control_roll182_tag = {"a_roll182"};
+component_tag<TRollover> control_roll183_tag = {"a_roll183"};
+component_tag<TRollover> control_roll184_tag = {"a_roll184"};
+component_tag<TSink> control_sink1_tag = {"v_sink1"};
+component_tag<TSink> control_sink2_tag = {"v_sink2"};
+component_tag<TSink> control_sink3_tag = {"v_sink3"};
+component_tag<TSink> control_sink7_tag = {"v_sink7"};
+component_tag<TSound> control_soundwave3_tag = {"soundwave3"};
+component_tag<TSound> control_soundwave7_tag = {"soundwave7"};
+component_tag<TSound> control_soundwave8_tag = {"soundwave8"};
+component_tag<TSound> control_soundwave9_tag = {"soundwave9"};
+component_tag<TSound> control_soundwave10_tag = {"soundwave10"};
+component_tag<TSound> control_soundwave14_1_tag = {"soundwave14"};
+component_tag<TSound> control_soundwave14_2_tag = {"soundwave14"};
+component_tag<TSound> control_soundwave21_tag = {"soundwave21"};
+component_tag<TSound> control_soundwave23_tag = {"soundwave23"};
+component_tag<TSound> control_soundwave24_tag = {"soundwave24"};
+component_tag<TSound> control_soundwave25_tag = {"soundwave25"};
+component_tag<TSound> control_soundwave26_tag = {"soundwave26"};
+component_tag<TSound> control_soundwave27_tag = {"soundwave27"};
+component_tag<TSound> control_soundwave28_tag = {"soundwave28"};
+component_tag<TSound> control_soundwave30_tag = {"soundwave30"};
+component_tag<TSound> control_soundwave35_1_tag = {"soundwave35"};
+component_tag<TSound> control_soundwave35_2_tag = {"soundwave35"};
+component_tag<TSound> control_soundwave36_1_tag = {"soundwave36"};
+component_tag<TSound> control_soundwave36_2_tag = {"soundwave36"};
+component_tag<TSound> control_soundwave38_tag = {"soundwave38"};
+component_tag<TSound> control_soundwave39_tag = {"soundwave39"};
+component_tag<TSound> control_soundwave40_tag = {"soundwave40"};
+component_tag<TSound> control_soundwave41_tag = {"soundwave41"};
+component_tag<TSound> control_soundwave44_tag = {"soundwave44"};
+component_tag<TSound> control_soundwave45_tag = {"soundwave45"};
+component_tag<TSound> control_soundwave46_tag = {"soundwave46"};
+component_tag<TSound> control_soundwave47_tag = {"soundwave47"};
+component_tag<TSound> control_soundwave48_tag = {"soundwave48"};
+component_tag<TSound> control_soundwave49D_tag = {"soundwave49D"};
+component_tag<TSound> control_soundwave50_1_tag = {"soundwave50"};
+component_tag<TSound> control_soundwave50_2_tag = {"soundwave50"};
+component_tag<TSound> control_soundwave52_tag = {"soundwave52"};
+component_tag<TSound> control_soundwave59_tag = {"soundwave59"};
+component_tag<TPopupTarget> control_target1_tag = {"a_targ1"};
+component_tag<TPopupTarget> control_target2_tag = {"a_targ2"};
+component_tag<TPopupTarget> control_target3_tag = {"a_targ3"};
+component_tag<TPopupTarget> control_target4_tag = {"a_targ4"};
+component_tag<TPopupTarget> control_target5_tag = {"a_targ5"};
+component_tag<TPopupTarget> control_target6_tag = {"a_targ6"};
+component_tag<TPopupTarget> control_target7_tag = {"a_targ7"};
+component_tag<TPopupTarget> control_target8_tag = {"a_targ8"};
+component_tag<TPopupTarget> control_target9_tag = {"a_targ9"};
+component_tag<TSoloTarget> control_target10_tag = {"a_targ10"};
+component_tag<TSoloTarget> control_target11_tag = {"a_targ11"};
+component_tag<TSoloTarget> control_target12_tag = {"a_targ12"};
+component_tag<TSoloTarget> control_target13_tag = {"a_targ13"};
+component_tag<TSoloTarget> control_target14_tag = {"a_targ14"};
+component_tag<TSoloTarget> control_target15_tag = {"a_targ15"};
+component_tag<TSoloTarget> control_target16_tag = {"a_targ16"};
+component_tag<TSoloTarget> control_target17_tag = {"a_targ17"};
+component_tag<TSoloTarget> control_target18_tag = {"a_targ18"};
+component_tag<TSoloTarget> control_target19_tag = {"a_targ19"};
+component_tag<TSoloTarget> control_target20_tag = {"a_targ20"};
+component_tag<TSoloTarget> control_target21_tag = {"a_targ21"};
+component_tag<TSoloTarget> control_target22_tag = {"a_targ22"};
+component_tag<TTripwire> control_trip1_tag = {"s_trip1"};
+component_tag<TTripwire> control_trip2_tag = {"s_trip2"};
+component_tag<TTripwire> control_trip3_tag = {"s_trip3"};
+component_tag<TTripwire> control_trip4_tag = {"s_trip4"};
+component_tag<TTripwire> control_trip5_tag = {"s_trip5"};
+
+
+// Component shortcuts for easier access without indirection through tags 
+TComponentGroup*& attack_bump = control_attack_bump_tag.Component;
+TComponentGroup*& launch_bump = control_launch_bump_tag.Component;
+TBlocker*& block1 = control_block1_tag.Component;
+TBumper*& bump1 = control_bump1_tag.Component;
+TBumper*& bump2 = control_bump2_tag.Component;
+TBumper*& bump3 = control_bump3_tag.Component;
+TBumper*& bump4 = control_bump4_tag.Component;
+TBumper*& bump5 = control_bump5_tag.Component;
+TBumper*& bump6 = control_bump6_tag.Component;
+TBumper*& bump7 = control_bump7_tag.Component;
+TDrain*& drain = control_drain_tag.Component;
+TFlagSpinner*& flag1 = control_flag1_tag.Component;
+TFlagSpinner*& flag2 = control_flag2_tag.Component;
+TFlipper*& flip1 = control_flip1_tag.Component;
+TFlipper*& flip2 = control_flip2_tag.Component;
+TLightBargraph*& fuel_bargraph = control_fuel_bargraph_tag.Component;
+TGate*& gate1 = control_gate1_tag.Component;
+TGate*& gate2 = control_gate2_tag.Component;
+TTextBox*& info_text_box = control_info_text_box_tag.Component;
+TKickback*& kicker1 = control_kicker1_tag.Component;
+TKickback*& kicker2 = control_kicker2_tag.Component;
+TKickout*& kickout1 = control_kickout1_tag.Component;
+TKickout*& kickout2 = control_kickout2_tag.Component;
+TKickout*& kickout3 = control_kickout3_tag.Component;
+TLight*& lite1 = control_lite1_tag.Component;
+TLight*& lite2 = control_lite2_tag.Component;
+TLight*& lite3 = control_lite3_tag.Component;
+TLight*& lite4 = control_lite4_tag.Component;
+TLight*& lite5 = control_lite5_tag.Component;
+TLight*& lite6 = control_lite6_tag.Component;
+TLight*& lite7 = control_lite7_tag.Component;
+TLight*& lite8 = control_lite8_tag.Component;
+TLight*& lite9 = control_lite9_tag.Component;
+TLight*& lite10 = control_lite10_tag.Component;
+TLight*& lite11 = control_lite11_tag.Component;
+TLight*& lite12 = control_lite12_tag.Component;
+TLight*& lite13 = control_lite13_tag.Component;
+TLight*& lite16 = control_lite16_tag.Component;
+TLight*& lite17 = control_lite17_tag.Component;
+TLight*& lite18 = control_lite18_tag.Component;
+TLight*& lite19 = control_lite19_tag.Component;
+TLight*& lite20 = control_lite20_tag.Component;
+TLight*& lite21 = control_lite21_tag.Component;
+TLight*& lite22 = control_lite22_tag.Component;
+TLight*& lite23 = control_lite23_tag.Component;
+TLight*& lite24 = control_lite24_tag.Component;
+TLight*& lite25 = control_lite25_tag.Component;
+TLight*& lite26 = control_lite26_tag.Component;
+TLight*& lite27 = control_lite27_tag.Component;
+TLight*& lite28 = control_lite28_tag.Component;
+TLight*& lite29 = control_lite29_tag.Component;
+TLight*& lite30 = control_lite30_tag.Component;
+TLight*& lite54 = control_lite54_tag.Component;
+TLight*& lite55 = control_lite55_tag.Component;
+TLight*& lite56 = control_lite56_tag.Component;
+TLight*& lite58 = control_lite58_tag.Component;
+TLight*& lite59 = control_lite59_tag.Component;
+TLight*& lite60 = control_lite60_tag.Component;
+TLight*& lite61 = control_lite61_tag.Component;
+TLight*& lite62 = control_lite62_tag.Component;
+TLight*& lite67 = control_lite67_tag.Component;
+TLight*& lite68 = control_lite68_tag.Component;
+TLight*& lite69 = control_lite69_tag.Component;
+TLight*& lite70 = control_lite70_tag.Component;
+TLight*& lite71 = control_lite71_tag.Component;
+TLight*& lite72 = control_lite72_tag.Component;
+TLight*& lite77 = control_lite77_tag.Component;
+TLight*& lite84 = control_lite84_tag.Component;
+TLight*& lite85 = control_lite85_tag.Component;
+TLight*& lite101 = control_lite101_tag.Component;
+TLight*& lite102 = control_lite102_tag.Component;
+TLight*& lite103 = control_lite103_tag.Component;
+TLight*& lite104 = control_lite104_tag.Component;
+TLight*& lite105 = control_lite105_tag.Component;
+TLight*& lite106 = control_lite106_tag.Component;
+TLight*& lite107 = control_lite107_tag.Component;
+TLight*& lite108 = control_lite108_tag.Component;
+TLight*& lite109 = control_lite109_tag.Component;
+TLight*& lite110 = control_lite110_tag.Component;
+TLight*& lite130 = control_lite130_tag.Component;
+TLight*& lite131 = control_lite131_tag.Component;
+TLight*& lite132 = control_lite132_tag.Component;
+TLight*& lite133 = control_lite133_tag.Component;
+TLight*& lite169 = control_lite169_tag.Component;
+TLight*& lite170 = control_lite170_tag.Component;
+TLight*& lite171 = control_lite171_tag.Component;
+TLight*& lite195 = control_lite195_tag.Component;
+TLight*& lite196 = control_lite196_tag.Component;
+TLight*& lite198 = control_lite198_tag.Component;
+TLight*& lite199 = control_lite199_tag.Component;
+TLight*& lite200 = control_lite200_tag.Component;
+TLight*& lite300 = control_lite300_tag.Component;
+TLight*& lite301 = control_lite301_tag.Component;
+TLight*& lite302 = control_lite302_tag.Component;
+TLight*& lite303 = control_lite303_tag.Component;
+TLight*& lite304 = control_lite304_tag.Component;
+TLight*& lite305 = control_lite305_tag.Component;
+TLight*& lite306 = control_lite306_tag.Component;
+TLight*& lite307 = control_lite307_tag.Component;
+TLight*& lite308 = control_lite308_tag.Component;
+TLight*& lite309 = control_lite309_tag.Component;
+TLight*& lite310 = control_lite310_tag.Component;
+TLight*& lite311 = control_lite311_tag.Component;
+TLight*& lite312 = control_lite312_tag.Component;
+TLight*& lite313 = control_lite313_tag.Component;
+TLight*& lite314 = control_lite314_tag.Component;
+TLight*& lite315 = control_lite315_tag.Component;
+TLight*& lite316 = control_lite316_tag.Component;
+TLight*& lite317 = control_lite317_tag.Component;
+TLight*& lite318 = control_lite318_tag.Component;
+TLight*& lite319 = control_lite319_tag.Component;
+TLight*& lite320 = control_lite320_tag.Component;
+TLight*& lite321 = control_lite321_tag.Component;
+TLight*& lite322 = control_lite322_tag.Component;
+TLight*& literoll179 = control_literoll179_tag.Component;
+TLight*& literoll180 = control_literoll180_tag.Component;
+TLight*& literoll181 = control_literoll181_tag.Component;
+TLight*& literoll182 = control_literoll182_tag.Component;
+TLight*& literoll183 = control_literoll183_tag.Component;
+TLight*& literoll184 = control_literoll184_tag.Component;
+TLightGroup*& middle_circle = control_middle_circle_tag.Component;
+TLightGroup*& lchute_tgt_lights = control_lchute_tgt_lights_tag.Component;
+TLightGroup*& l_trek_lights = control_l_trek_lights_tag.Component;
+TLightGroup*& goal_lights = control_goal_lights_tag.Component;
+TLightGroup*& hyper_lights = control_hyper_lights_tag.Component;
+TLightGroup*& bmpr_inc_lights = control_bmpr_inc_lights_tag.Component;
+TLightGroup*& bpr_solotgt_lights = control_bpr_solotgt_lights_tag.Component;
+TLightGroup*& bsink_arrow_lights = control_bsink_arrow_lights_tag.Component;
+TLightGroup*& bumber_target_lights = control_bumber_target_lights_tag.Component;
+TLightGroup*& outer_circle = control_outer_circle_tag.Component;
+TLightGroup*& r_trek_lights = control_r_trek_lights_tag.Component;
+TLightGroup*& ramp_bmpr_inc_lights = control_ramp_bmpr_inc_lights_tag.Component;
+TLightGroup*& ramp_tgt_lights = control_ramp_tgt_lights_tag.Component;
+TLightGroup*& skill_shot_lights = control_skill_shot_lights_tag.Component;
+TLightGroup*& top_circle_tgt_lights = control_top_circle_tgt_lights_tag.Component;
+TLightGroup*& top_target_lights = control_top_target_lights_tag.Component;
+TLightGroup*& worm_hole_lights = control_worm_hole_lights_tag.Component;
+TTextBox*& mission_text_box = control_mission_text_box_tag.Component;
+TOneway*& oneway1 = control_oneway1_tag.Component;
+TOneway*& oneway4 = control_oneway4_tag.Component;
+TOneway*& oneway10 = control_oneway10_tag.Component;
+TPlunger*& plunger = control_plunger_tag.Component;
+THole*& ramp_hole = control_ramp_hole_tag.Component;
+TRamp*& ramp = control_ramp_tag.Component;
+TWall*& rebo1 = control_rebo1_tag.Component;
+TWall*& rebo2 = control_rebo2_tag.Component;
+TWall*& rebo3 = control_rebo3_tag.Component;
+TWall*& rebo4 = control_rebo4_tag.Component;
+TRollover*& roll1 = control_roll1_tag.Component;
+TRollover*& roll2 = control_roll2_tag.Component;
+TRollover*& roll3 = control_roll3_tag.Component;
+TRollover*& roll4 = control_roll4_tag.Component;
+TRollover*& roll5 = control_roll5_tag.Component;
+TRollover*& roll6 = control_roll6_tag.Component;
+TRollover*& roll7 = control_roll7_tag.Component;
+TRollover*& roll8 = control_roll8_tag.Component;
+TLightRollover*& roll9 = control_roll9_tag.Component;
+TRollover*& roll110 = control_roll110_tag.Component;
+TRollover*& roll111 = control_roll111_tag.Component;
+TRollover*& roll112 = control_roll112_tag.Component;
+TRollover*& roll179 = control_roll179_tag.Component;
+TRollover*& roll180 = control_roll180_tag.Component;
+TRollover*& roll181 = control_roll181_tag.Component;
+TRollover*& roll182 = control_roll182_tag.Component;
+TRollover*& roll183 = control_roll183_tag.Component;
+TRollover*& roll184 = control_roll184_tag.Component;
+TSink*& sink1 = control_sink1_tag.Component;
+TSink*& sink2 = control_sink2_tag.Component;
+TSink*& sink3 = control_sink3_tag.Component;
+TSink*& sink7 = control_sink7_tag.Component;
+TSound*& soundwave3 = control_soundwave3_tag.Component;
+TSound*& soundwave7 = control_soundwave7_tag.Component;
+TSound*& soundwave8 = control_soundwave8_tag.Component;
+TSound*& soundwave9 = control_soundwave9_tag.Component;
+TSound*& soundwave10 = control_soundwave10_tag.Component;
+TSound*& soundwave14_1 = control_soundwave14_1_tag.Component;
+TSound*& soundwave14_2 = control_soundwave14_2_tag.Component;
+TSound*& soundwave21 = control_soundwave21_tag.Component;
+TSound*& soundwave23 = control_soundwave23_tag.Component;
+TSound*& soundwave24 = control_soundwave24_tag.Component;
+TSound*& soundwave25 = control_soundwave25_tag.Component;
+TSound*& soundwave26 = control_soundwave26_tag.Component;
+TSound*& soundwave27 = control_soundwave27_tag.Component;
+TSound*& soundwave28 = control_soundwave28_tag.Component;
+TSound*& soundwave30 = control_soundwave30_tag.Component;
+TSound*& soundwave35_1 = control_soundwave35_1_tag.Component;
+TSound*& soundwave35_2 = control_soundwave35_2_tag.Component;
+TSound*& soundwave36_1 = control_soundwave36_1_tag.Component;
+TSound*& soundwave36_2 = control_soundwave36_2_tag.Component;
+TSound*& soundwave38 = control_soundwave38_tag.Component;
+TSound*& soundwave39 = control_soundwave39_tag.Component;
+TSound*& soundwave40 = control_soundwave40_tag.Component;
+TSound*& soundwave41 = control_soundwave41_tag.Component;
+TSound*& soundwave44 = control_soundwave44_tag.Component;
+TSound*& soundwave45 = control_soundwave45_tag.Component;
+TSound*& soundwave46 = control_soundwave46_tag.Component;
+TSound*& soundwave47 = control_soundwave47_tag.Component;
+TSound*& soundwave48 = control_soundwave48_tag.Component;
+TSound*& soundwave49D = control_soundwave49D_tag.Component;
+TSound*& soundwave50_1 = control_soundwave50_1_tag.Component;
+TSound*& soundwave50_2 = control_soundwave50_2_tag.Component;
+TSound*& soundwave52 = control_soundwave52_tag.Component;
+TSound*& soundwave59 = control_soundwave59_tag.Component;
+TPopupTarget*& target1 = control_target1_tag.Component;
+TPopupTarget*& target2 = control_target2_tag.Component;
+TPopupTarget*& target3 = control_target3_tag.Component;
+TPopupTarget*& target4 = control_target4_tag.Component;
+TPopupTarget*& target5 = control_target5_tag.Component;
+TPopupTarget*& target6 = control_target6_tag.Component;
+TPopupTarget*& target7 = control_target7_tag.Component;
+TPopupTarget*& target8 = control_target8_tag.Component;
+TPopupTarget*& target9 = control_target9_tag.Component;
+TSoloTarget*& target10 = control_target10_tag.Component;
+TSoloTarget*& target11 = control_target11_tag.Component;
+TSoloTarget*& target12 = control_target12_tag.Component;
+TSoloTarget*& target13 = control_target13_tag.Component;
+TSoloTarget*& target14 = control_target14_tag.Component;
+TSoloTarget*& target15 = control_target15_tag.Component;
+TSoloTarget*& target16 = control_target16_tag.Component;
+TSoloTarget*& target17 = control_target17_tag.Component;
+TSoloTarget*& target18 = control_target18_tag.Component;
+TSoloTarget*& target19 = control_target19_tag.Component;
+TSoloTarget*& target20 = control_target20_tag.Component;
+TSoloTarget*& target21 = control_target21_tag.Component;
+TSoloTarget*& target22 = control_target22_tag.Component;
+TTripwire*& trip1 = control_trip1_tag.Component;
+TTripwire*& trip2 = control_trip2_tag.Component;
+TTripwire*& trip3 = control_trip3_tag.Component;
+TTripwire*& trip4 = control_trip4_tag.Component;
+TTripwire*& trip5 = control_trip5_tag.Component;
 
 
 TPinballTable* control::TableG;
 component_info control::score_components[88]
 {
-	component_info{&control_bump1_tag, {BumperControl, 4, control_bump_scores1}},
-	component_info{&control_bump2_tag, {BumperControl, 4, control_bump_scores1}},
-	component_info{&control_bump3_tag, {BumperControl, 4, control_bump_scores1}},
-	component_info{&control_bump4_tag, {BumperControl, 4, control_bump_scores1}},
-	component_info{&control_roll3_tag, {ReentryLanesRolloverControl, 1, control_roll_scores1}},
-	component_info{&control_roll2_tag, {ReentryLanesRolloverControl, 1, control_roll_scores1}},
-	component_info{&control_roll1_tag, {ReentryLanesRolloverControl, 1, control_roll_scores1}},
-	component_info{&control_attack_bump_tag, {BumperGroupControl, 0, nullptr}},
-	component_info{&control_bump5_tag, {BumperControl, 4, control_bump_scores2}},
-	component_info{&control_bump6_tag, {BumperControl, 4, control_bump_scores2}},
-	component_info{&control_bump7_tag, {BumperControl, 4, control_bump_scores2}},
-	component_info{&control_roll112_tag, {LaunchLanesRolloverControl, 1, control_roll_scores2}},
-	component_info{&control_roll111_tag, {LaunchLanesRolloverControl, 1, control_roll_scores2}},
-	component_info{&control_roll110_tag, {LaunchLanesRolloverControl, 1, control_roll_scores2}},
-	component_info{&control_launch_bump_tag, {BumperGroupControl, 0, nullptr}},
-	component_info{&control_rebo1_tag, {FlipperRebounderControl1, 1, control_rebo_score1}},
-	component_info{&control_rebo2_tag, {FlipperRebounderControl2, 1, control_rebo_score1}},
-	component_info{&control_rebo3_tag, {RebounderControl, 1, control_rebo_score1}},
-	component_info{&control_rebo4_tag, {RebounderControl, 1, control_rebo_score1}},
-	component_info{&control_kicker1_tag, {LeftKickerControl, 0, nullptr}},
-	component_info{&control_kicker2_tag, {RightKickerControl, 0, nullptr}},
-	component_info{&control_gate1_tag, {LeftKickerGateControl, 0, nullptr}},
-	component_info{&control_gate2_tag, {RightKickerGateControl, 0, nullptr}},
-	component_info{&control_oneway4_tag, {DeploymentChuteToEscapeChuteOneWayControl, 6, control_oneway4_score1}},
-	component_info{&control_oneway10_tag, {DeploymentChuteToTableOneWayControl, 0, nullptr}},
-	component_info{&control_block1_tag, {DrainBallBlockerControl, 0, nullptr}},
-	component_info{&control_ramp_tag, {LaunchRampControl, 1, control_ramp_score1}},
-	component_info{&control_ramp_hole_tag, {LaunchRampHoleControl, 0, nullptr}},
-	component_info{&control_roll4_tag, {OutLaneRolloverControl, 1, control_roll_score1}},
-	component_info{&control_roll8_tag, {OutLaneRolloverControl, 1, control_roll_score1}},
-	component_info{&control_lite17_tag, {ExtraBallLightControl, 0, nullptr}},
-	component_info{&control_roll6_tag, {ReturnLaneRolloverControl, 2, control_roll_score2}},
-	component_info{&control_roll7_tag, {ReturnLaneRolloverControl, 2, control_roll_score2}},
-	component_info{&control_roll5_tag, {BonusLaneRolloverControl, 1, control_roll_score3}},
-	component_info{&control_roll179_tag, {FuelRollover1Control, 1, control_roll_score4}},
-	component_info{&control_roll180_tag, {FuelRollover2Control, 1, control_roll_score4}},
-	component_info{&control_roll181_tag, {FuelRollover3Control, 1, control_roll_score4}},
-	component_info{&control_roll182_tag, {FuelRollover4Control, 1, control_roll_score4}},
-	component_info{&control_roll183_tag, {FuelRollover5Control, 1, control_roll_score4}},
-	component_info{&control_roll184_tag, {FuelRollover6Control, 1, control_roll_score4}},
-	component_info{&control_flag1_tag, {FlagControl, 2, control_flag_score1}},
-	component_info{&control_kickout2_tag, {HyperspaceKickOutControl, 5, control_kickout_score1}},
-	component_info{&control_hyper_lights_tag, {HyperspaceLightGroupControl, 0, nullptr}},
-	component_info{&control_flag2_tag, {FlagControl, 2, control_flag_score1}},
-	component_info{&control_sink1_tag, {WormHoleControl, 3, control_sink_score1}},
-	component_info{&control_sink2_tag, {WormHoleControl, 3, control_sink_score1}},
-	component_info{&control_sink3_tag, {WormHoleControl, 3, control_sink_score1}},
-	component_info{&control_flip1_tag, {LeftFlipperControl, 0, nullptr}},
-	component_info{&control_flip2_tag, {RightFlipperControl, 0, nullptr}},
-	component_info{&control_plunger_tag, {PlungerControl, 0, nullptr}},
-	component_info{&control_target1_tag, {BoosterTargetControl, 2, control_target_score1}},
-	component_info{&control_target2_tag, {BoosterTargetControl, 2, control_target_score1}},
-	component_info{&control_target3_tag, {BoosterTargetControl, 2, control_target_score1}},
-	component_info{&control_lite60_tag, {JackpotLightControl, 0, nullptr}},
-	component_info{&control_lite59_tag, {BonusLightControl, 0, nullptr}},
-	component_info{&control_target6_tag, {MedalTargetControl, 3, control_target_score2}},
-	component_info{&control_target5_tag, {MedalTargetControl, 3, control_target_score2}},
-	component_info{&control_target4_tag, {MedalTargetControl, 3, control_target_score2}},
-	component_info{&control_bumber_target_lights_tag, {MedalLightGroupControl, 0, nullptr}},
-	component_info{&control_target9_tag, {MultiplierTargetControl, 2, control_target_score3}},
-	component_info{&control_target8_tag, {MultiplierTargetControl, 2, control_target_score3}},
-	component_info{&control_target7_tag, {MultiplierTargetControl, 2, control_target_score3}},
-	component_info{&control_top_target_lights_tag, {MultiplierLightGroupControl, 0, nullptr}},
-	component_info{&control_target10_tag, {FuelSpotTargetControl, 1, control_target_score4}},
-	component_info{&control_target11_tag, {FuelSpotTargetControl, 1, control_target_score4}},
-	component_info{&control_target12_tag, {FuelSpotTargetControl, 1, control_target_score4}},
-	component_info{&control_target13_tag, {MissionSpotTargetControl, 1, control_target_score5}},
-	component_info{&control_target14_tag, {MissionSpotTargetControl, 1, control_target_score5}},
-	component_info{&control_target15_tag, {MissionSpotTargetControl, 1, control_target_score5}},
-	component_info{&control_target16_tag, {LeftHazardSpotTargetControl, 1, control_target_score6}},
-	component_info{&control_target17_tag, {LeftHazardSpotTargetControl, 1, control_target_score6}},
-	component_info{&control_target18_tag, {LeftHazardSpotTargetControl, 1, control_target_score6}},
-	component_info{&control_target19_tag, {RightHazardSpotTargetControl, 1, control_target_score6}},
-	component_info{&control_target20_tag, {RightHazardSpotTargetControl, 1, control_target_score6}},
-	component_info{&control_target21_tag, {RightHazardSpotTargetControl, 1, control_target_score6}},
-	component_info{&control_target22_tag, {WormHoleDestinationControl, 1, control_target_score7}},
-	component_info{&control_roll9_tag, {SpaceWarpRolloverControl, 1, control_roll_score5}},
-	component_info{&control_kickout3_tag, {BlackHoleKickoutControl, 1, control_kickout_score2}},
-	component_info{&control_kickout1_tag, {GravityWellKickoutControl, 1, control_kickout_score3}},
-	component_info{&control_drain_tag, {BallDrainControl, 0, nullptr}},
-	component_info{&control_oneway1_tag, {SkillShotGate1Control, 0, nullptr}},
-	component_info{&control_trip1_tag, {SkillShotGate2Control, 0, nullptr}},
-	component_info{&control_trip2_tag, {SkillShotGate3Control, 0, nullptr}},
-	component_info{&control_trip3_tag, {SkillShotGate4Control, 0, nullptr}},
-	component_info{&control_trip4_tag, {SkillShotGate5Control, 0, nullptr}},
-	component_info{&control_trip5_tag, {SkillShotGate6Control, 0, nullptr}},
-	component_info{&control_lite200_tag, {ShootAgainLightControl, 0, nullptr}},
-	component_info{&control_sink7_tag, {EscapeChuteSinkControl, 0, nullptr}},
+	component_info{control_bump1_tag, {BumperControl, 4, control_bump_scores1}},
+	component_info{control_bump2_tag, {BumperControl, 4, control_bump_scores1}},
+	component_info{control_bump3_tag, {BumperControl, 4, control_bump_scores1}},
+	component_info{control_bump4_tag, {BumperControl, 4, control_bump_scores1}},
+	component_info{control_roll3_tag, {ReentryLanesRolloverControl, 1, control_roll_scores1}},
+	component_info{control_roll2_tag, {ReentryLanesRolloverControl, 1, control_roll_scores1}},
+	component_info{control_roll1_tag, {ReentryLanesRolloverControl, 1, control_roll_scores1}},
+	component_info{control_attack_bump_tag, {BumperGroupControl, 0, nullptr}},
+	component_info{control_bump5_tag, {BumperControl, 4, control_bump_scores2}},
+	component_info{control_bump6_tag, {BumperControl, 4, control_bump_scores2}},
+	component_info{control_bump7_tag, {BumperControl, 4, control_bump_scores2}},
+	component_info{control_roll112_tag, {LaunchLanesRolloverControl, 1, control_roll_scores2}},
+	component_info{control_roll111_tag, {LaunchLanesRolloverControl, 1, control_roll_scores2}},
+	component_info{control_roll110_tag, {LaunchLanesRolloverControl, 1, control_roll_scores2}},
+	component_info{control_launch_bump_tag, {BumperGroupControl, 0, nullptr}},
+	component_info{control_rebo1_tag, {FlipperRebounderControl1, 1, control_rebo_score1}},
+	component_info{control_rebo2_tag, {FlipperRebounderControl2, 1, control_rebo_score1}},
+	component_info{control_rebo3_tag, {RebounderControl, 1, control_rebo_score1}},
+	component_info{control_rebo4_tag, {RebounderControl, 1, control_rebo_score1}},
+	component_info{control_kicker1_tag, {LeftKickerControl, 0, nullptr}},
+	component_info{control_kicker2_tag, {RightKickerControl, 0, nullptr}},
+	component_info{control_gate1_tag, {LeftKickerGateControl, 0, nullptr}},
+	component_info{control_gate2_tag, {RightKickerGateControl, 0, nullptr}},
+	component_info{control_oneway4_tag, {DeploymentChuteToEscapeChuteOneWayControl, 6, control_oneway4_score1}},
+	component_info{control_oneway10_tag, {DeploymentChuteToTableOneWayControl, 0, nullptr}},
+	component_info{control_block1_tag, {DrainBallBlockerControl, 0, nullptr}},
+	component_info{control_ramp_tag, {LaunchRampControl, 1, control_ramp_score1}},
+	component_info{control_ramp_hole_tag, {LaunchRampHoleControl, 0, nullptr}},
+	component_info{control_roll4_tag, {OutLaneRolloverControl, 1, control_roll_score1}},
+	component_info{control_roll8_tag, {OutLaneRolloverControl, 1, control_roll_score1}},
+	component_info{control_lite17_tag, {ExtraBallLightControl, 0, nullptr}},
+	component_info{control_roll6_tag, {ReturnLaneRolloverControl, 2, control_roll_score2}},
+	component_info{control_roll7_tag, {ReturnLaneRolloverControl, 2, control_roll_score2}},
+	component_info{control_roll5_tag, {BonusLaneRolloverControl, 1, control_roll_score3}},
+	component_info{control_roll179_tag, {FuelRollover1Control, 1, control_roll_score4}},
+	component_info{control_roll180_tag, {FuelRollover2Control, 1, control_roll_score4}},
+	component_info{control_roll181_tag, {FuelRollover3Control, 1, control_roll_score4}},
+	component_info{control_roll182_tag, {FuelRollover4Control, 1, control_roll_score4}},
+	component_info{control_roll183_tag, {FuelRollover5Control, 1, control_roll_score4}},
+	component_info{control_roll184_tag, {FuelRollover6Control, 1, control_roll_score4}},
+	component_info{control_flag1_tag, {FlagControl, 2, control_flag_score1}},
+	component_info{control_kickout2_tag, {HyperspaceKickOutControl, 5, control_kickout_score1}},
+	component_info{control_hyper_lights_tag, {HyperspaceLightGroupControl, 0, nullptr}},
+	component_info{control_flag2_tag, {FlagControl, 2, control_flag_score1}},
+	component_info{control_sink1_tag, {WormHoleControl, 3, control_sink_score1}},
+	component_info{control_sink2_tag, {WormHoleControl, 3, control_sink_score1}},
+	component_info{control_sink3_tag, {WormHoleControl, 3, control_sink_score1}},
+	component_info{control_flip1_tag, {LeftFlipperControl, 0, nullptr}},
+	component_info{control_flip2_tag, {RightFlipperControl, 0, nullptr}},
+	component_info{control_plunger_tag, {PlungerControl, 0, nullptr}},
+	component_info{control_target1_tag, {BoosterTargetControl, 2, control_target_score1}},
+	component_info{control_target2_tag, {BoosterTargetControl, 2, control_target_score1}},
+	component_info{control_target3_tag, {BoosterTargetControl, 2, control_target_score1}},
+	component_info{control_lite60_tag, {JackpotLightControl, 0, nullptr}},
+	component_info{control_lite59_tag, {BonusLightControl, 0, nullptr}},
+	component_info{control_target6_tag, {MedalTargetControl, 3, control_target_score2}},
+	component_info{control_target5_tag, {MedalTargetControl, 3, control_target_score2}},
+	component_info{control_target4_tag, {MedalTargetControl, 3, control_target_score2}},
+	component_info{control_bumber_target_lights_tag, {MedalLightGroupControl, 0, nullptr}},
+	component_info{control_target9_tag, {MultiplierTargetControl, 2, control_target_score3}},
+	component_info{control_target8_tag, {MultiplierTargetControl, 2, control_target_score3}},
+	component_info{control_target7_tag, {MultiplierTargetControl, 2, control_target_score3}},
+	component_info{control_top_target_lights_tag, {MultiplierLightGroupControl, 0, nullptr}},
+	component_info{control_target10_tag, {FuelSpotTargetControl, 1, control_target_score4}},
+	component_info{control_target11_tag, {FuelSpotTargetControl, 1, control_target_score4}},
+	component_info{control_target12_tag, {FuelSpotTargetControl, 1, control_target_score4}},
+	component_info{control_target13_tag, {MissionSpotTargetControl, 1, control_target_score5}},
+	component_info{control_target14_tag, {MissionSpotTargetControl, 1, control_target_score5}},
+	component_info{control_target15_tag, {MissionSpotTargetControl, 1, control_target_score5}},
+	component_info{control_target16_tag, {LeftHazardSpotTargetControl, 1, control_target_score6}},
+	component_info{control_target17_tag, {LeftHazardSpotTargetControl, 1, control_target_score6}},
+	component_info{control_target18_tag, {LeftHazardSpotTargetControl, 1, control_target_score6}},
+	component_info{control_target19_tag, {RightHazardSpotTargetControl, 1, control_target_score6}},
+	component_info{control_target20_tag, {RightHazardSpotTargetControl, 1, control_target_score6}},
+	component_info{control_target21_tag, {RightHazardSpotTargetControl, 1, control_target_score6}},
+	component_info{control_target22_tag, {WormHoleDestinationControl, 1, control_target_score7}},
+	component_info{control_roll9_tag, {SpaceWarpRolloverControl, 1, control_roll_score5}},
+	component_info{control_kickout3_tag, {BlackHoleKickoutControl, 1, control_kickout_score2}},
+	component_info{control_kickout1_tag, {GravityWellKickoutControl, 1, control_kickout_score3}},
+	component_info{control_drain_tag, {BallDrainControl, 0, nullptr}},
+	component_info{control_oneway1_tag, {SkillShotGate1Control, 0, nullptr}},
+	component_info{control_trip1_tag, {SkillShotGate2Control, 0, nullptr}},
+	component_info{control_trip2_tag, {SkillShotGate3Control, 0, nullptr}},
+	component_info{control_trip3_tag, {SkillShotGate4Control, 0, nullptr}},
+	component_info{control_trip4_tag, {SkillShotGate5Control, 0, nullptr}},
+	component_info{control_trip5_tag, {SkillShotGate6Control, 0, nullptr}},
+	component_info{control_lite200_tag, {ShootAgainLightControl, 0, nullptr}},
+	component_info{control_sink7_tag, {EscapeChuteSinkControl, 0, nullptr}},
 };
 
 
@@ -587,30 +820,30 @@ void control::make_links(TPinballTable* table)
 	}
 
 	for (int i = 0; i < 142; ++i)
-		make_component_link(simple_components[i]);
+		make_component_link(*simple_components[i]);
 }
 
 void control::ClearLinks()
 {
 	TableG = nullptr;
 	for (auto& component : score_components)
-		component.Tag->SetComponent(nullptr);
+		component.Tag.SetComponent(nullptr);
 	for (auto& component : simple_components)
 		component->SetComponent(nullptr);
 }
 
-TPinballComponent* control::make_component_link(component_tag_base* tag)
+TPinballComponent* control::make_component_link(component_tag_base& tag)
 {
-	if (tag->GetComponent())
-		return tag->GetComponent();
+	if (tag.GetComponent())
+		return tag.GetComponent();
 
 	for (auto component: TableG->ComponentList)
 	{
 		if (component->GroupName)
 		{
-			if (!strcmp(component->GroupName, tag->Name))
+			if (!strcmp(component->GroupName, tag.Name))
 			{
-				tag->SetComponent(component);
+				tag.SetComponent(component);
 				return component;
 			}
 		}
@@ -658,7 +891,8 @@ void control::pbctrl_bdoor_controller(char key)
 	std::memmove(&cheatBuffer[0], &cheatBuffer[1], 10);
 	cheatBuffer[10] = key;
 
-	if (strcmp(bufferEnd - 11, "hidden test") == 0)
+	if (strcmp(bufferEnd - 11, "hidden test") == 0 ||
+		strcmp(bufferEnd - 11, "hidden\ttest") == 0)
 	{
 		pb::cheat_mode ^= true;
 	}
@@ -683,7 +917,7 @@ void control::pbctrl_bdoor_controller(char key)
 		// A sad developer easter egg type 'cheat' from Full Tilt 
 		float time = 0;
 		for (auto quote : quotes)
-			control_mission_text_box_tag.Component->Display(quote, time += 3);
+			mission_text_box->Display(quote, time += 3);
 		return;
 	}
 	else
@@ -697,42 +931,42 @@ void control::pbctrl_bdoor_controller(char key)
 void control::table_add_extra_ball(float count)
 {
 	++TableG->ExtraBalls;
-	control_soundwave28_tag.Component->Play();
+	soundwave28->Play();
 	auto msg = pinball::get_rc_string(9, 0);
-	control_info_text_box_tag.Component->Display(msg, count);
+	info_text_box->Display(msg, count);
 }
 
 void control::table_set_bonus_hold()
 {
-	control_lite58_tag.Component->Message(19, 0.0);
-	control_info_text_box_tag.Component->Display(pinball::get_rc_string(52, 0), 2.0);
+	lite58->Message(19, 0.0);
+	info_text_box->Display(pinball::get_rc_string(52, 0), 2.0);
 }
 
 void control::table_set_bonus()
 {
 	TableG->ScoreSpecial2Flag = 1;
-	control_lite59_tag.Component->Message(9, 60.0);
-	control_info_text_box_tag.Component->Display(pinball::get_rc_string(4, 0), 2.0);
+	lite59->Message(9, 60.0);
+	info_text_box->Display(pinball::get_rc_string(4, 0), 2.0);
 }
 
 void control::table_set_jackpot()
 {
 	TableG->ScoreSpecial3Flag = 1;
-	control_lite60_tag.Component->Message(9, 60.0);
-	control_info_text_box_tag.Component->Display(pinball::get_rc_string(15, 0), 2.0);
+	lite60->Message(9, 60.0);
+	info_text_box->Display(pinball::get_rc_string(15, 0), 2.0);
 }
 
 void control::table_set_flag_lights()
 {
-	control_lite20_tag.Component->Message(9, 60.0);
-	control_lite19_tag.Component->Message(9, 60.0);
-	control_lite61_tag.Component->Message(9, 60.0);
-	control_info_text_box_tag.Component->Display(pinball::get_rc_string(51, 0), 2.0);
+	lite20->Message(9, 60.0);
+	lite19->Message(9, 60.0);
+	lite61->Message(9, 60.0);
+	info_text_box->Display(pinball::get_rc_string(51, 0), 2.0);
 }
 
 void control::table_set_multiball()
 {
-	control_info_text_box_tag.Component->Display(pinball::get_rc_string(16, 0), 2.0);
+	info_text_box->Display(pinball::get_rc_string(16, 0), 2.0);
 }
 
 void control::table_bump_ball_sink_lock()
@@ -745,30 +979,30 @@ void control::table_bump_ball_sink_lock()
 	else
 	{
 		TableG->BallLockedCounter = TableG->BallLockedCounter + 1;
-		control_soundwave44_tag.Component->Play();
-		control_info_text_box_tag.Component->Display(pinball::get_rc_string(1, 0), 2.0);
+		soundwave44->Play();
+		info_text_box->Display(pinball::get_rc_string(1, 0), 2.0);
 		TableG->Plunger->Message(1016, 0.0);
 	}
 }
 
 void control::table_set_replay(float value)
 {
-	control_lite199_tag.Component->Message(19, 0.0);
-	control_info_text_box_tag.Component->Display(pinball::get_rc_string(0, 0), value);
+	lite199->Message(19, 0.0);
+	info_text_box->Display(pinball::get_rc_string(0, 0), value);
 }
 
 void control::cheat_bump_rank()
 {
 	char Buffer[64]{};
 
-	auto rank = control_middle_circle_tag.Component->Message(37, 0.0);
+	auto rank = middle_circle->Message(37, 0.0);
 	if (rank < 9)
 	{
-		control_middle_circle_tag.Component->Message(41, 2.0f);
+		middle_circle->Message(41, 2.0f);
 		auto rankText = pinball::get_rc_string(RankRcArray[rank], 1);
 		snprintf(Buffer,sizeof Buffer, pinball::get_rc_string(83, 0), rankText);
-		control_mission_text_box_tag.Component->Display(Buffer, 8.0);
-		control_soundwave10_tag.Component->Play();
+		mission_text_box->Display(Buffer, 8.0);
+		soundwave10->Play();
 	}
 }
 
@@ -799,44 +1033,42 @@ int control::AddRankProgress(int rank)
 	char Buffer[64];
 	int result = 0;
 
-	control_lite16_tag.Component->Message(19, 0.0);
-	TPinballComponent* outerCircle = control_outer_circle_tag.Component;
+	lite16->Message(19, 0.0);
 	for (int index = rank; index; --index)
 	{
-		outerCircle->Message(41, 2.0);
+		outer_circle->Message(41, 2.0);
 	}
 
-	int activeCount = outerCircle->Message(37, 0.0);
-	int totalCount = outerCircle->Message(38, 0.0);
+	int activeCount = outer_circle->Message(37, 0.0);
+	int totalCount = outer_circle->Message(38, 0.0);
 	if (activeCount == totalCount)
 	{
 		result = 1;
-		outerCircle->Message(16, 5.0);
-		TPinballComponent* middleCircle = control_middle_circle_tag.Component;
-		control_middle_circle_tag.Component->Message(34, 0.0);
-		int midActiveCount = middleCircle->Message(37, 0.0);
+		outer_circle->Message(16, 5.0);
+		middle_circle->Message(34, 0.0);
+		int midActiveCount = middle_circle->Message(37, 0.0);
 		if (midActiveCount < 9)
 		{
-			middleCircle->Message(41, 5.0);
+			middle_circle->Message(41, 5.0);
 			auto rankText = pinball::get_rc_string(RankRcArray[midActiveCount], 1);
 			snprintf(Buffer, sizeof Buffer, pinball::get_rc_string(83, 0), rankText);
-			control_mission_text_box_tag.Component->Display(Buffer, 8.0);
-			control_soundwave10_tag.Component->Play();
+			mission_text_box->Display(Buffer, 8.0);
+			soundwave10->Play();
 		}
 	}
 	else if (activeCount >= 3 * totalCount / 4)
 	{
-		control_middle_circle_tag.Component->Message(27, -1.0);
+		middle_circle->Message(27, -1.0);
 	}
 	return result;
 }
 
 void control::AdvanceWormHoleDestination(int flag)
 {
-	int lite198Msg = control_lite198_tag.Component->MessageField;
+	int lite198Msg = lite198->MessageField;
 	if (lite198Msg != 16 && lite198Msg != 22 && lite198Msg != 23)
 	{
-		int lite4Msg = control_lite4_tag.Component->MessageField;
+		int lite4Msg = lite4->MessageField;
 		if (flag || lite4Msg)
 		{
 			int val1 = lite4Msg + 1;
@@ -846,12 +1078,12 @@ void control::AdvanceWormHoleDestination(int flag)
 				val1 = 1;
 				val2 = 1;
 			}
-			control_bsink_arrow_lights_tag.Component->Message(23, static_cast<float>(val2));
-			control_bsink_arrow_lights_tag.Component->Message(11, static_cast<float>(3 - val1));
+			bsink_arrow_lights->Message(23, static_cast<float>(val2));
+			bsink_arrow_lights->Message(11, static_cast<float>(3 - val1));
 			if (!light_on(&control_lite4_tag))
 			{
-				control_worm_hole_lights_tag.Component->Message(19, 0.0);
-				control_bsink_arrow_lights_tag.Component->Message(19, 0.0);
+				worm_hole_lights->Message(19, 0.0);
+				bsink_arrow_lights->Message(19, 0.0);
 			}
 		}
 	}
@@ -861,7 +1093,7 @@ void control::FlipperRebounderControl1(int code, TPinballComponent* caller)
 {
 	if (code == 63)
 	{
-		control_lite84_tag.Component->Message(9, 0.1f);
+		lite84->Message(9, 0.1f);
 		auto score = caller->get_scoring(0);
 		TableG->AddScore(score);
 	}
@@ -871,7 +1103,7 @@ void control::FlipperRebounderControl2(int code, TPinballComponent* caller)
 {
 	if (code == 63)
 	{
-		control_lite85_tag.Component->Message(9, 0.1f);
+		lite85->Message(9, 0.1f);
 		int score = caller->get_scoring(0);
 		TableG->AddScore(score);
 	}
@@ -896,26 +1128,26 @@ void control::BumperControl(int code, TPinballComponent* caller)
 void control::LeftKickerControl(int code, TPinballComponent* caller)
 {
 	if (code == 60)
-		control_gate1_tag.Component->Message(54, 0.0);
+		gate1->Message(54, 0.0);
 }
 
 void control::RightKickerControl(int code, TPinballComponent* caller)
 {
 	if (code == 60)
-		control_gate2_tag.Component->Message(54, 0.0);
+		gate2->Message(54, 0.0);
 }
 
 void control::LeftKickerGateControl(int code, TPinballComponent* caller)
 {
 	if (code == 53)
 	{
-		control_lite30_tag.Component->Message(15, 5.0);
-		control_lite196_tag.Component->Message(7, 5.0);
+		lite30->Message(15, 5.0);
+		lite196->Message(7, 5.0);
 	}
 	else if (code == 54)
 	{
-		control_lite30_tag.Component->Message(20, 0.0);
-		control_lite196_tag.Component->Message(20, 0.0);
+		lite30->Message(20, 0.0);
+		lite196->Message(20, 0.0);
 	}
 }
 
@@ -923,13 +1155,13 @@ void control::RightKickerGateControl(int code, TPinballComponent* caller)
 {
 	if (code == 53)
 	{
-		control_lite29_tag.Component->Message(15, 5.0);
-		control_lite195_tag.Component->Message(7, 5.0);
+		lite29->Message(15, 5.0);
+		lite195->Message(7, 5.0);
 	}
 	else if (code == 54)
 	{
-		control_lite29_tag.Component->Message(20, 0.0);
-		control_lite195_tag.Component->Message(20, 0.0);
+		lite29->Message(20, 0.0);
+		lite195->Message(20, 0.0);
 	}
 }
 
@@ -938,21 +1170,21 @@ void control::DeploymentChuteToEscapeChuteOneWayControl(int code, TPinballCompon
 	char Buffer[64];
 	if (code == 63)
 	{
-		int count = control_skill_shot_lights_tag.Component->Message(37, 0.0);
+		int count = skill_shot_lights->Message(37, 0.0);
 		if (count)
 		{
-			control_soundwave3_tag.Component->Play();
+			soundwave3->Play();
 			int score = TableG->AddScore(caller->get_scoring(count - 1));
 			snprintf(Buffer, sizeof Buffer, pinball::get_rc_string(21, 0), score);
-			control_info_text_box_tag.Component->Display(Buffer, 2.0);
+			info_text_box->Display(Buffer, 2.0);
 			if (!light_on(&control_lite56_tag))
 			{
-				control_l_trek_lights_tag.Component->Message(34, 0.0);
-				control_l_trek_lights_tag.Component->Message(20, 0.0);
-				control_r_trek_lights_tag.Component->Message(34, 0.0);
-				control_r_trek_lights_tag.Component->Message(20, 0.0);
+				l_trek_lights->Message(34, 0.0);
+				l_trek_lights->Message(20, 0.0);
+				r_trek_lights->Message(34, 0.0);
+				r_trek_lights->Message(20, 0.0);
 			}
-			control_skill_shot_lights_tag.Component->Message(44, 1.0);
+			skill_shot_lights->Message(44, 1.0);
 		}
 	}
 }
@@ -960,7 +1192,7 @@ void control::DeploymentChuteToEscapeChuteOneWayControl(int code, TPinballCompon
 void control::DeploymentChuteToTableOneWayControl(int code, TPinballComponent* caller)
 {
 	if (code == 63)
-		control_skill_shot_lights_tag.Component->Message(20, 0.0);
+		skill_shot_lights->Message(20, 0.0);
 }
 
 void control::DrainBallBlockerControl(int code, TPinballComponent* caller)
@@ -991,7 +1223,7 @@ void control::DrainBallBlockerControl(int code, TPinballComponent* caller)
 		msgValue = static_cast<float>(block->TurnOffMsgValue);
 		msgCode = 7;
 	}
-	control_lite1_tag.Component->Message(msgCode, msgValue);
+	lite1->Message(msgCode, msgValue);
 }
 
 void control::LaunchRampControl(int code, TPinballComponent* caller)
@@ -1007,7 +1239,7 @@ void control::LaunchRampControl(int code, TPinballComponent* caller)
 			someFlag = 1;
 			int addedScore = SpecialAddScore(TableG->ScoreSpecial1);
 			snprintf(Buffer, sizeof Buffer, pinball::get_rc_string(10, 0), addedScore);
-			control_info_text_box_tag.Component->Display(Buffer, 2.0);
+			info_text_box->Display(Buffer, 2.0);
 		}
 		if (light_on(&control_lite55_tag))
 			someFlag |= 2u;
@@ -1017,21 +1249,21 @@ void control::LaunchRampControl(int code, TPinballComponent* caller)
 		{
 			if (someFlag == 1)
 			{
-				sound = control_soundwave21_tag.Component;
+				sound = soundwave21;
 			}
 			else if (someFlag < 1 || someFlag > 3)
 			{
-				sound = control_soundwave24_tag.Component;
+				sound = soundwave24;
 			}
 			else
 			{
-				sound = control_soundwave23_tag.Component;
+				sound = soundwave23;
 			}
 		}
 		else
 		{
 			TableG->AddScore(caller->get_scoring(0));
-			sound = control_soundwave30_tag.Component;
+			sound = soundwave30;
 		}
 		sound->Play();
 	}
@@ -1040,15 +1272,15 @@ void control::LaunchRampControl(int code, TPinballComponent* caller)
 void control::LaunchRampHoleControl(int code, TPinballComponent* caller)
 {
 	if (code == 58)
-		control_lite54_tag.Component->Message(7, 5.0);
+		lite54->Message(7, 5.0);
 }
 
 void control::SpaceWarpRolloverControl(int code, TPinballComponent* caller)
 {
 	if (code == 63)
 	{
-		control_lite27_tag.Component->Message(19, 0.0);
-		control_lite28_tag.Component->Message(19, 0.0);
+		lite27->Message(19, 0.0);
+		lite28->Message(19, 0.0);
 	}
 }
 
@@ -1056,24 +1288,24 @@ void control::ReentryLanesRolloverControl(int code, TPinballComponent* caller)
 {
 	if (code == 63)
 	{
-		if (!light_on(&control_lite56_tag) && control_l_trek_lights_tag.Component->Message(39, 0.0))
+		if (!light_on(&control_lite56_tag) && l_trek_lights->Message(39, 0.0))
 		{
-			control_l_trek_lights_tag.Component->Message(34, 0.0);
-			control_l_trek_lights_tag.Component->Message(20, 0.0);
-			control_r_trek_lights_tag.Component->Message(34, 0.0);
-			control_r_trek_lights_tag.Component->Message(20, 0.0);
+			l_trek_lights->Message(34, 0.0);
+			l_trek_lights->Message(20, 0.0);
+			r_trek_lights->Message(34, 0.0);
+			r_trek_lights->Message(20, 0.0);
 		}
 
 		TLight* light;
-		if (control_roll3_tag.Component == caller)
+		if (roll3 == caller)
 		{
-			light = control_lite8_tag.Component;
+			light = lite8;
 		}
 		else
 		{
-			light = control_lite9_tag.Component;
-			if (control_roll2_tag.Component != caller)
-				light = control_lite10_tag.Component;
+			light = lite9;
+			if (roll2 != caller)
+				light = lite10;
 		}
 		if (!light->FlasherActive)
 		{
@@ -1084,17 +1316,17 @@ void control::ReentryLanesRolloverControl(int code, TPinballComponent* caller)
 			else
 			{
 				light->Message(19, 0.0);
-				int activeCount = control_bmpr_inc_lights_tag.Component->Message(37, 0.0);
-				if (activeCount == control_bmpr_inc_lights_tag.Component->Message(38, 0.0))
+				int activeCount = bmpr_inc_lights->Message(37, 0.0);
+				if (activeCount == bmpr_inc_lights->Message(38, 0.0))
 				{
-					control_bmpr_inc_lights_tag.Component->Message(7, 5.0);
-					control_bmpr_inc_lights_tag.Component->Message(0, 0.0);
-					if (control_bump1_tag.Component->BmpIndex < 3)
+					bmpr_inc_lights->Message(7, 5.0);
+					bmpr_inc_lights->Message(0, 0.0);
+					if (bump1->BmpIndex < 3)
 					{
-						control_attack_bump_tag.Component->Message(12, 0.0);
-						control_info_text_box_tag.Component->Display(pinball::get_rc_string(5, 0), 2.0);
+						attack_bump->Message(12, 0.0);
+						info_text_box->Display(pinball::get_rc_string(5, 0), 2.0);
 					}
-					control_attack_bump_tag.Component->Message(48, 60.0);
+					attack_bump->Message(48, 60.0);
 				}
 			}
 		}
@@ -1121,15 +1353,15 @@ void control::LaunchLanesRolloverControl(int code, TPinballComponent* caller)
 
 	if (code == 63)
 	{
-		if (control_roll112_tag.Component == caller)
+		if (roll112 == caller)
 		{
-			light = control_lite171_tag.Component;
+			light = lite171;
 		}
 		else
 		{
-			light = control_lite170_tag.Component;
-			if (control_roll111_tag.Component != caller)
-				light = control_lite169_tag.Component;
+			light = lite170;
+			if (roll111 != caller)
+				light = lite169;
 		}
 		if (!light->FlasherActive)
 		{
@@ -1140,17 +1372,17 @@ void control::LaunchLanesRolloverControl(int code, TPinballComponent* caller)
 			else
 			{
 				light->Message(19, 0.0);
-				int msg1 = control_ramp_bmpr_inc_lights_tag.Component->Message(37, 0.0);
-				if (msg1 == control_ramp_bmpr_inc_lights_tag.Component->Message(38, 0.0))
+				int msg1 = ramp_bmpr_inc_lights->Message(37, 0.0);
+				if (msg1 == ramp_bmpr_inc_lights->Message(38, 0.0))
 				{
-					control_ramp_bmpr_inc_lights_tag.Component->Message(7, 5.0);
-					control_ramp_bmpr_inc_lights_tag.Component->Message(0, 0.0);
-					if (control_bump5_tag.Component->BmpIndex < 3)
+					ramp_bmpr_inc_lights->Message(7, 5.0);
+					ramp_bmpr_inc_lights->Message(0, 0.0);
+					if (bump5->BmpIndex < 3)
 					{
-						control_launch_bump_tag.Component->Message(12, 0.0);
-						control_info_text_box_tag.Component->Display(pinball::get_rc_string(6, 0), 2.0);
+						launch_bump->Message(12, 0.0);
+						info_text_box->Display(pinball::get_rc_string(6, 0), 2.0);
 					}
-					control_launch_bump_tag.Component->Message(48, 60.0);
+					launch_bump->Message(48, 60.0);
 				}
 			}
 		}
@@ -1165,25 +1397,25 @@ void control::OutLaneRolloverControl(int code, TPinballComponent* caller)
 		if (light_on(&control_lite17_tag) || light_on(&control_lite18_tag))
 		{
 			table_add_extra_ball(2.0);
-			control_lite17_tag.Component->Message(20, 0.0);
-			control_lite18_tag.Component->Message(20, 0.0);
+			lite17->Message(20, 0.0);
+			lite18->Message(20, 0.0);
 		}
 		else
 		{
-			control_soundwave26_tag.Component->Play();
+			soundwave26->Play();
 		}
-		if (control_roll4_tag.Component == caller)
+		if (roll4 == caller)
 		{
 			if (light_on(&control_lite30_tag))
 			{
-				control_lite30_tag.Component->Message(4, 0.0);
-				control_lite196_tag.Component->Message(4, 0.0);
+				lite30->Message(4, 0.0);
+				lite196->Message(4, 0.0);
 			}
 		}
 		else if (light_on(&control_lite29_tag))
 		{
-			control_lite29_tag.Component->Message(4, 0.0);
-			control_lite195_tag.Component->Message(4, 0.0);
+			lite29->Message(4, 0.0);
+			lite195->Message(4, 0.0);
 		}
 		TableG->AddScore(caller->get_scoring(0));
 	}
@@ -1193,16 +1425,16 @@ void control::ExtraBallLightControl(int code, TPinballComponent* caller)
 {
 	if (code == 19)
 	{
-		control_lite17_tag.Component->Message(9, 55.0);
-		control_lite18_tag.Component->Message(9, 55.0);
+		lite17->Message(9, 55.0);
+		lite18->Message(9, 55.0);
 		extraball_light_flag = 1;
 	}
 	else if (code == 60)
 	{
 		if (extraball_light_flag)
 		{
-			control_lite17_tag.Component->Message(7, 5.0);
-			control_lite18_tag.Component->Message(7, 5.0);
+			lite17->Message(7, 5.0);
+			lite18->Message(7, 5.0);
 			extraball_light_flag = 0;
 		}
 	}
@@ -1212,23 +1444,23 @@ void control::ReturnLaneRolloverControl(int code, TPinballComponent* caller)
 {
 	if (code == 63)
 	{
-		if (control_roll6_tag.Component == caller)
+		if (roll6 == caller)
 		{
 			if (light_on(&control_lite27_tag))
 			{
-				control_lite59_tag.Component->Message(20, 0.0);
-				control_lite27_tag.Component->Message(20, 0.0);
+				lite59->Message(20, 0.0);
+				lite27->Message(20, 0.0);
 				TableG->AddScore(caller->get_scoring(1));
 			}
 			else
 				TableG->AddScore(caller->get_scoring(0));
 		}
-		else if (control_roll7_tag.Component == caller)
+		else if (roll7 == caller)
 		{
 			if (light_on(&control_lite28_tag))
 			{
-				control_lite59_tag.Component->Message(20, 0.0);
-				control_lite28_tag.Component->Message(20, 0.0);
+				lite59->Message(20, 0.0);
+				lite28->Message(20, 0.0);
 				TableG->AddScore(caller->get_scoring(1));
 			}
 			else
@@ -1247,17 +1479,17 @@ void control::BonusLaneRolloverControl(int code, TPinballComponent* caller)
 		{
 			int addedScore = SpecialAddScore(TableG->ScoreSpecial2);
 			snprintf(Buffer, sizeof Buffer, pinball::get_rc_string(3, 0), addedScore);
-			control_info_text_box_tag.Component->Display(Buffer, 2.0);
-			control_lite16_tag.Component->Message(20, 0.0);
-			control_soundwave50_1_tag.Component->Play();
+			info_text_box->Display(Buffer, 2.0);
+			lite16->Message(20, 0.0);
+			soundwave50_1->Play();
 		}
 		else
 		{
 			TableG->AddScore(caller->get_scoring(0));
-			control_soundwave25_tag.Component->Play();
-			control_info_text_box_tag.Component->Display(pinball::get_rc_string(44, 0), 2.0);
+			soundwave25->Play();
+			info_text_box->Display(pinball::get_rc_string(44, 0), 2.0);
 		}
-		control_fuel_bargraph_tag.Component->Message(45, 11.0);
+		fuel_bargraph->Message(45, 11.0);
 	}
 }
 
@@ -1265,14 +1497,14 @@ void control::FuelRollover1Control(int code, TPinballComponent* caller)
 {
 	if (code == 63)
 	{
-		if (control_fuel_bargraph_tag.Component->Message(37, 0.0) > 1)
+		if (fuel_bargraph->Message(37, 0.0) > 1)
 		{
-			control_literoll179_tag.Component->Message(8, 0.05f);
+			literoll179->Message(8, 0.05f);
 		}
 		else
 		{
-			control_fuel_bargraph_tag.Component->Message(45, 1.0);
-			control_info_text_box_tag.Component->Display(pinball::get_rc_string(44, 0), 2.0);
+			fuel_bargraph->Message(45, 1.0);
+			info_text_box->Display(pinball::get_rc_string(44, 0), 2.0);
 		}
 		TableG->AddScore(caller->get_scoring(0));
 	}
@@ -1282,14 +1514,14 @@ void control::FuelRollover2Control(int code, TPinballComponent* caller)
 {
 	if (code == 63)
 	{
-		if (control_fuel_bargraph_tag.Component->Message(37, 0.0) > 3)
+		if (fuel_bargraph->Message(37, 0.0) > 3)
 		{
-			control_literoll180_tag.Component->Message(8, 0.05f);
+			literoll180->Message(8, 0.05f);
 		}
 		else
 		{
-			control_fuel_bargraph_tag.Component->Message(45, 3.0);
-			control_info_text_box_tag.Component->Display(pinball::get_rc_string(44, 0), 2.0);
+			fuel_bargraph->Message(45, 3.0);
+			info_text_box->Display(pinball::get_rc_string(44, 0), 2.0);
 		}
 		TableG->AddScore(caller->get_scoring(0));
 	}
@@ -1299,14 +1531,14 @@ void control::FuelRollover3Control(int code, TPinballComponent* caller)
 {
 	if (code == 63)
 	{
-		if (control_fuel_bargraph_tag.Component->Message(37, 0.0) > 5)
+		if (fuel_bargraph->Message(37, 0.0) > 5)
 		{
-			control_literoll181_tag.Component->Message(8, 0.05f);
+			literoll181->Message(8, 0.05f);
 		}
 		else
 		{
-			control_fuel_bargraph_tag.Component->Message(45, 5.0);
-			control_info_text_box_tag.Component->Display(pinball::get_rc_string(44, 0), 2.0);
+			fuel_bargraph->Message(45, 5.0);
+			info_text_box->Display(pinball::get_rc_string(44, 0), 2.0);
 		}
 		TableG->AddScore(caller->get_scoring(0));
 	}
@@ -1316,14 +1548,14 @@ void control::FuelRollover4Control(int code, TPinballComponent* caller)
 {
 	if (code == 63)
 	{
-		if (control_fuel_bargraph_tag.Component->Message(37, 0.0) > 7)
+		if (fuel_bargraph->Message(37, 0.0) > 7)
 		{
-			control_literoll182_tag.Component->Message(8, 0.05f);
+			literoll182->Message(8, 0.05f);
 		}
 		else
 		{
-			control_fuel_bargraph_tag.Component->Message(45, 7.0);
-			control_info_text_box_tag.Component->Display(pinball::get_rc_string(44, 0), 2.0);
+			fuel_bargraph->Message(45, 7.0);
+			info_text_box->Display(pinball::get_rc_string(44, 0), 2.0);
 		}
 		TableG->AddScore(caller->get_scoring(0));
 	}
@@ -1333,14 +1565,14 @@ void control::FuelRollover5Control(int code, TPinballComponent* caller)
 {
 	if (code == 63)
 	{
-		if (control_fuel_bargraph_tag.Component->Message(37, 0.0) > 9)
+		if (fuel_bargraph->Message(37, 0.0) > 9)
 		{
-			control_literoll183_tag.Component->Message(8, 0.05f);
+			literoll183->Message(8, 0.05f);
 		}
 		else
 		{
-			control_fuel_bargraph_tag.Component->Message(45, 9.0);
-			control_info_text_box_tag.Component->Display(pinball::get_rc_string(44, 0), 2.0);
+			fuel_bargraph->Message(45, 9.0);
+			info_text_box->Display(pinball::get_rc_string(44, 0), 2.0);
 		}
 		TableG->AddScore(caller->get_scoring(0));
 	}
@@ -1350,14 +1582,14 @@ void control::FuelRollover6Control(int code, TPinballComponent* caller)
 {
 	if (code == 63)
 	{
-		if (control_fuel_bargraph_tag.Component->Message(37, 0.0) > 11)
+		if (fuel_bargraph->Message(37, 0.0) > 11)
 		{
-			control_literoll184_tag.Component->Message(8, 0.05f);
+			literoll184->Message(8, 0.05f);
 		}
 		else
 		{
-			control_fuel_bargraph_tag.Component->Message(45, 11.0);
-			control_info_text_box_tag.Component->Display(pinball::get_rc_string(44, 0), 2.0);
+			fuel_bargraph->Message(45, 11.0);
+			info_text_box->Display(pinball::get_rc_string(44, 0), 2.0);
 		}
 		TableG->AddScore(caller->get_scoring(0));
 	}
@@ -1391,19 +1623,19 @@ void control::WormHoleControl(int code, TPinballComponent* caller)
 	if (code == 63)
 	{
 		int sinkFlag = 0;
-		if (control_sink1_tag.Component != sink)
+		if (sink1 != sink)
 		{
-			sinkFlag = control_sink2_tag.Component != sink;
+			sinkFlag = sink2 != sink;
 			++sinkFlag;
 		}
 
-		int lite4Msg = control_lite4_tag.Component->MessageField;
+		int lite4Msg = lite4->MessageField;
 		if (lite4Msg)
 		{
-			control_lite4_tag.Component->MessageField = 0;
-			control_worm_hole_lights_tag.Component->Message(20, 0.0);
-			control_bsink_arrow_lights_tag.Component->Message(20, 0.0);
-			control_lite110_tag.Component->Message(20, 0.0);
+			lite4->MessageField = 0;
+			worm_hole_lights->Message(20, 0.0);
+			bsink_arrow_lights->Message(20, 0.0);
+			lite110->Message(20, 0.0);
 			if (lite4Msg == sinkFlag + 1)
 			{
 				if (TableG->MultiballFlag)
@@ -1413,7 +1645,7 @@ void control::WormHoleControl(int code, TPinballComponent* caller)
 				}
 				else
 				{
-					control_info_text_box_tag.Component->Display(pinball::get_rc_string(49, 0), 2.0);
+					info_text_box->Display(pinball::get_rc_string(49, 0), 2.0);
 					table_set_replay(4.0);
 					TableG->AddScore(sink->get_scoring(1));
 					wormhole_tag_array2[sinkFlag]->GetComponent()->Message(16, sink->TimerTime);
@@ -1436,7 +1668,7 @@ void control::WormHoleControl(int code, TPinballComponent* caller)
 		wormhole_tag_array3[sinkFlag2]->GetComponent()->Message(11, static_cast<float>(2 - sinkFlag2));
 		wormhole_tag_array3[sinkFlag2]->GetComponent()->Message(16, sink->TimerTime);
 		wormhole_tag_array1[sinkFlag2]->GetComponent()->Message(56, sink->TimerTime);
-		control_info_text_box_tag.Component->Display(pinball::get_rc_string(49, 0), 2.0);
+		info_text_box->Display(pinball::get_rc_string(49, 0), 2.0);
 	}
 }
 
@@ -1444,8 +1676,8 @@ void control::LeftFlipperControl(int code, TPinballComponent* caller)
 {
 	if (code == 1)
 	{
-		control_bmpr_inc_lights_tag.Component->Message(24, 0.0);
-		control_ramp_bmpr_inc_lights_tag.Component->Message(24, 0.0);
+		bmpr_inc_lights->Message(24, 0.0);
+		ramp_bmpr_inc_lights->Message(24, 0.0);
 	}
 }
 
@@ -1453,8 +1685,8 @@ void control::RightFlipperControl(int code, TPinballComponent* caller)
 {
 	if (code == 1)
 	{
-		control_bmpr_inc_lights_tag.Component->Message(25, 0.0);
-		control_ramp_bmpr_inc_lights_tag.Component->Message(25, 0.0);
+		bmpr_inc_lights->Message(25, 0.0);
+		ramp_bmpr_inc_lights->Message(25, 0.0);
 	}
 }
 
@@ -1477,9 +1709,9 @@ void control::BoosterTargetControl(int code, TPinballComponent* caller)
 	if (code == 63 && !caller->MessageField)
 	{
 		caller->MessageField = 1;
-		if (control_target1_tag.Component->MessageField
-			+ control_target2_tag.Component->MessageField
-			+ control_target3_tag.Component->MessageField != 3)
+		if (target1->MessageField
+			+ target2->MessageField
+			+ target3->MessageField != 3)
 		{
 			TableG->AddScore(caller->get_scoring(0));
 			return;
@@ -1498,38 +1730,38 @@ void control::BoosterTargetControl(int code, TPinballComponent* caller)
 					{
 						table_set_bonus_hold();
 					}
-					sound = control_soundwave48_tag.Component;
+					sound = soundwave48;
 				}
 				else
 				{
 					table_set_bonus();
-					sound = control_soundwave46_tag.Component;
+					sound = soundwave46;
 				}
 			}
 			else
 			{
 				table_set_jackpot();
-				sound = control_soundwave45_tag.Component;
+				sound = soundwave45;
 			}
 		}
 		else
 		{
-			int msg = control_lite198_tag.Component->MessageField;
+			int msg = lite198->MessageField;
 			if (msg != 15 && msg != 29)
 			{
 				table_set_flag_lights();
-				sound = control_soundwave47_tag.Component;
+				sound = soundwave47;
 			}
 		}
 		if (sound)
 			sound->Play();
 
-		control_target1_tag.Component->MessageField = 0;
-		control_target1_tag.Component->Message(50, 0.0);
-		control_target2_tag.Component->MessageField = 0;
-		control_target2_tag.Component->Message(50, 0.0);
-		control_target3_tag.Component->MessageField = 0;
-		control_target3_tag.Component->Message(50, 0.0);
+		target1->MessageField = 0;
+		target1->Message(50, 0.0);
+		target2->MessageField = 0;
+		target2->Message(50, 0.0);
+		target3->MessageField = 0;
+		target3->Message(50, 0.0);
 		TableG->AddScore(caller->get_scoring(1));
 	}
 }
@@ -1576,7 +1808,7 @@ void control::MultiplierLightGroupControl(int code, TPinballComponent* caller)
 		TableG->ScoreMultiplier = 4;
 		caller->Message(19, 0.0);
 		caller->Message(43, 30.0);
-		control_info_text_box_tag.Component->Display(pinball::get_rc_string(59, 0), 2.0);
+		info_text_box->Display(pinball::get_rc_string(59, 0), 2.0);
 		break;
 	case 65:
 		TableG->ScoreMultiplier = 0;
@@ -1594,28 +1826,28 @@ void control::FuelSpotTargetControl(int code, TPinballComponent* caller)
 
 	if (code == 63)
 	{
-		if (control_target10_tag.Component == caller)
+		if (target10 == caller)
 		{
-			liteComp = control_lite70_tag.Component;
+			liteComp = lite70;
 		}
 		else
 		{
-			liteComp = control_lite71_tag.Component;
-			if (control_target11_tag.Component != caller)
-				liteComp = control_lite72_tag.Component;
+			liteComp = lite71;
+			if (target11 != caller)
+				liteComp = lite72;
 		}
 		liteComp->Message(15, 2.0);
 		TableG->AddScore(caller->get_scoring(0));
-		if (control_top_circle_tgt_lights_tag.Component->Message(37, 0.0) == 3)
+		if (top_circle_tgt_lights->Message(37, 0.0) == 3)
 		{
-			control_top_circle_tgt_lights_tag.Component->Message(16, 2.0);
-			control_fuel_bargraph_tag.Component->Message(45, 11.0);
-			control_soundwave25_tag.Component->Play();
-			control_info_text_box_tag.Component->Display(pinball::get_rc_string(44, 0), 2.0);
+			top_circle_tgt_lights->Message(16, 2.0);
+			fuel_bargraph->Message(45, 11.0);
+			soundwave25->Play();
+			info_text_box->Display(pinball::get_rc_string(44, 0), 2.0);
 		}
 		else
 		{
-			control_soundwave49D_tag.Component->Play();
+			soundwave49D->Play();
 		}
 	}
 }
@@ -1625,34 +1857,34 @@ void control::MissionSpotTargetControl(int code, TPinballComponent* caller)
 	if (code == 63)
 	{
 		TPinballComponent* lite;
-		if (control_target13_tag.Component == caller)
+		if (target13 == caller)
 		{
-			control_lite101_tag.Component->MessageField |= 1u;
-			lite = control_lite101_tag.Component;
+			lite101->MessageField |= 1u;
+			lite = lite101;
 		}
-		else if (control_target14_tag.Component == caller)
+		else if (target14 == caller)
 		{
-			control_lite101_tag.Component->MessageField |= 2u;
-			lite = control_lite102_tag.Component;
+			lite101->MessageField |= 2u;
+			lite = lite102;
 		}
 		else
 		{
-			control_lite101_tag.Component->MessageField |= 4u;
-			lite = control_lite103_tag.Component;
+			lite101->MessageField |= 4u;
+			lite = lite103;
 		}
 		lite->Message(15, 2.0);
 
 		TSound* sound;
-		if (!light_on(&control_lite198_tag) || control_lite198_tag.Component->FlasherActive)
+		if (!light_on(&control_lite198_tag) || lite198->FlasherActive)
 		{
-			sound = control_soundwave52_tag.Component;
+			sound = soundwave52;
 		}
 		else
-			sound = control_soundwave49D_tag.Component;
+			sound = soundwave49D;
 		sound->Play();
 		TableG->AddScore(caller->get_scoring(0));
-		if (control_ramp_tgt_lights_tag.Component->Message(37, 0.0) == 3)
-			control_ramp_tgt_lights_tag.Component->Message(16, 2.0);
+		if (ramp_tgt_lights->Message(37, 0.0) == 3)
+			ramp_tgt_lights->Message(16, 2.0);
 	}
 }
 
@@ -1662,32 +1894,32 @@ void control::LeftHazardSpotTargetControl(int code, TPinballComponent* caller)
 
 	if (code == 63)
 	{
-		if (control_target16_tag.Component == caller)
+		if (target16 == caller)
 		{
-			control_lite104_tag.Component->MessageField |= 1u;
-			lite = control_lite104_tag.Component;
+			lite104->MessageField |= 1u;
+			lite = lite104;
 		}
-		else if (control_target17_tag.Component == caller)
+		else if (target17 == caller)
 		{
-			control_lite104_tag.Component->MessageField |= 2u;
-			lite = control_lite105_tag.Component;
+			lite104->MessageField |= 2u;
+			lite = lite105;
 		}
 		else
 		{
-			control_lite104_tag.Component->MessageField |= 4u;
-			lite = control_lite106_tag.Component;
+			lite104->MessageField |= 4u;
+			lite = lite106;
 		}
 		lite->Message(15, 2.0);
 		TableG->AddScore(caller->get_scoring(0));
-		if (control_lchute_tgt_lights_tag.Component->Message(37, 0.0) == 3)
+		if (lchute_tgt_lights->Message(37, 0.0) == 3)
 		{
-			control_soundwave14_1_tag.Component->Play();
-			control_gate1_tag.Component->Message(53, 0.0);
-			control_lchute_tgt_lights_tag.Component->Message(16, 2.0);
+			soundwave14_1->Play();
+			gate1->Message(53, 0.0);
+			lchute_tgt_lights->Message(16, 2.0);
 		}
 		else
 		{
-			control_soundwave49D_tag.Component->Play();
+			soundwave49D->Play();
 		}
 	}
 }
@@ -1698,32 +1930,32 @@ void control::RightHazardSpotTargetControl(int code, TPinballComponent* caller)
 
 	if (code == 63)
 	{
-		if (control_target19_tag.Component == caller)
+		if (target19 == caller)
 		{
-			control_lite107_tag.Component->MessageField |= 1u;
-			light = control_lite107_tag.Component;
+			lite107->MessageField |= 1u;
+			light = lite107;
 		}
-		else if (control_target20_tag.Component == caller)
+		else if (target20 == caller)
 		{
-			control_lite107_tag.Component->MessageField |= 2u;
-			light = control_lite108_tag.Component;
+			lite107->MessageField |= 2u;
+			light = lite108;
 		}
 		else
 		{
-			control_lite107_tag.Component->MessageField |= 4u;
-			light = control_lite109_tag.Component;
+			lite107->MessageField |= 4u;
+			light = lite109;
 		}
 		light->Message(15, 2.0);
 		TableG->AddScore(caller->get_scoring(0));
-		if (control_bpr_solotgt_lights_tag.Component->Message(37, 0.0) == 3)
+		if (bpr_solotgt_lights->Message(37, 0.0) == 3)
 		{
-			control_soundwave14_1_tag.Component->Play();
-			control_gate2_tag.Component->Message(53, 0.0);
-			control_bpr_solotgt_lights_tag.Component->Message(16, 2.0);
+			soundwave14_1->Play();
+			gate2->Message(53, 0.0);
+			bpr_solotgt_lights->Message(16, 2.0);
 		}
 		else
 		{
-			control_soundwave49D_tag.Component->Play();
+			soundwave49D->Play();
 		}
 	}
 }
@@ -1734,8 +1966,8 @@ void control::WormHoleDestinationControl(int code, TPinballComponent* caller)
 	{
 		if (!light_on(&control_lite110_tag))
 		{
-			control_lite110_tag.Component->Message(15, 3.0);
-			control_info_text_box_tag.Component->Display(pinball::get_rc_string(93, 0), 2.0);
+			lite110->Message(15, 3.0);
+			info_text_box->Display(pinball::get_rc_string(93, 0), 2.0);
 		}
 		TableG->AddScore(caller->get_scoring(0));
 		AdvanceWormHoleDestination(1);
@@ -1750,7 +1982,7 @@ void control::BlackHoleKickoutControl(int code, TPinballComponent* caller)
 	{
 		int addedScore = TableG->AddScore(caller->get_scoring(0));
 		snprintf(Buffer, sizeof Buffer, pinball::get_rc_string(80, 0), addedScore);
-		control_info_text_box_tag.Component->Display(Buffer, 2.0);
+		info_text_box->Display(Buffer, 2.0);
 		caller->Message(55, -1.0);
 	}
 }
@@ -1778,10 +2010,10 @@ void control::GravityWellKickoutControl(int code, TPinballComponent* caller)
 		{
 			auto addedScore = TableG->AddScore(caller->get_scoring(0));
 			snprintf(Buffer, sizeof Buffer, pinball::get_rc_string(81, 0), addedScore);
-			control_info_text_box_tag.Component->Display(Buffer, 2.0);
-			control_lite62_tag.Component->Message(20, 0.0);
+			info_text_box->Display(Buffer, 2.0);
+			lite62->Message(20, 0.0);
 			caller->ActiveFlag = 0;
-			auto duration = control_soundwave7_tag.Component->Play();
+			auto duration = soundwave7->Play();
 			caller->Message(55, duration);
 			break;
 		}
@@ -1796,13 +2028,13 @@ void control::GravityWellKickoutControl(int code, TPinballComponent* caller)
 			{
 				snprintf(Buffer, sizeof Buffer, "%s", pinball::get_rc_string(45, 0));
 			}
-			control_info_text_box_tag.Component->Display(Buffer, 2.0);
-			control_lite62_tag.Component->Message(4, 0.0);
-			control_kickout1_tag.Component->ActiveFlag = 1;
+			info_text_box->Display(Buffer, 2.0);
+			lite62->Message(4, 0.0);
+			kickout1->ActiveFlag = 1;
 			break;
 		}
 	case 1024:
-		control_kickout1_tag.Component->ActiveFlag = 0;
+		kickout1->ActiveFlag = 0;
 		break;
 	}
 }
@@ -1811,16 +2043,16 @@ void control::SkillShotGate1Control(int code, TPinballComponent* caller)
 {
 	if (code == 63)
 	{
-		control_lite200_tag.Component->Message(9, 5.0);
+		lite200->Message(9, 5.0);
 		if (light_on(&control_lite67_tag))
 		{
-			control_skill_shot_lights_tag.Component->Message(34, 0.0);
-			control_skill_shot_lights_tag.Component->Message(20, 0.0);
-			control_lite67_tag.Component->Message(19, 0.0);
-			control_lite54_tag.Component->Message(7, 5.0);
-			control_lite25_tag.Component->Message(7, 5.0);
-			control_fuel_bargraph_tag.Component->Message(45, 11.0);
-			control_soundwave14_2_tag.Component->Play();
+			skill_shot_lights->Message(34, 0.0);
+			skill_shot_lights->Message(20, 0.0);
+			lite67->Message(19, 0.0);
+			lite54->Message(7, 5.0);
+			lite25->Message(7, 5.0);
+			fuel_bargraph->Message(45, 11.0);
+			soundwave14_2->Play();
 		}
 	}
 }
@@ -1831,8 +2063,8 @@ void control::SkillShotGate2Control(int code, TPinballComponent* caller)
 	{
 		if (light_on(&control_lite67_tag))
 		{
-			control_lite68_tag.Component->Message(19, 0.0);
-			control_soundwave14_2_tag.Component->Play();
+			lite68->Message(19, 0.0);
+			soundwave14_2->Play();
 		}
 	}
 }
@@ -1843,8 +2075,8 @@ void control::SkillShotGate3Control(int code, TPinballComponent* caller)
 	{
 		if (light_on(&control_lite67_tag))
 		{
-			control_lite69_tag.Component->Message(19, 0.0);
-			control_soundwave14_2_tag.Component->Play();
+			lite69->Message(19, 0.0);
+			soundwave14_2->Play();
 		}
 	}
 }
@@ -1855,8 +2087,8 @@ void control::SkillShotGate4Control(int code, TPinballComponent* caller)
 	{
 		if (light_on(&control_lite67_tag))
 		{
-			control_lite131_tag.Component->Message(19, 0.0);
-			control_soundwave14_2_tag.Component->Play();
+			lite131->Message(19, 0.0);
+			soundwave14_2->Play();
 		}
 	}
 }
@@ -1867,8 +2099,8 @@ void control::SkillShotGate5Control(int code, TPinballComponent* caller)
 	{
 		if (light_on(&control_lite67_tag))
 		{
-			control_lite132_tag.Component->Message(19, 0.0);
-			control_soundwave14_2_tag.Component->Play();
+			lite132->Message(19, 0.0);
+			soundwave14_2->Play();
 		}
 	}
 }
@@ -1879,8 +2111,8 @@ void control::SkillShotGate6Control(int code, TPinballComponent* caller)
 	{
 		if (light_on(&control_lite67_tag))
 		{
-			control_lite133_tag.Component->Message(19, 0.0);
-			control_soundwave14_2_tag.Component->Play();
+			lite133->Message(19, 0.0);
+			soundwave14_2->Play();
 		}
 	}
 }
@@ -1909,34 +2141,34 @@ void control::EscapeChuteSinkControl(int code, TPinballComponent* caller)
 
 void control::MissionControl(int code, TPinballComponent* caller)
 {
-	if (!control_lite198_tag.Component)
+	if (!lite198)
 		return;
 
-	int lite198Msg = control_lite198_tag.Component->MessageField;
+	int lite198Msg = lite198->MessageField;
 	switch (code)
 	{
 	case 47:
-		if (control_fuel_bargraph_tag.Component == caller && lite198Msg > 1)
+		if (fuel_bargraph == caller && lite198Msg > 1)
 		{
-			control_l_trek_lights_tag.Component->Message(34, 0.0);
-			control_l_trek_lights_tag.Component->Message(20, 0.0);
-			control_r_trek_lights_tag.Component->Message(34, 0.0);
-			control_r_trek_lights_tag.Component->Message(20, 0.0);
-			control_mission_text_box_tag.Component->Display(pinball::get_rc_string(109, 0), 4.0);
-			control_lite198_tag.Component->MessageField = 1;
+			l_trek_lights->Message(34, 0.0);
+			l_trek_lights->Message(20, 0.0);
+			r_trek_lights->Message(34, 0.0);
+			r_trek_lights->Message(20, 0.0);
+			mission_text_box->Display(pinball::get_rc_string(109, 0), 4.0);
+			lite198->MessageField = 1;
 			MissionControl(66, nullptr);
 		}
 		break;
 	case 60:
-		if (control_fuel_bargraph_tag.Component == caller && lite198Msg)
+		if (fuel_bargraph == caller && lite198Msg)
 		{
-			if (control_fuel_bargraph_tag.Component->Message(37, 0.0) == 1)
+			if (fuel_bargraph->Message(37, 0.0) == 1)
 			{
-				control_mission_text_box_tag.Component->Display(pinball::get_rc_string(116, 0), 4.0);
+				mission_text_box->Display(pinball::get_rc_string(116, 0), 4.0);
 			}
 			break;
 		}
-		if (control_mission_text_box_tag.Component == caller)
+		if (mission_text_box == caller)
 			code = 67;
 		break;
 	case 1009:
@@ -2057,31 +2289,31 @@ void control::HyperspaceKickOutControl(int code, TPinballComponent* caller)
 	if (code != 63)
 		return;
 
-	auto activeCount = control_hyper_lights_tag.Component->Message(37, 0.0);
-	HyperspaceLightGroupControl(41, control_hyper_lights_tag.Component);
+	auto activeCount = hyper_lights->Message(37, 0.0);
+	HyperspaceLightGroupControl(41, hyper_lights);
 	switch (activeCount)
 	{
 	case 0:
 		{
 			auto addedScore = TableG->AddScore(caller->get_scoring(0));
 			snprintf(Buffer, sizeof Buffer, pinball::get_rc_string(12, 0), addedScore);
-			control_info_text_box_tag.Component->Display(Buffer, 2.0);
+			info_text_box->Display(Buffer, 2.0);
 			break;
 		}
 	case 1:
 		{
 			auto addedScore = SpecialAddScore(TableG->ScoreSpecial3);
 			snprintf(Buffer, sizeof Buffer, pinball::get_rc_string(14, 0), addedScore);
-			control_info_text_box_tag.Component->Display(Buffer, 2.0);
+			info_text_box->Display(Buffer, 2.0);
 			TableG->ScoreSpecial3 = 20000;
 			break;
 		}
 	case 2:
 		{
-			DrainBallBlockerControl(52, control_block1_tag.Component);
+			DrainBallBlockerControl(52, block1);
 			auto addedScore = TableG->AddScore(caller->get_scoring(2));
 			snprintf(Buffer, sizeof Buffer, pinball::get_rc_string(2, 0), addedScore);
-			control_info_text_box_tag.Component->Display(Buffer, 2.0);
+			info_text_box->Display(Buffer, 2.0);
 			break;
 		}
 	case 3:
@@ -2089,12 +2321,12 @@ void control::HyperspaceKickOutControl(int code, TPinballComponent* caller)
 			ExtraBallLightControl(19, nullptr);
 			auto addedScore = TableG->AddScore(caller->get_scoring(3));
 			snprintf(Buffer, sizeof Buffer, pinball::get_rc_string(8, 0), addedScore);
-			control_info_text_box_tag.Component->Display(Buffer, 2.0);
+			info_text_box->Display(Buffer, 2.0);
 			break;
 		}
 	case 4:
 		{
-			control_hyper_lights_tag.Component->Message(0, 0.0);
+			hyper_lights->Message(0, 0.0);
 			size_t addedScore = TableG->AddScore(caller->get_scoring(4));
 			GravityWellKickoutControl(64, reinterpret_cast<TPinballComponent*>(addedScore));
 			break;
@@ -2109,24 +2341,24 @@ void control::HyperspaceKickOutControl(int code, TPinballComponent* caller)
 		someFlag = 1;
 		auto addedScore = SpecialAddScore(TableG->ScoreSpecial1);
 		snprintf(Buffer, sizeof Buffer, pinball::get_rc_string(10, 0), addedScore);
-		control_info_text_box_tag.Component->Display(Buffer, 2.0);
+		info_text_box->Display(Buffer, 2.0);
 	}
 	if (light_on(&control_lite26_tag))
 		someFlag |= 2u;
 	if (light_on(&control_lite130_tag))
 	{
 		someFlag |= 4u;
-		control_lite130_tag.Component->Message(20, 0.0);
-		MultiplierLightGroupControl(64, control_top_target_lights_tag.Component);
-		control_bumber_target_lights_tag.Component->Message(19, 0.0);
+		lite130->Message(20, 0.0);
+		MultiplierLightGroupControl(64, top_target_lights);
+		bumber_target_lights->Message(19, 0.0);
 		table_set_jackpot();
 		table_set_bonus();
 		table_set_flag_lights();
 		table_set_bonus_hold();
-		control_lite27_tag.Component->Message(19, 0.0);
-		control_lite28_tag.Component->Message(19, 0.0);
+		lite27->Message(19, 0.0);
+		lite28->Message(19, 0.0);
 		ExtraBallLightControl(19, nullptr);
-		DrainBallBlockerControl(52, control_block1_tag.Component);
+		DrainBallBlockerControl(52, block1);
 
 		if (TableG->MultiballFlag)
 		{
@@ -2144,20 +2376,20 @@ void control::HyperspaceKickOutControl(int code, TPinballComponent* caller)
 	{
 		if (someFlag == 1)
 		{
-			sound = control_soundwave21_tag.Component;
+			sound = soundwave21;
 		}
 		else
 		{
 			if (someFlag < 1 || someFlag > 3)
 			{
-				auto duration = control_soundwave41_tag.Component->Play();
-				control_soundwave36_1_tag.Component->Play();
-				control_soundwave50_2_tag.Component->Play();
-				control_lite25_tag.Component->Message(7, 5.0);
+				auto duration = soundwave41->Play();
+				soundwave36_1->Play();
+				soundwave50_2->Play();
+				lite25->Message(7, 5.0);
 				caller->Message(55, duration);
 				return;
 			}
-			sound = control_soundwave40_tag.Component;
+			sound = soundwave40;
 		}
 	}
 	else
@@ -2165,24 +2397,24 @@ void control::HyperspaceKickOutControl(int code, TPinballComponent* caller)
 		switch (activeCount)
 		{
 		case 1:
-			sound = control_soundwave36_2_tag.Component;
+			sound = soundwave36_2;
 			break;
 		case 2:
-			sound = control_soundwave35_2_tag.Component;
+			sound = soundwave35_2;
 			break;
 		case 3:
-			sound = control_soundwave38_tag.Component;
+			sound = soundwave38;
 			break;
 		case 4:
-			sound = control_soundwave39_tag.Component;
+			sound = soundwave39;
 			break;
 		default:
-			sound = control_soundwave35_1_tag.Component;
+			sound = soundwave35_1;
 			break;
 		}
 	}
 	auto duration = sound->Play();
-	control_lite25_tag.Component->Message(7, 5.0);
+	lite25->Message(7, 5.0);
 	caller->Message(55, duration);
 }
 
@@ -2195,27 +2427,27 @@ void control::PlungerControl(int code, TPinballComponent* caller)
 	else if (code == 1016)
 	{
 		table_unlimited_balls = false;
-		if (!control_middle_circle_tag.Component->Message(37, 0.0))
-			control_middle_circle_tag.Component->Message(32, 0.0);
+		if (!middle_circle->Message(37, 0.0))
+			middle_circle->Message(32, 0.0);
 		if (!light_on(&control_lite200_tag))
 		{
-			control_skill_shot_lights_tag.Component->Message(20, 0.0);
-			control_lite67_tag.Component->Message(19, 0.0);
-			control_skill_shot_lights_tag.Component->Message(26, 0.25f);
-			control_l_trek_lights_tag.Component->Message(20, 0.0);
-			control_l_trek_lights_tag.Component->Message(32, 0.2f);
-			control_l_trek_lights_tag.Component->Message(26, 0.2f);
-			control_r_trek_lights_tag.Component->Message(20, 0.0);
-			control_r_trek_lights_tag.Component->Message(32, 0.2f);
-			control_r_trek_lights_tag.Component->Message(26, 0.2f);
+			skill_shot_lights->Message(20, 0.0);
+			lite67->Message(19, 0.0);
+			skill_shot_lights->Message(26, 0.25f);
+			l_trek_lights->Message(20, 0.0);
+			l_trek_lights->Message(32, 0.2f);
+			l_trek_lights->Message(26, 0.2f);
+			r_trek_lights->Message(20, 0.0);
+			r_trek_lights->Message(32, 0.2f);
+			r_trek_lights->Message(26, 0.2f);
 			TableG->ScoreSpecial1 = 25000;
-			MultiplierLightGroupControl(65, control_top_target_lights_tag.Component);
-			control_fuel_bargraph_tag.Component->Message(19, 0.0);
-			control_lite200_tag.Component->Message(19, 0.0);
-			control_gate1_tag.Component->Message(53, 0.0);
-			control_gate2_tag.Component->Message(53, 0.0);
+			MultiplierLightGroupControl(65, top_target_lights);
+			fuel_bargraph->Message(19, 0.0);
+			lite200->Message(19, 0.0);
+			gate1->Message(53, 0.0);
+			gate2->Message(53, 0.0);
 		}
-		control_lite200_tag.Component->MessageField = 0;
+		lite200->MessageField = 0;
 	}
 }
 
@@ -2224,12 +2456,12 @@ void control::MedalTargetControl(int code, TPinballComponent* caller)
 	if (code == 63 && !caller->MessageField)
 	{
 		caller->MessageField = 1;
-		if (control_target6_tag.Component->MessageField
-			+ control_target5_tag.Component->MessageField
-			+ control_target4_tag.Component->MessageField == 3)
+		if (target6->MessageField
+			+ target5->MessageField
+			+ target4->MessageField == 3)
 		{
-			MedalLightGroupControl(41, control_bumber_target_lights_tag.Component);
-			int activeCount = control_bumber_target_lights_tag.Component->Message(37, 0.0) - 1;
+			MedalLightGroupControl(41, bumber_target_lights);
+			int activeCount = bumber_target_lights->Message(37, 0.0) - 1;
 			char* text;
 			switch (activeCount)
 			{
@@ -2246,13 +2478,13 @@ void control::MedalTargetControl(int code, TPinballComponent* caller)
 				text = pinball::get_rc_string(55, 0);
 				break;
 			}
-			control_info_text_box_tag.Component->Display(text, 2.0);
-			control_target6_tag.Component->MessageField = 0;
-			control_target6_tag.Component->Message(50, 0.0);
-			control_target5_tag.Component->MessageField = 0;
-			control_target5_tag.Component->Message(50, 0.0);
-			control_target4_tag.Component->MessageField = 0;
-			control_target4_tag.Component->Message(50, 0.0);
+			info_text_box->Display(text, 2.0);
+			target6->MessageField = 0;
+			target6->Message(50, 0.0);
+			target5->MessageField = 0;
+			target5->Message(50, 0.0);
+			target4->MessageField = 0;
+			target4->Message(50, 0.0);
 			return;
 		}
 		TableG->AddScore(caller->get_scoring(0));
@@ -2264,13 +2496,11 @@ void control::MultiplierTargetControl(int code, TPinballComponent* caller)
 	if (code == 63 && !caller->MessageField)
 	{
 		caller->MessageField = 1;
-		if (control_target9_tag.Component->MessageField
-			+ control_target8_tag.Component->MessageField
-			+ control_target7_tag.Component->MessageField == 3)
+		if (target9->MessageField + target8->MessageField + target7->MessageField == 3)
 		{
 			TableG->AddScore(caller->get_scoring(1));
-			MultiplierLightGroupControl(41, control_top_target_lights_tag.Component);
-			int activeCount = control_top_target_lights_tag.Component->Message(37, 0.0);
+			MultiplierLightGroupControl(41, top_target_lights);
+			int activeCount = top_target_lights->Message(37, 0.0);
 			char* text;
 			switch (activeCount)
 			{
@@ -2292,13 +2522,13 @@ void control::MultiplierTargetControl(int code, TPinballComponent* caller)
 				break;
 			}
 
-			control_info_text_box_tag.Component->Display(text, 2.0);
-			control_target9_tag.Component->MessageField = 0;
-			control_target9_tag.Component->Message(50, 0.0);
-			control_target8_tag.Component->MessageField = 0;
-			control_target8_tag.Component->Message(50, 0.0);
-			control_target7_tag.Component->MessageField = 0;
-			control_target7_tag.Component->Message(50, 0.0);
+			info_text_box->Display(text, 2.0);
+			target9->MessageField = 0;
+			target9->Message(50, 0.0);
+			target8->MessageField = 0;
+			target8->Message(50, 0.0);
+			target7->MessageField = 0;
+			target7->Message(50, 0.0);
 		}
 		else
 		{
@@ -2313,55 +2543,55 @@ void control::BallDrainControl(int code, TPinballComponent* caller)
 
 	if (code == 60)
 	{
-		if (control_lite199_tag.Component->MessageField)
+		if (lite199->MessageField)
 		{
 			TableG->Message(1022, 0.0);
 			if (pb::chk_highscore())
 			{
-				control_soundwave3_tag.Component->Play();
+				soundwave3->Play();
 				TableG->LightGroup->Message(16, 3.0);
 				char* v11 = pinball::get_rc_string(177, 0);
-				control_mission_text_box_tag.Component->Display(v11, -1.0);
+				mission_text_box->Display(v11, -1.0);
 			}
 		}
 		else
 		{
-			control_plunger_tag.Component->Message(1016, 0.0);
+			plunger->Message(1016, 0.0);
 		}
 	}
 	else if (code == 63)
 	{
 		if (table_unlimited_balls)
 		{
-			control_drain_tag.Component->Message(1024, 0.0);
-			control_sink3_tag.Component->Message(56, 0.0);
+			drain->Message(1024, 0.0);
+			sink3->Message(56, 0.0);
 		}
 		else
 		{
 			if (TableG->TiltLockFlag)
 			{
-				control_lite200_tag.Component->Message(20, 0.0);
-				control_lite199_tag.Component->Message(20, 0.0);
+				lite200->Message(20, 0.0);
+				lite199->Message(20, 0.0);
 			}
 			if (light_on(&control_lite200_tag))
 			{
-				control_soundwave27_tag.Component->Play();
-				control_lite200_tag.Component->Message(19, 0.0);
-				control_info_text_box_tag.Component->Display(pinball::get_rc_string(96, 0), -1.0);
-				control_soundwave59_tag.Component->Play();
+				soundwave27->Play();
+				lite200->Message(19, 0.0);
+				info_text_box->Display(pinball::get_rc_string(96, 0), -1.0);
+				soundwave59->Play();
 			}
 			else if (light_on(&control_lite199_tag))
 			{
-				control_soundwave27_tag.Component->Play();
-				control_lite199_tag.Component->Message(20, 0.0);
-				control_lite200_tag.Component->Message(19, 0.0);
-				control_info_text_box_tag.Component->Display(pinball::get_rc_string(95, 0), 2.0);
-				control_soundwave59_tag.Component->Play();
+				soundwave27->Play();
+				lite199->Message(20, 0.0);
+				lite200->Message(19, 0.0);
+				info_text_box->Display(pinball::get_rc_string(95, 0), 2.0);
+				soundwave59->Play();
 				--TableG->UnknownP78;
 			}
 			else if (TableG->UnknownP75)
 			{
-				control_soundwave27_tag.Component->Play();
+				soundwave27->Play();
 				--TableG->UnknownP75;
 			}
 			else
@@ -2370,14 +2600,14 @@ void control::BallDrainControl(int code, TPinballComponent* caller)
 				{
 					int time = SpecialAddScore(TableG->ScoreSpecial2);
 					snprintf(Buffer, sizeof Buffer, pinball::get_rc_string(94, 0), time);
-					control_info_text_box_tag.Component->Display(Buffer, 2.0);
+					info_text_box->Display(Buffer, 2.0);
 				}
 				if (TableG->ExtraBalls)
 				{
 					TableG->ExtraBalls--;
 
 					char* shootAgainText;
-					control_soundwave59_tag.Component->Play();
+					soundwave59->Play();
 					switch (TableG->CurrentPlayer)
 					{
 					case 0:
@@ -2394,7 +2624,7 @@ void control::BallDrainControl(int code, TPinballComponent* caller)
 						shootAgainText = pinball::get_rc_string(100, 0);
 						break;
 					}
-					control_info_text_box_tag.Component->Display(shootAgainText, -1.0);
+					info_text_box->Display(shootAgainText, -1.0);
 				}
 				else
 				{
@@ -2402,85 +2632,85 @@ void control::BallDrainControl(int code, TPinballComponent* caller)
 					if (TableG->CurrentPlayer + 1 != TableG->PlayerCount || TableG->BallCount)
 					{
 						TableG->Message(1021, 0.0);
-						control_lite199_tag.Component->MessageField = 0;
+						lite199->MessageField = 0;
 					}
 					else
 					{
-						control_lite199_tag.Component->MessageField = 1;
+						lite199->MessageField = 1;
 					}
-					control_soundwave27_tag.Component->Play();
+					soundwave27->Play();
 				}
-				control_bmpr_inc_lights_tag.Component->Message(20, 0.0);
-				control_ramp_bmpr_inc_lights_tag.Component->Message(20, 0.0);
-				control_lite30_tag.Component->Message(20, 0.0);
-				control_lite29_tag.Component->Message(20, 0.0);
-				control_lite1_tag.Component->Message(20, 0.0);
-				control_lite54_tag.Component->Message(20, 0.0);
-				control_lite55_tag.Component->Message(20, 0.0);
-				control_lite56_tag.Component->Message(20, 0.0);
-				control_lite17_tag.Component->Message(20, 0.0);
-				control_lite18_tag.Component->Message(20, 0.0);
-				control_lite27_tag.Component->Message(20, 0.0);
-				control_lite28_tag.Component->Message(20, 0.0);
-				control_lite16_tag.Component->Message(20, 0.0);
-				control_lite20_tag.Component->Message(20, 0.0);
-				control_hyper_lights_tag.Component->Message(20, 0.0);
-				control_lite25_tag.Component->Message(20, 0.0);
-				control_lite26_tag.Component->Message(20, 0.0);
-				control_lite130_tag.Component->Message(20, 0.0);
-				control_lite19_tag.Component->Message(20, 0.0);
-				control_worm_hole_lights_tag.Component->Message(20, 0.0);
-				control_bsink_arrow_lights_tag.Component->Message(20, 0.0);
-				control_l_trek_lights_tag.Component->Message(20, 0.0);
-				control_r_trek_lights_tag.Component->Message(20, 0.0);
-				control_lite60_tag.Component->Message(20, 0.0);
-				control_lite59_tag.Component->Message(20, 0.0);
-				control_lite61_tag.Component->Message(20, 0.0);
-				control_bumber_target_lights_tag.Component->Message(20, 0.0);
-				control_top_target_lights_tag.Component->Message(20, 0.0);
-				control_top_circle_tgt_lights_tag.Component->Message(20, 0.0);
-				control_ramp_tgt_lights_tag.Component->Message(20, 0.0);
-				control_lchute_tgt_lights_tag.Component->Message(20, 0.0);
-				control_bpr_solotgt_lights_tag.Component->Message(20, 0.0);
-				control_lite110_tag.Component->Message(20, 0.0);
-				control_skill_shot_lights_tag.Component->Message(20, 0.0);
-				control_lite77_tag.Component->Message(20, 0.0);
-				control_lite198_tag.Component->Message(20, 0.0);
-				control_lite196_tag.Component->Message(20, 0.0);
-				control_lite195_tag.Component->Message(20, 0.0);
-				control_fuel_bargraph_tag.Component->Message(20, 0.0);
-				control_fuel_bargraph_tag.Component->Message(1024, 0.0);
+				bmpr_inc_lights->Message(20, 0.0);
+				ramp_bmpr_inc_lights->Message(20, 0.0);
+				lite30->Message(20, 0.0);
+				lite29->Message(20, 0.0);
+				lite1->Message(20, 0.0);
+				lite54->Message(20, 0.0);
+				lite55->Message(20, 0.0);
+				lite56->Message(20, 0.0);
+				lite17->Message(20, 0.0);
+				lite18->Message(20, 0.0);
+				lite27->Message(20, 0.0);
+				lite28->Message(20, 0.0);
+				lite16->Message(20, 0.0);
+				lite20->Message(20, 0.0);
+				hyper_lights->Message(20, 0.0);
+				lite25->Message(20, 0.0);
+				lite26->Message(20, 0.0);
+				lite130->Message(20, 0.0);
+				lite19->Message(20, 0.0);
+				worm_hole_lights->Message(20, 0.0);
+				bsink_arrow_lights->Message(20, 0.0);
+				l_trek_lights->Message(20, 0.0);
+				r_trek_lights->Message(20, 0.0);
+				lite60->Message(20, 0.0);
+				lite59->Message(20, 0.0);
+				lite61->Message(20, 0.0);
+				bumber_target_lights->Message(20, 0.0);
+				top_target_lights->Message(20, 0.0);
+				top_circle_tgt_lights->Message(20, 0.0);
+				ramp_tgt_lights->Message(20, 0.0);
+				lchute_tgt_lights->Message(20, 0.0);
+				bpr_solotgt_lights->Message(20, 0.0);
+				lite110->Message(20, 0.0);
+				skill_shot_lights->Message(20, 0.0);
+				lite77->Message(20, 0.0);
+				lite198->Message(20, 0.0);
+				lite196->Message(20, 0.0);
+				lite195->Message(20, 0.0);
+				fuel_bargraph->Message(20, 0.0);
+				fuel_bargraph->Message(1024, 0.0);
 				GravityWellKickoutControl(1024, nullptr);
-				control_lite62_tag.Component->Message(20, 0.0);
-				control_lite4_tag.Component->MessageField = 0;
-				control_lite101_tag.Component->MessageField = 0;
-				control_lite102_tag.Component->MessageField = 0;
-				control_lite103_tag.Component->MessageField = 0;
-				control_ramp_tgt_lights_tag.Component->MessageField = 0;
-				control_outer_circle_tag.Component->Message(34, 0.0);
-				control_middle_circle_tag.Component->Message(34, 0.0);
-				control_attack_bump_tag.Component->Message(1024, 0.0);
-				control_launch_bump_tag.Component->Message(1024, 0.0);
-				control_gate1_tag.Component->Message(1024, 0.0);
-				control_gate2_tag.Component->Message(1024, 0.0);
-				control_block1_tag.Component->Message(1024, 0.0);
-				control_target1_tag.Component->Message(1024, 0.0);
-				control_target2_tag.Component->Message(1024, 0.0);
-				control_target3_tag.Component->Message(1024, 0.0);
-				control_target6_tag.Component->Message(1024, 0.0);
-				control_target5_tag.Component->Message(1024, 0.0);
-				control_target4_tag.Component->Message(1024, 0.0);
-				control_target9_tag.Component->Message(1024, 0.0);
-				control_target8_tag.Component->Message(1024, 0.0);
-				control_target7_tag.Component->Message(1024, 0.0);
-				if (control_lite199_tag.Component->MessageField)
-					control_lite198_tag.Component->MessageField = 32;
+				lite62->Message(20, 0.0);
+				lite4->MessageField = 0;
+				lite101->MessageField = 0;
+				lite102->MessageField = 0;
+				lite103->MessageField = 0;
+				ramp_tgt_lights->MessageField = 0;
+				outer_circle->Message(34, 0.0);
+				middle_circle->Message(34, 0.0);
+				attack_bump->Message(1024, 0.0);
+				launch_bump->Message(1024, 0.0);
+				gate1->Message(1024, 0.0);
+				gate2->Message(1024, 0.0);
+				block1->Message(1024, 0.0);
+				target1->Message(1024, 0.0);
+				target2->Message(1024, 0.0);
+				target3->Message(1024, 0.0);
+				target6->Message(1024, 0.0);
+				target5->Message(1024, 0.0);
+				target4->Message(1024, 0.0);
+				target9->Message(1024, 0.0);
+				target8->Message(1024, 0.0);
+				target7->Message(1024, 0.0);
+				if (lite199->MessageField)
+					lite198->MessageField = 32;
 				else
-					control_lite198_tag.Component->MessageField = 0;
+					lite198->MessageField = 0;
 				MissionControl(66, nullptr);
 				TableG->Message(1012, 0.0);
 				if (light_on(&control_lite58_tag))
-					control_lite58_tag.Component->Message(20, 0.0);
+					lite58->Message(20, 0.0);
 				else
 					TableG->ScoreSpecial2 = 25000;
 			}
@@ -2494,7 +2724,7 @@ void control::table_control_handler(int code)
 	if (code == 1011)
 	{
 		table_unlimited_balls = false;
-		control_lite77_tag.Component->Message(7, 0.0);
+		lite77->Message(7, 0.0);
 	}
 }
 
@@ -2505,30 +2735,28 @@ void control::AlienMenaceController(int code, TPinballComponent* caller)
 	{
 		if (code == 66)
 		{
-			control_attack_bump_tag.Component->Message(11, 0.0);
-			TPinballComponent* lTrekLight = control_l_trek_lights_tag.Component;
-			control_l_trek_lights_tag.Component->Message(20, 0.0);
-			lTrekLight->Message(32, 0.2f);
-			lTrekLight->Message(26, 0.2f);
-			TPinballComponent* rTrekLight = control_r_trek_lights_tag.Component;
-			control_r_trek_lights_tag.Component->Message(20, 0.0);
-			rTrekLight->Message(32, 0.2f);
-			rTrekLight->Message(26, 0.2f);
-			control_lite307_tag.Component->Message(7, 0.0);
+			attack_bump->Message(11, 0.0);
+			l_trek_lights->Message(20, 0.0);
+			l_trek_lights->Message(32, 0.2f);
+			l_trek_lights->Message(26, 0.2f);
+			r_trek_lights->Message(20, 0.0);
+			r_trek_lights->Message(32, 0.2f);
+			r_trek_lights->Message(26, 0.2f);
+			lite307->Message(7, 0.0);
 		}
 		else if (code != 67)
 		{
 			return;
 		}
-		control_mission_text_box_tag.Component->Display(pinball::get_rc_string(175, 0), -1.0);
+		mission_text_box->Display(pinball::get_rc_string(175, 0), -1.0);
 		return;
 	}
-	if (control_bump1_tag.Component == caller)
+	if (bump1 == caller)
 	{
-		if (control_bump1_tag.Component->BmpIndex)
+		if (bump1->BmpIndex)
 		{
-			control_lite307_tag.Component->Message(20, 0.0);
-			control_lite198_tag.Component->MessageField = 20;
+			lite307->Message(20, 0.0);
+			lite198->MessageField = 20;
 			MissionControl(66, nullptr);
 		}
 	}
@@ -2542,46 +2770,46 @@ void control::AlienMenacePartTwoController(int code, TPinballComponent* caller)
 	{
 		if (code == 66)
 		{
-			control_lite56_tag.Component->MessageField = 8;
-			control_l_trek_lights_tag.Component->Message(34, 0.0);
-			control_l_trek_lights_tag.Component->Message(20, 0.0);
-			control_r_trek_lights_tag.Component->Message(34, 0.0);
-			control_r_trek_lights_tag.Component->Message(20, 0.0);
-			control_lite308_tag.Component->Message(7, 0.0);
-			control_lite311_tag.Component->Message(7, 0.0);
+			lite56->MessageField = 8;
+			l_trek_lights->Message(34, 0.0);
+			l_trek_lights->Message(20, 0.0);
+			r_trek_lights->Message(34, 0.0);
+			r_trek_lights->Message(20, 0.0);
+			lite308->Message(7, 0.0);
+			lite311->Message(7, 0.0);
 		}
 		else if (code != 67)
 		{
 			return;
 		}
 		snprintf(Buffer, sizeof Buffer, pinball::get_rc_string(107, 0),
-		          control_lite56_tag.Component->MessageField);
-		control_mission_text_box_tag.Component->Display(Buffer, -1.0);
+		          lite56->MessageField);
+		mission_text_box->Display(Buffer, -1.0);
 		return;
 	}
-	if (control_bump1_tag.Component == caller
-		|| control_bump2_tag.Component == caller
-		|| control_bump3_tag.Component == caller
-		|| control_bump4_tag.Component == caller)
+	if (bump1 == caller
+		|| bump2 == caller
+		|| bump3 == caller
+		|| bump4 == caller)
 	{
-		control_lite56_tag.Component->MessageField = control_lite56_tag.Component->MessageField - 1;
-		if (control_lite56_tag.Component->MessageField)
+		lite56->MessageField = lite56->MessageField - 1;
+		if (lite56->MessageField)
 		{
 			MissionControl(67, caller);
 		}
 		else
 		{
-			control_lite308_tag.Component->Message(20, 0.0);
-			control_lite311_tag.Component->Message(20, 0.0);
-			control_lite198_tag.Component->MessageField = 1;
+			lite308->Message(20, 0.0);
+			lite311->Message(20, 0.0);
+			lite198->MessageField = 1;
 			MissionControl(66, nullptr);
-			control_mission_text_box_tag.Component->Display(pinball::get_rc_string(130, 0), 4.0);
+			mission_text_box->Display(pinball::get_rc_string(130, 0), 4.0);
 			int addedScore = SpecialAddScore(750000);
 			snprintf(Buffer, sizeof Buffer, pinball::get_rc_string(78, 0), addedScore);
 			if (!AddRankProgress(7))
 			{
-				control_mission_text_box_tag.Component->Display(Buffer, 8.0);
-				control_soundwave9_tag.Component->Play();
+				mission_text_box->Display(Buffer, 8.0);
+				soundwave9->Play();
 			}
 		}
 	}
@@ -2593,27 +2821,27 @@ void control::BlackHoleThreatController(int code, TPinballComponent* caller)
 
 	if (code == 11)
 	{
-		if (control_bump5_tag.Component == caller)
+		if (bump5 == caller)
 			MissionControl(67, caller);
 	}
 	else if (code == 63)
 	{
-		if (control_kickout3_tag.Component == caller
-			&& control_bump5_tag.Component->BmpIndex)
+		if (kickout3 == caller
+			&& bump5->BmpIndex)
 		{
 			if (light_on(&control_lite316_tag))
-				control_lite316_tag.Component->Message(20, 0.0);
+				lite316->Message(20, 0.0);
 			if (light_on(&control_lite314_tag))
-				control_lite314_tag.Component->Message(20, 0.0);
-			control_lite198_tag.Component->MessageField = 1;
+				lite314->Message(20, 0.0);
+			lite198->MessageField = 1;
 			MissionControl(66, nullptr);
-			control_mission_text_box_tag.Component->Display(pinball::get_rc_string(124, 0), 4.0);
+			mission_text_box->Display(pinball::get_rc_string(124, 0), 4.0);
 			int addedScore = SpecialAddScore(1000000);
 			snprintf(Buffer, sizeof Buffer, pinball::get_rc_string(78, 0), addedScore);
 			if (!AddRankProgress(8))
 			{
-				control_mission_text_box_tag.Component->Display(Buffer, 8.0);
-				control_soundwave9_tag.Component->Play();
+				mission_text_box->Display(Buffer, 8.0);
+				soundwave9->Play();
 			}
 		}
 	}
@@ -2621,30 +2849,30 @@ void control::BlackHoleThreatController(int code, TPinballComponent* caller)
 	{
 		if (code == 66)
 		{
-			control_launch_bump_tag.Component->Message(11, 0.0);
+			launch_bump->Message(11, 0.0);
 		}
 		else if (code != 67)
 		{
 			return;
 		}
-		if (control_bump5_tag.Component->BmpIndex)
+		if (bump5->BmpIndex)
 		{
-			control_mission_text_box_tag.Component->Display(pinball::get_rc_string(123, 0), -1.0);
+			mission_text_box->Display(pinball::get_rc_string(123, 0), -1.0);
 			if (light_on(&control_lite316_tag))
-				control_lite316_tag.Component->Message(20, 0.0);
+				lite316->Message(20, 0.0);
 			if (!light_on(&control_lite314_tag))
 			{
-				control_lite314_tag.Component->Message(7, 0.0);
+				lite314->Message(7, 0.0);
 			}
 		}
 		else
 		{
-			control_mission_text_box_tag.Component->Display(pinball::get_rc_string(122, 0), -1.0);
+			mission_text_box->Display(pinball::get_rc_string(122, 0), -1.0);
 			if (light_on(&control_lite314_tag))
-				control_lite314_tag.Component->Message(20, 0.0);
+				lite314->Message(20, 0.0);
 			if (!light_on(&control_lite316_tag))
 			{
-				control_lite316_tag.Component->Message(7, 0.0);
+				lite316->Message(7, 0.0);
 			}
 		}
 	}
@@ -2658,87 +2886,87 @@ void control::BugHuntController(int code, TPinballComponent* caller)
 	{
 		if (code == 66)
 		{
-			control_lite56_tag.Component->MessageField = 15;
-			control_target1_tag.Component->MessageField = 0;
-			control_target1_tag.Component->Message(50, 0.0);
-			control_target2_tag.Component->MessageField = 0;
-			control_target2_tag.Component->Message(50, 0.0);
-			control_target3_tag.Component->MessageField = 0;
-			control_target3_tag.Component->Message(50, 0.0);
-			control_target6_tag.Component->MessageField = 0;
-			control_target6_tag.Component->Message(50, 0.0);
-			control_target5_tag.Component->MessageField = 0;
-			control_target5_tag.Component->Message(50, 0.0);
-			control_target4_tag.Component->MessageField = 0;
-			control_target4_tag.Component->Message(50, 0.0);
-			control_target9_tag.Component->MessageField = 0;
-			control_target9_tag.Component->Message(50, 0.0);
-			control_target8_tag.Component->MessageField = 0;
-			control_target8_tag.Component->Message(50, 0.0);
-			control_target7_tag.Component->MessageField = 0;
-			control_target7_tag.Component->Message(50, 0.0);
-			control_top_circle_tgt_lights_tag.Component->Message(20, 0.0);
-			control_ramp_tgt_lights_tag.Component->Message(20, 0.0);
-			control_lchute_tgt_lights_tag.Component->Message(20, 0.0);
-			control_bpr_solotgt_lights_tag.Component->Message(20, 0.0);
-			control_lite306_tag.Component->Message(7, 0.0);
-			control_lite308_tag.Component->Message(7, 0.0);
-			control_lite310_tag.Component->Message(7, 0.0);
-			control_lite313_tag.Component->Message(7, 0.0);
-			control_lite319_tag.Component->Message(7, 0.0);
+			lite56->MessageField = 15;
+			target1->MessageField = 0;
+			target1->Message(50, 0.0);
+			target2->MessageField = 0;
+			target2->Message(50, 0.0);
+			target3->MessageField = 0;
+			target3->Message(50, 0.0);
+			target6->MessageField = 0;
+			target6->Message(50, 0.0);
+			target5->MessageField = 0;
+			target5->Message(50, 0.0);
+			target4->MessageField = 0;
+			target4->Message(50, 0.0);
+			target9->MessageField = 0;
+			target9->Message(50, 0.0);
+			target8->MessageField = 0;
+			target8->Message(50, 0.0);
+			target7->MessageField = 0;
+			target7->Message(50, 0.0);
+			top_circle_tgt_lights->Message(20, 0.0);
+			ramp_tgt_lights->Message(20, 0.0);
+			lchute_tgt_lights->Message(20, 0.0);
+			bpr_solotgt_lights->Message(20, 0.0);
+			lite306->Message(7, 0.0);
+			lite308->Message(7, 0.0);
+			lite310->Message(7, 0.0);
+			lite313->Message(7, 0.0);
+			lite319->Message(7, 0.0);
 		}
 		else if (code != 67)
 		{
 			return;
 		}
-		snprintf(Buffer, sizeof Buffer, pinball::get_rc_string(125, 0), control_lite56_tag.Component->MessageField);
-		control_mission_text_box_tag.Component->Display(Buffer, -1.0);
+		snprintf(Buffer, sizeof Buffer, pinball::get_rc_string(125, 0), lite56->MessageField);
+		mission_text_box->Display(Buffer, -1.0);
 		return;
 	}
-	if (control_target1_tag.Component == caller
-		|| control_target2_tag.Component == caller
-		|| control_target3_tag.Component == caller
-		|| control_target6_tag.Component == caller
-		|| control_target5_tag.Component == caller
-		|| control_target4_tag.Component == caller
-		|| control_target9_tag.Component == caller
-		|| control_target8_tag.Component == caller
-		|| control_target7_tag.Component == caller
-		|| control_target10_tag.Component == caller
-		|| control_target11_tag.Component == caller
-		|| control_target12_tag.Component == caller
-		|| control_target13_tag.Component == caller
-		|| control_target14_tag.Component == caller
-		|| control_target15_tag.Component == caller
-		|| control_target16_tag.Component == caller
-		|| control_target17_tag.Component == caller
-		|| control_target18_tag.Component == caller
-		|| control_target19_tag.Component == caller
-		|| control_target20_tag.Component == caller
-		|| control_target21_tag.Component == caller
-		|| control_target22_tag.Component == caller)
+	if (target1 == caller
+		|| target2 == caller
+		|| target3 == caller
+		|| target6 == caller
+		|| target5 == caller
+		|| target4 == caller
+		|| target9 == caller
+		|| target8 == caller
+		|| target7 == caller
+		|| target10 == caller
+		|| target11 == caller
+		|| target12 == caller
+		|| target13 == caller
+		|| target14 == caller
+		|| target15 == caller
+		|| target16 == caller
+		|| target17 == caller
+		|| target18 == caller
+		|| target19 == caller
+		|| target20 == caller
+		|| target21 == caller
+		|| target22 == caller)
 	{
-		control_lite56_tag.Component->MessageField = control_lite56_tag.Component->MessageField - 1;
-		if (control_lite56_tag.Component->MessageField)
+		lite56->MessageField = lite56->MessageField - 1;
+		if (lite56->MessageField)
 		{
 			MissionControl(67, caller);
 		}
 		else
 		{
-			control_lite306_tag.Component->Message(20, 0.0);
-			control_lite308_tag.Component->Message(20, 0.0);
-			control_lite310_tag.Component->Message(20, 0.0);
-			control_lite313_tag.Component->Message(20, 0.0);
-			control_lite319_tag.Component->Message(20, 0.0);
-			control_lite198_tag.Component->MessageField = 1;
+			lite306->Message(20, 0.0);
+			lite308->Message(20, 0.0);
+			lite310->Message(20, 0.0);
+			lite313->Message(20, 0.0);
+			lite319->Message(20, 0.0);
+			lite198->MessageField = 1;
 			MissionControl(66, nullptr);
-			control_mission_text_box_tag.Component->Display(pinball::get_rc_string(126, 0), 4.0);
+			mission_text_box->Display(pinball::get_rc_string(126, 0), 4.0);
 			int addedScore = SpecialAddScore(750000);
 			snprintf(Buffer, sizeof Buffer, pinball::get_rc_string(78, 0), addedScore);
 			if (!AddRankProgress(7))
 			{
-				control_mission_text_box_tag.Component->Display(Buffer, 8.0);
-				control_soundwave9_tag.Component->Play();
+				mission_text_box->Display(Buffer, 8.0);
+				soundwave9->Play();
 			}
 		}
 	}
@@ -2752,35 +2980,35 @@ void control::CosmicPlagueController(int code, TPinballComponent* caller)
 	{
 		if (code == 66)
 		{
-			control_lite56_tag.Component->MessageField = 75;
-			control_lite20_tag.Component->Message(19, 0.0);
-			control_lite19_tag.Component->Message(19, 0.0);
-			control_lite305_tag.Component->Message(7, 0.0);
-			control_lite312_tag.Component->Message(7, 0.0);
+			lite56->MessageField = 75;
+			lite20->Message(19, 0.0);
+			lite19->Message(19, 0.0);
+			lite305->Message(7, 0.0);
+			lite312->Message(7, 0.0);
 		}
 		else if (code != 67)
 		{
 			return;
 		}
-		snprintf(Buffer, sizeof Buffer, pinball::get_rc_string(139, 0), control_lite56_tag.Component->MessageField);
-		control_mission_text_box_tag.Component->Display(Buffer, -1.0);
+		snprintf(Buffer, sizeof Buffer, pinball::get_rc_string(139, 0), lite56->MessageField);
+		mission_text_box->Display(Buffer, -1.0);
 		return;
 	}
-	if (control_flag1_tag.Component == caller || control_flag2_tag.Component == caller)
+	if (flag1 == caller || flag2 == caller)
 	{
-		control_lite56_tag.Component->MessageField = control_lite56_tag.Component->MessageField - 1;
-		if (control_lite56_tag.Component->MessageField)
+		lite56->MessageField = lite56->MessageField - 1;
+		if (lite56->MessageField)
 		{
 			MissionControl(67, caller);
 		}
 		else
 		{
-			control_lite305_tag.Component->Message(20, 0.0);
-			control_lite312_tag.Component->Message(20, 0.0);
-			control_lite198_tag.Component->MessageField = 21;
+			lite305->Message(20, 0.0);
+			lite312->Message(20, 0.0);
+			lite198->MessageField = 21;
 			MissionControl(66, nullptr);
-			control_lite20_tag.Component->Message(20, 0.0);
-			control_lite19_tag.Component->Message(20, 0.0);
+			lite20->Message(20, 0.0);
+			lite19->Message(20, 0.0);
 		}
 	}
 }
@@ -2793,27 +3021,27 @@ void control::CosmicPlaguePartTwoController(int code, TPinballComponent* caller)
 	{
 		if (code == 66)
 		{
-			control_lite310_tag.Component->Message(7, 0.0);
+			lite310->Message(7, 0.0);
 		}
 		else if (code != 67)
 		{
 			return;
 		}
-		control_mission_text_box_tag.Component->Display(pinball::get_rc_string(140, 0), -1.0);
+		mission_text_box->Display(pinball::get_rc_string(140, 0), -1.0);
 		return;
 	}
-	if (control_roll9_tag.Component == caller)
+	if (roll9 == caller)
 	{
-		control_lite310_tag.Component->Message(20, 0.0);
-		control_lite198_tag.Component->MessageField = 1;
+		lite310->Message(20, 0.0);
+		lite198->MessageField = 1;
 		MissionControl(66, nullptr);
-		control_mission_text_box_tag.Component->Display(pinball::get_rc_string(141, 0), 4.0);
+		mission_text_box->Display(pinball::get_rc_string(141, 0), 4.0);
 		int addedScore = SpecialAddScore(1750000);
 		snprintf(Buffer, sizeof Buffer, pinball::get_rc_string(78, 0), addedScore);
 		if (!AddRankProgress(11))
 		{
-			control_mission_text_box_tag.Component->Display(Buffer, 8.0);
-			control_soundwave9_tag.Component->Play();
+			mission_text_box->Display(Buffer, 8.0);
+			soundwave9->Play();
 		}
 	}
 }
@@ -2826,38 +3054,38 @@ void control::DoomsdayMachineController(int code, TPinballComponent* caller)
 	{
 		if (code == 66)
 		{
-			control_lite56_tag.Component->MessageField = 3;
-			control_lite301_tag.Component->Message(7, 0.0);
-			control_lite320_tag.Component->Message(7, 0.0);
+			lite56->MessageField = 3;
+			lite301->Message(7, 0.0);
+			lite320->Message(7, 0.0);
 		}
 		else if (code != 67)
 		{
 			return;
 		}
-		snprintf(Buffer, sizeof Buffer, pinball::get_rc_string(137, 0), control_lite56_tag.Component->MessageField);
-		control_mission_text_box_tag.Component->Display(Buffer, -1.0);
+		snprintf(Buffer, sizeof Buffer, pinball::get_rc_string(137, 0), lite56->MessageField);
+		mission_text_box->Display(Buffer, -1.0);
 		return;
 	}
-	if (control_roll4_tag.Component == caller || control_roll8_tag.Component == caller)
+	if (roll4 == caller || roll8 == caller)
 	{
-		control_lite56_tag.Component->MessageField = control_lite56_tag.Component->MessageField - 1;
-		if (control_lite56_tag.Component->MessageField)
+		lite56->MessageField = lite56->MessageField - 1;
+		if (lite56->MessageField)
 		{
 			MissionControl(67, caller);
 		}
 		else
 		{
-			control_lite301_tag.Component->Message(20, 0.0);
-			control_lite320_tag.Component->Message(20, 0.0);
-			control_lite198_tag.Component->MessageField = 1;
+			lite301->Message(20, 0.0);
+			lite320->Message(20, 0.0);
+			lite198->MessageField = 1;
 			MissionControl(66, nullptr);
-			control_mission_text_box_tag.Component->Display(pinball::get_rc_string(138, 0), 4.0);
+			mission_text_box->Display(pinball::get_rc_string(138, 0), 4.0);
 			int addedScore = SpecialAddScore(1250000);
 			snprintf(Buffer, sizeof Buffer, pinball::get_rc_string(78, 0), addedScore);
 			if (!AddRankProgress(9))
 			{
-				control_mission_text_box_tag.Component->Display(Buffer, 8.0);
-				control_soundwave9_tag.Component->Play();
+				mission_text_box->Display(Buffer, 8.0);
+				soundwave9->Play();
 			}
 		}
 	}
@@ -2869,17 +3097,17 @@ void control::GameoverController(int code, TPinballComponent* caller)
 
 	if (code == 66)
 	{
-		control_goal_lights_tag.Component->Message(20, 0.0);
+		goal_lights->Message(20, 0.0);
 		pb::mode_change(GameModes::GameOver);
-		control_flip1_tag.Component->Message(1022, 0.0);
-		control_flip2_tag.Component->Message(1022, 0.0);
-		control_mission_text_box_tag.Component->MessageField = 0;
+		flip1->Message(1022, 0.0);
+		flip2->Message(1022, 0.0);
+		mission_text_box->MessageField = 0;
 		return;
 	}
 	if (code != 67)
 		return;
 
-	int missionMsg = control_mission_text_box_tag.Component->MessageField;
+	int missionMsg = mission_text_box->MessageField;
 	if (missionMsg & 0x100)
 	{
 		int playerId = missionMsg % 4;
@@ -2908,13 +3136,13 @@ void control::GameoverController(int code, TPinballComponent* caller)
 			if (playerNScoreText != nullptr)
 			{
 				snprintf(Buffer, sizeof Buffer, playerNScoreText, playerScore);
-				control_mission_text_box_tag.Component->Display(Buffer, 3.0);
+				mission_text_box->Display(Buffer, 3.0);
 				int msgField = nextPlayerId == TableG->PlayerCount ? 0x200 : nextPlayerId | 0x100;
-				control_mission_text_box_tag.Component->MessageField = msgField;
+				mission_text_box->MessageField = msgField;
 				return;
 			}
 		}
-		control_mission_text_box_tag.Component->MessageField = 0x200;
+		mission_text_box->MessageField = 0x200;
 	}
 
 	if (missionMsg & 0x200)
@@ -2948,16 +3176,16 @@ void control::GameoverController(int code, TPinballComponent* caller)
 			if (highScoreNText != nullptr)
 			{
 				snprintf(Buffer, sizeof Buffer, highScoreNText, highScore);
-				control_mission_text_box_tag.Component->Display(Buffer, 3.0);
+				mission_text_box->Display(Buffer, 3.0);
 				int msgField = nextHidhscoreId == 5 ? 0 : nextHidhscoreId | 0x200;
-				control_mission_text_box_tag.Component->MessageField = msgField;
+				mission_text_box->MessageField = msgField;
 				return;
 			}
 		}
 	}
 
-	control_mission_text_box_tag.Component->MessageField = 0x100;
-	control_mission_text_box_tag.Component->Display(pinball::get_rc_string(172, 0), 10.0);
+	mission_text_box->MessageField = 0x100;
+	mission_text_box->Display(pinball::get_rc_string(172, 0), 10.0);
 }
 
 void control::LaunchTrainingController(int code, TPinballComponent* caller)
@@ -2968,36 +3196,36 @@ void control::LaunchTrainingController(int code, TPinballComponent* caller)
 	{
 		if (code == 66)
 		{
-			control_lite317_tag.Component->Message(7, 0.0);
-			control_lite56_tag.Component->MessageField = 3;
+			lite317->Message(7, 0.0);
+			lite56->MessageField = 3;
 		}
 		else if (code != 67)
 		{
 			return;
 		}
-		snprintf(Buffer, sizeof Buffer, pinball::get_rc_string(110, 0), control_lite56_tag.Component->MessageField);
-		control_mission_text_box_tag.Component->Display(Buffer, -1.0);
+		snprintf(Buffer, sizeof Buffer, pinball::get_rc_string(110, 0), lite56->MessageField);
+		mission_text_box->Display(Buffer, -1.0);
 		return;
 	}
-	if (control_ramp_tag.Component == caller)
+	if (ramp == caller)
 	{
-		control_lite56_tag.Component->MessageField = control_lite56_tag.Component->MessageField - 1;
-		if (control_lite56_tag.Component->MessageField)
+		lite56->MessageField = lite56->MessageField - 1;
+		if (lite56->MessageField)
 		{
 			MissionControl(67, caller);
 		}
 		else
 		{
-			control_lite317_tag.Component->Message(20, 0.0);
-			control_lite198_tag.Component->MessageField = 1;
+			lite317->Message(20, 0.0);
+			lite198->MessageField = 1;
 			MissionControl(66, nullptr);
-			control_mission_text_box_tag.Component->Display(pinball::get_rc_string(111, 0), 4.0);
+			mission_text_box->Display(pinball::get_rc_string(111, 0), 4.0);
 			int addedScore = SpecialAddScore(500000);
 			snprintf(Buffer, sizeof Buffer, pinball::get_rc_string(78, 0), addedScore);
 			if (!AddRankProgress(6))
 			{
-				control_mission_text_box_tag.Component->Display(Buffer, 8.0);
-				control_soundwave9_tag.Component->Play();
+				mission_text_box->Display(Buffer, 8.0);
+				soundwave9->Play();
 			}
 		}
 	}
@@ -3011,40 +3239,40 @@ void control::MaelstromController(int code, TPinballComponent* caller)
 	{
 		if (code == 66)
 		{
-			control_lite56_tag.Component->MessageField = 3;
-			control_lite303_tag.Component->Message(7, 0.0);
-			control_lite309_tag.Component->Message(7, 0.0);
-			control_lite315_tag.Component->Message(7, 0.0);
+			lite56->MessageField = 3;
+			lite303->Message(7, 0.0);
+			lite309->Message(7, 0.0);
+			lite315->Message(7, 0.0);
 		}
 		else if (code != 67)
 		{
 			return;
 		}
-		snprintf(Buffer, sizeof Buffer, pinball::get_rc_string(148, 0), control_lite56_tag.Component->MessageField);
-		control_mission_text_box_tag.Component->Display(Buffer, -1.0);
+		snprintf(Buffer, sizeof Buffer, pinball::get_rc_string(148, 0), lite56->MessageField);
+		mission_text_box->Display(Buffer, -1.0);
 		return;
 	}
-	if (control_target1_tag.Component == caller
-		|| control_target2_tag.Component == caller
-		|| control_target3_tag.Component == caller
-		|| control_target6_tag.Component == caller
-		|| control_target5_tag.Component == caller
-		|| control_target4_tag.Component == caller
-		|| control_target9_tag.Component == caller
-		|| control_target8_tag.Component == caller
-		|| control_target7_tag.Component == caller)
+	if (target1 == caller
+		|| target2 == caller
+		|| target3 == caller
+		|| target6 == caller
+		|| target5 == caller
+		|| target4 == caller
+		|| target9 == caller
+		|| target8 == caller
+		|| target7 == caller)
 	{
-		control_lite56_tag.Component->MessageField = control_lite56_tag.Component->MessageField - 1;
-		if (control_lite56_tag.Component->MessageField)
+		lite56->MessageField = lite56->MessageField - 1;
+		if (lite56->MessageField)
 		{
 			MissionControl(67, caller);
 		}
 		else
 		{
-			control_lite303_tag.Component->Message(20, 0.0);
-			control_lite309_tag.Component->Message(20, 0.0);
-			control_lite315_tag.Component->Message(20, 0.0);
-			control_lite198_tag.Component->MessageField = 25;
+			lite303->Message(20, 0.0);
+			lite309->Message(20, 0.0);
+			lite315->Message(20, 0.0);
+			lite198->MessageField = 25;
 			MissionControl(66, nullptr);
 		}
 	}
@@ -3058,29 +3286,29 @@ void control::MaelstromPartEightController(int code, TPinballComponent* caller)
 	{
 		if (code == 66)
 		{
-			control_lite130_tag.Component->Message(19, 0.0);
-			control_lite304_tag.Component->Message(7, 0.0);
+			lite130->Message(19, 0.0);
+			lite304->Message(7, 0.0);
 		}
 		else if (code != 67)
 		{
 			return;
 		}
-		control_mission_text_box_tag.Component->Display(pinball::get_rc_string(155, 0), -1.0);
+		mission_text_box->Display(pinball::get_rc_string(155, 0), -1.0);
 		return;
 	}
-	if (control_kickout2_tag.Component == caller)
+	if (kickout2 == caller)
 	{
-		control_lite304_tag.Component->Message(20, 0.0);
-		control_lite130_tag.Component->Message(20, 0.0);
-		control_lite198_tag.Component->MessageField = 1;
+		lite304->Message(20, 0.0);
+		lite130->Message(20, 0.0);
+		lite198->MessageField = 1;
 		MissionControl(66, nullptr);
 		int addedScore = SpecialAddScore(5000000);
 		snprintf(Buffer, sizeof Buffer, pinball::get_rc_string(78, 0), addedScore);
-		control_info_text_box_tag.Component->Display(pinball::get_rc_string(48, 0), 4.0);
+		info_text_box->Display(pinball::get_rc_string(48, 0), 4.0);
 		if (!AddRankProgress(18))
 		{
-			control_mission_text_box_tag.Component->Display(Buffer, 8.0);
-			control_soundwave9_tag.Component->Play();
+			mission_text_box->Display(Buffer, 8.0);
+			soundwave9->Play();
 		}
 	}
 }
@@ -3091,19 +3319,19 @@ void control::MaelstromPartFiveController(int code, TPinballComponent* caller)
 	{
 		if (code == 66)
 		{
-			control_lite317_tag.Component->Message(7, 0.0);
+			lite317->Message(7, 0.0);
 		}
 		else if (code != 67)
 		{
 			return;
 		}
-		control_mission_text_box_tag.Component->Display(pinball::get_rc_string(152, 0), -1.0);
+		mission_text_box->Display(pinball::get_rc_string(152, 0), -1.0);
 		return;
 	}
-	if (control_ramp_tag.Component == caller)
+	if (ramp == caller)
 	{
-		control_lite317_tag.Component->Message(20, 0.0);
-		control_lite198_tag.Component->MessageField = 29;
+		lite317->Message(20, 0.0);
+		lite198->MessageField = 29;
 		MissionControl(66, nullptr);
 	}
 }
@@ -3114,20 +3342,20 @@ void control::MaelstromPartFourController(int code, TPinballComponent* caller)
 	{
 		if (code == 66)
 		{
-			control_lite56_tag.Component->MessageField = 0;
-			control_lite318_tag.Component->Message(7, 0.0);
+			lite56->MessageField = 0;
+			lite318->Message(7, 0.0);
 		}
 		else if (code != 67)
 		{
 			return;
 		}
-		control_mission_text_box_tag.Component->Display(pinball::get_rc_string(151, 0), -1.0);
+		mission_text_box->Display(pinball::get_rc_string(151, 0), -1.0);
 		return;
 	}
-	if (control_roll184_tag.Component == caller)
+	if (roll184 == caller)
 	{
-		control_lite318_tag.Component->Message(20, 0.0);
-		control_lite198_tag.Component->MessageField = 28;
+		lite318->Message(20, 0.0);
+		lite198->MessageField = 28;
 		MissionControl(66, nullptr);
 	}
 }
@@ -3139,22 +3367,22 @@ void control::MaelstromPartSevenController(int code, TPinballComponent* caller)
 		if (code == 66)
 		{
 			AdvanceWormHoleDestination(1);
-			control_sink1_tag.Component->Message(7, 0.0);
-			control_sink2_tag.Component->Message(7, 0.0);
-			control_sink3_tag.Component->Message(7, 0.0);
+			sink1->Message(7, 0.0);
+			sink2->Message(7, 0.0);
+			sink3->Message(7, 0.0);
 		}
 		else if (code != 67)
 		{
 			return;
 		}
-		control_mission_text_box_tag.Component->Display(pinball::get_rc_string(154, 0), -1.0);
+		mission_text_box->Display(pinball::get_rc_string(154, 0), -1.0);
 		return;
 	}
-	if (control_sink1_tag.Component == caller
-		|| control_sink2_tag.Component == caller
-		|| control_sink3_tag.Component == caller)
+	if (sink1 == caller
+		|| sink2 == caller
+		|| sink3 == caller)
 	{
-		control_lite198_tag.Component->MessageField = 31;
+		lite198->MessageField = 31;
 		MissionControl(66, nullptr);
 	}
 }
@@ -3165,26 +3393,26 @@ void control::MaelstromPartSixController(int code, TPinballComponent* caller)
 	{
 		if (code == 66)
 		{
-			control_lite20_tag.Component->Message(19, 0.0);
-			control_lite19_tag.Component->Message(19, 0.0);
-			control_lite305_tag.Component->Message(7, 0.0);
-			control_lite312_tag.Component->Message(7, 0.0);
+			lite20->Message(19, 0.0);
+			lite19->Message(19, 0.0);
+			lite305->Message(7, 0.0);
+			lite312->Message(7, 0.0);
 		}
 		else if (code != 67)
 		{
 			return;
 		}
-		control_mission_text_box_tag.Component->Display(pinball::get_rc_string(153, 0), -1.0);
+		mission_text_box->Display(pinball::get_rc_string(153, 0), -1.0);
 		return;
 	}
-	if (control_flag1_tag.Component == caller || control_flag2_tag.Component == caller)
+	if (flag1 == caller || flag2 == caller)
 	{
-		control_lite305_tag.Component->Message(20, 0.0);
-		control_lite312_tag.Component->Message(20, 0.0);
-		control_lite198_tag.Component->MessageField = 30;
+		lite305->Message(20, 0.0);
+		lite312->Message(20, 0.0);
+		lite198->MessageField = 30;
 		MissionControl(66, nullptr);
-		control_lite20_tag.Component->Message(20, 0.0);
-		control_lite19_tag.Component->Message(20, 0.0);
+		lite20->Message(20, 0.0);
+		lite19->Message(20, 0.0);
 	}
 }
 
@@ -3196,48 +3424,48 @@ void control::MaelstromPartThreeController(int code, TPinballComponent* caller)
 	{
 		if (code == 66)
 		{
-			control_lite56_tag.Component->MessageField = 5;
-			control_lite301_tag.Component->Message(7, 0.0);
-			control_lite302_tag.Component->Message(7, 0.0);
-			control_lite307_tag.Component->Message(7, 0.0);
-			control_lite316_tag.Component->Message(7, 0.0);
-			control_lite320_tag.Component->Message(7, 0.0);
-			control_lite321_tag.Component->Message(7, 0.0);
+			lite56->MessageField = 5;
+			lite301->Message(7, 0.0);
+			lite302->Message(7, 0.0);
+			lite307->Message(7, 0.0);
+			lite316->Message(7, 0.0);
+			lite320->Message(7, 0.0);
+			lite321->Message(7, 0.0);
 		}
 		else if (code != 67)
 		{
 			return;
 		}
-		snprintf(Buffer, sizeof Buffer, pinball::get_rc_string(150, 0), control_lite56_tag.Component->MessageField);
-		control_mission_text_box_tag.Component->Display(Buffer, -1.0);
+		snprintf(Buffer, sizeof Buffer, pinball::get_rc_string(150, 0), lite56->MessageField);
+		mission_text_box->Display(Buffer, -1.0);
 		return;
 	}
-	if (control_roll3_tag.Component == caller
-		|| control_roll2_tag.Component == caller
-		|| control_roll1_tag.Component == caller
-		|| control_roll112_tag.Component == caller
-		|| control_roll111_tag.Component == caller
-		|| control_roll110_tag.Component == caller
-		|| control_roll4_tag.Component == caller
-		|| control_roll8_tag.Component == caller
-		|| control_roll6_tag.Component == caller
-		|| control_roll7_tag.Component == caller
-		|| control_roll5_tag.Component == caller)
+	if (roll3 == caller
+		|| roll2 == caller
+		|| roll1 == caller
+		|| roll112 == caller
+		|| roll111 == caller
+		|| roll110 == caller
+		|| roll4 == caller
+		|| roll8 == caller
+		|| roll6 == caller
+		|| roll7 == caller
+		|| roll5 == caller)
 	{
-		control_lite56_tag.Component->MessageField = control_lite56_tag.Component->MessageField - 1;
-		if (control_lite56_tag.Component->MessageField)
+		lite56->MessageField = lite56->MessageField - 1;
+		if (lite56->MessageField)
 		{
 			MissionControl(67, caller);
 		}
 		else
 		{
-			control_lite301_tag.Component->Message(20, 0.0);
-			control_lite302_tag.Component->Message(20, 0.0);
-			control_lite307_tag.Component->Message(20, 0.0);
-			control_lite316_tag.Component->Message(20, 0.0);
-			control_lite320_tag.Component->Message(20, 0.0);
-			control_lite321_tag.Component->Message(20, 0.0);
-			control_lite198_tag.Component->MessageField = 27;
+			lite301->Message(20, 0.0);
+			lite302->Message(20, 0.0);
+			lite307->Message(20, 0.0);
+			lite316->Message(20, 0.0);
+			lite320->Message(20, 0.0);
+			lite321->Message(20, 0.0);
+			lite198->MessageField = 27;
 			MissionControl(66, nullptr);
 		}
 	}
@@ -3251,48 +3479,48 @@ void control::MaelstromPartTwoController(int code, TPinballComponent* caller)
 	{
 		if (code == 66)
 		{
-			control_lite56_tag.Component->MessageField = 3;
-			control_lite306_tag.Component->Message(7, 0.0);
-			control_lite308_tag.Component->Message(7, 0.0);
-			control_lite310_tag.Component->Message(7, 0.0);
-			control_lite313_tag.Component->Message(7, 0.0);
-			control_lite319_tag.Component->Message(7, 0.0);
+			lite56->MessageField = 3;
+			lite306->Message(7, 0.0);
+			lite308->Message(7, 0.0);
+			lite310->Message(7, 0.0);
+			lite313->Message(7, 0.0);
+			lite319->Message(7, 0.0);
 		}
 		else if (code != 67)
 		{
 			return;
 		}
-		snprintf(Buffer, sizeof Buffer, pinball::get_rc_string(149, 0), control_lite56_tag.Component->MessageField);
-		control_mission_text_box_tag.Component->Display(Buffer, -1.0);
+		snprintf(Buffer, sizeof Buffer, pinball::get_rc_string(149, 0), lite56->MessageField);
+		mission_text_box->Display(Buffer, -1.0);
 		return;
 	}
-	if (control_target10_tag.Component == caller
-		|| control_target11_tag.Component == caller
-		|| control_target12_tag.Component == caller
-		|| control_target13_tag.Component == caller
-		|| control_target14_tag.Component == caller
-		|| control_target15_tag.Component == caller
-		|| control_target16_tag.Component == caller
-		|| control_target17_tag.Component == caller
-		|| control_target18_tag.Component == caller
-		|| control_target19_tag.Component == caller
-		|| control_target20_tag.Component == caller
-		|| control_target21_tag.Component == caller
-		|| control_target22_tag.Component == caller)
+	if (target10 == caller
+		|| target11 == caller
+		|| target12 == caller
+		|| target13 == caller
+		|| target14 == caller
+		|| target15 == caller
+		|| target16 == caller
+		|| target17 == caller
+		|| target18 == caller
+		|| target19 == caller
+		|| target20 == caller
+		|| target21 == caller
+		|| target22 == caller)
 	{
-		control_lite56_tag.Component->MessageField = control_lite56_tag.Component->MessageField - 1;
-		if (control_lite56_tag.Component->MessageField)
+		lite56->MessageField = lite56->MessageField - 1;
+		if (lite56->MessageField)
 		{
 			MissionControl(67, caller);
 		}
 		else
 		{
-			control_lite306_tag.Component->Message(20, 0.0);
-			control_lite308_tag.Component->Message(20, 0.0);
-			control_lite310_tag.Component->Message(20, 0.0);
-			control_lite313_tag.Component->Message(20, 0.0);
-			control_lite319_tag.Component->Message(20, 0.0);
-			control_lite198_tag.Component->MessageField = 26;
+			lite306->Message(20, 0.0);
+			lite308->Message(20, 0.0);
+			lite310->Message(20, 0.0);
+			lite313->Message(20, 0.0);
+			lite319->Message(20, 0.0);
+			lite198->MessageField = 26;
 			MissionControl(66, nullptr);
 		}
 	}
@@ -3306,42 +3534,42 @@ void control::PracticeMissionController(int code, TPinballComponent* caller)
 	{
 		if (code == 66)
 		{
-			control_lite308_tag.Component->Message(7, 0.0);
-			control_lite311_tag.Component->Message(7, 0.0);
-			control_lite56_tag.Component->MessageField = 8;
+			lite308->Message(7, 0.0);
+			lite311->Message(7, 0.0);
+			lite56->MessageField = 8;
 		}
 		else if (code != 67)
 		{
 			return;
 		}
-		snprintf(Buffer, sizeof Buffer, pinball::get_rc_string(107, 0), control_lite56_tag.Component->MessageField);
-		control_mission_text_box_tag.Component->Display(Buffer, -1.0);
+		snprintf(Buffer, sizeof Buffer, pinball::get_rc_string(107, 0), lite56->MessageField);
+		mission_text_box->Display(Buffer, -1.0);
 		return;
 	}
 
-	if (control_bump1_tag.Component == caller
-		|| control_bump2_tag.Component == caller
-		|| control_bump3_tag.Component == caller
-		|| control_bump4_tag.Component == caller)
+	if (bump1 == caller
+		|| bump2 == caller
+		|| bump3 == caller
+		|| bump4 == caller)
 	{
-		control_lite56_tag.Component->MessageField = control_lite56_tag.Component->MessageField - 1;
-		if (control_lite56_tag.Component->MessageField)
+		lite56->MessageField = lite56->MessageField - 1;
+		if (lite56->MessageField)
 		{
 			MissionControl(67, caller);
 		}
 		else
 		{
-			control_lite308_tag.Component->Message(20, 0.0);
-			control_lite311_tag.Component->Message(20, 0.0);
-			control_lite198_tag.Component->MessageField = 1;
+			lite308->Message(20, 0.0);
+			lite311->Message(20, 0.0);
+			lite198->MessageField = 1;
 			MissionControl(66, nullptr);
-			control_mission_text_box_tag.Component->Display(pinball::get_rc_string(108, 0), 4.0);
+			mission_text_box->Display(pinball::get_rc_string(108, 0), 4.0);
 			int addedScore = SpecialAddScore(500000);
 			snprintf(Buffer, sizeof Buffer, pinball::get_rc_string(78, 0), addedScore);
 			if (!AddRankProgress(6))
 			{
-				control_mission_text_box_tag.Component->Display(Buffer, 8.0);
-				control_soundwave9_tag.Component->Play();
+				mission_text_box->Display(Buffer, 8.0);
+				soundwave9->Play();
 			}
 		}
 	}
@@ -3355,56 +3583,56 @@ void control::ReconnaissanceController(int code, TPinballComponent* caller)
 	{
 		if (code == 66)
 		{
-			control_lite56_tag.Component->MessageField = 15;
-			control_lite301_tag.Component->Message(7, 0.0);
-			control_lite302_tag.Component->Message(7, 0.0);
-			control_lite307_tag.Component->Message(7, 0.0);
-			control_lite316_tag.Component->Message(7, 0.0);
-			control_lite320_tag.Component->Message(7, 0.0);
-			control_lite321_tag.Component->Message(7, 0.0);
+			lite56->MessageField = 15;
+			lite301->Message(7, 0.0);
+			lite302->Message(7, 0.0);
+			lite307->Message(7, 0.0);
+			lite316->Message(7, 0.0);
+			lite320->Message(7, 0.0);
+			lite321->Message(7, 0.0);
 		}
 		else if (code != 67)
 		{
 			return;
 		}
-		snprintf(Buffer, sizeof Buffer, pinball::get_rc_string(134, 0), control_lite56_tag.Component->MessageField);
-		control_mission_text_box_tag.Component->Display(Buffer, -1.0);
+		snprintf(Buffer, sizeof Buffer, pinball::get_rc_string(134, 0), lite56->MessageField);
+		mission_text_box->Display(Buffer, -1.0);
 		return;
 	}
-	if (control_roll3_tag.Component == caller
-		|| control_roll2_tag.Component == caller
-		|| control_roll1_tag.Component == caller
-		|| control_roll112_tag.Component == caller
-		|| control_roll111_tag.Component == caller
-		|| control_roll110_tag.Component == caller
-		|| control_roll4_tag.Component == caller
-		|| control_roll8_tag.Component == caller
-		|| control_roll6_tag.Component == caller
-		|| control_roll7_tag.Component == caller
-		|| control_roll5_tag.Component == caller)
+	if (roll3 == caller
+		|| roll2 == caller
+		|| roll1 == caller
+		|| roll112 == caller
+		|| roll111 == caller
+		|| roll110 == caller
+		|| roll4 == caller
+		|| roll8 == caller
+		|| roll6 == caller
+		|| roll7 == caller
+		|| roll5 == caller)
 	{
-		control_lite56_tag.Component->MessageField = control_lite56_tag.Component->MessageField - 1;
-		if (control_lite56_tag.Component->MessageField)
+		lite56->MessageField = lite56->MessageField - 1;
+		if (lite56->MessageField)
 		{
 			MissionControl(67, nullptr);
 		}
 		else
 		{
-			control_lite301_tag.Component->Message(20, 0.0);
-			control_lite302_tag.Component->Message(20, 0.0);
-			control_lite307_tag.Component->Message(20, 0.0);
-			control_lite316_tag.Component->Message(20, 0.0);
-			control_lite320_tag.Component->Message(20, 0.0);
-			control_lite321_tag.Component->Message(20, 0.0);
-			control_lite198_tag.Component->MessageField = 1;
+			lite301->Message(20, 0.0);
+			lite302->Message(20, 0.0);
+			lite307->Message(20, 0.0);
+			lite316->Message(20, 0.0);
+			lite320->Message(20, 0.0);
+			lite321->Message(20, 0.0);
+			lite198->MessageField = 1;
 			MissionControl(66, nullptr);
-			control_mission_text_box_tag.Component->Display(pinball::get_rc_string(136, 0), 4.0);
+			mission_text_box->Display(pinball::get_rc_string(136, 0), 4.0);
 			int addedScore = SpecialAddScore(1250000);
 			snprintf(Buffer, sizeof Buffer, pinball::get_rc_string(78, 0), addedScore);
 			if (!AddRankProgress(9))
 			{
-				control_mission_text_box_tag.Component->Display(Buffer, 8.0);
-				control_soundwave9_tag.Component->Play();
+				mission_text_box->Display(Buffer, 8.0);
+				soundwave9->Play();
 			}
 		}
 	}
@@ -3418,44 +3646,44 @@ void control::ReentryTrainingController(int code, TPinballComponent* caller)
 	{
 		if (code == 66)
 		{
-			control_lite56_tag.Component->MessageField = 3;
-			control_l_trek_lights_tag.Component->Message(20, 0.0);
-			static_cast<TPinballComponent*>(control_l_trek_lights_tag.Component)->Message(32, 0.2f);
-			static_cast<TPinballComponent*>(control_l_trek_lights_tag.Component)->Message(26, 0.2f);
-			control_r_trek_lights_tag.Component->Message(20, 0.0);
-			static_cast<TPinballComponent*>(control_r_trek_lights_tag.Component)->Message(32, 0.2f);
-			static_cast<TPinballComponent*>(control_r_trek_lights_tag.Component)->Message(26, 0.2f);
-			control_lite307_tag.Component->Message(7, 0.0);
+			lite56->MessageField = 3;
+			l_trek_lights->Message(20, 0.0);
+			l_trek_lights->Message(32, 0.2f);
+			l_trek_lights->Message(26, 0.2f);
+			r_trek_lights->Message(20, 0.0);
+			r_trek_lights->Message(32, 0.2f);
+			r_trek_lights->Message(26, 0.2f);
+			lite307->Message(7, 0.0);
 		}
 		else if (code != 67)
 		{
 			return;
 		}
-		snprintf(Buffer, sizeof Buffer, pinball::get_rc_string(112, 0), control_lite56_tag.Component->MessageField);
-		control_mission_text_box_tag.Component->Display(Buffer, -1.0);
+		snprintf(Buffer, sizeof Buffer, pinball::get_rc_string(112, 0), lite56->MessageField);
+		mission_text_box->Display(Buffer, -1.0);
 		return;
 	}
-	if (control_roll3_tag.Component == caller
-		|| control_roll2_tag.Component == caller
-		|| control_roll1_tag.Component == caller)
+	if (roll3 == caller
+		|| roll2 == caller
+		|| roll1 == caller)
 	{
-		control_lite56_tag.Component->MessageField = control_lite56_tag.Component->MessageField - 1;
-		if (control_lite56_tag.Component->MessageField)
+		lite56->MessageField = lite56->MessageField - 1;
+		if (lite56->MessageField)
 		{
 			MissionControl(67, caller);
 		}
 		else
 		{
-			control_lite307_tag.Component->Message(20, 0.0);
-			control_lite198_tag.Component->MessageField = 1;
+			lite307->Message(20, 0.0);
+			lite198->MessageField = 1;
 			MissionControl(66, nullptr);
-			control_mission_text_box_tag.Component->Display(pinball::get_rc_string(113, 0), 4.0);
+			mission_text_box->Display(pinball::get_rc_string(113, 0), 4.0);
 			int addedScore = SpecialAddScore(500000);
 			snprintf(Buffer, sizeof Buffer, pinball::get_rc_string(78, 0), addedScore);
 			if (!AddRankProgress(6))
 			{
-				control_mission_text_box_tag.Component->Display(Buffer, 8.0);
-				control_soundwave9_tag.Component->Play();
+				mission_text_box->Display(Buffer, 8.0);
+				soundwave9->Play();
 			}
 		}
 	}
@@ -3469,61 +3697,61 @@ void control::RescueMissionController(int code, TPinballComponent* caller)
 	{
 	case 63:
 		{
-			if (control_target1_tag.Component == caller
-				|| control_target2_tag.Component == caller
-				|| control_target3_tag.Component == caller)
+			if (target1 == caller
+				|| target2 == caller
+				|| target3 == caller)
 			{
 				MissionControl(67, caller);
 				return;
 			}
-			if (control_kickout2_tag.Component != caller || !light_on(&control_lite20_tag))
+			if (kickout2 != caller || !light_on(&control_lite20_tag))
 				return;
-			control_lite56_tag.Component->MessageField = control_lite56_tag.Component->MessageField - 1;
-			if (control_lite56_tag.Component->MessageField)
+			lite56->MessageField = lite56->MessageField - 1;
+			if (lite56->MessageField)
 			{
 				MissionControl(67, caller);
 				return;
 			}
 			if (light_on(&control_lite303_tag))
-				control_lite303_tag.Component->Message(20, 0.0);
+				lite303->Message(20, 0.0);
 			if (light_on(&control_lite304_tag))
-				control_lite304_tag.Component->Message(20, 0.0);
-			control_lite198_tag.Component->MessageField = 1;
+				lite304->Message(20, 0.0);
+			lite198->MessageField = 1;
 			MissionControl(66, nullptr);
-			control_mission_text_box_tag.Component->Display(pinball::get_rc_string(129, 0), 4.0);
+			mission_text_box->Display(pinball::get_rc_string(129, 0), 4.0);
 			int addedScore = SpecialAddScore(750000);
 			snprintf(Buffer, sizeof Buffer, pinball::get_rc_string(78, 0), addedScore);
 			if (!AddRankProgress(7))
 			{
-				control_mission_text_box_tag.Component->Display(Buffer, 8.0);
-				control_soundwave9_tag.Component->Play();
+				mission_text_box->Display(Buffer, 8.0);
+				soundwave9->Play();
 			}
 			break;
 		}
 	case 66:
-		control_lite20_tag.Component->Message(20, 0.0);
-		control_lite19_tag.Component->Message(20, 0.0);
-		control_lite56_tag.Component->MessageField = 1;
+		lite20->Message(20, 0.0);
+		lite19->Message(20, 0.0);
+		lite56->MessageField = 1;
 		break;
 	case 67:
 		if (light_on(&control_lite20_tag))
 		{
-			control_mission_text_box_tag.Component->Display(pinball::get_rc_string(128, 0), -1.0);
+			mission_text_box->Display(pinball::get_rc_string(128, 0), -1.0);
 			if (light_on(&control_lite303_tag))
-				control_lite303_tag.Component->Message(20, 0.0);
+				lite303->Message(20, 0.0);
 			if (!light_on(&control_lite304_tag))
 			{
-				control_lite304_tag.Component->Message(7, 0.0);
+				lite304->Message(7, 0.0);
 			}
 		}
 		else
 		{
-			control_mission_text_box_tag.Component->Display(pinball::get_rc_string(127, 0), -1.0);
+			mission_text_box->Display(pinball::get_rc_string(127, 0), -1.0);
 			if (light_on(&control_lite304_tag))
-				control_lite304_tag.Component->Message(20, 0.0);
+				lite304->Message(20, 0.0);
 			if (!light_on(&control_lite303_tag))
 			{
-				control_lite303_tag.Component->Message(7, 0.0);
+				lite303->Message(7, 0.0);
 			}
 		}
 		break;
@@ -3540,36 +3768,36 @@ void control::SatelliteController(int code, TPinballComponent* caller)
 	{
 		if (code == 66)
 		{
-			control_lite56_tag.Component->MessageField = 3;
-			control_lite308_tag.Component->Message(7, 0.0);
+			lite56->MessageField = 3;
+			lite308->Message(7, 0.0);
 		}
 		else if (code != 67)
 		{
 			return;
 		}
-		snprintf(Buffer, sizeof Buffer, pinball::get_rc_string(132, 0), control_lite56_tag.Component->MessageField);
-		control_mission_text_box_tag.Component->Display(Buffer, -1.0);
+		snprintf(Buffer, sizeof Buffer, pinball::get_rc_string(132, 0), lite56->MessageField);
+		mission_text_box->Display(Buffer, -1.0);
 		return;
 	}
-	if (control_bump4_tag.Component == caller)
+	if (bump4 == caller)
 	{
-		control_lite56_tag.Component->MessageField = control_lite56_tag.Component->MessageField - 1;
-		if (control_lite56_tag.Component->MessageField)
+		lite56->MessageField = lite56->MessageField - 1;
+		if (lite56->MessageField)
 		{
 			MissionControl(67, caller);
 		}
 		else
 		{
-			control_lite308_tag.Component->Message(20, 0.0);
-			control_lite198_tag.Component->MessageField = 1;
+			lite308->Message(20, 0.0);
+			lite198->MessageField = 1;
 			MissionControl(66, nullptr);
-			control_mission_text_box_tag.Component->Display(pinball::get_rc_string(133, 0), 4.0);
+			mission_text_box->Display(pinball::get_rc_string(133, 0), 4.0);
 			int addedScore = SpecialAddScore(1250000);
 			snprintf(Buffer, sizeof Buffer, pinball::get_rc_string(78, 0), addedScore);
 			if (!AddRankProgress(9))
 			{
-				control_mission_text_box_tag.Component->Display(Buffer, 8.0);
-				control_soundwave9_tag.Component->Play();
+				mission_text_box->Display(Buffer, 8.0);
+				soundwave9->Play();
 			}
 		}
 	}
@@ -3583,66 +3811,66 @@ void control::ScienceMissionController(int code, TPinballComponent* caller)
 	{
 		if (code == 66)
 		{
-			control_lite56_tag.Component->MessageField = 9;
-			control_target1_tag.Component->MessageField = 0;
-			control_target1_tag.Component->Message(50, 0.0);
-			control_target2_tag.Component->MessageField = 0;
-			control_target2_tag.Component->Message(50, 0.0);
-			control_target3_tag.Component->MessageField = 0;
-			control_target3_tag.Component->Message(50, 0.0);
-			control_target6_tag.Component->MessageField = 0;
-			control_target6_tag.Component->Message(50, 0.0);
-			control_target5_tag.Component->MessageField = 0;
-			control_target5_tag.Component->Message(50, 0.0);
-			control_target4_tag.Component->MessageField = 0;
-			control_target4_tag.Component->Message(50, 0.0);
-			control_target9_tag.Component->MessageField = 0;
-			control_target9_tag.Component->Message(50, 0.0);
-			control_target8_tag.Component->MessageField = 0;
-			control_target8_tag.Component->Message(50, 0.0);
-			control_target7_tag.Component->MessageField = 0;
-			control_target7_tag.Component->Message(50, 0.0);
-			control_lite303_tag.Component->Message(7, 0.0);
-			control_lite309_tag.Component->Message(7, 0.0);
-			control_lite315_tag.Component->Message(7, 0.0);
+			lite56->MessageField = 9;
+			target1->MessageField = 0;
+			target1->Message(50, 0.0);
+			target2->MessageField = 0;
+			target2->Message(50, 0.0);
+			target3->MessageField = 0;
+			target3->Message(50, 0.0);
+			target6->MessageField = 0;
+			target6->Message(50, 0.0);
+			target5->MessageField = 0;
+			target5->Message(50, 0.0);
+			target4->MessageField = 0;
+			target4->Message(50, 0.0);
+			target9->MessageField = 0;
+			target9->Message(50, 0.0);
+			target8->MessageField = 0;
+			target8->Message(50, 0.0);
+			target7->MessageField = 0;
+			target7->Message(50, 0.0);
+			lite303->Message(7, 0.0);
+			lite309->Message(7, 0.0);
+			lite315->Message(7, 0.0);
 		}
 		else if (code != 67)
 		{
 			return;
 		}
-		snprintf(Buffer, sizeof Buffer, pinball::get_rc_string(114, 0), control_lite56_tag.Component->MessageField);
-		control_mission_text_box_tag.Component->Display(Buffer, -1.0);
+		snprintf(Buffer, sizeof Buffer, pinball::get_rc_string(114, 0), lite56->MessageField);
+		mission_text_box->Display(Buffer, -1.0);
 		return;
 	}
-	if (control_target1_tag.Component == caller
-		|| control_target2_tag.Component == caller
-		|| control_target3_tag.Component == caller
-		|| control_target6_tag.Component == caller
-		|| control_target5_tag.Component == caller
-		|| control_target4_tag.Component == caller
-		|| control_target9_tag.Component == caller
-		|| control_target8_tag.Component == caller
-		|| control_target7_tag.Component == caller)
+	if (target1 == caller
+		|| target2 == caller
+		|| target3 == caller
+		|| target6 == caller
+		|| target5 == caller
+		|| target4 == caller
+		|| target9 == caller
+		|| target8 == caller
+		|| target7 == caller)
 	{
-		control_lite56_tag.Component->MessageField = control_lite56_tag.Component->MessageField - 1;
-		if (control_lite56_tag.Component->MessageField)
+		lite56->MessageField = lite56->MessageField - 1;
+		if (lite56->MessageField)
 		{
 			MissionControl(67, caller);
 		}
 		else
 		{
-			control_lite303_tag.Component->Message(20, 0.0);
-			control_lite309_tag.Component->Message(20, 0.0);
-			control_lite315_tag.Component->Message(20, 0.0);
-			control_lite198_tag.Component->MessageField = 1;
+			lite303->Message(20, 0.0);
+			lite309->Message(20, 0.0);
+			lite315->Message(20, 0.0);
+			lite198->MessageField = 1;
 			MissionControl(66, nullptr);
-			control_mission_text_box_tag.Component->Display(pinball::get_rc_string(115, 0), 4.0);
+			mission_text_box->Display(pinball::get_rc_string(115, 0), 4.0);
 			int addedScore = SpecialAddScore(750000);
 			snprintf(Buffer, sizeof Buffer, pinball::get_rc_string(78, 0), addedScore);
 			if (!AddRankProgress(9))
 			{
-				control_mission_text_box_tag.Component->Display(Buffer, 8.0);
-				control_soundwave9_tag.Component->Play();
+				mission_text_box->Display(Buffer, 8.0);
+				soundwave9->Play();
 			}
 		}
 	}
@@ -3656,30 +3884,30 @@ void control::SecretMissionGreenController(int code, TPinballComponent* caller)
 	{
 		if (code == 66)
 		{
-			control_lite6_tag.Component->Message(19, 0.0);
-			control_lite2_tag.Component->Message(11, 1.0);
-			control_lite2_tag.Component->Message(19, 0.0);
-			control_lite2_tag.Component->Message(7, 0.0);
+			lite6->Message(19, 0.0);
+			lite2->Message(11, 1.0);
+			lite2->Message(19, 0.0);
+			lite2->Message(7, 0.0);
 		}
 		else if (code != 67)
 		{
 			return;
 		}
 		char* v2 = pinball::get_rc_string(144, 0);
-		control_mission_text_box_tag.Component->Display(v2, -1.0);
+		mission_text_box->Display(v2, -1.0);
 		return;
 	}
-	if (control_sink2_tag.Component == caller)
+	if (sink2 == caller)
 	{
-		control_lite198_tag.Component->MessageField = 1;
+		lite198->MessageField = 1;
 		MissionControl(66, nullptr);
-		control_mission_text_box_tag.Component->Display(pinball::get_rc_string(145, 0), 4.0);
+		mission_text_box->Display(pinball::get_rc_string(145, 0), 4.0);
 		int addedScore = SpecialAddScore(1500000);
 		snprintf(Buffer, sizeof Buffer, pinball::get_rc_string(78, 0), addedScore);
 		if (!AddRankProgress(10))
 		{
-			control_mission_text_box_tag.Component->Display(Buffer, 8.0);
-			control_soundwave9_tag.Component->Play();
+			mission_text_box->Display(Buffer, 8.0);
+			soundwave9->Play();
 		}
 	}
 }
@@ -3690,21 +3918,21 @@ void control::SecretMissionRedController(int code, TPinballComponent* caller)
 	{
 		if (code == 66)
 		{
-			control_lite5_tag.Component->Message(19, 0.0);
-			control_lite4_tag.Component->Message(11, 2.0);
-			control_lite4_tag.Component->Message(19, 0.0);
-			control_lite4_tag.Component->Message(7, 0.0);
+			lite5->Message(19, 0.0);
+			lite4->Message(11, 2.0);
+			lite4->Message(19, 0.0);
+			lite4->Message(7, 0.0);
 		}
 		else if (code != 67)
 		{
 			return;
 		}
-		control_mission_text_box_tag.Component->Display(pinball::get_rc_string(143, 0), -1.0);
+		mission_text_box->Display(pinball::get_rc_string(143, 0), -1.0);
 		return;
 	}
-	if (control_sink1_tag.Component == caller)
+	if (sink1 == caller)
 	{
-		control_lite198_tag.Component->MessageField = 23;
+		lite198->MessageField = 23;
 		MissionControl(66, nullptr);
 	}
 }
@@ -3715,25 +3943,25 @@ void control::SecretMissionYellowController(int code, TPinballComponent* caller)
 	{
 		if (code == 66)
 		{
-			control_worm_hole_lights_tag.Component->Message(20, 0.0);
-			control_bsink_arrow_lights_tag.Component->Message(20, 0.0);
-			control_bsink_arrow_lights_tag.Component->Message(23, 0.0);
-			control_lite110_tag.Component->Message(20, 0.0);
-			control_lite7_tag.Component->Message(19, 0.0);
-			control_lite3_tag.Component->Message(11, 0.0);
-			control_lite3_tag.Component->Message(19, 0.0);
-			control_lite3_tag.Component->Message(7, 0.0);
+			worm_hole_lights->Message(20, 0.0);
+			bsink_arrow_lights->Message(20, 0.0);
+			bsink_arrow_lights->Message(23, 0.0);
+			lite110->Message(20, 0.0);
+			lite7->Message(19, 0.0);
+			lite3->Message(11, 0.0);
+			lite3->Message(19, 0.0);
+			lite3->Message(7, 0.0);
 		}
 		else if (code != 67)
 		{
 			return;
 		}
-		control_mission_text_box_tag.Component->Display(pinball::get_rc_string(142, 0), -1.0);
+		mission_text_box->Display(pinball::get_rc_string(142, 0), -1.0);
 		return;
 	}
-	if (control_sink3_tag.Component == caller)
+	if (sink3 == caller)
 	{
-		control_lite198_tag.Component->MessageField = 22;
+		lite198->MessageField = 22;
 		MissionControl(66, nullptr);
 	}
 }
@@ -3746,52 +3974,52 @@ void control::SelectMissionController(int code, TPinballComponent* caller)
 	{
 	case 45:
 	case 47:
-		if (control_fuel_bargraph_tag.Component != caller)
+		if (fuel_bargraph != caller)
 			return;
 		MissionControl(67, caller);
 		return;
 	case 63:
 		{
 			int missionLevel = 0;
-			if (control_target13_tag.Component == caller)
+			if (target13 == caller)
 				missionLevel = 1;
-			if (control_target14_tag.Component == caller)
+			if (target14 == caller)
 				missionLevel = 2;
-			if (control_target15_tag.Component == caller)
+			if (target15 == caller)
 				missionLevel = 3;
 			if (!missionLevel)
 			{
-				if (control_ramp_tag.Component == caller
+				if (ramp == caller
 					&& light_on(&control_lite56_tag)
-					&& control_fuel_bargraph_tag.Component->Message(37, 0.0))
+					&& fuel_bargraph->Message(37, 0.0))
 				{
-					control_lite56_tag.Component->Message(20, 0.0);
-					control_lite198_tag.Component->Message(19, 0.0);
-					control_outer_circle_tag.Component->Message(26, -1.0);
+					lite56->Message(20, 0.0);
+					lite198->Message(19, 0.0);
+					outer_circle->Message(26, -1.0);
 					if (light_on(&control_lite317_tag))
-						control_lite317_tag.Component->Message(20, 0.0);
+						lite317->Message(20, 0.0);
 					if (light_on(&control_lite318_tag))
-						control_lite318_tag.Component->Message(20, 0.0);
+						lite318->Message(20, 0.0);
 					if (light_on(&control_lite319_tag))
-						control_lite319_tag.Component->Message(20, 0.0);
-					control_lite198_tag.Component->MessageField = control_lite56_tag.Component->MessageField;
-					auto scoreId = control_lite56_tag.Component->MessageField - 2;
+						lite319->Message(20, 0.0);
+					lite198->MessageField = lite56->MessageField;
+					auto scoreId = lite56->MessageField - 2;
 					MissionControl(66, nullptr);
 					int addedScore = SpecialAddScore(mission_select_scores[scoreId]);
 					snprintf(Buffer, sizeof Buffer, pinball::get_rc_string(77, 0), addedScore);
-					control_mission_text_box_tag.Component->Display(Buffer, 4.0);
+					mission_text_box->Display(Buffer, 4.0);
 				}
 				return;
 			}
 
-			if (control_lite101_tag.Component->MessageField == 7)
+			if (lite101->MessageField == 7)
 			{
-				control_lite101_tag.Component->MessageField = 0;
+				lite101->MessageField = 0;
 				missionLevel = 4;
 			}
 
 			int missionId;
-			auto activeCount = control_middle_circle_tag.Component->Message(37, 0.0);
+			auto activeCount = middle_circle->Message(37, 0.0);
 			switch (activeCount)
 			{
 			case 1:
@@ -3886,25 +4114,25 @@ void control::SelectMissionController(int code, TPinballComponent* caller)
 			default:
 				return;
 			}
-			control_lite56_tag.Component->MessageField = missionId;
-			control_lite56_tag.Component->Message(15, 2.0);
-			control_lite198_tag.Component->Message(4, 0.0);
+			lite56->MessageField = missionId;
+			lite56->Message(15, 2.0);
+			lite198->Message(4, 0.0);
 			MissionControl(67, caller);
 			return;
 		}
 	case 66:
-		control_lite198_tag.Component->Message(20, 0.0);
-		control_outer_circle_tag.Component->Message(34, 0.0);
-		control_ramp_tgt_lights_tag.Component->Message(20, 0.0);
-		control_lite56_tag.Component->MessageField = 0;
-		control_lite101_tag.Component->MessageField = 0;
-		control_l_trek_lights_tag.Component->Message(34, 0.0);
-		control_l_trek_lights_tag.Component->Message(20, 0.0);
-		control_r_trek_lights_tag.Component->Message(34, 0.0);
-		control_r_trek_lights_tag.Component->Message(20, 0.0);
-		control_goal_lights_tag.Component->Message(20, 0.0);
-		control_worm_hole_lights_tag.Component->Message(20, 0.0);
-		control_bsink_arrow_lights_tag.Component->Message(20, 0.0);
+		lite198->Message(20, 0.0);
+		outer_circle->Message(34, 0.0);
+		ramp_tgt_lights->Message(20, 0.0);
+		lite56->MessageField = 0;
+		lite101->MessageField = 0;
+		l_trek_lights->Message(34, 0.0);
+		l_trek_lights->Message(20, 0.0);
+		r_trek_lights->Message(34, 0.0);
+		r_trek_lights->Message(20, 0.0);
+		goal_lights->Message(20, 0.0);
+		worm_hole_lights->Message(20, 0.0);
+		bsink_arrow_lights->Message(20, 0.0);
 		break;
 	case 67:
 		break;
@@ -3912,44 +4140,43 @@ void control::SelectMissionController(int code, TPinballComponent* caller)
 		return;
 	}
 
-	if (control_fuel_bargraph_tag.Component->Message(37, 0.0))
+	if (fuel_bargraph->Message(37, 0.0))
 	{
 		if (light_on(&control_lite56_tag))
 		{
-			auto missionText = pinball::
-				get_rc_string(MissionRcArray[control_lite56_tag.Component->MessageField - 2], 1);
+			auto missionText = pinball::get_rc_string(MissionRcArray[lite56->MessageField - 2], 1);
 			snprintf(Buffer, sizeof Buffer, pinball::get_rc_string(106, 0), missionText);
-			control_mission_text_box_tag.Component->Display(Buffer, -1.0);
+			mission_text_box->Display(Buffer, -1.0);
 			if (light_on(&control_lite318_tag))
-				control_lite318_tag.Component->Message(20, 0.0);
+				lite318->Message(20, 0.0);
 			if (light_on(&control_lite319_tag))
-				control_lite319_tag.Component->Message(20, 0.0);
+				lite319->Message(20, 0.0);
 			if (!light_on(&control_lite317_tag))
-				control_lite317_tag.Component->Message(7, 0.0);
+				lite317->Message(7, 0.0);
 		}
 		else
 		{
-			control_mission_text_box_tag.Component->Display(pinball::get_rc_string(104, 0), -1.0);
+			mission_text_box->Display(pinball::get_rc_string(104, 0), -1.0);
 			if (light_on(&control_lite317_tag))
-				control_lite317_tag.Component->Message(20, 0.0);
+				lite317->Message(20, 0.0);
 			if (light_on(&control_lite318_tag))
-				control_lite318_tag.Component->Message(20, 0.0);
+				lite318->Message(20, 0.0);
 			if (!light_on(&control_lite319_tag))
 			{
-				control_lite319_tag.Component->Message(7, 0.0);
+				lite319->Message(7, 0.0);
 			}
 		}
 	}
 	else
 	{
-		control_mission_text_box_tag.Component->Display(pinball::get_rc_string(105, 0), -1.0);
+		mission_text_box->Display(pinball::get_rc_string(105, 0), -1.0);
 		if (light_on(&control_lite317_tag))
-			control_lite317_tag.Component->Message(20, 0.0);
+			lite317->Message(20, 0.0);
 		if (light_on(&control_lite319_tag))
-			control_lite319_tag.Component->Message(20, 0.0);
+			lite319->Message(20, 0.0);
 		if (!light_on(&control_lite318_tag))
 		{
-			control_lite318_tag.Component->Message(7, 0.0);
+			lite318->Message(7, 0.0);
 		}
 	}
 }
@@ -3960,33 +4187,33 @@ void control::SpaceRadiationController(int code, TPinballComponent* caller)
 
 	if (code == 63)
 	{
-		if (control_target16_tag.Component == caller
-			|| control_target17_tag.Component == caller
-			|| control_target18_tag.Component == caller)
+		if (target16 == caller
+			|| target17 == caller
+			|| target18 == caller)
 		{
-			if (control_lite104_tag.Component->MessageField == 7)
+			if (lite104->MessageField == 7)
 			{
-				control_lite104_tag.Component->MessageField = 15;
-				control_bsink_arrow_lights_tag.Component->Message(7, 0.0);
-				control_lite313_tag.Component->Message(20, 0.0);
+				lite104->MessageField = 15;
+				bsink_arrow_lights->Message(7, 0.0);
+				lite313->Message(20, 0.0);
 				MissionControl(67, caller);
 				AdvanceWormHoleDestination(1);
 			}
 		}
-		else if ((control_sink1_tag.Component == caller
-				|| control_sink2_tag.Component == caller
-				|| control_sink3_tag.Component == caller)
-			&& control_lite104_tag.Component->MessageField == 15)
+		else if ((sink1 == caller
+				|| sink2 == caller
+				|| sink3 == caller)
+			&& lite104->MessageField == 15)
 		{
-			control_lite198_tag.Component->MessageField = 1;
+			lite198->MessageField = 1;
 			MissionControl(66, nullptr);
-			control_mission_text_box_tag.Component->Display(pinball::get_rc_string(121, 0), 4.0);
+			mission_text_box->Display(pinball::get_rc_string(121, 0), 4.0);
 			int addedScore = SpecialAddScore(1000000);
 			snprintf(Buffer, sizeof Buffer, pinball::get_rc_string(78, 0), addedScore);
 			if (!AddRankProgress(8))
 			{
-				control_mission_text_box_tag.Component->Display(Buffer, 8.0);
-				control_soundwave9_tag.Component->Play();
+				mission_text_box->Display(Buffer, 8.0);
+				soundwave9->Play();
 			}
 		}
 	}
@@ -3994,18 +4221,18 @@ void control::SpaceRadiationController(int code, TPinballComponent* caller)
 	{
 		if (code == 66)
 		{
-			control_lchute_tgt_lights_tag.Component->Message(20, 0.0);
-			control_lite104_tag.Component->MessageField = 0;
-			control_lite313_tag.Component->Message(7, 0.0);
+			lchute_tgt_lights->Message(20, 0.0);
+			lite104->MessageField = 0;
+			lite313->Message(7, 0.0);
 		}
 		else if (code == 67)
 		{
 			char* text;
-			if (control_lite104_tag.Component->MessageField == 15)
+			if (lite104->MessageField == 15)
 				text = pinball::get_rc_string(120, 0);
 			else
 				text = pinball::get_rc_string(176, 0);
-			control_mission_text_box_tag.Component->Display(text, -1.0);
+			mission_text_box->Display(text, -1.0);
 		}
 	}
 }
@@ -4016,30 +4243,30 @@ void control::StrayCometController(int code, TPinballComponent* caller)
 
 	if (code == 63)
 	{
-		if (control_target19_tag.Component == caller
-			|| control_target20_tag.Component == caller
-			|| control_target21_tag.Component == caller)
+		if (target19 == caller
+			|| target20 == caller
+			|| target21 == caller)
 		{
-			if (control_lite107_tag.Component->MessageField == 7)
+			if (lite107->MessageField == 7)
 			{
-				control_lite306_tag.Component->Message(20, 0.0);
-				control_lite304_tag.Component->Message(7, 0.0);
-				control_lite107_tag.Component->MessageField = 15;
+				lite306->Message(20, 0.0);
+				lite304->Message(7, 0.0);
+				lite107->MessageField = 15;
 				MissionControl(67, caller);
 			}
 		}
-		else if (control_kickout2_tag.Component == caller && control_lite107_tag.Component->MessageField == 15)
+		else if (kickout2 == caller && lite107->MessageField == 15)
 		{
-			control_lite304_tag.Component->Message(20, 0.0);
-			control_lite198_tag.Component->MessageField = 1;
+			lite304->Message(20, 0.0);
+			lite198->MessageField = 1;
 			MissionControl(66, nullptr);
-			control_mission_text_box_tag.Component->Display(pinball::get_rc_string(119, 0), 4.0);
+			mission_text_box->Display(pinball::get_rc_string(119, 0), 4.0);
 			int addedScore = SpecialAddScore(1000000);
 			snprintf(Buffer, sizeof Buffer, pinball::get_rc_string(78, 0), addedScore);
 			if (!AddRankProgress(8))
 			{
-				control_mission_text_box_tag.Component->Display(Buffer, 8.0);
-				control_soundwave9_tag.Component->Play();
+				mission_text_box->Display(Buffer, 8.0);
+				soundwave9->Play();
 			}
 		}
 	}
@@ -4047,18 +4274,18 @@ void control::StrayCometController(int code, TPinballComponent* caller)
 	{
 		if (code == 66)
 		{
-			control_bpr_solotgt_lights_tag.Component->Message(20, 0.0);
-			control_lite107_tag.Component->MessageField = 0;
-			control_lite306_tag.Component->Message(7, 0.0);
+			bpr_solotgt_lights->Message(20, 0.0);
+			lite107->MessageField = 0;
+			lite306->Message(7, 0.0);
 		}
 		else if (code == 67)
 		{
 			char* text;
-			if (control_lite107_tag.Component->MessageField == 15)
+			if (lite107->MessageField == 15)
 				text = pinball::get_rc_string(118, 0);
 			else
 				text = pinball::get_rc_string(117, 0);
-			control_mission_text_box_tag.Component->Display(text, -1.0);
+			mission_text_box->Display(text, -1.0);
 		}
 	}
 }
@@ -4071,33 +4298,33 @@ void control::TimeWarpController(int code, TPinballComponent* caller)
 	{
 		if (code == 66)
 		{
-			control_lite56_tag.Component->MessageField = 25;
-			control_lite300_tag.Component->Message(7, 0.0);
-			control_lite322_tag.Component->Message(7, 0.0);
+			lite56->MessageField = 25;
+			lite300->Message(7, 0.0);
+			lite322->Message(7, 0.0);
 		}
 		else if (code != 67)
 		{
 			return;
 		}
-		snprintf(Buffer, sizeof Buffer, pinball::get_rc_string(146, 0), control_lite56_tag.Component->MessageField);
-		control_mission_text_box_tag.Component->Display(Buffer, -1.0);
+		snprintf(Buffer, sizeof Buffer, pinball::get_rc_string(146, 0), lite56->MessageField);
+		mission_text_box->Display(Buffer, -1.0);
 		return;
 	}
-	if (control_rebo1_tag.Component == caller
-		|| control_rebo2_tag.Component == caller
-		|| control_rebo3_tag.Component == caller
-		|| control_rebo4_tag.Component == caller)
+	if (rebo1 == caller
+		|| rebo2 == caller
+		|| rebo3 == caller
+		|| rebo4 == caller)
 	{
-		control_lite56_tag.Component->MessageField = control_lite56_tag.Component->MessageField - 1;
-		if (control_lite56_tag.Component->MessageField)
+		lite56->MessageField = lite56->MessageField - 1;
+		if (lite56->MessageField)
 		{
 			MissionControl(67, caller);
 		}
 		else
 		{
-			control_lite300_tag.Component->Message(20, 0.0);
-			control_lite322_tag.Component->Message(20, 0.0);
-			control_lite198_tag.Component->MessageField = 24;
+			lite300->Message(20, 0.0);
+			lite322->Message(20, 0.0);
+			lite198->MessageField = 24;
 			MissionControl(66, nullptr);
 		}
 	}
@@ -4111,59 +4338,59 @@ void control::TimeWarpPartTwoController(int code, TPinballComponent* caller)
 	{
 		if (code == 66)
 		{
-			control_lite55_tag.Component->Message(7, -1.0);
-			control_lite26_tag.Component->Message(7, -1.0);
-			control_lite304_tag.Component->Message(7, 0.0);
-			control_lite317_tag.Component->Message(7, 0.0);
+			lite55->Message(7, -1.0);
+			lite26->Message(7, -1.0);
+			lite304->Message(7, 0.0);
+			lite317->Message(7, 0.0);
 		}
 		else if (code != 67)
 		{
 			return;
 		}
-		control_mission_text_box_tag.Component->Display(pinball::get_rc_string(147, 0), -1.0);
+		mission_text_box->Display(pinball::get_rc_string(147, 0), -1.0);
 		return;
 	}
-	if (control_kickout2_tag.Component == caller)
+	if (kickout2 == caller)
 	{
-		control_mission_text_box_tag.Component->Display(pinball::get_rc_string(47, 0), 4.0);
-		if (control_middle_circle_tag.Component->Message(37, 0.0) > 1)
+		mission_text_box->Display(pinball::get_rc_string(47, 0), 4.0);
+		if (middle_circle->Message(37, 0.0) > 1)
 		{
-			control_middle_circle_tag.Component->Message(33, 5.0);
-			int rank = control_middle_circle_tag.Component->Message(37, 0.0);
+			middle_circle->Message(33, 5.0);
+			int rank = middle_circle->Message(37, 0.0);
 			snprintf(Buffer, sizeof Buffer, pinball::get_rc_string(174, 0), pinball::get_rc_string(RankRcArray[rank - 1], 1));
-			control_mission_text_box_tag.Component->Display(Buffer, 8.0);
+			mission_text_box->Display(Buffer, 8.0);
 		}
 	}
 	else
 	{
-		if (control_ramp_tag.Component != caller)
+		if (ramp != caller)
 			return;
-		control_mission_text_box_tag.Component->Display(pinball::get_rc_string(46, 0), 4.0);
-		if (control_middle_circle_tag.Component->Message(37, 0.0) < 9)
+		mission_text_box->Display(pinball::get_rc_string(46, 0), 4.0);
+		if (middle_circle->Message(37, 0.0) < 9)
 		{
-			int rank = control_middle_circle_tag.Component->Message(37, 0.0);
-			control_middle_circle_tag.Component->Message(41, 5.0);
+			int rank = middle_circle->Message(37, 0.0);
+			middle_circle->Message(41, 5.0);
 			snprintf(Buffer, sizeof Buffer, pinball::get_rc_string(173, 0), pinball::get_rc_string(RankRcArray[rank], 1));
 		}
 		if (!AddRankProgress(12))
 		{
-			control_mission_text_box_tag.Component->Display(Buffer, 8.0);
-			control_soundwave10_tag.Component->Play();
+			mission_text_box->Display(Buffer, 8.0);
+			soundwave10->Play();
 		}
 	}
 	SpecialAddScore(2000000);
-	control_lite55_tag.Component->Message(20, 0.0);
-	control_lite26_tag.Component->Message(20, 0.0);
-	control_lite304_tag.Component->Message(20, 0.0);
-	control_lite317_tag.Component->Message(20, 0.0);
-	control_lite198_tag.Component->MessageField = 1;
+	lite55->Message(20, 0.0);
+	lite26->Message(20, 0.0);
+	lite304->Message(20, 0.0);
+	lite317->Message(20, 0.0);
+	lite198->MessageField = 1;
 	MissionControl(66, nullptr);
 	// SpecialAddScore sets the score dirty flag. So next tick it will be redrawn.
 }
 
 void control::UnselectMissionController(int code, TPinballComponent* caller)
 {
-	control_lite198_tag.Component->MessageField = 1;
+	lite198->MessageField = 1;
 	MissionControl(66, nullptr);
 }
 
@@ -4172,18 +4399,18 @@ void control::WaitingDeploymentController(int code, TPinballComponent* caller)
 	switch (code)
 	{
 	case 63:
-		if (control_oneway4_tag.Component == caller || control_oneway10_tag.Component == caller)
+		if (oneway4 == caller || oneway10 == caller)
 		{
-			control_lite198_tag.Component->MessageField = 1;
+			lite198->MessageField = 1;
 			MissionControl(66, nullptr);
 		}
 		break;
 	case 66:
-		control_mission_text_box_tag.Component->Clear();
+		mission_text_box->Clear();
 		waiting_deployment_flag = 0;
 		break;
 	case 67:
-		control_mission_text_box_tag.Component->Display(pinball::get_rc_string(50, 0), -1.0);
+		mission_text_box->Display(pinball::get_rc_string(50, 0), -1.0);
 		break;
 	default:
 		break;
