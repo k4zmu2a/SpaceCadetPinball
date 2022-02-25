@@ -35,7 +35,7 @@ splash_struct* splash::splash_screen(HINSTANCE hInstance, LPCSTR bmpName1, LPCST
 		RegisterClassA(&WndClass);
 	}
 	splashStruct->Bitmap = nullptr;
-	HWND windowHandle = CreateWindowExA(0, "3DPB_SPLASH_CLASS", "", 0x80000000, -10, -10, 1, 1,
+	HWND windowHandle = CreateWindowExA(0, "3DPB_SPLASH_CLASS", "", WS_POPUP, -10, -10, 1, 1,
 	                                    nullptr, nullptr, HInstance, nullptr);
 	splashStruct->WindowHandle = windowHandle;
 	if (!windowHandle)
@@ -44,7 +44,7 @@ splash_struct* splash::splash_screen(HINSTANCE hInstance, LPCSTR bmpName1, LPCST
 		return nullptr;
 	}
 
-	SetWindowLongPtrA(windowHandle, -21, reinterpret_cast<LONG_PTR>(splashStruct));
+	SetWindowLongPtrA(windowHandle, GWLP_USERDATA, reinterpret_cast<LONG_PTR>(splashStruct));
 	GetWindowRect(GetDesktopWindow(), &Rect);
 	splash_bitmap_setup(splashStruct);
 	//MoveWindow(splashStruct->WindowHandle, 0, 0, Rect.right - Rect.left, Rect.bottom - Rect.top, 0);
@@ -280,7 +280,7 @@ LRESULT splash::splash_message_handler(HWND hWnd, UINT Msg, WPARAM wParam, LPARA
 	{
 	case WM_PAINT:
 		{
-			auto splashStruct = reinterpret_cast<splash_struct*>(GetWindowLongPtrA(hWnd, -21));
+			auto splashStruct = reinterpret_cast<splash_struct*>(GetWindowLongPtrA(hWnd, GWLP_USERDATA));
 			BeginPaint(hWnd, &Paint);
 			EndPaint(hWnd, &Paint);
 			auto dc = GetDC(hWnd);

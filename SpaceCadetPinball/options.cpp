@@ -317,7 +317,7 @@ void options::set_int(LPCSTR optPath, LPCSTR lpValueName, int data)
 	auto regPath = path(optPath);
 	if (!RegCreateKeyExA(HKEY_CURRENT_USER, regPath, 0, nullptr, 0, KEY_ALL_ACCESS, nullptr, &hKey, &dwDisposition))
 	{
-		RegSetValueExA(hKey, lpValueName, 0, 4u, reinterpret_cast<LPBYTE>(&data), 4u);
+		RegSetValueExA(hKey, lpValueName, 0, REG_DWORD, reinterpret_cast<LPBYTE>(&data), 4u);
 		RegCloseKey(hKey);
 	}
 	path_free();
@@ -353,7 +353,7 @@ void options::set_string(LPCSTR optPath, LPCSTR lpValueName, LPCSTR value)
 	auto regPath = path(optPath);
 	if (!RegCreateKeyExA(HKEY_CURRENT_USER, regPath, 0, nullptr, 0, KEY_ALL_ACCESS, nullptr, &hKey, &dwDisposition))
 	{
-		RegSetValueExA(hKey, lpValueName, 0, 1u, LPBYTE(value), lstrlenA(value) + 1);
+		RegSetValueExA(hKey, lpValueName, 0, REG_SZ, LPBYTE(value), lstrlenA(value) + 1);
 		RegCloseKey(hKey);
 	}
 	path_free();

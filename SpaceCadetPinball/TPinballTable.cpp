@@ -236,7 +236,7 @@ TPinballComponent* TPinballTable::find_component(LPCSTR componentName)
 			}
 		}
 	}
-	MessageBoxA(nullptr, "Table cant find:", componentName, 0x2000u);
+	MessageBoxA(nullptr, "Table cant find:", componentName, MB_TASKMODAL);
 	return nullptr;
 }
 
@@ -254,7 +254,7 @@ TPinballComponent* TPinballTable::find_component(int groupIndex)
 		}
 	}
 	_itoa_s(groupIndex, Buffer, 10);
-	MessageBoxA(nullptr, "Table cant find (lh):", Buffer, 0x2000u);
+	MessageBoxA(nullptr, "Table cant find (lh):", Buffer, MB_TASKMODAL);
 	return nullptr;
 }
 

@@ -63,7 +63,7 @@ int loader::error(int errorCode, int captionCode)
 
 	if (!errorText)
 		errorText = loader_errors[index].Message;
-	MessageBoxA(nullptr, errorText, errorCaption, 0x2000u);
+	MessageBoxA(nullptr, errorText, errorCaption, MB_TASKMODAL);
 	return -1;
 }
 

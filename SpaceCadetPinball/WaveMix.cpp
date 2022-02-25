@@ -255,7 +255,7 @@ MIXWAVE* WaveMix::OpenWave(HANDLE hMixSession, LPCSTR szWaveFilename, HINSTANCE 
 	pwfx.nBlockAlign = globals->PCM.wf.nBlockAlign;
 	pwfx.wBitsPerSample = globals->PCM.wBitsPerSample;
 	pwfx.cbSize = 0;
-	if (waveOutOpen(&phwo, 0xFFFFFFFF, &pwfx, 0, 0, 1u))
+	if (waveOutOpen(&phwo, WAVE_MAPPER, &pwfx, 0, 0, WAVE_FORMAT_QUERY))
 	{
 		if (ShowDebugDialogs)
 			MessageBoxA(nullptr, "The waveform device can't play this format.", "WavMix32", MB_ICONWARNING);
@@ -304,7 +304,7 @@ MIXWAVE* WaveMix::OpenWave(HANDLE hMixSession, LPCSTR szWaveFilename, HINSTANCE 
 			pmmioinfo.cchBuffer = SizeofResource(hInst, hrsc);
 			pmmioinfo.fccIOProc = FOURCC_MEM;
 			pmmioinfo.adwInfo[0] = 0;
-			hMmio = mmioOpenA(nullptr, &pmmioinfo, 0);
+			hMmio = mmioOpenA(nullptr, &pmmioinfo, MMIO_READ);
 			if (!hMmio)
 			{
 				if (ShowDebugDialogs)
@@ -320,7 +320,7 @@ MIXWAVE* WaveMix::OpenWave(HANDLE hMixSession, LPCSTR szWaveFilename, HINSTANCE 
 		else if ((dwFlags & 4) != 0)
 		{
 			memcpy(&pmmioinfo, szWaveFilename, sizeof pmmioinfo);
-			hMmio = mmioOpenA(nullptr, &pmmioinfo, 0);
+			hMmio = mmioOpenA(nullptr, &pmmioinfo, MMIO_READ);
 			if (!hMmio)
 			{
 				if (ShowDebugDialogs)
@@ -335,7 +335,7 @@ MIXWAVE* WaveMix::OpenWave(HANDLE hMixSession, LPCSTR szWaveFilename, HINSTANCE 
 		}
 		else
 		{
-			hMmio = mmioOpenA(const_cast<LPSTR>(szWaveFilename), nullptr, 0x10000u);
+			hMmio = mmioOpenA(const_cast<LPSTR>(szWaveFilename), nullptr, MMIO_ALLOCBUF);
 			if (!hMmio)
 			{
 				if (ShowDebugDialogs)
@@ -919,7 +919,7 @@ void WaveMix::ShowWaveOutDevices()
 		MessageBoxA(nullptr, string_buffer, "WavMix32", MB_ICONINFORMATION);
 		for (auto uDeviceID = 0u; uDeviceID < deviceCount; ++uDeviceID)
 		{
-			if (!waveOutGetDevCapsA(uDeviceID, &pwoc, 0x34u) && RemoveInvalidIniNameCharacters(pwoc.szPname))
+			if (!waveOutGetDevCapsA(uDeviceID, &pwoc, sizeof(tagWAVEOUTCAPSA)) && RemoveInvalidIniNameCharacters(pwoc.szPname))
 				wsprintfA(
 					string_buffer,
 					"Device %i: %s\n\tVersion %u.%u",
@@ -977,7 +977,7 @@ int WaveMix::ReadConfigSettings(MIXCONFIG* lpConfig)
 	if (Globals->wDeviceID >= waveDeviceCount)
 		Globals->wDeviceID = 0;
 
-	if (waveOutGetDevCapsA(Globals->wDeviceID, &Globals->WaveoutCaps, 0x34u)
+	if (waveOutGetDevCapsA(Globals->wDeviceID, &Globals->WaveoutCaps, sizeof(tagWAVEOUTCAPSA))
 		|| !RemoveInvalidIniNameCharacters(Globals->WaveoutCaps.szPname))
 	{
 		lstrcpyA(Globals->WaveoutCaps.szPname, "Unkown Device");
@@ -1113,7 +1113,7 @@ int WaveMix::ReadRegistryForAppSpecificConfigs(MIXCONFIG* lpConfig)
 		lpConfig->PauseBlocks = static_cast<short>(ReadRegistryInt(phkResult, "PauseBlocks", defaultPauseBlocks));
 	}
 	lpConfig->dwFlags = 1023;
-	waveOutGetDevCapsA(lpConfig->wDeviceID, &Globals->WaveoutCaps, 0x34u);
+	waveOutGetDevCapsA(lpConfig->wDeviceID, &Globals->WaveoutCaps, sizeof(tagWAVEOUTCAPSA));
 	RegCloseKey(phkResult);
 	return 1;
 }
@@ -1138,7 +1138,7 @@ int WaveMix::DefaultGoodWavePos(unsigned uDeviceID)
 
 	auto deviceCount = waveOutGetNumDevs();
 	if (uDeviceID > deviceCount || (uDeviceID & 0x80000000) != 0 ||
-		!deviceCount || waveOutGetDevCapsA(uDeviceID, &pwoc, 0x34u))
+		!deviceCount || waveOutGetDevCapsA(uDeviceID, &pwoc, sizeof(tagWAVEOUTCAPSA)))
 	{
 		result = 0;
 	}
@@ -1213,7 +1213,7 @@ int WaveMix::Configure(GLOBALS* hMixSession, HWND hWndParent, MIXCONFIG* lpConfi
 	{
 		if (mixConfig->wDeviceID != globals->wDeviceID)
 		{
-			auto result = waveOutGetDevCapsA(mixConfig->wDeviceID, &pwoc, 0x34u);
+			auto result = waveOutGetDevCapsA(mixConfig->wDeviceID, &pwoc, sizeof(tagWAVEOUTCAPSA));
 			if (result)
 				return result;
 			memcpy(&Globals->WaveoutCaps, &pwoc, sizeof Globals->WaveoutCaps);
@@ -1821,17 +1821,17 @@ int WaveMix::Settings_OnInitDialog(HWND hWnd, WPARAM wParam, MIXCONFIG* lpMixcon
 	GetWindowTextA(hWnd, String, 256);
 	wsprintfA(string_buffer, String, 2, 81);
 	SetWindowTextA(hWnd, string_buffer);
-	SetWindowLongPtr(hWnd, -21, reinterpret_cast<LONG_PTR>(lpMixconfig));
-	SendMessageA(GetDlgItem(hWnd, 1000), 0xF1u, lpMixconfig->wChannels > 1u, 0);
-	SendMessageA(GetDlgItem(hWnd, 1001), 0xF1u, lpMixconfig->ResetMixDefaultFlag != 0, 0);
-	SendMessageA(GetDlgItem(hWnd, 1004), 0xF1u, lpMixconfig->GoodWavePos != 0, 0);
-	SendMessageA(GetDlgItem(hWnd, 1005), 0xF1u, lpMixconfig->CmixPtrDefaultFlag != 0, 0);
-	SendMessageA(GetDlgItem(hWnd, 1010), 0xF1u, lpMixconfig->ShowDebugDialogs != 0, 0);
+	SetWindowLongPtr(hWnd, GWLP_USERDATA, reinterpret_cast<LONG_PTR>(lpMixconfig));
+	SendMessageA(GetDlgItem(hWnd, 1000), BM_SETCHECK, lpMixconfig->wChannels > 1u, 0);
+	SendMessageA(GetDlgItem(hWnd, 1001), BM_SETCHECK, lpMixconfig->ResetMixDefaultFlag != 0, 0);
+	SendMessageA(GetDlgItem(hWnd, 1004), BM_SETCHECK, lpMixconfig->GoodWavePos != 0, 0);
+	SendMessageA(GetDlgItem(hWnd, 1005), BM_SETCHECK, lpMixconfig->CmixPtrDefaultFlag != 0, 0);
+	SendMessageA(GetDlgItem(hWnd, 1010), BM_SETCHECK, lpMixconfig->ShowDebugDialogs != 0, 0);
 	EnableWindow(GetDlgItem(hWnd, 1005), 0);
-	SendMessageA(GetDlgItem(hWnd, 1003), 0xC5u, 2u, 0);
-	SendMessageA(GetDlgItem(hWnd, 1007), 0xC5u, 4u, 0);
-	SendMessageA(GetDlgItem(hWnd, 1008), 0xC5u, 2u, 0);
-	SendMessageA(GetDlgItem(hWnd, 1011), 0xC5u, 2u, 0);
+	SendMessageA(GetDlgItem(hWnd, 1003), EM_LIMITTEXT, 2u, 0);
+	SendMessageA(GetDlgItem(hWnd, 1007), EM_LIMITTEXT, 4u, 0);
+	SendMessageA(GetDlgItem(hWnd, 1008), EM_LIMITTEXT, 2u, 0);
+	SendMessageA(GetDlgItem(hWnd, 1011), EM_LIMITTEXT, 2u, 0);
 	GetWindowTextA(GetDlgItem(hWnd, 1012), String, 100);
 	wsprintfA(string_buffer, String, 2, 10);
 	SetWindowTextA(GetDlgItem(hWnd, 1012), string_buffer);
@@ -1859,7 +1859,7 @@ int WaveMix::Settings_OnInitDialog(HWND hWnd, WPARAM wParam, MIXCONFIG* lpMixcon
 	{
 		do
 		{
-			MMRESULT getResult = waveOutGetDevCapsA(uDeviceID, &pwoc, 0x34u);
+			MMRESULT getResult = waveOutGetDevCapsA(uDeviceID, &pwoc, sizeof(tagWAVEOUTCAPSA));
 			if (getResult)
 			{
 				wsprintfA(string_buffer, "waveOutGetDevCaps failed (err %u) for device %d", getResult, uDeviceID);
@@ -1868,28 +1868,28 @@ int WaveMix::Settings_OnInitDialog(HWND hWnd, WPARAM wParam, MIXCONFIG* lpMixcon
 			else
 			{
 				wsprintfA(string_buffer, "%d: %s", uDeviceID, pwoc.szPname);
-				SendMessageA(GetDlgItem(hWnd, 1009), 0x143u, 0, (LPARAM)string_buffer);
+				SendMessageA(GetDlgItem(hWnd, 1009), CB_ADDSTRING, 0, (LPARAM)string_buffer);
 			}
 			++uDeviceID;
 		}
 		while (uDeviceID < deviceCount);
 	}
-	SendMessageA(GetDlgItem(hWnd, 1009), 0x14Eu, lpMixconfig->wDeviceID, 0);
+	SendMessageA(GetDlgItem(hWnd, 1009), CB_SETCURSEL, lpMixconfig->wDeviceID, 0);
 	return 1;
 }
 
 int WaveMix::Settings_OnCommand(HWND hWnd, int command, LPARAM lParam, int wParam)
 {
-	auto userData = reinterpret_cast<MIXCONFIG*>(GetWindowLongPtrA(hWnd, -21));
+	auto userData = reinterpret_cast<MIXCONFIG*>(GetWindowLongPtrA(hWnd, GWLP_USERDATA));
 	if (command == 1)
 	{
 		if (userData)
 		{
-			userData->wChannels = (SendMessageA(GetDlgItem(hWnd, 1000), 0xF0u, 0, 0) != 0) + 1;
-			userData->ResetMixDefaultFlag = SendMessageA(GetDlgItem(hWnd, 1001), 0xF0u, 0, 0) != 0;
-			userData->GoodWavePos = SendMessageA(GetDlgItem(hWnd, 1004), 0xF0u, 0, 0) != 0;
-			userData->ShowDebugDialogs = SendMessageA(GetDlgItem(hWnd, 1010), 0xF0u, 0, 0) != 0;
-			userData->CmixPtrDefaultFlag = SendMessageA(GetDlgItem(hWnd, 1005), 0xF0u, 0, 0) != 0;
+			userData->wChannels = (SendMessageA(GetDlgItem(hWnd, 1000), BM_GETCHECK, 0, 0) != 0) + 1;
+			userData->ResetMixDefaultFlag = SendMessageA(GetDlgItem(hWnd, 1001), BM_GETCHECK, 0, 0) != 0;
+			userData->GoodWavePos = SendMessageA(GetDlgItem(hWnd, 1004), BM_GETCHECK, 0, 0) != 0;
+			userData->ShowDebugDialogs = SendMessageA(GetDlgItem(hWnd, 1010), BM_GETCHECK, 0, 0) != 0;
+			userData->CmixPtrDefaultFlag = SendMessageA(GetDlgItem(hWnd, 1005), BM_GETCHECK, 0, 0) != 0;
 			GetWindowTextA(GetDlgItem(hWnd, 1003), string_buffer, 10);
 			userData->WaveBlockCount = atoi(string_buffer);
 			GetWindowTextA(GetDlgItem(hWnd, 1007), string_buffer, 10);
@@ -2021,7 +2021,7 @@ void WaveMix::ShowCurrentSettings()
 {
 	tagWAVEOUTCAPSA pwoc{};
 
-	if (waveOutGetDevCapsA(Globals->wDeviceID, &pwoc, 0x34u) || !RemoveInvalidIniNameCharacters(pwoc.szPname))
+	if (waveOutGetDevCapsA(Globals->wDeviceID, &pwoc, sizeof(tagWAVEOUTCAPSA)) || !RemoveInvalidIniNameCharacters(pwoc.szPname))
 		lstrcpyA(pwoc.szPname, "Unknown Device");
 	auto cmixitType = "cmixit";
 	if (Globals->CmixPtr != cmixit)
@@ -2061,7 +2061,7 @@ unsigned WaveMix::GetWaveDevice()
 
 	if (Globals->hWaveOut)
 		return 0;
-	HWND window = CreateWindowExA(0, "WavMix32", "", 0x8000000u, 0, 0, 0, 0, nullptr, nullptr, HModule,
+	HWND window = CreateWindowExA(0, "WavMix32", "", WS_DISABLED, 0, 0, 0, 0, nullptr, nullptr, HModule,
 	                              nullptr);
 	GLOBALS* globals = Globals;
 	Globals->hWndApp = window;
@@ -2078,9 +2078,9 @@ unsigned WaveMix::GetWaveDevice()
 	pwfx.nBlockAlign = globals->PCM.wf.nBlockAlign;
 	pwfx.wBitsPerSample = globals->PCM.wBitsPerSample;
 	pwfx.cbSize = 0;
-	unsigned int openResult = waveOutOpen(&globals->hWaveOut, 0xFFFFFFFF, &pwfx,
+	unsigned int openResult = waveOutOpen(&globals->hWaveOut, WAVE_MAPPER, &pwfx,
 	                                      reinterpret_cast<DWORD_PTR>(globals->hWndApp), 0,
-	                                      0x10000u);
+	                                      CALLBACK_WINDOW);
 	if (openResult)
 	{
 		DestroyWindow(Globals->hWndApp);
