@@ -24,6 +24,7 @@ Supports data files from Windows and Full Tilt versions of the game.
 | Nintendo 3DS       | MaikelChan      | https://github.com/MaikelChan/SpaceCadetPinball/tree/3ds                                                   |
 | Nintendo Wii U     | IntriguingTiles | https://github.com/IntriguingTiles/SpaceCadetPinball-WiiU                                                  |
 | MorphOS            | BeWorld         | https://www.morphos-storage.net/?id=1688897                                                                |
+| AmigaOS 4          | rjd324          | http://aminet.net/package/game/actio/spacecadetpinball-aos4                                                |
 
 Platforms covered by this project: desktop Windows, Linux and macOS.
 
