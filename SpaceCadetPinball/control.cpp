@@ -3148,7 +3148,7 @@ void control::GameoverController(int code, TPinballComponent* caller)
 	if (missionMsg & 0x200)
 	{
 		int highscoreId = missionMsg % 5;
-		int highScore = pb::highscore_table[highscoreId].Score;
+		int highScore = high_score::highscore_table[highscoreId].Score;
 		auto nextHidhscoreId = highscoreId + 1;
 		if (highScore > 0)
 		{
