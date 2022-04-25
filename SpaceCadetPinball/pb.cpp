@@ -32,6 +32,7 @@ DatFile* pb::record_table = nullptr;
 int pb::time_ticks = 0;
 GameModes pb::game_mode = GameModes::GameOver;
 float pb::time_now = 0, pb::time_next = 0, pb::ball_speed_limit, pb::time_ticks_remainder = 0;
+high_score_struct pb::highscore_table[5];
 bool pb::FullTiltMode = false, pb::FullTiltDemoMode = false, pb::cheat_mode = false, pb::demo_mode = false;
 std::string pb::DatFileName;
 
@@ -97,7 +98,7 @@ int pb::init()
 
 	MainTable = new TPinballTable();
 
-	high_score::read();
+	high_score::read(highscore_table);
 	ball_speed_limit = MainTable->BallList.at(0)->Offset * 200.0f;
 	return 0;
 }
@@ -107,7 +108,7 @@ int pb::uninit()
 	score::unload_msg_font();
 	loader::unload();
 	delete record_table;
-	high_score::write();
+	high_score::write(highscore_table);
 	delete MainTable;
 	MainTable = nullptr;
 	timer::uninit();
@@ -461,6 +462,11 @@ void pb::InputDown(GameInput input)
 			nudge::nudge_up();
 	}
 
+	if (input.Type == InputTypes::GameController && input.Value == SDL_CONTROLLER_BUTTON_BACK)
+	{
+		winmain::new_game();
+	}
+	
 	if (cheat_mode && input.Type == InputTypes::Keyboard)
 	{
 		switch (input.Value)
@@ -495,12 +501,10 @@ void pb::InputDown(GameInput input)
 			ball->Acceleration.X = 0.0;
 			break;
 		case 'h':
-		{
-			high_score_struct entry{ {0}, 1000000000 };
-			strncpy(entry.Name, pinball::get_rc_string(26, 0), sizeof entry.Name - 1);
-			high_score::show_and_set_high_score_dialog({ entry, 1 });
+			char String1[200];
+			strncpy(String1, pinball::get_rc_string(26, 0), sizeof String1 - 1);
+			high_score::show_and_set_high_score_dialog(highscore_table, 1000000000, 1, String1);
 			break;
-		}
 		case 'r':
 			control::cheat_bump_rank();
 			break;
@@ -523,6 +527,7 @@ void pb::end_game()
 {
 	int scores[4]{};
 	int scoreIndex[4]{};
+	char String1[200];
 
 	mode_change(GameModes::GameOver);
 	int playerCount = MainTable->PlayerCount;
@@ -556,12 +561,11 @@ void pb::end_game()
 	{
 		for (auto i = 0; i < playerCount; ++i)
 		{
-			int position = high_score::get_score_position(scores[i]);
+			int position = high_score::get_score_position(highscore_table, scores[i]);
 			if (position >= 0)
 			{
-				high_score_struct entry{ {0}, scores[i] };
-				strncpy(entry.Name, pinball::get_rc_string(scoreIndex[i] + 26, 0), sizeof entry.Name - 1);
-				high_score::show_and_set_high_score_dialog({ entry, -1 });
+				strncpy(String1, pinball::get_rc_string(scoreIndex[i] + 26, 0), sizeof String1 - 1);
+				high_score::show_and_set_high_score_dialog(highscore_table, scores[i], position, String1);
 			}
 		}
 	}
@@ -569,7 +573,7 @@ void pb::end_game()
 
 void pb::high_scores()
 {
-	high_score::show_high_score_dialog();
+	high_score::show_high_score_dialog(highscore_table);
 }
 
 void pb::tilt_no_more()
@@ -584,12 +588,17 @@ bool pb::chk_highscore()
 {
 	if (demo_mode)
 		return false;
-	for (auto i = 0; i < MainTable->PlayerCount; ++i)
+	int playerIndex = MainTable->PlayerCount - 1;
+	if (playerIndex < 0)
+		return false;
+	for (int i = playerIndex;
+	     high_score::get_score_position(highscore_table, MainTable->PlayerScores[i].ScoreStruct->Score) < 0;
+	     --i)
 	{
-		if (high_score::get_score_position(MainTable->PlayerScores[i].ScoreStruct->Score) >= 0)
-			return true;
+		if (--playerIndex < 0)
+			return false;
 	}
-	return false;
+	return true;
 }
 
 float pb::collide(float timeNow, float timeDelta, TBall* ball)
