@@ -221,10 +221,10 @@ endif()
 if(UNIX AND NOT APPLE)
 	include(GNUInstallDirs)
 	install(TARGETS "${PROJECT_NAME}" RUNTIME DESTINATION "${CMAKE_INSTALL_BINDIR}")
-	install(FILES "Platform/Linux/${PROJECT_NAME}.desktop" DESTINATION "share/applications")
-	install(FILES "Platform/Linux/${PROJECT_NAME}.metainfo.xml" DESTINATION "share/metainfo")
+	install(FILES "${CMAKE_SOURCE_DIR}/Platform/Linux/${PROJECT_NAME}.desktop" DESTINATION "share/applications")
+	install(FILES "${CMAKE_SOURCE_DIR}/Platform/Linux/${PROJECT_NAME}.metainfo.xml" DESTINATION "share/metainfo")
 	foreach(S 16 32 48 128 192)
-		install(FILES "${PROJECT_NAME}/Icon_${S}x${S}.png" DESTINATION
+		install(FILES "${CMAKE_SOURCE_DIR}/${PROJECT_NAME}/Icon_${S}x${S}.png" DESTINATION
 			"share/icons/hicolor/${S}x${S}/apps" RENAME "${PROJECT_NAME}.png")
 	endforeach(S)
 endif()
