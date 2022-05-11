@@ -617,7 +617,7 @@ void TPinballTable::replay_timer_callback(int timerId, void* caller)
 void TPinballTable::tilt_timeout(int timerId, void* caller)
 {
 	auto table = static_cast<TPinballTable*>(caller);
-	vector_type vec{};
+	vector2 vec{};
 
 	table->TiltTimeoutTimer = 0;
 	if (table->TiltLockFlag)

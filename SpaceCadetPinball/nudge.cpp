@@ -64,7 +64,7 @@ void nudge::nudge_up()
 
 void nudge::_nudge(float xDiff, float yDiff)
 {
-	vector_type accelMod;
+	vector2 accelMod;
 	float invAccelX, invAccelY;
 
 	accelMod.X = xDiff * 0.5f;

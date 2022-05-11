@@ -16,7 +16,7 @@ class TEdgeManager
 public:
 	TEdgeManager(float posX, float posY, float width, float height);
 	~TEdgeManager();
-	void FieldEffects(TBall* ball, struct vector_type* dstVec);
+	void FieldEffects(TBall* ball, struct vector2* dstVec);
 	int box_x(float x);
 	int box_y(float y);
 	int increment_box_x(int x);

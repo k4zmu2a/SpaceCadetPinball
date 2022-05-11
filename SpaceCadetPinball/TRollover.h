@@ -10,7 +10,7 @@ public:
 	TRollover(TPinballTable* table, int groupIndex);
 	~TRollover() override = default;
 	int Message(int code, float value) override;
-	void Collision(TBall* ball, vector_type* nextPosition, vector_type* direction, float coef,
+	void Collision(TBall* ball, vector2* nextPosition, vector2* direction, float coef,
 		TEdgeSegment* edge) override;
 	void put_scoring(int index, int score) override;
 	int get_scoring(int index) override;

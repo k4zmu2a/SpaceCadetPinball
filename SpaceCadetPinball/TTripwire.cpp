@@ -10,7 +10,7 @@ TTripwire::TTripwire(TPinballTable* table, int groupIndex) : TRollover(table, gr
 {
 }
 
-void TTripwire::Collision(TBall* ball, vector_type* nextPosition, vector_type* direction, float coef,
+void TTripwire::Collision(TBall* ball, vector2* nextPosition, vector2* direction, float coef,
                           TEdgeSegment* edge)
 {
 	ball->Position.X = nextPosition->X;

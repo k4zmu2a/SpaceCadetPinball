@@ -23,8 +23,8 @@ public :
 	float RayMaxDistance;
 	float TimeDelta;
 	float TimeNow;
-	vector_type InvAcceleration{};
-	vector_type RampFieldForce{};	
+	vector2 InvAcceleration{};
+	vector2 RampFieldForce{};	
 	TCollisionComponent* CollisionComp;
 	int FieldFlag;
 	TEdgeSegment* Collisions[5]{};

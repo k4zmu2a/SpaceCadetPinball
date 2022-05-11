@@ -290,7 +290,7 @@ void pb::frame(float dtMilliSec)
 
 void pb::timed_frame(float timeNow, float timeDelta, bool drawBalls)
 {
-	vector_type vec1{}, vec2{};
+	vector2 vec1{}, vec2{};
 
 	for (auto ball : MainTable->BallList)
 	{
@@ -594,7 +594,7 @@ bool pb::chk_highscore()
 float pb::collide(float timeNow, float timeDelta, TBall* ball)
 {
 	ray_type ray{};
-	vector_type positionMod{};
+	vector2 positionMod{};
 
 	if (ball->ActiveFlag && !ball->CollisionComp)
 	{

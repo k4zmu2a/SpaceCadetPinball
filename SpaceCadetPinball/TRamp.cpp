@@ -14,7 +14,7 @@
 TRamp::TRamp(TPinballTable* table, int groupIndex) : TCollisionComponent(table, groupIndex, false)
 {
 	visualStruct visual{};
-	vector_type end{}, start{}, *end2, *start2, *start3, *end3;
+	vector2 end{}, start{}, *end2, *start2, *start3, *end3;
 
 	MessageField = 0;
 	UnusedBaseFlag = 1;
@@ -94,7 +94,7 @@ TRamp::TRamp(TPinballTable* table, int groupIndex) : TCollisionComponent(table, 
 		xMax = std::max(std::max(std::max(plane->V3.X, plane->V1.X), plane->V2.X), xMin);
 		yMax = std::max(std::max(std::max(plane->V3.Y, plane->V1.Y), plane->V2.Y), xMin);
 
-		vector_type* pointOrder[4] = {pVec1, pVec2, pVec3, pVec1};
+		vector2* pointOrder[4] = {pVec1, pVec2, pVec3, pVec1};
 		for (auto pt = 0; pt < 3; pt++)
 		{
 			auto point1 = pointOrder[pt], point2 = pointOrder[pt + 1];
@@ -154,7 +154,7 @@ int TRamp::get_scoring(int index)
 	return index < 4 ? Scores[index] : 0;
 }
 
-void TRamp::Collision(TBall* ball, vector_type* nextPosition, vector_type* direction, float coef, TEdgeSegment* edge)
+void TRamp::Collision(TBall* ball, vector2* nextPosition, vector2* direction, float coef, TEdgeSegment* edge)
 {
 	ball->not_again(edge);
 	ball->Position.X = nextPosition->X;
@@ -204,7 +204,7 @@ void TRamp::Collision(TBall* ball, vector_type* nextPosition, vector_type* direc
 	}
 }
 
-int TRamp::FieldEffect(TBall* ball, vector_type* vecDst)
+int TRamp::FieldEffect(TBall* ball, vector2* vecDst)
 {
 	vecDst->X = ball->RampFieldForce.X - ball->Acceleration.X * ball->Speed * BallFieldMult;
 	vecDst->Y = ball->RampFieldForce.Y - ball->Acceleration.Y * ball->Speed * BallFieldMult;

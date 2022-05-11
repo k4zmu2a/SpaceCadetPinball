@@ -14,7 +14,7 @@ class TTableLayer :
 public:
 	TTableLayer(TPinballTable* table);
 	~TTableLayer() override;
-	int FieldEffect(TBall* ball, vector_type* vecDst) override;
+	int FieldEffect(TBall* ball, vector2* vecDst) override;
 
 	static void edges_insert_square(float y0, float x0, float y1, float x1, TEdgeSegment* edge,
 	                                field_effect_type* field);

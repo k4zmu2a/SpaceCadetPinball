@@ -11,7 +11,7 @@
 TOneway::TOneway(TPinballTable* table, int groupIndex) : TCollisionComponent(table, groupIndex, false)
 {
 	visualStruct visual{};
-	vector_type linePt1{}, linePt2{};
+	vector2 linePt1{}, linePt2{};
 
 	loader::query_visual(groupIndex, 0, &visual);
 	if (visual.FloatArrCount == 2)
@@ -40,7 +40,7 @@ TOneway::TOneway(TPinballTable* table, int groupIndex) : TCollisionComponent(tab
 	}
 }
 
-void TOneway::Collision(TBall* ball, vector_type* nextPosition, vector_type* direction, float coef, TEdgeSegment* edge)
+void TOneway::Collision(TBall* ball, vector2* nextPosition, vector2* direction, float coef, TEdgeSegment* edge)
 {
 	if (edge == Line)
 	{

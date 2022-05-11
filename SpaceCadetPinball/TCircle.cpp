@@ -5,7 +5,7 @@
 #include "TCollisionComponent.h"
 #include "TTableLayer.h"
 
-TCircle::TCircle(TCollisionComponent* collComp, char* activeFlag, unsigned collisionGroup, vector_type* center,
+TCircle::TCircle(TCollisionComponent* collComp, char* activeFlag, unsigned collisionGroup, vector2* center,
                  float radius): TEdgeSegment(collComp, activeFlag, collisionGroup)
 {
 	Circle.RadiusSq = radius * radius;
@@ -19,7 +19,7 @@ float TCircle::FindCollisionDistance(ray_type* ray)
 
 void TCircle::EdgeCollision(TBall* ball, float coef)
 {
-	vector_type direction{}, nextPosition{};
+	vector2 direction{}, nextPosition{};
 
 	nextPosition.X = coef * ball->Acceleration.X + ball->Position.X;
 	nextPosition.Y = coef * ball->Acceleration.Y + ball->Position.Y;

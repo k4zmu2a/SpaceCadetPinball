@@ -64,7 +64,7 @@ int TSoloTarget::get_scoring(int index)
 	return index < 1 ? Scores[index] : 0;
 }
 
-void TSoloTarget::Collision(TBall* ball, vector_type* nextPosition, vector_type* direction, float coef,
+void TSoloTarget::Collision(TBall* ball, vector2* nextPosition, vector2* direction, float coef,
                             TEdgeSegment* edge)
 {
 	if (DefaultCollision(ball, nextPosition, direction))

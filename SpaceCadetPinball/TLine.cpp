@@ -14,8 +14,8 @@ TLine::TLine(TCollisionComponent* collCmp, char* activeFlag, unsigned int collis
 	maths::line_init(&Line, x0, y0, x1, y1);
 }
 
-TLine::TLine(TCollisionComponent* collCmp, char* activeFlag, unsigned int collisionGroup, struct vector_type* start,
-             struct vector_type* end) : TEdgeSegment(collCmp, activeFlag, collisionGroup)
+TLine::TLine(TCollisionComponent* collCmp, char* activeFlag, unsigned int collisionGroup, struct vector2* start,
+             struct vector2* end) : TEdgeSegment(collCmp, activeFlag, collisionGroup)
 {
 	X0 = start->X;
 	Y0 = start->Y;

@@ -28,7 +28,7 @@ int TDrain::Message(int code, float value)
 	return 0;
 }
 
-void TDrain::Collision(TBall* ball, vector_type* nextPosition, vector_type* direction, float coef, TEdgeSegment* edge)
+void TDrain::Collision(TBall* ball, vector2* nextPosition, vector2* direction, float coef, TEdgeSegment* edge)
 {
 	ball->Message(1024, 0.0);
 	PinballTable->BallInSink = 1;

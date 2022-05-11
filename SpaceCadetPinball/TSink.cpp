@@ -75,7 +75,7 @@ int TSink::get_scoring(int index)
 	return index < 3 ? Scores[index] : 0;
 }
 
-void TSink::Collision(TBall* ball, vector_type* nextPosition, vector_type* direction, float coef, TEdgeSegment* edge)
+void TSink::Collision(TBall* ball, vector2* nextPosition, vector2* direction, float coef, TEdgeSegment* edge)
 {
 	Timer = 0;
 	if (PinballTable->TiltLockFlag)

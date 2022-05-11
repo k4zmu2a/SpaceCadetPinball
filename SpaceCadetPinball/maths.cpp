@@ -155,7 +155,7 @@ float maths::ray_intersect_circle(ray_type* ray, circle_type* circle)
 }
 
 
-float maths::normalize_2d(vector_type* vec)
+float maths::normalize_2d(vector2* vec)
 {
 	float mag = sqrt(vec->X * vec->X + vec->Y * vec->Y);
 	if (mag != 0.0f)
@@ -263,13 +263,13 @@ float maths::magnitude(vector3* vec)
 	return result;
 }
 
-void maths::vector_add(vector_type* vec1Dst, vector_type* vec2)
+void maths::vector_add(vector2* vec1Dst, vector2* vec2)
 {
 	vec1Dst->X += vec2->X;
 	vec1Dst->Y += vec2->Y;
 }
 
-float maths::basic_collision(TBall* ball, vector_type* nextPosition, vector_type* direction, float elasticity, float smoothness,
+float maths::basic_collision(TBall* ball, vector2* nextPosition, vector2* direction, float elasticity, float smoothness,
                              float threshold, float boost)
 {
 	ball->Position.X = nextPosition->X;
@@ -299,24 +299,24 @@ float maths::basic_collision(TBall* ball, vector_type* nextPosition, vector_type
 	return projSpeed;
 }
 
-float maths::Distance_Squared(vector_type& vec1, vector_type& vec2)
+float maths::Distance_Squared(vector2& vec1, vector2& vec2)
 {
 	return (vec1.Y - vec2.Y) * (vec1.Y - vec2.Y) + (vec1.X - vec2.X) * (vec1.X - vec2.X);
 }
 
-float maths::DotProduct(vector_type* vec1, vector_type* vec2)
+float maths::DotProduct(vector2* vec1, vector2* vec2)
 {
 	return vec1->Y * vec2->Y + vec1->X * vec2->X;
 }
 
-void maths::vswap(vector_type* vec1, vector_type* vec2)
+void maths::vswap(vector2* vec1, vector2* vec2)
 {
-	vector_type tmp = *vec1;
+	vector2 tmp = *vec1;
 	*vec1 = *vec2;
 	*vec2 = tmp;
 }
 
-float maths::Distance(vector_type* vec1, vector_type* vec2)
+float maths::Distance(vector2* vec1, vector2* vec2)
 {
 	auto dx = vec1->X - vec2->X;
 	auto dy = vec1->Y - vec2->Y;
@@ -329,7 +329,7 @@ void maths::SinCos(float angle, float* sinOut, float* cosOut)
 	*cosOut = cos(angle);
 }
 
-void maths::RotatePt(vector_type* point, float sin, float cos, vector_type* origin)
+void maths::RotatePt(vector2* point, float sin, float cos, vector2* origin)
 {
 	auto dirX = point->X - origin->X;
 	auto dirY = point->Y - origin->Y;
@@ -370,7 +370,7 @@ float maths::distance_to_flipper(ray_type* ray1, ray_type* ray2)
 
 	if (distanceType != -1)
 	{
-		vector_type* nextOrigin;
+		vector2* nextOrigin;
 		if (distanceType)
 		{
 			if (distanceType != 1)
@@ -406,7 +406,7 @@ float maths::distance_to_flipper(ray_type* ray1, ray_type* ray2)
 	return 1000000000.0;
 }
 
-void maths::RotateVector(vector_type* vec, float angle)
+void maths::RotateVector(vector2* vec, float angle)
 {
 	float s = sin(angle), c = cos(angle);
 	vec->X = c * vec->X - s * vec->Y;
@@ -418,10 +418,10 @@ void maths::RotateVector(vector_type* vec, float angle)
 	 */
 }
 
-void maths::find_closest_edge(ramp_plane_type* plane, int planeCount, wall_point_type* wall, vector_type** lineEnd,
-                              vector_type** lineStart)
+void maths::find_closest_edge(ramp_plane_type* plane, int planeCount, wall_point_type* wall, vector2** lineEnd,
+                              vector2** lineStart)
 {
-	vector_type wallEnd{}, wallStart{};
+	vector2 wallEnd{}, wallStart{};
 
 	wallStart.X = wall->X0;
 	wallStart.Y = wall->Y0;

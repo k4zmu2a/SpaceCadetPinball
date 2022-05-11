@@ -7,7 +7,7 @@
 #include "TTableLayer.h"
 
 float TFlipperEdge::flipper_sin_angle, TFlipperEdge::flipper_cos_angle;
-vector_type TFlipperEdge::A1, TFlipperEdge::A2, TFlipperEdge::B1, TFlipperEdge::B2, TFlipperEdge::T1;
+vector2 TFlipperEdge::A1, TFlipperEdge::A2, TFlipperEdge::B1, TFlipperEdge::B2, TFlipperEdge::T1;
 line_type TFlipperEdge::lineA, TFlipperEdge::lineB;
 circle_type TFlipperEdge::circlebase, TFlipperEdge::circleT1;
 
@@ -200,7 +200,7 @@ float TFlipperEdge::FindCollisionDistance(ray_type* ray)
 			auto ballInside = is_ball_inside(posX, posY);
 			if (ballInside != 0)
 			{
-				vector_type* linePtr;
+				vector2* linePtr;
 				if (FlipperFlag == 1 && ballInside != 5)
 				{
 					linePtr = &lineA.PerpendicularL;
@@ -271,7 +271,7 @@ float TFlipperEdge::FindCollisionDistance(ray_type* ray)
 				NextBallPosition = dstRay.Origin;
 				NextBallPosition.X -= srcRay.Direction.X * 1e-05f;
 				NextBallPosition.Y -= srcRay.Direction.Y * 1e-05f;
-				vector_type* linePtr;
+				vector2* linePtr;
 				if (FlipperFlag == 2)
 				{
 					linePtr = &lineB.PerpendicularL;
@@ -435,7 +435,7 @@ float TFlipperEdge::flipper_angle(float timeNow)
 
 int TFlipperEdge::is_ball_inside(float x, float y)
 {
-	vector_type testPoint{};
+	vector2 testPoint{};
 	float dx = RotOrigin.X - x;
 	float dy = RotOrigin.Y - y;
 	if (((A2.X - A1.X) * (y - A1.Y) - (A2.Y - A1.Y) * (x - A1.X) >= 0.0f &&

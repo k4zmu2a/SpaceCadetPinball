@@ -33,7 +33,7 @@ TPlunger::TPlunger(TPinballTable* table, int groupIndex) : TCollisionComponent(t
 	table->PlungerPositionY = floatArr[1];
 }
 
-void TPlunger::Collision(TBall* ball, vector_type* nextPosition, vector_type* direction, float coef, TEdgeSegment* edge)
+void TPlunger::Collision(TBall* ball, vector2* nextPosition, vector2* direction, float coef, TEdgeSegment* edge)
 {
 	if (PinballTable->TiltLockFlag)
 		Message(1017, 0.0);

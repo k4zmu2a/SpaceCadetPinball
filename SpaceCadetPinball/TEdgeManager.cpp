@@ -87,9 +87,9 @@ int TEdgeManager::TestGridBox(int x, int y, float* distPtr, TEdgeSegment** edgeD
 	return edgeIndex;
 }
 
-void TEdgeManager::FieldEffects(TBall* ball, vector_type* dstVec)
+void TEdgeManager::FieldEffects(TBall* ball, vector2* dstVec)
 {
-	vector_type vec{};
+	vector2 vec{};
 	TEdgeBox* edgeBox = &BoxArray[box_x(ball->Position.X) + box_y(ball->Position.Y) *
 		MaxBoxX];
 

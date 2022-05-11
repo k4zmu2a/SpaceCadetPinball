@@ -34,7 +34,7 @@ int TLightRollover::Message(int code, float value)
 	return 0;
 }
 
-void TLightRollover::Collision(TBall* ball, vector_type* nextPosition, vector_type* direction, float coef,
+void TLightRollover::Collision(TBall* ball, vector2* nextPosition, vector2* direction, float coef,
                                TEdgeSegment* edge)
 {
 	ball->Position.X = nextPosition->X;

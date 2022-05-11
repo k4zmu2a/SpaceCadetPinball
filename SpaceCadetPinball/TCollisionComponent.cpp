@@ -51,7 +51,7 @@ void TCollisionComponent::port_draw()
 		edge->port_draw();
 }
 
-int TCollisionComponent::DefaultCollision(TBall* ball, vector_type* nextPosition, vector_type* direction)
+int TCollisionComponent::DefaultCollision(TBall* ball, vector2* nextPosition, vector2* direction)
 {
 	if (PinballTable->TiltLockFlag)
 	{
@@ -73,7 +73,7 @@ int TCollisionComponent::DefaultCollision(TBall* ball, vector_type* nextPosition
 	return 1;
 }
 
-void TCollisionComponent::Collision(TBall* ball, vector_type* nextPosition, vector_type* direction,
+void TCollisionComponent::Collision(TBall* ball, vector2* nextPosition, vector2* direction,
                                     float coef, TEdgeSegment* edge)
 {
 	int soundIndex;
@@ -105,7 +105,7 @@ void TCollisionComponent::Collision(TBall* ball, vector_type* nextPosition, vect
 		loader::play_sound(soundIndex);
 }
 
-int TCollisionComponent::FieldEffect(TBall* ball, vector_type* vecDst)
+int TCollisionComponent::FieldEffect(TBall* ball, vector2* vecDst)
 {
 	return 0;
 }

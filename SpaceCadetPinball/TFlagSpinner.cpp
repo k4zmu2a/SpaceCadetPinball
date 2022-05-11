@@ -13,7 +13,7 @@
 TFlagSpinner::TFlagSpinner(TPinballTable* table, int groupIndex) : TCollisionComponent(table, groupIndex, false)
 {
 	visualStruct visual{};
-	vector_type end{}, start{};
+	vector2 end{}, start{};
 
 	Timer = 0;
 	loader::query_visual(groupIndex, 0, &visual);
@@ -72,7 +72,7 @@ int TFlagSpinner::Message(int code, float value)
 	return 0;
 }
 
-void TFlagSpinner::Collision(TBall* ball, vector_type* nextPosition, vector_type* direction, float coef,
+void TFlagSpinner::Collision(TBall* ball, vector2* nextPosition, vector2* direction, float coef,
                              TEdgeSegment* edge)
 {
 	ball->Position.X = nextPosition->X;

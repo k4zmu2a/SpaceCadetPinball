@@ -111,7 +111,7 @@ TTableLayer::~TTableLayer()
 		delete edge_manager;
 }
 
-int TTableLayer::FieldEffect(TBall* ball, vector_type* vecDst)
+int TTableLayer::FieldEffect(TBall* ball, vector2* vecDst)
 {
 	vecDst->X = GraityDirX - (0.5f - RandFloat() + ball->Acceleration.X) *
 		ball->Speed * GraityMult;
@@ -161,7 +161,7 @@ void TTableLayer::edges_insert_square(float y0, float x0, float y1, float x1, TE
 void TTableLayer::edges_insert_circle(circle_type* circle, TEdgeSegment* edge, field_effect_type* field)
 {
 	ray_type ray{};
-	vector_type vec1{};
+	vector2 vec1{};
 
 	auto radiusM = sqrt(circle->RadiusSq) + edge_manager->AdvanceX * 0.001f;
 	auto radiusMSq = radiusM * radiusM;

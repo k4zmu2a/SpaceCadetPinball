@@ -1,7 +1,7 @@
 #pragma once
 #include "TPinballComponent.h"
 
-struct vector_type;
+struct vector2;
 class TEdgeSegment;
 class TBall;
 
@@ -19,8 +19,8 @@ public:
 	TCollisionComponent(TPinballTable* table, int groupIndex, bool createWall);
 	~TCollisionComponent() override;
 	void port_draw() override;
-	virtual void Collision(TBall* ball, vector_type* nextPosition, vector_type* direction, float coef,
+	virtual void Collision(TBall* ball, vector2* nextPosition, vector2* direction, float coef,
 	                       TEdgeSegment* edge);
-	virtual int FieldEffect(TBall* ball, vector_type* vecDst);
-	int DefaultCollision(TBall* ball, vector_type* nextPosition, vector_type* direction);
+	virtual int FieldEffect(TBall* ball, vector2* vecDst);
+	int DefaultCollision(TBall* ball, vector2* nextPosition, vector2* direction);
 };
