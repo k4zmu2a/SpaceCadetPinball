@@ -49,7 +49,7 @@ TBall::TBall(TPinballTable* table) : TPinballComponent(table, -1, false)
 		loader::query_visual(groupIndex, index, &visual);
 		if (ListBitmap)
 			ListBitmap->push_back(visual.Bitmap);
-		auto visVec = reinterpret_cast<vector_type*>(loader::query_float_attribute(groupIndex, index, 501));
+		auto visVec = reinterpret_cast<vector3*>(loader::query_float_attribute(groupIndex, index, 501));
 		auto zDepth = proj::z_distance(visVec);
 		VisualZArray[index] = zDepth;
 	}
@@ -129,7 +129,7 @@ int TBall::Message(int code, float value)
 	return 0;
 }
 
-void TBall::throw_ball(TBall* ball, vector_type* acceleration, float angleMult, float speedMult1, float speedMult2)
+void TBall::throw_ball(TBall* ball, vector3* acceleration, float angleMult, float speedMult1, float speedMult2)
 {
 	ball->CollisionComp = nullptr;
 	ball->Acceleration = *acceleration;

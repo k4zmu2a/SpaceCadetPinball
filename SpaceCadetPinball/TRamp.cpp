@@ -85,9 +85,9 @@ TRamp::TRamp(TPinballTable* table, int groupIndex) : TCollisionComponent(table, 
 	for (auto index = 0; index < RampPlaneCount; index++)
 	{
 		auto plane = &RampPlane[index];
-		auto pVec1 = reinterpret_cast<vector_type*>(&plane->V1);
-		auto pVec2 = reinterpret_cast<vector_type*>(&plane->V2);
-		auto pVec3 = reinterpret_cast<vector_type*>(&plane->V3);
+		auto pVec1 = &plane->V1;
+		auto pVec2 = &plane->V2;
+		auto pVec3 = &plane->V3;
 
 		xMin = std::min(std::min(std::min(plane->V3.X, plane->V1.X), plane->V2.X), xMin);
 		yMin = std::min(std::min(std::min(plane->V3.Y, plane->V1.Y), plane->V2.Y), xMin); // Sic

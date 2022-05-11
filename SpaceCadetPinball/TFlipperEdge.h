@@ -8,7 +8,7 @@ class TFlipperEdge : public TEdgeSegment
 {
 public:
 	TFlipperEdge(TCollisionComponent* collComp, char* activeFlag, unsigned int collisionGroup, TPinballTable* table,
-	             vector_type* origin, vector_type* vecT1, vector_type* vecT2, float extendTime, float retractTime, float collMult,
+	             vector3* origin, vector3* vecT1, vector3* vecT2, float extendTime, float retractTime, float collMult,
 	             float elasticity, float smoothness);
 	void port_draw() override;
 	float FindCollisionDistance(ray_type* ray) override;

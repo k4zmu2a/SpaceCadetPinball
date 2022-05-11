@@ -12,10 +12,10 @@ line_type TFlipperEdge::lineA, TFlipperEdge::lineB;
 circle_type TFlipperEdge::circlebase, TFlipperEdge::circleT1;
 
 TFlipperEdge::TFlipperEdge(TCollisionComponent* collComp, char* activeFlag, unsigned int collisionGroup, TPinballTable* table,
-                           vector_type* origin, vector_type* vecT1, vector_type* vecT2, float extendTime, float retractTime,
+                           vector3* origin, vector3* vecT1, vector3* vecT2, float extendTime, float retractTime,
                            float collMult, float elasticity, float smoothness): TEdgeSegment(collComp, activeFlag, collisionGroup)
 {
-	vector_type crossProd{}, vecDir1{}, vecDir2{};
+	vector3 crossProd{}, vecDir1{}, vecDir2{};
 
 	Elasticity = elasticity;
 	Smoothness = smoothness;

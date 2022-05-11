@@ -14,11 +14,11 @@ public :
 	bool already_hit(TEdgeSegment* edge);
 	int Message(int code, float value) override;
 
-	static void throw_ball(TBall* ball, struct vector_type* acceleration, float angleMult, float speedMult1,
+	static void throw_ball(TBall* ball, vector3* acceleration, float angleMult, float speedMult1,
 	                       float speedMult2);
 
-	vector_type Position{};
-	vector_type Acceleration{};
+	vector3 Position{};
+	vector3 Acceleration{};
 	float Speed;
 	float RayMaxDistance;
 	float TimeDelta;
@@ -29,7 +29,7 @@ public :
 	int FieldFlag;
 	TEdgeSegment* Collisions[5]{};
 	int EdgeCollisionCount;
-	vector_type CollisionOffset{};
+	vector3 CollisionOffset{};
 	int CollisionFlag;
 	float Offset;
 	float VisualZArray[50]{};

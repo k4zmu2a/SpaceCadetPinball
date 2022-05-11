@@ -6,9 +6,16 @@ struct vector_type
 {
 	float X;
 	float Y;
-	float Z;
 };
 
+struct vector_type2 :vector_type
+{
+};
+
+struct vector3 :vector_type
+{	
+	float Z;
+};
 
 struct rectangle_type
 {
@@ -45,12 +52,6 @@ struct line_type
 	vector_type RayIntersect;
 };
 
-struct vector_type2
-{
-	float X;
-	float Y;
-};
-
 struct wall_point_type
 {
 	float X0;
@@ -61,7 +62,7 @@ struct wall_point_type
 
 struct ramp_plane_type
 {
-	vector_type BallCollisionOffset;
+	vector3 BallCollisionOffset;
 	vector_type2 V1;
 	vector_type2 V2;
 	vector_type2 V3;
@@ -81,8 +82,8 @@ public:
 	static float normalize_2d(vector_type* vec);
 	static void line_init(line_type* line, float x0, float y0, float x1, float y1);
 	static float ray_intersect_line(ray_type* ray, line_type* line);
-	static void cross(vector_type* vec1, vector_type* vec2, vector_type* dstVec);
-	static float magnitude(vector_type* vec);
+	static void cross(vector3* vec1, vector3* vec2, vector3* dstVec);
+	static float magnitude(vector3* vec);
 	static void vector_add(vector_type* vec1Dst, vector_type* vec2);
 	static float basic_collision(TBall* ball, vector_type* nextPosition, vector_type* direction, float elasticity,
 	                             float smoothness,

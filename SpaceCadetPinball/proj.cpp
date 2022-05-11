@@ -26,7 +26,7 @@ void proj::init(float* mat4x3, float d, float centerX, float centerY)
 	centery = centerY;
 }
 
-void proj::matrix_vector_multiply(mat4_row_major* mat, vector_type* vec, vector_type* dstVec)
+void proj::matrix_vector_multiply(mat4_row_major* mat, vector3* vec, vector3* dstVec)
 {
 	const float x = vec->X, y = vec->Y, z = vec->Z;
 	dstVec->X = z * mat->Row0.Z + y * mat->Row0.Y + x * mat->Row0.X + mat->Row0.W;
@@ -34,17 +34,17 @@ void proj::matrix_vector_multiply(mat4_row_major* mat, vector_type* vec, vector_
 	dstVec->Z = z * mat->Row2.Z + y * mat->Row2.Y + x * mat->Row2.X + mat->Row2.W;
 }
 
-float proj::z_distance(vector_type* vec)
+float proj::z_distance(vector3* vec)
 {
-	vector_type dstVec{};
+	vector3 dstVec{};
 	matrix_vector_multiply(&matrix, vec, &dstVec);
 	return maths::magnitude(&dstVec);
 }
 
-void proj::xform_to_2d(vector_type* vec, int* dst)
+void proj::xform_to_2d(vector3* vec, int* dst)
 {
 	float projCoef;
-	vector_type dstVec2{};
+	vector3 dstVec2{};
 
 	matrix_vector_multiply(&matrix, vec, &dstVec2);
 	if (dstVec2.Z == 0.0f)

@@ -308,7 +308,6 @@ void pb::timed_frame(float timeNow, float timeDelta, bool drawBalls)
 				{
 					vec2.X = 0.0;
 					vec2.Y = 0.0;
-					vec2.Z = 0.0;
 					TTableLayer::edge_manager->FieldEffects(ball, &vec2);
 					vec2.X = vec2.X * timeDelta;
 					vec2.Y = vec2.Y * timeDelta;
@@ -486,8 +485,8 @@ void pb::InputDown(GameInput input)
 					}
 				}
 			}
-			ball->Position.X = 1.0;
 			ball->ActiveFlag = 1;
+			ball->Position.X = 1.0;
 			ball->Position.Z = ball->Offset;
 			ball->Position.Y = 1.0;
 			ball->Acceleration.Z = 0.0;
@@ -607,12 +606,8 @@ float pb::collide(float timeNow, float timeDelta, TBall* ball)
 		ball->RayMaxDistance = maxDistance;
 		ball->TimeNow = timeNow;
 
-		ray.Origin.X = ball->Position.X;
-		ray.Origin.Y = ball->Position.Y;
-		ray.Origin.Z = ball->Position.Z;
-		ray.Direction.X = ball->Acceleration.X;
-		ray.Direction.Y = ball->Acceleration.Y;
-		ray.Direction.Z = ball->Acceleration.Z;
+		ray.Origin = ball->Position;
+		ray.Direction = ball->Acceleration;
 		ray.MaxDistance = maxDistance;
 		ray.FieldFlag = ball->FieldFlag;
 		ray.TimeNow = timeNow;
@@ -628,7 +623,6 @@ float pb::collide(float timeNow, float timeDelta, TBall* ball)
 			ball->RayMaxDistance = maxDistance;
 			positionMod.X = maxDistance * ball->Acceleration.X;
 			positionMod.Y = maxDistance * ball->Acceleration.Y;
-			positionMod.Z = 0.0;
 			maths::vector_add(&ball->Position, &positionMod);
 		}
 		else

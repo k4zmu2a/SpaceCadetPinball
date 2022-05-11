@@ -31,7 +31,7 @@ THole::THole(TPinballTable* table, int groupIndex) : TCollisionComponent(table, 
 		Circle.RadiusSq = 0.001f;
 
 	auto tCircle = new TCircle(this, &ActiveFlag, visual.CollisionGroup,
-	                           reinterpret_cast<vector_type*>(visual.FloatArr),
+	                           reinterpret_cast<vector3*>(visual.FloatArr),
 	                           Circle.RadiusSq);
 	if (tCircle)
 	{
@@ -50,7 +50,6 @@ THole::THole(TPinballTable* table, int groupIndex) : TCollisionComponent(table, 
 	circle.RadiusSq = Circle.RadiusSq;
 	circle.Center.X = Circle.Center.X;
 	circle.Center.Y = Circle.Center.Y;
-	circle.Center.Z = Circle.Center.Z;
 
 	Field.Flag2Ptr = &ActiveFlag;
 	Field.CollisionComp = this;

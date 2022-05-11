@@ -20,7 +20,8 @@ void TEdgeSegment::port_draw()
 TEdgeSegment* TEdgeSegment::install_wall(float* floatArr, TCollisionComponent* collComp, char* activeFlagPtr,
                                          unsigned int collisionGroup, float offset, size_t wallValue)
 {
-	vector_type center{}, start{}, end{}, prevCenter{}, vec1{}, vec2{}, dstVec{};
+	vector_type center{}, start{}, end{}, prevCenter{};
+	vector3 vec1{}, vec2{}, dstVec{};
 	TEdgeSegment* edge = nullptr;
 
 	wall_type wallType = static_cast<wall_type>(static_cast<int>(floor(*floatArr) - 1.0f));

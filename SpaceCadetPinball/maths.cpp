@@ -245,14 +245,14 @@ float maths::ray_intersect_line(ray_type* ray, line_type* line)
 	return 1000000000.0;
 }
 
-void maths::cross(vector_type* vec1, vector_type* vec2, vector_type* dstVec)
+void maths::cross(vector3* vec1, vector3* vec2, vector3* dstVec)
 {
 	dstVec->X = vec2->Z * vec1->Y - vec2->Y * vec1->Z;
 	dstVec->Y = vec2->X * vec1->Z - vec1->X * vec2->Z;
 	dstVec->Z = vec1->X * vec2->Y - vec2->X * vec1->Y;
 }
 
-float maths::magnitude(vector_type* vec)
+float maths::magnitude(vector3* vec)
 {
 	float result;
 	auto magSq = vec->X * vec->X + vec->Y * vec->Y + vec->Z * vec->Z;
@@ -432,9 +432,9 @@ void maths::find_closest_edge(ramp_plane_type* plane, int planeCount, wall_point
 	ramp_plane_type* planePtr = plane;
 	for (auto index = 0; index < planeCount; index++)
 	{
-		auto vec1 = reinterpret_cast<vector_type*>(&planePtr->V1),
-		     vec2 = reinterpret_cast<vector_type*>(&planePtr->V2),
-		     vec3 = reinterpret_cast<vector_type*>(&planePtr->V3);
+		auto vec1 = &planePtr->V1,
+		     vec2 = &planePtr->V2,
+		     vec3 = &planePtr->V3;
 		auto distance = Distance(&wallStart, vec1) + Distance(&wallEnd, vec2);
 		if (distance < maxDistance)
 		{

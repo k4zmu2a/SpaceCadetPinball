@@ -18,7 +18,7 @@ public:
 	int Timer;
 	float TimerTime;
 	vector_type BallPosition{};
-	vector_type BallAcceleration{};
+	vector3 BallAcceleration{};
 	float ThrowAngleMult;
 	float ThrowSpeedMult1;
 	float ThrowSpeedMult2;

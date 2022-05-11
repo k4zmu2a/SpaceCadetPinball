@@ -28,7 +28,7 @@ public:
 	float FieldMult;
 	circle_type Circle{};
 	float OriginalBallZ{};
-	vector_type BallAcceleration{};
+	vector3 BallAcceleration{};
 	float ThrowAngleMult;
 	float ThrowSpeedMult1;
 	float ThrowSpeedMult2;
