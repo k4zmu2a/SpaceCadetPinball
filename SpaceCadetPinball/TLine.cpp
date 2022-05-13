@@ -14,20 +14,20 @@ TLine::TLine(TCollisionComponent* collCmp, char* activeFlag, unsigned int collis
 	maths::line_init(&Line, x0, y0, x1, y1);
 }
 
-TLine::TLine(TCollisionComponent* collCmp, char* activeFlag, unsigned int collisionGroup, struct vector2* start,
-             struct vector2* end) : TEdgeSegment(collCmp, activeFlag, collisionGroup)
+TLine::TLine(TCollisionComponent* collCmp, char* activeFlag, unsigned int collisionGroup, const vector2& start,
+             const vector2& end) : TEdgeSegment(collCmp, activeFlag, collisionGroup)
 {
-	X0 = start->X;
-	Y0 = start->Y;
-	X1 = end->X;
-	Y1 = end->Y;
+	X0 = start.X;
+	Y0 = start.Y;
+	X1 = end.X;
+	Y1 = end.Y;
 	maths::line_init(&Line, X0, Y0, X1, Y1);
 }
 
 void TLine::Offset(float offset)
 {
-	float offX = offset * Line.PerpendicularL.X;
-	float offY = offset * Line.PerpendicularL.Y;
+	float offX = offset * Line.PerpendicularC.X;
+	float offY = offset * Line.PerpendicularC.Y;
 
 	X0 += offX;
 	Y0 += offY;
@@ -46,7 +46,7 @@ void TLine::EdgeCollision(TBall* ball, float coef)
 	CollisionComponent->Collision(
 		ball,
 		&Line.RayIntersect,
-		&Line.PerpendicularL,
+		&Line.PerpendicularC,
 		coef,
 		this);
 }

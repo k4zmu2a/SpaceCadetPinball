@@ -127,7 +127,7 @@ int THole::FieldEffect(TBall* ball, vector2* vecDst)
 		direction.Y = Circle.Center.Y - ball->Position.Y;
 		if (direction.X * direction.X + direction.Y * direction.Y <= Circle.RadiusSq)
 		{
-			maths::normalize_2d(&direction);
+			maths::normalize_2d(direction);
 			vecDst->X = direction.X * GravityPull - ball->Acceleration.X * ball->Speed;
 			vecDst->Y = direction.Y * GravityPull - ball->Acceleration.Y * ball->Speed;
 			result = 1;

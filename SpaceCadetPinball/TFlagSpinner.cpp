@@ -21,14 +21,14 @@ TFlagSpinner::TFlagSpinner(TPinballTable* table, int groupIndex) : TCollisionCom
 	end.Y = visual.FloatArr[1];
 	start.X = visual.FloatArr[2];
 	start.Y = visual.FloatArr[3];
-	auto line = new TLine(this, &ActiveFlag, visual.CollisionGroup, &start, &end);
+	auto line = new TLine(this, &ActiveFlag, visual.CollisionGroup, start, end);
 	if (line)
 	{
 		line->place_in_grid();
 		EdgeList.push_back(line);
 	}
 
-	line = new TLine(this, &ActiveFlag, visual.CollisionGroup, &end, &start);
+	line = new TLine(this, &ActiveFlag, visual.CollisionGroup, end, start);
 	PrevCollider = line;
 	if (line)
 	{

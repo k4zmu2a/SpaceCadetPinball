@@ -76,15 +76,15 @@ void render::update()
 		{
 		case VisualTypes::Sprite:
 			if (curSprite->DirtyRectPrev.Width > 0)
-				maths::enclosing_box(&curSprite->DirtyRectPrev, &curSprite->BmpRect, &curSprite->DirtyRect);
+				maths::enclosing_box(curSprite->DirtyRectPrev, curSprite->BmpRect, curSprite->DirtyRect);
 
-			if (maths::rectangle_clip(&curSprite->DirtyRect, &vscreen_rect, &curSprite->DirtyRect))
+			if (maths::rectangle_clip(curSprite->DirtyRect, vscreen_rect, &curSprite->DirtyRect))
 				clearSprite = true;
 			else
 				curSprite->DirtyRect.Width = -1;
 			break;
 		case VisualTypes::None:
-			if (maths::rectangle_clip(&curSprite->BmpRect, &vscreen_rect, &curSprite->DirtyRect))
+			if (maths::rectangle_clip(curSprite->BmpRect, vscreen_rect, &curSprite->DirtyRect))
 				clearSprite = !curSprite->Bmp;
 			else
 				curSprite->DirtyRect.Width = -1;
@@ -291,7 +291,7 @@ void render::repaint(struct render_sprite_type_struct* sprite)
 	{
 		if (!refSprite->UnknownFlag && refSprite->Bmp)
 		{
-			if (maths::rectangle_clip(&refSprite->BmpRect, &sprite->DirtyRect, &clipRect))
+			if (maths::rectangle_clip(refSprite->BmpRect, sprite->DirtyRect, &clipRect))
 				zdrv::paint(
 					clipRect.Width,
 					clipRect.Height,
@@ -334,7 +334,7 @@ void render::paint_balls()
 	{
 		auto ball = ball_list[index];
 		auto dirty = &ball->DirtyRect;
-		if (ball->Bmp && maths::rectangle_clip(&ball->BmpRect, &vscreen_rect, &ball->DirtyRect))
+		if (ball->Bmp && maths::rectangle_clip(ball->BmpRect, vscreen_rect, &ball->DirtyRect))
 		{
 			int xPos = dirty->XPosition;
 			int yPos = dirty->YPosition;
@@ -407,7 +407,7 @@ void render::build_occlude_list()
 			{
 				if (!refSprite->UnknownFlag
 					&& refSprite->BoundingRect.Width != -1
-					&& maths::rectangle_clip(&mainSprite->BoundingRect, &refSprite->BoundingRect, nullptr)
+					&& maths::rectangle_clip(mainSprite->BoundingRect, refSprite->BoundingRect, nullptr)
 					&& spriteArr)
 				{
 					spriteArr->push_back(refSprite);

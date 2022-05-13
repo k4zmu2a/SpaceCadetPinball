@@ -100,7 +100,7 @@ void TEdgeManager::FieldEffects(TBall* ball, vector2* dstVec)
 		{
 			if (field->CollisionComp->FieldEffect(ball, &vec))
 			{
-				maths::vector_add(dstVec, &vec);
+				maths::vector_add(*dstVec, vec);
 			}
 		}
 	}

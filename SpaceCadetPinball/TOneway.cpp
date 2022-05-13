@@ -21,7 +21,7 @@ TOneway::TOneway(TPinballTable* table, int groupIndex) : TCollisionComponent(tab
 		linePt1.X = visual.FloatArr[2];
 		linePt1.Y = visual.FloatArr[3];
 
-		auto line = new TLine(this, &ActiveFlag, visual.CollisionGroup, &linePt2, &linePt1);
+		auto line = new TLine(this, &ActiveFlag, visual.CollisionGroup, linePt2, linePt1);
 		if (line)
 		{
 			line->Offset(table->CollisionCompOffset);
@@ -29,7 +29,7 @@ TOneway::TOneway(TPinballTable* table, int groupIndex) : TCollisionComponent(tab
 			EdgeList.push_back(line);
 		}
 
-		line = new TLine(this, &ActiveFlag, visual.CollisionGroup, &linePt1, &linePt2);
+		line = new TLine(this, &ActiveFlag, visual.CollisionGroup, linePt1, linePt2);
 		Line = line;
 		if (line)
 		{

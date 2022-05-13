@@ -14,7 +14,7 @@
 TRamp::TRamp(TPinballTable* table, int groupIndex) : TCollisionComponent(table, groupIndex, false)
 {
 	visualStruct visual{};
-	vector2 end{}, start{}, *end2, *start2, *start3, *end3;
+	vector2 end{}, start{}, end2{}, start2{}, start3{}, end3{};
 
 	MessageField = 0;
 	UnusedBaseFlag = 1;
@@ -33,7 +33,7 @@ TRamp::TRamp(TPinballTable* table, int groupIndex) : TCollisionComponent(table, 
 	end.Y = floatArr4[3];
 	start.X = floatArr4[4];
 	start.Y = floatArr4[5];
-	Line1 = new TLine(this, &ActiveFlag, 1 << static_cast<int>(floor(floatArr4[0])), &start, &end);
+	Line1 = new TLine(this, &ActiveFlag, 1 << static_cast<int>(floor(floatArr4[0])), start, end);
 	EdgeList.push_back(Line1);
 	if (Line1)
 	{
@@ -49,8 +49,8 @@ TRamp::TRamp(TPinballTable* table, int groupIndex) : TCollisionComponent(table, 
 		RampPlane,
 		RampPlaneCount,
 		reinterpret_cast<wall_point_type*>(floatArr5WallPoint + 3),
-		&end2,
-		&start2);
+		end2,
+		start2);
 	Line2 = new TLine(this, &ActiveFlag, CollisionGroup, start2, end2);
 	EdgeList.push_back(Line2);
 	if (Line2)
@@ -67,8 +67,8 @@ TRamp::TRamp(TPinballTable* table, int groupIndex) : TCollisionComponent(table, 
 		RampPlane,
 		RampPlaneCount,
 		reinterpret_cast<wall_point_type*>(floatArr6WallPoint + 3),
-		&end3,
-		&start3);
+		end3,
+		start3);
 	Line3 = new TLine(this, &ActiveFlag, CollisionGroup, start3, end3);
 	EdgeList.push_back(Line3);
 	if (Line3)
@@ -84,20 +84,17 @@ TRamp::TRamp(TPinballTable* table, int groupIndex) : TCollisionComponent(table, 
 	auto xMax = -1000000000.0f;
 	for (auto index = 0; index < RampPlaneCount; index++)
 	{
-		auto plane = &RampPlane[index];
-		auto pVec1 = &plane->V1;
-		auto pVec2 = &plane->V2;
-		auto pVec3 = &plane->V3;
+		auto& plane = RampPlane[index];
+		vector2* pointOrder[4] = { &plane.V1, &plane.V2, &plane.V3, &plane.V1 };
 
-		xMin = std::min(std::min(std::min(plane->V3.X, plane->V1.X), plane->V2.X), xMin);
-		yMin = std::min(std::min(std::min(plane->V3.Y, plane->V1.Y), plane->V2.Y), xMin); // Sic
-		xMax = std::max(std::max(std::max(plane->V3.X, plane->V1.X), plane->V2.X), xMin);
-		yMax = std::max(std::max(std::max(plane->V3.Y, plane->V1.Y), plane->V2.Y), xMin);
-
-		vector2* pointOrder[4] = {pVec1, pVec2, pVec3, pVec1};
+		xMin = std::min(std::min(std::min(plane.V3.X, plane.V1.X), plane.V2.X), xMin);
+		yMin = std::min(std::min(std::min(plane.V3.Y, plane.V1.Y), plane.V2.Y), xMin); // Sic
+		xMax = std::max(std::max(std::max(plane.V3.X, plane.V1.X), plane.V2.X), xMin);
+		yMax = std::max(std::max(std::max(plane.V3.Y, plane.V1.Y), plane.V2.Y), xMin);
+		
 		for (auto pt = 0; pt < 3; pt++)
 		{
-			auto point1 = pointOrder[pt], point2 = pointOrder[pt + 1];
+			auto& point1 = *pointOrder[pt], point2 = *pointOrder[pt + 1];
 			auto collisionGroup = 0;
 			if (point1 != end2 || point2 != start2)
 			{
@@ -120,15 +117,15 @@ TRamp::TRamp(TPinballTable* table, int groupIndex) : TCollisionComponent(table, 
 				EdgeList.push_back(line);
 				if (line)
 				{
-					line->WallValue = plane;
+					line->WallValue = &plane;
 					line->place_in_grid();
 				}
 			}
 		}
 
-		plane->FieldForce.X = cos(plane->GravityAngle2) * sin(plane->GravityAngle1) *
+		plane.FieldForce.X = cos(plane.GravityAngle2) * sin(plane.GravityAngle1) *
 			PinballTable->GravityDirVectMult;
-		plane->FieldForce.Y = sin(plane->GravityAngle2) * sin(plane->GravityAngle1) *
+		plane.FieldForce.Y = sin(plane.GravityAngle2) * sin(plane.GravityAngle1) *
 			PinballTable->GravityDirVectMult;
 	}
 

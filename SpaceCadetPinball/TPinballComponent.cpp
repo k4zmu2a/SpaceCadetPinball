@@ -59,7 +59,7 @@ TPinballComponent::TPinballComponent(TPinballTable* table, int groupIndex, bool 
 				tmpRect.YPosition = bmp->YPosition - table->YOffset;
 				tmpRect.Width = bmp->Width;
 				tmpRect.Height = bmp->Height;
-				maths::enclosing_box(&bmp1Rect, &tmpRect, &bmp1Rect);
+				maths::enclosing_box(bmp1Rect, tmpRect, bmp1Rect);
 			}
 
 			RenderSprite = render::create_sprite(

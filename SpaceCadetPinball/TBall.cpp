@@ -135,7 +135,7 @@ void TBall::throw_ball(TBall* ball, vector3* acceleration, float angleMult, floa
 	ball->Acceleration = *acceleration;
 	float rnd = RandFloat();
 	float angle = (1.0f - (rnd + rnd)) * angleMult;
-	maths::RotateVector(&ball->Acceleration, angle);
+	maths::RotateVector(ball->Acceleration, angle);
 	rnd = RandFloat();
 	ball->Speed = (1.0f - (rnd + rnd)) * (speedMult1 * speedMult2) + speedMult1;
 }

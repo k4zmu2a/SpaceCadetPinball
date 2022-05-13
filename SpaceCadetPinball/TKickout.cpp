@@ -138,7 +138,7 @@ int TKickout::FieldEffect(TBall* ball, vector2* dstVec)
 	direction.Y = Circle.Center.Y - ball->Position.Y;
 	if (direction.Y * direction.Y + direction.X * direction.X > Circle.RadiusSq)
 		return 0;
-	maths::normalize_2d(&direction);
+	maths::normalize_2d(direction);
 	dstVec->X = direction.X * FieldMult - ball->Acceleration.X * ball->Speed;
 	dstVec->Y = direction.Y * FieldMult - ball->Acceleration.Y * ball->Speed;
 	return 1;

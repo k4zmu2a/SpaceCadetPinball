@@ -220,45 +220,45 @@ void TTableLayer::edges_insert_circle(circle_type* circle, TEdgeSegment* edge, f
 					ray.Direction.X = 1.0;
 					ray.Direction.Y = 0.0;
 					ray.MaxDistance = edge_manager->AdvanceX;
-					if (maths::ray_intersect_circle(&ray, circle) < 1000000000.0f)
+					if (maths::ray_intersect_circle(ray, *circle) < 1000000000.0f)
 						break;
 
 					ray.Direction.X = -1.0;
 					ray.Origin.X = ray.Origin.X + edge_manager->AdvanceX;
-					if (maths::ray_intersect_circle(&ray, circle) < 1000000000.0f)
+					if (maths::ray_intersect_circle(ray, *circle) < 1000000000.0f)
 						break;
 
 					ray.Direction.X = 0.0;
 					ray.Direction.Y = 1.0;
 					ray.MaxDistance = edge_manager->AdvanceY;
-					if (maths::ray_intersect_circle(&ray, circle) < 1000000000.0f)
+					if (maths::ray_intersect_circle(ray, *circle) < 1000000000.0f)
 						break;
 
 					ray.Direction.Y = -1.0;
 					ray.Origin.Y = ray.Origin.Y + edge_manager->AdvanceY;
-					if (maths::ray_intersect_circle(&ray, circle) < 1000000000.0f)
+					if (maths::ray_intersect_circle(ray, *circle) < 1000000000.0f)
 						break;
 
 					ray.Direction.Y = 0.0;
 					ray.Direction.X = -1.0;
 					ray.MaxDistance = edge_manager->AdvanceX;
-					if (maths::ray_intersect_circle(&ray, circle) < 1000000000.0f)
+					if (maths::ray_intersect_circle(ray, *circle) < 1000000000.0f)
 						break;
 
 					ray.Direction.X = 1.0;
 					ray.Origin.X = ray.Origin.X - edge_manager->AdvanceX;
-					if (maths::ray_intersect_circle(&ray, circle) < 1000000000.0f)
+					if (maths::ray_intersect_circle(ray, *circle) < 1000000000.0f)
 						break;
 
 					ray.Direction.X = 0.0;
 					ray.Direction.Y = -1.0;
 					ray.MaxDistance = edge_manager->AdvanceY;
-					if (maths::ray_intersect_circle(&ray, circle) < 1000000000.0f)
+					if (maths::ray_intersect_circle(ray, *circle) < 1000000000.0f)
 						break;
 
 					ray.Direction.Y = 1.0;
 					ray.Origin.Y = ray.Origin.Y - edge_manager->AdvanceY;
-					if (maths::ray_intersect_circle(&ray, circle) < 1000000000.0f)
+					if (maths::ray_intersect_circle(ray, *circle) < 1000000000.0f)
 						break;
 
 					collision = false;

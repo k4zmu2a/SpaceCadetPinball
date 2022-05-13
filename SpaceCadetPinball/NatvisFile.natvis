@@ -10,4 +10,7 @@
 			<Item Name="[Color]" ExcludeView="simple">Color</Item>
 		</Expand>
 	</Type>
+	<Type Name="vector3">
+		<DisplayString>{{ X={X} Y={Y} Z={Z} }}</DisplayString>
+	</Type>
 </AutoVisualizer>

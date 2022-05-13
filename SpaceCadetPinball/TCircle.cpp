@@ -14,7 +14,7 @@ TCircle::TCircle(TCollisionComponent* collComp, char* activeFlag, unsigned colli
 
 float TCircle::FindCollisionDistance(ray_type* ray)
 {
-	return maths::ray_intersect_circle(ray, &Circle);
+	return maths::ray_intersect_circle(*ray, Circle);
 }
 
 void TCircle::EdgeCollision(TBall* ball, float coef)
@@ -25,7 +25,7 @@ void TCircle::EdgeCollision(TBall* ball, float coef)
 	nextPosition.Y = coef * ball->Acceleration.Y + ball->Position.Y;
 	direction.X = nextPosition.X - Circle.Center.X;
 	direction.Y = nextPosition.Y - Circle.Center.Y;
-	maths::normalize_2d(&direction);
+	maths::normalize_2d(direction);
 	CollisionComponent->Collision(ball, &nextPosition, &direction, coef, this);
 }
 

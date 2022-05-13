@@ -243,7 +243,7 @@ void pb::ballset(float dx, float dy)
 	TBall* ball = MainTable->BallList.at(0);
 	ball->Acceleration.X = dx * sensitivity;
 	ball->Acceleration.Y = dy * sensitivity;
-	ball->Speed = maths::normalize_2d(&ball->Acceleration);
+	ball->Speed = maths::normalize_2d(ball->Acceleration);
 }
 
 void pb::frame(float dtMilliSec)
@@ -313,8 +313,8 @@ void pb::timed_frame(float timeNow, float timeDelta, bool drawBalls)
 					vec2.Y = vec2.Y * timeDelta;
 					ball->Acceleration.X = ball->Speed * ball->Acceleration.X;
 					ball->Acceleration.Y = ball->Speed * ball->Acceleration.Y;
-					maths::vector_add(&ball->Acceleration, &vec2);
-					ball->Speed = maths::normalize_2d(&ball->Acceleration);
+					maths::vector_add(ball->Acceleration, vec2);
+					ball->Speed = maths::normalize_2d(ball->Acceleration);
 					ball->InvAcceleration.X = ball->Acceleration.X == 0.0f ? 1.0e9f : 1.0f / ball->Acceleration.X;
 					ball->InvAcceleration.Y = ball->Acceleration.Y == 0.0f ? 1.0e9f : 1.0f / ball->Acceleration.Y;
 				}
@@ -623,7 +623,7 @@ float pb::collide(float timeNow, float timeDelta, TBall* ball)
 			ball->RayMaxDistance = maxDistance;
 			positionMod.X = maxDistance * ball->Acceleration.X;
 			positionMod.Y = maxDistance * ball->Acceleration.Y;
-			maths::vector_add(&ball->Position, &positionMod);
+			maths::vector_add(ball->Position, positionMod);
 		}
 		else
 		{

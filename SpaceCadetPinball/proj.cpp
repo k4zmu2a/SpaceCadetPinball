@@ -38,7 +38,7 @@ float proj::z_distance(vector3* vec)
 {
 	vector3 dstVec{};
 	matrix_vector_multiply(&matrix, vec, &dstVec);
-	return maths::magnitude(&dstVec);
+	return maths::magnitude(dstVec);
 }
 
 void proj::xform_to_2d(vector3* vec, int* dst)
