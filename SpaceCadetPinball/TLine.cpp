@@ -11,7 +11,7 @@ TLine::TLine(TCollisionComponent* collCmp, char* activeFlag, unsigned int collis
 	Y0 = y0;
 	X1 = x1;
 	Y1 = y1;
-	maths::line_init(&Line, x0, y0, x1, y1);
+	maths::line_init(Line, x0, y0, x1, y1);
 }
 
 TLine::TLine(TCollisionComponent* collCmp, char* activeFlag, unsigned int collisionGroup, const vector2& start,
@@ -21,7 +21,7 @@ TLine::TLine(TCollisionComponent* collCmp, char* activeFlag, unsigned int collis
 	Y0 = start.Y;
 	X1 = end.X;
 	Y1 = end.Y;
-	maths::line_init(&Line, X0, Y0, X1, Y1);
+	maths::line_init(Line, X0, Y0, X1, Y1);
 }
 
 void TLine::Offset(float offset)
@@ -33,12 +33,12 @@ void TLine::Offset(float offset)
 	Y0 += offY;
 	X1 += offX;
 	Y1 += offY;
-	maths::line_init(&Line, X0, Y0, X1, Y1);
+	maths::line_init(Line, X0, Y0, X1, Y1);
 }
 
 float TLine::FindCollisionDistance(ray_type* ray)
 {
-	return maths::ray_intersect_line(ray, &Line);
+	return maths::ray_intersect_line(*ray, Line);
 }
 
 void TLine::EdgeCollision(TBall* ball, float coef)

@@ -120,7 +120,7 @@ float TFlipperEdge::FindCollisionDistance(ray_type* ray)
 				srcRay.Direction = ogRay->Direction;
 				srcRay.MaxDistance = ogRay->MaxDistance;
 				srcRay.Origin = ogRay->Origin;
-				auto distance = maths::distance_to_flipper(&srcRay, &dstRay);
+				auto distance = maths::distance_to_flipper(srcRay, dstRay);
 				if (distance == 0.0f)
 				{
 					NextBallPosition = dstRay.Origin;
@@ -166,14 +166,14 @@ float TFlipperEdge::FindCollisionDistance(ray_type* ray)
 			srcRay.Origin.X = ogRay->Origin.X - srcRay.Direction.X * 5.0f;
 			srcRay.Origin.Y = ogRay->Origin.Y - srcRay.Direction.Y * 5.0f;
 			srcRay.MaxDistance = ogRay->MaxDistance + 10.0f;
-			if (maths::distance_to_flipper(&srcRay, &dstRay) >= 1e+09f)
+			if (maths::distance_to_flipper(srcRay, dstRay) >= 1e+09f)
 			{
 				srcRay.Direction.X = RotOrigin.X - ogRay->Origin.X;
 				srcRay.Direction.Y = RotOrigin.Y - ogRay->Origin.Y;
 				maths::normalize_2d(srcRay.Direction);
 				srcRay.Origin.X = ogRay->Origin.X - srcRay.Direction.X * 5.0f;
 				srcRay.Origin.Y = ogRay->Origin.Y - srcRay.Direction.Y * 5.0f;
-				if (maths::distance_to_flipper(&srcRay, &dstRay) >= 1e+09f)
+				if (maths::distance_to_flipper(srcRay, dstRay) >= 1e+09f)
 				{
 					return 1e+09;
 				}
@@ -220,7 +220,7 @@ float TFlipperEdge::FindCollisionDistance(ray_type* ray)
 						srcRay.Origin.X = posX - srcRay.Direction.X * 5.0f;
 						srcRay.Origin.Y = posY - srcRay.Direction.Y * 5.0f;
 						srcRay.MaxDistance = ogRay->MaxDistance + 10.0f;
-						if (maths::distance_to_flipper(&srcRay, &dstRay) >= 1e+09f)
+						if (maths::distance_to_flipper(srcRay, dstRay) >= 1e+09f)
 						{
 							NextBallPosition.X = posX;
 							NextBallPosition.Y = posY;
@@ -249,7 +249,7 @@ float TFlipperEdge::FindCollisionDistance(ray_type* ray)
 				srcRay.Origin.X = ogRay->Origin.X - srcRay.Direction.X * 5.0f;
 				srcRay.Origin.Y = ogRay->Origin.Y - srcRay.Direction.Y * 5.0f;
 				srcRay.MaxDistance = ogRay->MaxDistance + 10.0f;
-				auto distance = maths::distance_to_flipper(&srcRay, &dstRay);
+				auto distance = maths::distance_to_flipper(srcRay, dstRay);
 				CollisionDirection = dstRay.Direction;
 				if (distance >= 1e+09f)
 				{
@@ -265,7 +265,7 @@ float TFlipperEdge::FindCollisionDistance(ray_type* ray)
 			srcRay.MinDistance = ogRay->MinDistance;
 			srcRay.Origin = ogRay->Origin;
 			srcRay.MaxDistance = rayMaxDistance;
-			auto distance = maths::distance_to_flipper(&srcRay, &dstRay);
+			auto distance = maths::distance_to_flipper(srcRay, dstRay);
 			if (distance < 1e+09f)
 			{
 				NextBallPosition = dstRay.Origin;
@@ -389,7 +389,7 @@ void TFlipperEdge::place_in_grid()
 
 void TFlipperEdge::set_control_points(float timeNow)
 {
-	maths::SinCos(flipper_angle(timeNow), &flipper_sin_angle, &flipper_cos_angle);
+	maths::SinCos(flipper_angle(timeNow), flipper_sin_angle, flipper_cos_angle);
 	A1 = A1Src;
 	A2 = A2Src;
 	B1 = B1Src;
@@ -404,8 +404,8 @@ void TFlipperEdge::set_control_points(float timeNow)
 
 void TFlipperEdge::build_edges_in_motion()
 {
-	maths::line_init(&lineA, A1.X, A1.Y, A2.X, A2.Y);
-	maths::line_init(&lineB, B1.X, B1.Y, B2.X, B2.Y);
+	maths::line_init(lineA, A1.X, A1.Y, A2.X, A2.Y);
+	maths::line_init(lineB, B1.X, B1.Y, B2.X, B2.Y);
 	circlebase.RadiusSq = CirclebaseRadiusSq;
 	circlebase.Center.X = RotOrigin.X;
 	circlebase.Center.Y = RotOrigin.Y;

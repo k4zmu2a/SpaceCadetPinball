@@ -129,37 +129,38 @@ float maths::normalize_2d(vector2& vec)
 }
 
 
-void maths::line_init(line_type* line, float x0, float y0, float x1, float y1)
+void maths::line_init(line_type& line, float x0, float y0, float x1, float y1)
 {
-	line->Origin = { x0, y0 };
-	line->Direction.X = x1 - x0;
-	line->Direction.Y = y1 - y0;
-	normalize_2d(line->Direction);
+	line.Origin = { x0, y0 };
+	line.Direction.X = x1 - x0;
+	line.Direction.Y = y1 - y0;
+	normalize_2d(line.Direction);
 
 	// Clockwise perpendicular to the line direction vector
-	line->PerpendicularC = { line->Direction.Y, -line->Direction.X };
+	line.PerpendicularC = { line.Direction.Y, -line.Direction.X };
 
 	auto lineStart = x0, lineEnd = x1;
-	if (std::abs(line->Direction.X) < 0.000000001f)
+	if (std::abs(line.Direction.X) < 0.000000001f)
 	{
-		line->Direction.X = 0.0;
+		line.Direction.X = 0.0;
 		lineStart = y0;
 		lineEnd = y1;
 	}
 
-	line->MinCoord = std::min(lineStart, lineEnd);
-	line->MaxCoord = std::max(lineStart, lineEnd);
+	line.MinCoord = std::min(lineStart, lineEnd);
+	line.MaxCoord = std::max(lineStart, lineEnd);
 }
 
 // Returns the distance from ray origin to the ray-line segment intersection point.
-float maths::ray_intersect_line(ray_type* ray, line_type* line)
+// Stores ray-line intersection point in line.RayIntersect
+float maths::ray_intersect_line(const ray_type& ray, line_type& line)
 {
 	// V1 vector between ray origin and line origin
 	// V2 ray direction
 	// V3 line perpendicular clockwise
-	auto v1 = vector_sub(ray->Origin, line->Origin);
-	auto v2 = line->Direction;
-	auto v3 = vector2{ -ray->Direction.Y, ray->Direction.X };
+	auto v1 = vector_sub(ray.Origin, line.Origin);
+	auto v2 = line.Direction;
+	auto v3 = vector2{ -ray.Direction.Y, ray.Direction.X };
 
 	// Project line on ray perpendicular, no intersection if ray is pointing away from the line
 	auto v2DotV3 = DotProduct(v2, v3);
@@ -167,14 +168,14 @@ float maths::ray_intersect_line(ray_type* ray, line_type* line)
 	{
 		// Distance to the intersect point: (V2 X V1) / (V2 dot V3)
 		auto distance = cross(v2, v1) / v2DotV3;
-		if (distance >= -ray->MinDistance && distance <= ray->MaxDistance)
+		if (distance >= -ray.MinDistance && distance <= ray.MaxDistance)
 		{
-			line->RayIntersect.X = distance * ray->Direction.X + ray->Origin.X;
-			line->RayIntersect.Y = distance * ray->Direction.Y + ray->Origin.Y;
+			line.RayIntersect.X = distance * ray.Direction.X + ray.Origin.X;
+			line.RayIntersect.Y = distance * ray.Direction.Y + ray.Origin.Y;
 
 			// Check if intersection point is inside line segment
-			auto testPoint = line->Direction.X != 0.0f ? line->RayIntersect.X : line->RayIntersect.Y;
-			if (testPoint >= line->MinCoord && testPoint <= line->MaxCoord)
+			auto testPoint = line.Direction.X != 0.0f ? line.RayIntersect.X : line.RayIntersect.Y;
+			if (testPoint >= line.MinCoord && testPoint <= line.MaxCoord)
 			{
 				return distance;
 			}
@@ -223,7 +224,8 @@ float maths::basic_collision(TBall* ball, vector2* nextPosition, vector2* direct
 {
 	ball->Position.X = nextPosition->X;
 	ball->Position.Y = nextPosition->Y;
-	float proj = -(direction->Y * ball->Acceleration.Y + direction->X * ball->Acceleration.X);
+
+	auto proj = -DotProduct(*direction, ball->Acceleration);
 	if (proj < 0)
 	{
 		proj = -proj;
@@ -236,6 +238,7 @@ float maths::basic_collision(TBall* ball, vector2* nextPosition, vector2* direct
 		ball->Acceleration.Y = (dy1 + ball->Acceleration.Y) * smoothness + dy1 * elasticity;
 		normalize_2d(ball->Acceleration);
 	}
+
 	float projSpeed = proj * ball->Speed;
 	float newSpeed = ball->Speed - (1.0f - elasticity) * projSpeed;
 	ball->Speed = newSpeed;
@@ -265,87 +268,75 @@ float maths::Distance(const vector2& vec1, const vector2& vec2)
 	return sqrt(Distance_Squared(vec1, vec2));
 }
 
-void maths::SinCos(float angle, float* sinOut, float* cosOut)
+void maths::SinCos(float angle, float& sinOut, float& cosOut)
 {
-	*sinOut = sin(angle);
-	*cosOut = cos(angle);
+	sinOut = sin(angle);
+	cosOut = cos(angle);
 }
 
 void maths::RotatePt(vector2& point, float sin, float cos, const vector2& origin)
 {
-	auto dirX = point.X - origin.X;
-	auto dirY = point.Y - origin.Y;
-	point.X = dirX * cos - dirY * sin + origin.X;
-	point.Y = dirX * sin + dirY * cos + origin.Y;
+	auto xOffset = point.X - origin.X;
+	auto yOffset = point.Y - origin.Y;
+	point.X = xOffset * cos - yOffset * sin + origin.X;
+	point.Y = xOffset * sin + yOffset * cos + origin.Y;
 }
 
-float maths::distance_to_flipper(ray_type* ray1, ray_type* ray2)
+// Return the distance from ray1 origin to the intersection point with the closest flipper feature. 
+// Sets ray2 origin to intersection point, direction to collision direction
+float maths::distance_to_flipper(const ray_type& ray1, ray_type& ray2)
 {
 	auto distance = 1000000000.0f;
-	auto distanceType = -1;
-	auto newDistance = ray_intersect_line(ray1, &TFlipperEdge::lineA);
-	if (newDistance < 1000000000.0f)
-	{
-		distance = newDistance;
-		distanceType = 0;
-	}
-	newDistance = ray_intersect_circle(*ray1, TFlipperEdge::circlebase);
+	auto distanceType = FlipperIntersect::none;
+	auto newDistance = ray_intersect_line(ray1, TFlipperEdge::lineA);
 	if (newDistance < distance)
 	{
 		distance = newDistance;
-		distanceType = 2;
+		distanceType = FlipperIntersect::lineA;
 	}
-	newDistance = ray_intersect_circle(*ray1, TFlipperEdge::circleT1);
+	newDistance = ray_intersect_circle(ray1, TFlipperEdge::circlebase);
 	if (newDistance < distance)
 	{
 		distance = newDistance;
-		distanceType = 3;
+		distanceType = FlipperIntersect::circlebase;
 	}
-	newDistance = ray_intersect_line(ray1, &TFlipperEdge::lineB);
+	newDistance = ray_intersect_circle(ray1, TFlipperEdge::circleT1);
 	if (newDistance < distance)
 	{
 		distance = newDistance;
-		distanceType = 1;
+		distanceType = FlipperIntersect::circleT1;
 	}
-	if (!ray2 || distance >= 1000000000.0f)
-		return distance;
+	newDistance = ray_intersect_line(ray1, TFlipperEdge::lineB);
+	if (newDistance < distance)
+	{
+		distance = newDistance;
+		distanceType = FlipperIntersect::lineB;
+	}
 
-	if (distanceType != -1)
+	switch (distanceType)
 	{
-		vector2* nextOrigin;
-		if (distanceType)
-		{
-			if (distanceType != 1)
-			{
-				float dirY;
-				ray2->Origin.X = distance * ray1->Direction.X + ray1->Origin.X;
-				ray2->Origin.Y = distance * ray1->Direction.Y + ray1->Origin.Y;
-				if (distanceType == 2)
-				{
-					ray2->Direction.X = ray2->Origin.X - TFlipperEdge::circlebase.Center.X;
-					dirY = ray2->Origin.Y - TFlipperEdge::circlebase.Center.Y;
-				}
-				else
-				{
-					ray2->Direction.X = ray2->Origin.X - TFlipperEdge::circleT1.Center.X;
-					dirY = ray2->Origin.Y - TFlipperEdge::circleT1.Center.Y;
-				}
-				ray2->Direction.Y = dirY;
-				normalize_2d(ray2->Direction);
-				return distance;
-			}
-			ray2->Direction = TFlipperEdge::lineB.PerpendicularC;
-			nextOrigin = &TFlipperEdge::lineB.RayIntersect;
-		}
-		else
-		{
-			ray2->Direction = TFlipperEdge::lineA.PerpendicularC;
-			nextOrigin = &TFlipperEdge::lineA.RayIntersect;
-		}
-		ray2->Origin = *nextOrigin;
-		return distance;
+	case FlipperIntersect::lineA:
+		ray2.Direction = TFlipperEdge::lineA.PerpendicularC;
+		ray2.Origin = TFlipperEdge::lineA.RayIntersect;
+		break;
+	case FlipperIntersect::lineB:
+		ray2.Direction = TFlipperEdge::lineB.PerpendicularC;
+		ray2.Origin = TFlipperEdge::lineB.RayIntersect;
+		break;
+	case FlipperIntersect::circlebase:
+	case FlipperIntersect::circleT1:
+		ray2.Origin.X = distance * ray1.Direction.X + ray1.Origin.X;
+		ray2.Origin.Y = distance * ray1.Direction.Y + ray1.Origin.Y;
+		ray2.Direction = vector_sub(ray2.Origin, distanceType == FlipperIntersect::circlebase ?
+			TFlipperEdge::circlebase.Center : TFlipperEdge::circleT1.Center);
+		normalize_2d(ray2.Direction);
+		break;
+	case FlipperIntersect::none:
+	default:
+		break;
 	}
-	return 1000000000.0;
+
+	return distance;
 }
 
 void maths::RotateVector(vector2& vec, float angle)
@@ -365,14 +356,7 @@ void maths::RotateVector(vector2& vec, float angle)
 void maths::find_closest_edge(ramp_plane_type* planes, int planeCount, wall_point_type* wall, vector2& lineEnd,
                               vector2& lineStart)
 {
-	vector2 wallEnd{}, wallStart{};
-
-	wallStart.X = wall->X0;
-	wallStart.Y = wall->Y0;
-	wallEnd.Y = wall->Y1;
-	wallEnd.X = wall->X1;
-
-	float maxDistance = 1000000000.0f;
+	float distance = 1000000000.0f;
 	for (auto index = 0; index < planeCount; index++)
 	{
 		auto& plane = planes[index];
@@ -382,10 +366,10 @@ void maths::find_closest_edge(ramp_plane_type* planes, int planeCount, wall_poin
 		{
 			auto& point1 = *pointOrder[pt], point2 = *pointOrder[pt + 1];
 
-			auto distance = Distance(wallStart, point1) + Distance(wallEnd, point2);
-			if (distance < maxDistance)
+			auto newDistance = Distance(wall->Pt0, point1) + Distance(wall->Pt1, point2);
+			if (newDistance < distance)
 			{
-				maxDistance = distance;
+				distance = newDistance;
 				lineEnd = point1;
 				lineStart = point2;
 			}
