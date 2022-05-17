@@ -79,123 +79,45 @@ void TLine::place_in_grid()
 	{
 		if (dirY == 1)
 		{
-			if (yBox0 <= yBox1)
-			{
-				do
-					edgeMan->add_edge_to_box(xBox0, yBox0++, this);
-				while (yBox0 <= yBox1);
-			}
+			while (yBox0 <= yBox1)
+				edgeMan->add_edge_to_box(xBox0, yBox0++, this);
 		}
-		else if (yBox0 >= yBox1)
+		else
 		{
-			do
+			while (yBox0 >= yBox1)
 				edgeMan->add_edge_to_box(xBox0, yBox0--, this);
-			while (yBox0 >= yBox1);
 		}
 	}
 	else
 	{
-		float yCoord, xCoord;
-		int indexX1 = xBox0, indexY1 = yBox0;
-		int bresIndexX = xBox0 + 1, bresIndexY = yBox0 + 1;
-		auto bresDyDx = (Y0 - Y1) / (X0 - X1);
-		auto bresXAdd = Y0 - bresDyDx * X0;
 		edgeMan->add_edge_to_box(xBox0, yBox0, this);
-		if (dirX == 1)
+
+		// Bresenham line formula: y = dYdX * (x - x0) + y0; dYdX = (y0 - y1) / (x0 - x1)
+		auto dyDx = (Y0 - Y1) / (X0 - X1);
+		// Precompute constant part: dYdX * (-x0) + y0
+		auto precomp = -X0 * dyDx + Y0;
+		// X and Y indexes are offset by one when going forwards, not sure why
+		auto xBias = dirX == 1 ? 1 : 0, yBias = dirY == 1 ? 1 : 0;
+
+		for (auto indexX = xBox0, indexY = yBox0; indexX != xBox1 || indexY != yBox1;)
 		{
-			if (dirY == 1)
+			// Calculate y from indexY and from line formula
+			auto yDiscrete = (indexY + yBias) * edgeMan->AdvanceY + edgeMan->Y;
+			auto ylinear = ((indexX + xBias) * edgeMan->AdvanceX + edgeMan->X) * dyDx + precomp;
+			if (dirY == 1 ? ylinear >= yDiscrete : ylinear <= yDiscrete)
 			{
-				do
-				{
-					yCoord = bresIndexY * edgeMan->AdvanceY + edgeMan->Y;
-					xCoord = (bresIndexX * edgeMan->AdvanceX + edgeMan->X) * bresDyDx + bresXAdd;
-					if (xCoord >= yCoord)
-					{
-						if (xCoord == yCoord)
-						{
-							++indexX1;
-							++bresIndexX;
-						}
-						++indexY1;
-						++bresIndexY;
-					}
-					else
-					{
-						++indexX1;
-						++bresIndexX;
-					}
-					edgeMan->add_edge_to_box(indexX1, indexY1, this);
-				}
-				while (indexX1 != xBox1 || indexY1 != yBox1);
+				// Advance indexY when discrete value is ahead/behind
+				// Advance indexX when discrete value matches linear value
+				indexY += dirY;
+				if (ylinear == yDiscrete)
+					indexX += dirX;
 			}
 			else
 			{
-				do
-				{
-					yCoord = indexY1 * edgeMan->AdvanceY + edgeMan->Y;
-					xCoord = (bresIndexX * edgeMan->AdvanceX + edgeMan->X) * bresDyDx + bresXAdd;
-					if (xCoord <= yCoord)
-					{
-						if (xCoord == yCoord)
-						{
-							++indexX1;
-							++bresIndexX;
-						}
-						--indexY1;
-					}
-					else
-					{
-						++indexX1;
-						++bresIndexX;
-					}
-					edgeMan->add_edge_to_box(indexX1, indexY1, this);
-				}
-				while (indexX1 != xBox1 || indexY1 != yBox1);
+				// Advance indexX otherwise
+				indexX += dirX;
 			}
-		}
-		else
-		{
-			if (dirY == 1)
-			{
-				do
-				{
-					xCoord = bresIndexY * edgeMan->AdvanceY + edgeMan->Y;
-					yCoord = (indexX1 * edgeMan->AdvanceX + edgeMan->X) * bresDyDx + bresXAdd;
-					if (yCoord >= xCoord)
-					{
-						if (yCoord == xCoord)
-							--indexX1;
-						++indexY1;
-						++bresIndexY;
-					}
-					else
-					{
-						--indexX1;
-					}
-					edgeMan->add_edge_to_box(indexX1, indexY1, this);
-				}
-				while (indexX1 != xBox1 || indexY1 != yBox1);
-			}
-			else
-			{
-				do
-				{
-					yCoord = indexY1 * edgeMan->AdvanceY + edgeMan->Y;
-					xCoord = (indexX1 * edgeMan->AdvanceX + edgeMan->X) * bresDyDx + bresXAdd;
-					if (xCoord <= yCoord)
-					{
-						if (xCoord == yCoord)
-							--indexX1;
-						--indexY1;
-					}
-					else
-					{
-						--indexX1;
-					}
-					edgeMan->add_edge_to_box(indexX1, indexY1, this);
-				}
-				while (indexX1 != xBox1 || indexY1 != yBox1);
-			}
+			edgeMan->add_edge_to_box(indexX, indexY, this);
 		}
 	}
 }
