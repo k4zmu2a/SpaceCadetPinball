@@ -50,7 +50,7 @@ TBall::TBall(TPinballTable* table) : TPinballComponent(table, -1, false)
 		if (ListBitmap)
 			ListBitmap->push_back(visual.Bitmap);
 		auto visVec = reinterpret_cast<vector3*>(loader::query_float_attribute(groupIndex, index, 501));
-		auto zDepth = proj::z_distance(visVec);
+		auto zDepth = proj::z_distance(*visVec);
 		VisualZArray[index] = zDepth;
 	}
 	RenderSprite = render::create_sprite(VisualTypes::Ball, nullptr, nullptr, 0, 0, nullptr);
@@ -60,8 +60,6 @@ TBall::TBall(TPinballTable* table) : TPinballComponent(table, -1, false)
 
 void TBall::Repaint()
 {
-	int pos2D[2];
-
 	if (CollisionFlag)
 	{
 		Position.Z =
@@ -70,8 +68,8 @@ void TBall::Repaint()
 			Offset + CollisionOffset.Z;
 	}
 
-	proj::xform_to_2d(&Position, pos2D);
-	auto zDepth = proj::z_distance(&Position);
+	auto pos2D = proj::xform_to_2d(Position);
+	auto zDepth = proj::z_distance(Position);
 
 	auto zArrPtr = VisualZArray;
 	auto index = 0u;
@@ -85,8 +83,8 @@ void TBall::Repaint()
 		RenderSprite,
 		bmp,
 		zDepth,
-		pos2D[0] - bmp->Width / 2,
-		pos2D[1] - bmp->Height / 2);
+		pos2D.X - bmp->Width / 2,
+		pos2D.Y - bmp->Height / 2);
 }
 
 void TBall::not_again(TEdgeSegment* edge)

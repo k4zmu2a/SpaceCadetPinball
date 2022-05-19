@@ -170,6 +170,8 @@ set(SOURCE_FILES
         SpaceCadetPinball/imstb_textedit.h
         SpaceCadetPinball/imstb_rectpack.h
         SpaceCadetPinball/imstb_truetype.h
+        SpaceCadetPinball/DebugOverlay.cpp
+        SpaceCadetPinball/DebugOverlay.h
         )
 
 # On Windows, include resource file with the icon

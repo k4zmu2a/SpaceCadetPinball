@@ -47,7 +47,7 @@ void GroupData::AddEntry(EntryData* entry)
 			if (srcBmp->BitmapType == BitmapTypes::Spliced)
 			{
 				// Get rid of spliced bitmap early on, to simplify render pipeline
-				auto bmp = new gdrv_bitmap8(srcBmp->Width, srcBmp->Height, srcBmp->Width);
+				auto bmp = new gdrv_bitmap8(srcBmp->Width, srcBmp->Height, true);
 				auto zMap = new zmap_header_type(srcBmp->Width, srcBmp->Height, srcBmp->Width);
 				SplitSplicedBitmap(*srcBmp, *bmp, *zMap);
 

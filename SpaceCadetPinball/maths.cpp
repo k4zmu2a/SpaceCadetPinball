@@ -132,6 +132,7 @@ float maths::normalize_2d(vector2& vec)
 void maths::line_init(line_type& line, float x0, float y0, float x1, float y1)
 {
 	line.Origin = { x0, y0 };
+	line.End = { x1, y1 };
 	line.Direction.X = x1 - x0;
 	line.Direction.Y = y1 - y0;
 	normalize_2d(line.Direction);
@@ -217,6 +218,11 @@ void maths::vector_add(vector2& vec1Dst, const vector2& vec2)
 vector2 maths::vector_sub(const vector2& vec1, const vector2& vec2)
 {
 	return { vec1.X - vec2.X, vec1.Y - vec2.Y };
+}
+
+vector2 maths::vector_mul(const vector2& vec1, float val)
+{
+	return { vec1.X * val, vec1.Y * val };
 }
 
 float maths::basic_collision(TBall* ball, vector2* nextPosition, vector2* direction, float elasticity, float smoothness,

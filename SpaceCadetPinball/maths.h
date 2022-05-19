@@ -19,7 +19,16 @@ struct vector2
 
 struct vector3 :vector2
 {	
+	vector3() = default;
+	vector3(float x, float y) : vector3{ x, y, 0 } {}
+	vector3(float x, float y, float z) : vector2{ x, y }, Z(z) {}
 	float Z;
+};
+
+struct vector2i
+{
+	int X;
+	int Y;
 };
 
 struct rectangle_type
@@ -52,6 +61,7 @@ struct line_type
 	vector2 PerpendicularC;
 	vector2 Direction;
 	vector2 Origin;
+	vector2 End;
 	float MinCoord;
 	float MaxCoord;
 	vector2 RayIntersect;
@@ -98,6 +108,7 @@ public:
 	static float magnitude(const vector3& vec);
 	static void vector_add(vector2& vec1Dst, const vector2& vec2);
 	static vector2 vector_sub(const vector2& vec1, const vector2& vec2);
+	static vector2 vector_mul(const vector2& vec1, float val);
 	static float basic_collision(TBall* ball, vector2* nextPosition, vector2* direction, float elasticity,
 	                             float smoothness,
 	                             float threshold, float boost);

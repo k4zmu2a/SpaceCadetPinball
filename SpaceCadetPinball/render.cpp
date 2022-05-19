@@ -8,6 +8,7 @@
 #include "score.h"
 #include "TPinballTable.h"
 #include "winmain.h"
+#include "DebugOverlay.h"
 
 std::vector<render_sprite_type_struct*> render::dirty_list, render::sprite_list, render::ball_list;
 zmap_header_type* render::background_zmap;
@@ -57,6 +58,7 @@ void render::uninit()
 	ball_list.clear();
 	dirty_list.clear();
 	sprite_list.clear();
+	DebugOverlay::UnInit();
 }
 
 void render::recreate_screen_texture()
@@ -584,5 +586,10 @@ void render::PresentVScreen()
 		SDL_RenderCopy(winmain::Renderer, vscreen->Texture, &srcBoardRect, &dstBoardRect);
 		SDL_RenderCopy(winmain::Renderer, vscreen->Texture, &srcSidebarRect, &dstSidebarRect);
 #endif
+	}
+
+	if (options::Options.DebugOverlay)
+	{
+		DebugOverlay::DrawOverlay();
 	}
 }

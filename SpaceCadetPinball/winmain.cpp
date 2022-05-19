@@ -577,6 +577,24 @@ void winmain::RenderUi()
 			{
 				DispGRhistory ^= true;
 			}
+			if (ImGui::MenuItem("Debug Overlay", nullptr, Options.DebugOverlay))
+			{
+				Options.DebugOverlay ^= true;
+			}
+			if (Options.DebugOverlay && ImGui::BeginMenu("Overlay Options"))
+			{
+				if (ImGui::MenuItem("Box Grid", nullptr, Options.DebugOverlayGrid))
+					Options.DebugOverlayGrid ^= true;
+				if (ImGui::MenuItem("All Edges", nullptr, Options.DebugOverlayAllEdges))
+					Options.DebugOverlayAllEdges ^= true;
+				if (ImGui::MenuItem("Ball Position", nullptr, Options.DebugOverlayBallPosition))
+					Options.DebugOverlayBallPosition ^= true;
+				if (ImGui::MenuItem("Ball Box Edges", nullptr, Options.DebugOverlayBallEdges))
+					Options.DebugOverlayBallEdges ^= true;
+				if (ImGui::MenuItem("Apply Collision Mask", nullptr, Options.DebugOverlayCollisionMask))
+					Options.DebugOverlayCollisionMask ^= true;
+				ImGui::EndMenu();
+			}
 			if (ImGui::BeginMenu("Cheats"))
 			{
 				if (ImGui::MenuItem("hidden test", nullptr, pb::cheat_mode))

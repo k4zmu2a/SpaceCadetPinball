@@ -9,7 +9,15 @@
 
 ColorRgba gdrv::current_palette[256]{};
 
-gdrv_bitmap8::gdrv_bitmap8(int width, int height, bool indexed)
+gdrv_bitmap8::gdrv_bitmap8(int width, int height) : gdrv_bitmap8(width, height, true, true)
+{
+}
+
+gdrv_bitmap8::gdrv_bitmap8(int width, int height, bool indexed) : gdrv_bitmap8(width, height, indexed, true)
+{
+}
+
+gdrv_bitmap8::gdrv_bitmap8(int width, int height, bool indexed, bool bmpBuff)
 {
 	assertm(width >= 0 && height >= 0, "Negative bitmap8 dimensions");
 
@@ -20,13 +28,15 @@ gdrv_bitmap8::gdrv_bitmap8(int width, int height, bool indexed)
 	BitmapType = BitmapTypes::DibBitmap;
 	Texture = nullptr;
 	IndexedBmpPtr = nullptr;
+	BmpBufPtr1 = nullptr;
 	XPosition = 0;
 	YPosition = 0;
 	Resolution = 0;
 
 	if (indexed)
 		IndexedBmpPtr = new char[Height * IndexedStride];
-	BmpBufPtr1 = new ColorRgba[Height * Stride];
+	if (bmpBuff)
+		BmpBufPtr1 = new ColorRgba[Height * Stride];
 }
 
 gdrv_bitmap8::gdrv_bitmap8(const dat8BitBmpHeader& header)

@@ -104,6 +104,12 @@ void options::InitPrimary()
 	Options.IntegerScaling = get_int("Integer Scaling", false);
 	Options.SoundVolume = Clamp(get_int("Sound Volume", DefVolume), MinVolume, MaxVolume);
 	Options.MusicVolume = Clamp(get_int("Music Volume", DefVolume), MinVolume, MaxVolume);
+	Options.DebugOverlay = get_int("Debug Overlay", false);
+	Options.DebugOverlayGrid = get_int("Debug Overlay Grid", true);
+	Options.DebugOverlayAllEdges = get_int("Debug Overlay All Edges", true);
+	Options.DebugOverlayBallPosition = get_int("Debug Overlay Ball Position", true);
+	Options.DebugOverlayBallEdges = get_int("Debug Overlay Ball Edges", true);
+	Options.DebugOverlayCollisionMask = get_int("Debug Overlay Collision Mask", true);
 }
 
 void options::InitSecondary()
@@ -143,6 +149,12 @@ void options::uninit()
 	set_int("Integer Scaling", Options.IntegerScaling);
 	set_int("Sound Volume", Options.SoundVolume);
 	set_int("Music Volume", Options.MusicVolume);
+	set_int("Debug Overlay", Options.DebugOverlay);
+	set_int("Debug Overlay Grid", Options.DebugOverlayGrid);
+	set_int("Debug Overlay All Edges", Options.DebugOverlayAllEdges);
+	set_int("Debug Overlay Ball Position", Options.DebugOverlayBallPosition);
+	set_int("Debug Overlay Ball Edges", Options.DebugOverlayBallEdges);
+	set_int("Debug Overlay Collision Mask", Options.DebugOverlayCollisionMask);
 }
 
 

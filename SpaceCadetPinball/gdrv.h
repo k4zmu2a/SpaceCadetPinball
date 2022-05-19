@@ -47,7 +47,9 @@ static_assert(sizeof(ColorRgba) == 4, "Wrong size of RGBA color");
 
 struct gdrv_bitmap8
 {
+	gdrv_bitmap8(int width, int height);
 	gdrv_bitmap8(int width, int height, bool indexed);
+	gdrv_bitmap8(int width, int height, bool indexed, bool bmpBuff);
 	gdrv_bitmap8(const struct dat8BitBmpHeader& header);
 	~gdrv_bitmap8();
 	void ScaleIndexed(float scaleX, float scaleY);

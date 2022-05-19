@@ -26,33 +26,42 @@ void proj::init(float* mat4x3, float d, float centerX, float centerY)
 	centery = centerY;
 }
 
-void proj::matrix_vector_multiply(mat4_row_major* mat, vector3* vec, vector3* dstVec)
+vector3 proj::matrix_vector_multiply(const mat4_row_major& mat, const vector3& vec)
 {
-	const float x = vec->X, y = vec->Y, z = vec->Z;
-	dstVec->X = z * mat->Row0.Z + y * mat->Row0.Y + x * mat->Row0.X + mat->Row0.W;
-	dstVec->Y = z * mat->Row1.Z + y * mat->Row1.Y + x * mat->Row1.X + mat->Row1.W;
-	dstVec->Z = z * mat->Row2.Z + y * mat->Row2.Y + x * mat->Row2.X + mat->Row2.W;
+	vector3 dstVec;
+	const float x = vec.X, y = vec.Y, z = vec.Z;
+	dstVec.X = z * mat.Row0.Z + y * mat.Row0.Y + x * mat.Row0.X + mat.Row0.W;
+	dstVec.Y = z * mat.Row1.Z + y * mat.Row1.Y + x * mat.Row1.X + mat.Row1.W;
+	dstVec.Z = z * mat.Row2.Z + y * mat.Row2.Y + x * mat.Row2.X + mat.Row2.W;
+	return dstVec;
 }
 
-float proj::z_distance(vector3* vec)
+float proj::z_distance(const vector3& vec)
 {
-	vector3 dstVec{};
-	matrix_vector_multiply(&matrix, vec, &dstVec);
-	return maths::magnitude(dstVec);
+	auto projVec = matrix_vector_multiply(matrix, vec);
+	return maths::magnitude(projVec);
 }
 
-void proj::xform_to_2d(vector3* vec, int* dst)
+vector2i proj::xform_to_2d(const vector2& vec)
+{
+	vector3 vec3{ vec.X, vec.Y, 0 };
+	return xform_to_2d(vec3);
+}
+
+vector2i proj::xform_to_2d(const vector3& vec)
 {
 	float projCoef;
-	vector3 dstVec2{};
 
-	matrix_vector_multiply(&matrix, vec, &dstVec2);
-	if (dstVec2.Z == 0.0f)
+	auto projVec = matrix_vector_multiply(matrix, vec);
+	if (projVec.Z == 0.0f)
 		projCoef = 999999.88f;
 	else
-		projCoef = d_ / dstVec2.Z;
-	dst[0] = static_cast<int>(dstVec2.X * projCoef + centerx);
-	dst[1] = static_cast<int>(dstVec2.Y * projCoef + centery);
+		projCoef = d_ / projVec.Z;
+	return
+	{
+		static_cast<int>(projVec.X * projCoef + centerx),
+		static_cast<int>(projVec.Y * projCoef + centery)
+	};
 }
 
 void proj::recenter(float centerX, float centerY)

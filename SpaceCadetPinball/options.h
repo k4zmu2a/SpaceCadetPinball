@@ -80,6 +80,12 @@ struct optionsStruct
 	bool IntegerScaling;
 	int SoundVolume;
 	int MusicVolume;
+	bool DebugOverlay;
+	bool DebugOverlayGrid;
+	bool DebugOverlayAllEdges;
+	bool DebugOverlayBallPosition;
+	bool DebugOverlayBallEdges;
+	bool DebugOverlayCollisionMask;
 };
 
 struct ControlRef
