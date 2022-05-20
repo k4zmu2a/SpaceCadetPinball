@@ -8,8 +8,8 @@
 
 std::vector<Mix_Music*> midi::LoadedTracks{};
 Mix_Music *midi::track1, *midi::track2, *midi::track3, *midi::active_track, *midi::NextTrack;
-bool midi::SetNextTrackFlag;
 int midi::Volume = MIX_MAX_VOLUME;
+bool midi::IsPlaying = false;
 
 constexpr uint32_t FOURCC(uint8_t a, uint8_t b, uint8_t c, uint8_t d)
 {
@@ -31,27 +31,41 @@ int ToVariableLen(uint32_t value, uint32_t& dst)
 	return count;
 }
 
-int midi::play_pb_theme()
+void midi::music_play()
 {
-	// Todo: add support for tracks 2 and 3
-	return play_track(track1);
+	if (!IsPlaying)
+	{
+		IsPlaying = true;
+		play_track(NextTrack);
+		NextTrack = nullptr;
+	}
 }
 
-int midi::music_stop()
+void midi::music_stop()
 {
-	if (active_track)
+	if (IsPlaying)
 	{
-		active_track = nullptr;
-		Mix_HaltMusic();
+		IsPlaying = false;
+		NextTrack = active_track;
+		StopPlayback();
 	}
+}
 
-	return true;
+void midi::StopPlayback()
+{
+	if (active_track != nullptr)
+	{
+		Mix_HaltMusic();
+		active_track = nullptr;
+	}
 }
 
 int midi::music_init(int volume)
 {
 	SetVolume(volume);
 	active_track = nullptr;
+	NextTrack = nullptr;
+	IsPlaying = false;
 
 	if (pb::FullTiltMode)
 	{
@@ -78,8 +92,7 @@ int midi::music_init(int volume)
 
 void midi::music_shutdown()
 {
-	if (active_track)
-		Mix_HaltMusic();
+	music_stop();
 
 	for (auto midi : LoadedTracks)
 	{
@@ -105,7 +118,7 @@ Mix_Music* midi::load_track(std::string fileName)
 		fileName.insert(0, "SOUND");
 	}
 
-	// FT has music in two formats, depending on version: MIDI in 16bit, MIDS in 32bit.
+	// FT has music in two formats, depending on game version: MIDI in 16bit, MIDS in 32bit.
 	// 3DPB music is MIDI only.
 	auto basePath = pinball::make_path_name(fileName);
 	for (int i = 0; i <= 1 && !audio; i++)
@@ -148,15 +161,14 @@ Mix_Music* midi::load_track(std::string fileName)
 
 bool midi::play_track(Mix_Music* midi)
 {
-	music_stop();
+	StopPlayback();
 	if (!midi)
 		return false;
 
-	if (SetNextTrackFlag)
+	if (!IsPlaying)
 	{
 		NextTrack = midi;
-		SetNextTrackFlag = false;
-		return true;
+		return false;
 	}
 
 	if (Mix_PlayMusic(midi, -1))
@@ -331,7 +343,7 @@ std::vector<uint8_t>* midi::MdsToMidi(std::string file)
 	while (false);
 
 	delete[] fileBuf;
-	if (returnCode && midiOut) 
+	if (returnCode && midiOut)
 	{
 		delete midiOut;
 		midiOut = nullptr;

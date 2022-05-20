@@ -813,7 +813,7 @@ int winmain::event_handler(const SDL_Event* event)
 			activated = true;
 			Sound::Activate();
 			if (Options.Music && !single_step)
-				midi::play_pb_theme();
+				midi::music_play();
 			no_time_loss = true;
 			has_focus = true;
 			break;

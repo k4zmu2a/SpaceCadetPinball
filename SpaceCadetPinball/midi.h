@@ -86,18 +86,27 @@ static_assert(sizeof(midi_track) == 8, "Wrong size of midi_track");
 class midi
 {
 public:
-	static int play_pb_theme();
-	static int music_stop();
+	static Mix_Music * track1, * track2, * track3;
+	static void music_play();
+	static void music_stop();
 	static int music_init(int volume);
 	static void music_shutdown();
 	static void SetVolume(int volume);
+	static bool play_track(Mix_Music* midi);
+	static Mix_Music* get_active_track()
+	{
+		if (active_track == nullptr)
+			return NextTrack;
+		else
+			return active_track;
+	}
 private:
 	static std::vector<Mix_Music*> LoadedTracks;
-	static Mix_Music *track1, *track2, *track3, *active_track, *NextTrack;
-	static bool SetNextTrackFlag;
+	static Mix_Music *active_track, *NextTrack;
 	static int Volume;
+	static bool IsPlaying;
 
+	static void StopPlayback();
 	static Mix_Music* load_track(std::string fileName);
-	static bool play_track(Mix_Music* midi);
 	static std::vector<uint8_t>* MdsToMidi(std::string file);
 };

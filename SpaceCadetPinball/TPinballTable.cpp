@@ -4,6 +4,7 @@
 
 #include "control.h"
 #include "loader.h"
+#include "midi.h"
 #include "pb.h"
 #include "pinball.h"
 #include "render.h"
@@ -448,6 +449,8 @@ int TPinballTable::Message(int code, float value)
 			auto time = loader::play_sound(SoundIndex1);
 			LightShowTimer = timer::set(time, this, LightShow_timeout);
 		}
+
+		midi::play_track(midi::track1);
 		break;
 	case 1018:
 		if (ReplayTimer)
