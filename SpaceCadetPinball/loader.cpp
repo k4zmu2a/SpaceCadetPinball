@@ -390,7 +390,7 @@ int loader::kicker(int groupIndex, visualKickerStruct* kicker)
 			kicker->ThrowBallMult = *floatArr;
 			break;
 		case 404:
-			kicker->ThrowBallAcceleration = *reinterpret_cast<vector3*>(floatArr);
+			kicker->ThrowBallDirection = *reinterpret_cast<vector3*>(floatArr);
 			floatArr += 3;
 			index += 4;
 			break;

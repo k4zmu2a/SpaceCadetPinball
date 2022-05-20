@@ -10,12 +10,12 @@ TTripwire::TTripwire(TPinballTable* table, int groupIndex) : TRollover(table, gr
 {
 }
 
-void TTripwire::Collision(TBall* ball, vector2* nextPosition, vector2* direction, float coef,
+void TTripwire::Collision(TBall* ball, vector2* nextPosition, vector2* direction, float distance,
                           TEdgeSegment* edge)
 {
 	ball->Position.X = nextPosition->X;
 	ball->Position.Y = nextPosition->Y;
-	ball->RayMaxDistance -= coef;
+	ball->RayMaxDistance -= distance;
 	ball->not_again(edge);
 	if (!PinballTable->TiltLockFlag)
 	{

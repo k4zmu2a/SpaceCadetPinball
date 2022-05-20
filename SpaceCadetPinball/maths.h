@@ -53,7 +53,7 @@ struct ray_type
 	float MinDistance;
 	float TimeNow;
 	float TimeDelta;
-	int FieldFlag;
+	int CollisionMask;
 };
 
 struct line_type

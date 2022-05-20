@@ -16,7 +16,7 @@ TSink::TSink(TPinballTable* table, int groupIndex) : TCollisionComponent(table, 
 	MessageField = 0;
 	Timer = 0;
 	loader::query_visual(groupIndex, 0, &visual);	
-	BallAcceleration = visual.Kicker.ThrowBallAcceleration;
+	BallThrowDirection = visual.Kicker.ThrowBallDirection;
 	ThrowAngleMult = visual.Kicker.ThrowBallAngleMult;
 	ThrowSpeedMult1 = visual.Kicker.Boost;
 	ThrowSpeedMult2 = visual.Kicker.ThrowBallMult * 0.01f;
@@ -75,7 +75,7 @@ int TSink::get_scoring(int index)
 	return index < 3 ? Scores[index] : 0;
 }
 
-void TSink::Collision(TBall* ball, vector2* nextPosition, vector2* direction, float coef, TEdgeSegment* edge)
+void TSink::Collision(TBall* ball, vector2* nextPosition, vector2* direction, float distance, TEdgeSegment* edge)
 {
 	Timer = 0;
 	if (PinballTable->TiltLockFlag)
@@ -99,7 +99,7 @@ void TSink::TimerExpired(int timerId, void* caller)
 	ball->ActiveFlag = 1;
 	ball->Position.X = sink->BallPosition.X;
 	ball->Position.Y = sink->BallPosition.Y;
-	TBall::throw_ball(ball, &sink->BallAcceleration, sink->ThrowAngleMult, sink->ThrowSpeedMult1,
+	TBall::throw_ball(ball, &sink->BallThrowDirection, sink->ThrowAngleMult, sink->ThrowSpeedMult1,
 	                  sink->ThrowSpeedMult2);
 	if (sink->SoundIndex3)
 		loader::play_sound(sink->SoundIndex3);

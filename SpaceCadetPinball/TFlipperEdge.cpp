@@ -298,7 +298,7 @@ float TFlipperEdge::FindCollisionDistance(ray_type* ray)
 	return 1e+09;
 }
 
-void TFlipperEdge::EdgeCollision(TBall* ball, float coef)
+void TFlipperEdge::EdgeCollision(TBall* ball, float distance)
 {
 	EdgeCollisionFlag = 1;
 	if (!FlipperFlag || !CollisionFlag2 || CollisionFlag1)
@@ -308,11 +308,11 @@ void TFlipperEdge::EdgeCollision(TBall* ball, float coef)
 		{
 			float dx = NextBallPosition.X - RotOrigin.X;
 			float dy = NextBallPosition.Y - RotOrigin.Y;
-			float distance = dy * dy + dx * dx;
-			if (circlebase.RadiusSq * 1.01f < distance)
+			float distanceSq = dy * dy + dx * dx;
+			if (circlebase.RadiusSq * 1.01f < distanceSq)
 			{
 				float v11;
-				float v20 = sqrt(distance / DistanceDivSq) * (fabs(AngleMax) / AngleMult);
+				float v20 = sqrt(distanceSq / DistanceDivSq) * (fabs(AngleMax) / AngleMult);
 				float dot1 = maths::DotProduct(CollisionLinePerp, CollisionDirection);
 				if (dot1 >= 0.0f)
 					v11 = dot1 * v20;
@@ -337,9 +337,9 @@ void TFlipperEdge::EdgeCollision(TBall* ball, float coef)
 	float elasticity;
 	float dx = NextBallPosition.X - RotOrigin.X;
 	float dy = NextBallPosition.Y - RotOrigin.Y;
-	float distance = dy * dy + dx * dx;
-	if (circlebase.RadiusSq * 1.01f < distance)
-		elasticity = (1.0f - sqrt(distance / DistanceDivSq)) * Elasticity;
+	float distanceSq = dy * dy + dx * dx;
+	if (circlebase.RadiusSq * 1.01f < distanceSq)
+		elasticity = (1.0f - sqrt(distanceSq / DistanceDivSq)) * Elasticity;
 	else
 		elasticity = Elasticity;
 	maths::basic_collision(ball, &NextBallPosition, &CollisionDirection, elasticity, Smoothness, 1000000000.0, 0.0);

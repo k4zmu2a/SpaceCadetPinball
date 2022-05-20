@@ -65,7 +65,6 @@ void nudge::nudge_up()
 void nudge::_nudge(float xDiff, float yDiff)
 {
 	vector2 accelMod;
-	float invAccelX, invAccelY;
 
 	accelMod.X = xDiff * 0.5f;
 	accelMod.Y = yDiff * 0.5f;
@@ -73,20 +72,10 @@ void nudge::_nudge(float xDiff, float yDiff)
 	{
 		if (ball->ActiveFlag && !ball->CollisionComp)
 		{
-			ball->Acceleration.X = ball->Acceleration.X * ball->Speed;
-			ball->Acceleration.Y = ball->Acceleration.Y * ball->Speed;
-			maths::vector_add(ball->Acceleration, accelMod);
-			ball->Speed = maths::normalize_2d(ball->Acceleration);
-			if (ball->Acceleration.X == 0.0f)
-				invAccelX = 1000000000.0;
-			else
-				invAccelX = 1.0f / ball->Acceleration.X;
-			ball->InvAcceleration.X = invAccelX;
-			if (ball->Acceleration.Y == 0.0f)
-				invAccelY = 1000000000.0;
-			else
-				invAccelY = 1.0f / ball->Acceleration.Y;
-			ball->InvAcceleration.Y = invAccelY;
+			ball->Direction.X = ball->Direction.X * ball->Speed;
+			ball->Direction.Y = ball->Direction.Y * ball->Speed;
+			maths::vector_add(ball->Direction, accelMod);
+			ball->Speed = maths::normalize_2d(ball->Direction);
 		}
 	}
 

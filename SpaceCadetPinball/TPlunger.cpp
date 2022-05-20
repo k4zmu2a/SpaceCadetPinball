@@ -33,12 +33,12 @@ TPlunger::TPlunger(TPinballTable* table, int groupIndex) : TCollisionComponent(t
 	table->PlungerPositionY = floatArr[1];
 }
 
-void TPlunger::Collision(TBall* ball, vector2* nextPosition, vector2* direction, float coef, TEdgeSegment* edge)
+void TPlunger::Collision(TBall* ball, vector2* nextPosition, vector2* direction, float distance, TEdgeSegment* edge)
 {
 	if (PinballTable->TiltLockFlag)
 		Message(1017, 0.0);
-	coef = RandFloat() * Boost * 0.1f + Boost; // it is intended that the passed in coef is never used!
-	maths::basic_collision(ball, nextPosition, direction, Elasticity, Smoothness, Threshold, coef);
+	auto boost = RandFloat() * Boost * 0.1f + Boost;
+	maths::basic_collision(ball, nextPosition, direction, Elasticity, Smoothness, Threshold, boost);
 }
 
 int TPlunger::Message(int code, float value)

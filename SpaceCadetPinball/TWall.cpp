@@ -24,7 +24,7 @@ int TWall::Message(int code, float value)
 	return 0;
 }
 
-void TWall::Collision(TBall* ball, vector2* nextPosition, vector2* direction, float coef, TEdgeSegment* edge)
+void TWall::Collision(TBall* ball, vector2* nextPosition, vector2* direction, float distance, TEdgeSegment* edge)
 {
 	if (DefaultCollision(ball, nextPosition, direction))
 	{

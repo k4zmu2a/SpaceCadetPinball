@@ -19,7 +19,7 @@
 
 gdrv_bitmap8* DebugOverlay::dbScreen = nullptr;
 
-int SDL_RenderDrawCircle(SDL_Renderer* renderer, int x, int y, int radius)
+static int SDL_RenderDrawCircle(SDL_Renderer* renderer, int x, int y, int radius)
 {
 	int offsetx, offsety, d;
 	int status;
@@ -184,7 +184,7 @@ void DebugOverlay::DrawBallInfo()
 				SDL_RenderDrawCircle(winmain::Renderer, pt1.X, pt1.Y, 10);
 
 				auto nextPos = ballPosition;
-				maths::vector_add(nextPos, maths::vector_mul(ball->Acceleration, ball->Speed / 10.0f));
+				maths::vector_add(nextPos, maths::vector_mul(ball->Direction, ball->Speed / 10.0f));
 				auto pt2 = proj::xform_to_2d(nextPos);
 				SDL_RenderDrawLine(winmain::Renderer, pt1.X, pt1.Y, pt2.X, pt2.Y);
 			}
@@ -223,7 +223,7 @@ void DebugOverlay::DrawEdge(TEdgeSegment* edge)
 				break;
 			}
 		}
-		if (refBall != nullptr && (refBall->FieldFlag & edge->CollisionGroup) == 0)
+		if (refBall != nullptr && (refBall->CollisionMask & edge->CollisionGroup) == 0)
 			return;
 	}
 

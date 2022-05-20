@@ -25,7 +25,7 @@ struct visualKickerStruct
 	float Threshold;
 	float Boost;
 	float ThrowBallMult;
-	vector3 ThrowBallAcceleration;
+	vector3 ThrowBallDirection;
 	float ThrowBallAngleMult;
 	int HardHitSoundId;
 };

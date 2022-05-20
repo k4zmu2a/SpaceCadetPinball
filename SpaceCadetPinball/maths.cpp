@@ -231,30 +231,35 @@ float maths::basic_collision(TBall* ball, vector2* nextPosition, vector2* direct
 	ball->Position.X = nextPosition->X;
 	ball->Position.Y = nextPosition->Y;
 
-	auto proj = -DotProduct(*direction, ball->Acceleration);
-	if (proj < 0)
+	// Project ball direction on collision rebound direction
+	auto reboundProj = -DotProduct(*direction, ball->Direction);
+	if (reboundProj < 0)
 	{
-		proj = -proj;
+		// Negative projection means no rebound, both direction vectors point the same way.
+		reboundProj = -reboundProj;
 	}
 	else
 	{
-		float dx1 = proj * direction->X;
-		float dy1 = proj * direction->Y;
-		ball->Acceleration.X = (dx1 + ball->Acceleration.X) * smoothness + dx1 * elasticity;
-		ball->Acceleration.Y = (dy1 + ball->Acceleration.Y) * smoothness + dy1 * elasticity;
-		normalize_2d(ball->Acceleration);
+		// Apply rebound to ball direction
+		float dx1 = reboundProj * direction->X;
+		float dy1 = reboundProj * direction->Y;
+		ball->Direction.X = (dx1 + ball->Direction.X) * smoothness + dx1 * elasticity;
+		ball->Direction.Y = (dy1 + ball->Direction.Y) * smoothness + dy1 * elasticity;
+		normalize_2d(ball->Direction);
 	}
 
-	float projSpeed = proj * ball->Speed;
-	float newSpeed = ball->Speed - (1.0f - elasticity) * projSpeed;
-	ball->Speed = newSpeed;
-	if (projSpeed >= threshold)
+	// Apply rebound to ball speed
+	float reboundSpeed = reboundProj * ball->Speed;
+	ball->Speed -= (1.0f - elasticity) * reboundSpeed;
+
+	if (reboundSpeed >= threshold)
 	{
-		ball->Acceleration.X = newSpeed * ball->Acceleration.X + direction->X * boost;
-		ball->Acceleration.Y = newSpeed * ball->Acceleration.Y + direction->Y * boost;
-		ball->Speed = normalize_2d(ball->Acceleration);
+		// Change ball direction if rebound speed is above threshold
+		ball->Direction.X = ball->Speed * ball->Direction.X + direction->X * boost;
+		ball->Direction.Y = ball->Speed * ball->Direction.Y + direction->Y * boost;
+		ball->Speed = normalize_2d(ball->Direction);
 	}
-	return projSpeed;
+	return reboundSpeed;
 }
 
 float maths::Distance_Squared(const vector2& vec1, const vector2& vec2)

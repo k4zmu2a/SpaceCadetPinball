@@ -40,20 +40,20 @@ THole::THole(TPinballTable* table, int groupIndex) : TCollisionComponent(table, 
 	}
 
 	ZSetValue = loader::query_float_attribute(groupIndex, 0, 408)[2];
-	FieldFlag = static_cast<int>(floor(*loader::query_float_attribute(groupIndex, 0, 1304)));
+	CollisionMask = static_cast<int>(floor(*loader::query_float_attribute(groupIndex, 0, 1304)));
 
-	/*Full tilt hack - FieldFlag should be on*/
+	// Full tilt hack - CollisionMask should be 1
 	if (pb::FullTiltMode)
-		FieldFlag = 1;
+		CollisionMask = 1;
 
 	Circle.RadiusSq = visual.FloatArr[2] * visual.FloatArr[2];
 	circle.RadiusSq = Circle.RadiusSq;
 	circle.Center.X = Circle.Center.X;
 	circle.Center.Y = Circle.Center.Y;
 
-	Field.Flag2Ptr = &ActiveFlag;
+	Field.ActiveFlag = &ActiveFlag;
 	Field.CollisionComp = this;
-	Field.Mask = visual.CollisionGroup;
+	Field.CollisionGroup = visual.CollisionGroup;
 	TTableLayer::edges_insert_circle(&circle, nullptr, &Field);
 }
 
@@ -69,7 +69,7 @@ int THole::Message(int code, float value)
 	return 0;
 }
 
-void THole::Collision(TBall* ball, vector2* nextPosition, vector2* direction, float coef, TEdgeSegment* edge)
+void THole::Collision(TBall* ball, vector2* nextPosition, vector2* direction, float distance, TEdgeSegment* edge)
 {
 	if (!BallCapturedFlag)
 	{
@@ -79,7 +79,7 @@ void THole::Collision(TBall* ball, vector2* nextPosition, vector2* direction, fl
 		ball->CollisionComp = this;
 		ball->Position.X = Circle.Center.X;
 		ball->Position.Y = Circle.Center.Y;
-		ball->Acceleration.Z = 0.0;
+		ball->Direction.Z = 0.0;
 
 		// Ramp hole has no delay in FT.
 		auto captureTime = pb::FullTiltMode ? 0 : 0.5f;
@@ -102,18 +102,18 @@ int THole::FieldEffect(TBall* ball, vector2* vecDst)
 	{
 		if (BallCapturedSecondStage)
 		{
-			ball->Acceleration.Z -= PinballTable->GravityDirVectMult * ball->TimeDelta * GravityMult;
-			ball->Position.Z += ball->Acceleration.Z;
+			ball->Direction.Z -= PinballTable->GravityDirVectMult * ball->TimeDelta * GravityMult;
+			ball->Position.Z += ball->Direction.Z;
 			if (ball->Position.Z <= ZSetValue)
 			{
 				BallCapturedFlag = 0;
 				BallCapturedSecondStage = 0;
 				ball->Position.Z = ZSetValue;
-				ball->Acceleration.Z = 0.0;
-				ball->FieldFlag = FieldFlag;
-				ball->Acceleration.Y = 0.0;
+				ball->Direction.Z = 0.0;
+				ball->CollisionMask = CollisionMask;
+				ball->Direction.Y = 0.0;
 				ball->CollisionComp = nullptr;
-				ball->Acceleration.X = 0.0;
+				ball->Direction.X = 0.0;
 				ball->Speed = 0.0;
 				loader::play_sound(SoftHitSoundId);
 				control::handler(58, this);
@@ -128,8 +128,8 @@ int THole::FieldEffect(TBall* ball, vector2* vecDst)
 		if (direction.X * direction.X + direction.Y * direction.Y <= Circle.RadiusSq)
 		{
 			maths::normalize_2d(direction);
-			vecDst->X = direction.X * GravityPull - ball->Acceleration.X * ball->Speed;
-			vecDst->Y = direction.Y * GravityPull - ball->Acceleration.Y * ball->Speed;
+			vecDst->X = direction.X * GravityPull - ball->Direction.X * ball->Speed;
+			vecDst->Y = direction.Y * GravityPull - ball->Direction.Y * ball->Speed;
 			result = 1;
 		}
 		else

@@ -128,7 +128,7 @@ void TFlipper::port_draw()
 	FlipperEdge->port_draw();
 }
 
-void TFlipper::Collision(TBall* ball, vector2* nextPosition, vector2* direction, float coef, TEdgeSegment* edge)
+void TFlipper::Collision(TBall* ball, vector2* nextPosition, vector2* direction, float distance, TEdgeSegment* edge)
 {
 }
 

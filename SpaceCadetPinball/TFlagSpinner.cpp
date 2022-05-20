@@ -72,12 +72,12 @@ int TFlagSpinner::Message(int code, float value)
 	return 0;
 }
 
-void TFlagSpinner::Collision(TBall* ball, vector2* nextPosition, vector2* direction, float coef,
+void TFlagSpinner::Collision(TBall* ball, vector2* nextPosition, vector2* direction, float distance,
                              TEdgeSegment* edge)
 {
 	ball->Position.X = nextPosition->X;
 	ball->Position.Y = nextPosition->Y;
-	ball->RayMaxDistance = ball->RayMaxDistance - coef;
+	ball->RayMaxDistance = ball->RayMaxDistance - distance;
 	ball->not_again(edge);
 
 	SpinDirection = 2 * (PrevCollider != edge) - 1;

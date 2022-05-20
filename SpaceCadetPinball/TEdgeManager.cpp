@@ -74,7 +74,7 @@ int TEdgeManager::TestGridBox(int x, int y, float* distPtr, TEdgeSegment** edgeD
 		for (auto it = edgeBox->EdgeList.rbegin(); it != edgeBox->EdgeList.rend(); ++it)
 		{
 			auto edge = *it;
-			if (!edge->ProcessedFlag && *edge->ActiveFlag && (edge->CollisionGroup & ray->FieldFlag))
+			if (!edge->ProcessedFlag && *edge->ActiveFlag && (edge->CollisionGroup & ray->CollisionMask))
 			{
 				if (!ball->already_hit(edge))
 				{
@@ -104,7 +104,7 @@ void TEdgeManager::FieldEffects(TBall* ball, vector2* dstVec)
 	for (auto it = edgeBox->FieldList.rbegin(); it != edgeBox->FieldList.rend(); ++it)
 	{
 		auto field = *it;
-		if (*field->Flag2Ptr && ball->FieldFlag & field->Mask)
+		if (*field->ActiveFlag && ball->CollisionMask & field->CollisionGroup)
 		{
 			if (field->CollisionComp->FieldEffect(ball, &vec))
 			{

@@ -12,7 +12,7 @@ public:
 	             float elasticity, float smoothness);
 	void port_draw() override;
 	float FindCollisionDistance(ray_type* ray) override;
-	void EdgeCollision(TBall* ball, float coef) override;
+	void EdgeCollision(TBall* ball, float distance) override;
 	void place_in_grid() override;
 	void set_control_points(float timeNow);
 	void build_edges_in_motion();

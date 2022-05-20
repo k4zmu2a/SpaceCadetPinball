@@ -14,19 +14,18 @@ public :
 	bool already_hit(TEdgeSegment* edge);
 	int Message(int code, float value) override;
 
-	static void throw_ball(TBall* ball, vector3* acceleration, float angleMult, float speedMult1,
+	static void throw_ball(TBall* ball, vector3* direction, float angleMult, float speedMult1,
 	                       float speedMult2);
 
 	vector3 Position{};
-	vector3 Acceleration{};
+	vector3 Direction{};
 	float Speed;
 	float RayMaxDistance;
 	float TimeDelta;
 	float TimeNow;
-	vector2 InvAcceleration{};
-	vector2 RampFieldForce{};	
+	vector2 RampFieldForce{};
 	TCollisionComponent* CollisionComp;
-	int FieldFlag;
+	int CollisionMask;
 	TEdgeSegment* Collisions[5]{};
 	int EdgeCollisionCount;
 	vector3 CollisionOffset{};

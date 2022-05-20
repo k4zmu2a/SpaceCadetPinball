@@ -11,7 +11,7 @@ public:
 	int Message(int code, float value) override;
 	void put_scoring(int index, int score) override;
 	int get_scoring(int index) override;
-	void Collision(TBall* ball, vector2* nextPosition, vector2* direction, float coef,
+	void Collision(TBall* ball, vector2* nextPosition, vector2* direction, float distance,
 	               TEdgeSegment* edge) override;
 	int FieldEffect(TBall* ball, vector2* vecDst) override;
 
@@ -28,7 +28,7 @@ public:
 	float FieldMult;
 	circle_type Circle{};
 	float OriginalBallZ{};
-	vector3 BallAcceleration{};
+	vector3 BallThrowDirection{};
 	float ThrowAngleMult;
 	float ThrowSpeedMult1;
 	float ThrowSpeedMult2;

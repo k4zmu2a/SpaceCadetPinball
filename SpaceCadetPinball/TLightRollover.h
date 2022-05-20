@@ -8,7 +8,7 @@ public:
 	TLightRollover(TPinballTable* table, int groupIndex);
 	~TLightRollover() override = default;
 	int Message(int code, float value) override;
-	void Collision(TBall* ball, vector2* nextPosition, vector2* direction, float coef,
+	void Collision(TBall* ball, vector2* nextPosition, vector2* direction, float distance,
 		TEdgeSegment* edge) override;
 
 	static void delay_expired(int timerId, void* caller);

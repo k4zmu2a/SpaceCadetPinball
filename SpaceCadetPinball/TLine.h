@@ -12,6 +12,6 @@ public:
 	TLine(TCollisionComponent* collCmp, char* activeFlag, unsigned int collisionGroup, const vector2& start, const vector2& end);
 	void Offset(float offset);
 	float FindCollisionDistance(ray_type* ray) override;
-	void EdgeCollision(TBall* ball, float coef) override;
+	void EdgeCollision(TBall* ball, float distance) override;
 	void place_in_grid() override;
 };

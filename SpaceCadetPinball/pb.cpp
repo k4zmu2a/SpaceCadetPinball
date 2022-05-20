@@ -241,9 +241,9 @@ void pb::ballset(float dx, float dy)
 	// dx and dy are normalized to window, ideally in [-1, 1]
 	static constexpr float sensitivity = 7000;
 	TBall* ball = MainTable->BallList.at(0);
-	ball->Acceleration.X = dx * sensitivity;
-	ball->Acceleration.Y = dy * sensitivity;
-	ball->Speed = maths::normalize_2d(ball->Acceleration);
+	ball->Direction.X = dx * sensitivity;
+	ball->Direction.Y = dy * sensitivity;
+	ball->Speed = maths::normalize_2d(ball->Direction);
 }
 
 void pb::frame(float dtMilliSec)
@@ -311,12 +311,10 @@ void pb::timed_frame(float timeNow, float timeDelta, bool drawBalls)
 					TTableLayer::edge_manager->FieldEffects(ball, &vec2);
 					vec2.X = vec2.X * timeDelta;
 					vec2.Y = vec2.Y * timeDelta;
-					ball->Acceleration.X = ball->Speed * ball->Acceleration.X;
-					ball->Acceleration.Y = ball->Speed * ball->Acceleration.Y;
-					maths::vector_add(ball->Acceleration, vec2);
-					ball->Speed = maths::normalize_2d(ball->Acceleration);
-					ball->InvAcceleration.X = ball->Acceleration.X == 0.0f ? 1.0e9f : 1.0f / ball->Acceleration.X;
-					ball->InvAcceleration.Y = ball->Acceleration.Y == 0.0f ? 1.0e9f : 1.0f / ball->Acceleration.Y;
+					ball->Direction.X = ball->Speed * ball->Direction.X;
+					ball->Direction.Y = ball->Speed * ball->Direction.Y;
+					maths::vector_add(ball->Direction, vec2);
+					ball->Speed = maths::normalize_2d(ball->Direction);
 				}
 
 				auto timeDelta2 = timeDelta;
@@ -489,9 +487,9 @@ void pb::InputDown(GameInput input)
 			ball->Position.X = 1.0;
 			ball->Position.Z = ball->Offset;
 			ball->Position.Y = 1.0;
-			ball->Acceleration.Z = 0.0;
-			ball->Acceleration.Y = 0.0;
-			ball->Acceleration.X = 0.0;
+			ball->Direction.Z = 0.0;
+			ball->Direction.Y = 0.0;
+			ball->Direction.X = 0.0;
 			break;
 		case 'h':
 		{
@@ -607,9 +605,9 @@ float pb::collide(float timeNow, float timeDelta, TBall* ball)
 		ball->TimeNow = timeNow;
 
 		ray.Origin = ball->Position;
-		ray.Direction = ball->Acceleration;
+		ray.Direction = ball->Direction;
 		ray.MaxDistance = maxDistance;
-		ray.FieldFlag = ball->FieldFlag;
+		ray.CollisionMask = ball->CollisionMask;
 		ray.TimeNow = timeNow;
 		ray.TimeDelta = timeDelta;
 		ray.MinDistance = 0.0020000001f;
@@ -621,8 +619,8 @@ float pb::collide(float timeNow, float timeDelta, TBall* ball)
 		{
 			maxDistance = timeDelta * ball->Speed;
 			ball->RayMaxDistance = maxDistance;
-			positionMod.X = maxDistance * ball->Acceleration.X;
-			positionMod.Y = maxDistance * ball->Acceleration.Y;
+			positionMod.X = maxDistance * ball->Direction.X;
+			positionMod.Y = maxDistance * ball->Direction.Y;
 			maths::vector_add(ball->Position, positionMod);
 		}
 		else

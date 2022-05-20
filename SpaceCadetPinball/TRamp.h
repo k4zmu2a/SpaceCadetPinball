@@ -12,7 +12,7 @@ public:
 	TRamp(TPinballTable* table, int groupIndex);
 	void put_scoring(int index, int score) override;
 	int get_scoring(int index) override;
-	void Collision(TBall* ball, vector2* nextPosition, vector2* direction, float coef,
+	void Collision(TBall* ball, vector2* nextPosition, vector2* direction, float distance,
 	               TEdgeSegment* edge) override;
 	int FieldEffect(TBall* ball, vector2* vecDst) override;
 	void port_draw() override;

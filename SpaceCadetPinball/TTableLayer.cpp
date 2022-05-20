@@ -98,8 +98,8 @@ TTableLayer::TTableLayer(TPinballTable* table): TCollisionComponent(table, -1, f
 		visArrPtr += 2;
 	}
 
-	Field.Mask = -1;
-	Field.Flag2Ptr = &ActiveFlag;
+	Field.CollisionGroup = -1;
+	Field.ActiveFlag = &ActiveFlag;
 	Field.CollisionComp = this;
 	edges_insert_square(Unknown2F, Unknown1F, Unknown4F, Unknown3F, nullptr,
 	                    &Field);
@@ -113,9 +113,9 @@ TTableLayer::~TTableLayer()
 
 int TTableLayer::FieldEffect(TBall* ball, vector2* vecDst)
 {
-	vecDst->X = GraityDirX - (0.5f - RandFloat() + ball->Acceleration.X) *
+	vecDst->X = GraityDirX - (0.5f - RandFloat() + ball->Direction.X) *
 		ball->Speed * GraityMult;
-	vecDst->Y = GraityDirY - ball->Acceleration.Y * ball->Speed * GraityMult;
+	vecDst->Y = GraityDirY - ball->Direction.Y * ball->Speed * GraityMult;
 	return 1;
 }
 

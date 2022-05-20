@@ -33,7 +33,7 @@ int TKickback::Message(int code, float value)
 	return 0;
 }
 
-void TKickback::Collision(TBall* ball, vector2* nextPosition, vector2* direction, float coef,
+void TKickback::Collision(TBall* ball, vector2* nextPosition, vector2* direction, float distance,
                           TEdgeSegment* edge)
 {
 	if (PinballTable->TiltLockFlag)

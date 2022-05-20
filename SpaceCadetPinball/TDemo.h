@@ -7,7 +7,7 @@ class TDemo :
 public:
 	TDemo(TPinballTable* table, int groupIndex);
 	int Message(int code, float value) override;
-	void Collision(TBall* ball, vector2* nextPosition, vector2* direction, float coef,
+	void Collision(TBall* ball, vector2* nextPosition, vector2* direction, float distance,
 	               TEdgeSegment* edge) override;
 
 	static void PlungerRelease(int timerId, void* caller);

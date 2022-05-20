@@ -47,16 +47,16 @@ TKickout::TKickout(TPinballTable* table, int groupIndex, bool someFlag): TCollis
 	auto zAttr = loader::query_float_attribute(groupIndex, 0, 408);
 	CollisionBallSetZ = pb::FullTiltMode && !pb::FullTiltDemoMode ? zAttr[3] : zAttr[2];
 	ThrowSpeedMult2 = visual.Kicker.ThrowBallMult * 0.01f;
-	BallAcceleration = visual.Kicker.ThrowBallAcceleration;
+	BallThrowDirection = visual.Kicker.ThrowBallDirection;
 	ThrowAngleMult = visual.Kicker.ThrowBallAngleMult;
 	ThrowSpeedMult1 = visual.Kicker.Boost;
 
 	circle.RadiusSq = Circle.RadiusSq;
 	circle.Center.X = Circle.Center.X;
 	circle.Center.Y = Circle.Center.Y;
-	Field.Flag2Ptr = &ActiveFlag;
+	Field.ActiveFlag = &ActiveFlag;
 	Field.CollisionComp = this;
-	Field.Mask = visual.CollisionGroup;
+	Field.CollisionGroup = visual.CollisionGroup;
 	TTableLayer::edges_insert_circle(&circle, nullptr, &Field);
 }
 
@@ -104,7 +104,7 @@ int TKickout::get_scoring(int index)
 	return index < 5 ? Scores[index] : 0;
 }
 
-void TKickout::Collision(TBall* ball, vector2* nextPosition, vector2* direction, float coef, TEdgeSegment* edge)
+void TKickout::Collision(TBall* ball, vector2* nextPosition, vector2* direction, float distance, TEdgeSegment* edge)
 {
 	if (!KickFlag1)
 	{
@@ -139,8 +139,8 @@ int TKickout::FieldEffect(TBall* ball, vector2* dstVec)
 	if (direction.Y * direction.Y + direction.X * direction.X > Circle.RadiusSq)
 		return 0;
 	maths::normalize_2d(direction);
-	dstVec->X = direction.X * FieldMult - ball->Acceleration.X * ball->Speed;
-	dstVec->Y = direction.Y * FieldMult - ball->Acceleration.Y * ball->Speed;
+	dstVec->X = direction.X * FieldMult - ball->Direction.X * ball->Speed;
+	dstVec->Y = direction.Y * FieldMult - ball->Direction.Y * ball->Speed;
 	return 1;
 }
 
@@ -154,7 +154,7 @@ void TKickout::TimerExpired(int timerId, void* caller)
 		if (kick->Ball)
 		{		
 			kick->Ball->Position.Z = kick->OriginalBallZ;
-			TBall::throw_ball(kick->Ball, &kick->BallAcceleration, kick->ThrowAngleMult, kick->ThrowSpeedMult1,
+			TBall::throw_ball(kick->Ball, &kick->BallThrowDirection, kick->ThrowAngleMult, kick->ThrowSpeedMult1,
 			                  kick->ThrowSpeedMult2);
 			kick->ActiveFlag = 0;
 			kick->Ball = nullptr;

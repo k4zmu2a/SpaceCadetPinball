@@ -93,12 +93,12 @@ int TDemo::Message(int code, float value)
 	return 0;
 }
 
-void TDemo::Collision(TBall* ball, vector2* nextPosition, vector2* direction, float coef, TEdgeSegment* edge)
+void TDemo::Collision(TBall* ball, vector2* nextPosition, vector2* direction, float distance, TEdgeSegment* edge)
 {
 	ball->not_again(edge);
 	ball->Position.X = nextPosition->X;
 	ball->Position.Y = nextPosition->Y;
-	ball->RayMaxDistance -= coef;
+	ball->RayMaxDistance -= distance;
 
 	switch (reinterpret_cast<size_t>(edge->WallValue))
 	{

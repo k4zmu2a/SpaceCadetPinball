@@ -9,7 +9,7 @@ class THole :
 public:
 	THole(TPinballTable* table, int groupIndex);
 	int Message(int code, float value) override;
-	void Collision(TBall* ball, vector2* nextPosition, vector2* direction, float coef,
+	void Collision(TBall* ball, vector2* nextPosition, vector2* direction, float distance,
 	               TEdgeSegment* edge) override;
 	int FieldEffect(TBall* ball, vector2* vecDst) override;
 
@@ -22,7 +22,7 @@ public:
 	float Unknown4;
 	float GravityMult;
 	float ZSetValue;
-	int FieldFlag;
+	int CollisionMask;
 	float GravityPull;
 	circle_type Circle{};
 	field_effect_type Field{};

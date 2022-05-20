@@ -74,7 +74,7 @@ int TCollisionComponent::DefaultCollision(TBall* ball, vector2* nextPosition, ve
 }
 
 void TCollisionComponent::Collision(TBall* ball, vector2* nextPosition, vector2* direction,
-                                    float coef, TEdgeSegment* edge)
+                                    float distance, TEdgeSegment* edge)
 {
 	int soundIndex;
 

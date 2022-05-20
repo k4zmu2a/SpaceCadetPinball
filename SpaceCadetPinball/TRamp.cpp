@@ -116,9 +116,9 @@ TRamp::TRamp(TPinballTable* table, int groupIndex) : TCollisionComponent(table, 
 			PinballTable->GravityDirVectMult;
 	}
 
-	Field.Flag2Ptr = &ActiveFlag;
+	Field.ActiveFlag = &ActiveFlag;
 	Field.CollisionComp = this;
-	Field.Mask = visual.CollisionGroup;
+	Field.CollisionGroup = visual.CollisionGroup;
 
 	auto x1 = xMax;
 	auto y1 = yMax;
@@ -138,12 +138,12 @@ int TRamp::get_scoring(int index)
 	return index < 4 ? Scores[index] : 0;
 }
 
-void TRamp::Collision(TBall* ball, vector2* nextPosition, vector2* direction, float coef, TEdgeSegment* edge)
+void TRamp::Collision(TBall* ball, vector2* nextPosition, vector2* direction, float distance, TEdgeSegment* edge)
 {
 	ball->not_again(edge);
 	ball->Position.X = nextPosition->X;
 	ball->Position.Y = nextPosition->Y;
-	ball->RayMaxDistance -= coef;
+	ball->RayMaxDistance -= distance;
 
 	auto plane = static_cast<ramp_plane_type*>(edge->WallValue);
 	if (plane)
@@ -156,7 +156,7 @@ void TRamp::Collision(TBall* ball, vector2* nextPosition, vector2* direction, fl
 		ball->RampFieldForce.Y = plane->FieldForce.Y;
 		ball->Position.Z = ball->Position.X * ball->CollisionOffset.X + ball->Position.Y * ball->CollisionOffset.Y +
 			ball->Offset + ball->CollisionOffset.Z;
-		ball->FieldFlag = CollisionGroup;
+		ball->CollisionMask = CollisionGroup;
 		return;
 	}
 
@@ -173,13 +173,13 @@ void TRamp::Collision(TBall* ball, vector2* nextPosition, vector2* direction, fl
 		ball->CollisionFlag = 0;
 		if (edge == Line2)
 		{
-			ball->FieldFlag = Wall1CollisionGroup;
+			ball->CollisionMask = Wall1CollisionGroup;
 			if (BallZOffsetFlag)
 				ball->Position.Z = ball->Offset + Wall1BallOffset;
 		}
 		else
 		{
-			ball->FieldFlag = Wall2CollisionGroup;
+			ball->CollisionMask = Wall2CollisionGroup;
 			if (BallZOffsetFlag)
 				ball->Position.Z = ball->Offset + Wall2BallOffset;
 		}
@@ -188,8 +188,8 @@ void TRamp::Collision(TBall* ball, vector2* nextPosition, vector2* direction, fl
 
 int TRamp::FieldEffect(TBall* ball, vector2* vecDst)
 {
-	vecDst->X = ball->RampFieldForce.X - ball->Acceleration.X * ball->Speed * BallFieldMult;
-	vecDst->Y = ball->RampFieldForce.Y - ball->Acceleration.Y * ball->Speed * BallFieldMult;
+	vecDst->X = ball->RampFieldForce.X - ball->Direction.X * ball->Speed * BallFieldMult;
+	vecDst->Y = ball->RampFieldForce.Y - ball->Direction.Y * ball->Speed * BallFieldMult;
 	return 1;
 }
 

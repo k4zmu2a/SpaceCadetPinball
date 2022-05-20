@@ -6,8 +6,8 @@ class TEdgeBox;
 
 struct field_effect_type
 {
-	char* Flag2Ptr;
-	int Mask;
+	char* ActiveFlag;
+	int CollisionGroup;
 	TCollisionComponent* CollisionComp;
 };
 

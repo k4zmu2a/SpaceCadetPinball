@@ -37,12 +37,12 @@ int TRollover::Message(int code, float value)
 	return 0;
 }
 
-void TRollover::Collision(TBall* ball, vector2* nextPosition, vector2* direction, float coef,
+void TRollover::Collision(TBall* ball, vector2* nextPosition, vector2* direction, float distance,
                           TEdgeSegment* edge)
 {
 	ball->Position.X = nextPosition->X;
 	ball->Position.Y = nextPosition->Y;
-	ball->RayMaxDistance -= coef;
+	ball->RayMaxDistance -= distance;
 	ball->not_again(edge);
 	gdrv_bitmap8* bmp = nullptr;
 	if (!PinballTable->TiltLockFlag)

@@ -21,13 +21,11 @@ TBall::TBall(TPinballTable* table) : TPinballComponent(table, -1, false)
 	CollisionComp = nullptr;
 	EdgeCollisionCount = 0;
 	TimeDelta = 0.0;
-	FieldFlag = 1;
+	CollisionMask = 1;
 	CollisionFlag = 0;
 	Speed = 0.0;
-	Acceleration.Y = 0.0;
-	Acceleration.X = 0.0;
-	InvAcceleration.Y = 1000000000.0;
-	InvAcceleration.X = 1000000000.0;
+	Direction.Y = 0.0;
+	Direction.X = 0.0;
 	Position.X = 0.0;
 	Position.Y = 0.0;
 
@@ -117,23 +115,23 @@ int TBall::Message(int code, float value)
 		Position.Y = 0.0;
 		ActiveFlag = 0;
 		CollisionFlag = 0;
-		FieldFlag = 1;
-		Acceleration.Y = 0.0;
+		CollisionMask = 1;
+		Direction.Y = 0.0;
 		Position.Z = Offset;
-		Acceleration.X = 0.0;
+		Direction.X = 0.0;
 		Speed = 0.0;
 		RayMaxDistance = 0.0;
 	}
 	return 0;
 }
 
-void TBall::throw_ball(TBall* ball, vector3* acceleration, float angleMult, float speedMult1, float speedMult2)
+void TBall::throw_ball(TBall* ball, vector3* direction, float angleMult, float speedMult1, float speedMult2)
 {
 	ball->CollisionComp = nullptr;
-	ball->Acceleration = *acceleration;
+	ball->Direction = *direction;
 	float rnd = RandFloat();
 	float angle = (1.0f - (rnd + rnd)) * angleMult;
-	maths::RotateVector(ball->Acceleration, angle);
+	maths::RotateVector(ball->Direction, angle);
 	rnd = RandFloat();
 	ball->Speed = (1.0f - (rnd + rnd)) * (speedMult1 * speedMult2) + speedMult1;
 }

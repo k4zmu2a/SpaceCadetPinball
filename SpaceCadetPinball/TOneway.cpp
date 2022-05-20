@@ -40,14 +40,14 @@ TOneway::TOneway(TPinballTable* table, int groupIndex) : TCollisionComponent(tab
 	}
 }
 
-void TOneway::Collision(TBall* ball, vector2* nextPosition, vector2* direction, float coef, TEdgeSegment* edge)
+void TOneway::Collision(TBall* ball, vector2* nextPosition, vector2* direction, float distance, TEdgeSegment* edge)
 {
 	if (edge == Line)
 	{
 		ball->not_again(edge);
 		ball->Position.X = nextPosition->X;
 		ball->Position.Y = nextPosition->Y;
-		ball->RayMaxDistance -= coef;
+		ball->RayMaxDistance -= distance;
 		if (!PinballTable->TiltLockFlag)
 		{
 			if (HardHitSoundId)

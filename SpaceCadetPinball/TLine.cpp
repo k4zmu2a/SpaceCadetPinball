@@ -41,13 +41,13 @@ float TLine::FindCollisionDistance(ray_type* ray)
 	return maths::ray_intersect_line(*ray, Line);
 }
 
-void TLine::EdgeCollision(TBall* ball, float coef)
+void TLine::EdgeCollision(TBall* ball, float distance)
 {
 	CollisionComponent->Collision(
 		ball,
 		&Line.RayIntersect,
 		&Line.PerpendicularC,
-		coef,
+		distance,
 		this);
 }
 

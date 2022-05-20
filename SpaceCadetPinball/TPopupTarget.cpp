@@ -62,7 +62,7 @@ int TPopupTarget::get_scoring(int index)
 	return index < 3 ? Scores[index] : 0;
 }
 
-void TPopupTarget::Collision(TBall* ball, vector2* nextPosition, vector2* direction, float coef,
+void TPopupTarget::Collision(TBall* ball, vector2* nextPosition, vector2* direction, float distance,
                              TEdgeSegment* edge)
 {
 	if (this->PinballTable->TiltLockFlag)
