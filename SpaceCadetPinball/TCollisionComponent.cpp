@@ -51,38 +51,33 @@ void TCollisionComponent::port_draw()
 		edge->port_draw();
 }
 
-int TCollisionComponent::DefaultCollision(TBall* ball, vector2* nextPosition, vector2* direction)
+bool TCollisionComponent::DefaultCollision(TBall* ball, vector2* nextPosition, vector2* direction)
 {
 	if (PinballTable->TiltLockFlag)
 	{
 		maths::basic_collision(ball, nextPosition, direction, Elasticity, Smoothness, 1000000000.0, 0.0);
-		return 0;
+		return false;
 	}
+
 	auto projSpeed = maths::basic_collision(ball, nextPosition, direction, Elasticity, Smoothness, Threshold, Boost);
-	if (projSpeed <= Threshold)
-	{
-		if (projSpeed > 0.2f)
-		{
-			if (SoftHitSoundId)
-				loader::play_sound(SoftHitSoundId);
-		}
-		return 0;
-	}
-	if (HardHitSoundId)
+	if (projSpeed > Threshold)
 		loader::play_sound(HardHitSoundId);
-	return 1;
+	else if (projSpeed > 0.2f)
+		loader::play_sound(SoftHitSoundId);
+	else
+		return false;
+	return true;
 }
 
 void TCollisionComponent::Collision(TBall* ball, vector2* nextPosition, vector2* direction,
                                     float distance, TEdgeSegment* edge)
 {
-	int soundIndex;
-
 	if (PinballTable->TiltLockFlag)
 	{
 		maths::basic_collision(ball, nextPosition, direction, Elasticity, Smoothness, 1000000000.0, 0.0);
 		return;
 	}
+
 	auto projSpeed = maths::basic_collision(
 		ball,
 		nextPosition,
@@ -91,18 +86,10 @@ void TCollisionComponent::Collision(TBall* ball, vector2* nextPosition, vector2*
 		Smoothness,
 		Threshold,
 		Boost);
-	if (projSpeed <= Threshold)
-	{
-		if (projSpeed <= 0.2f)
-			return;
-		soundIndex = SoftHitSoundId;
-	}
-	else
-	{
-		soundIndex = HardHitSoundId;
-	}
-	if (soundIndex)
-		loader::play_sound(soundIndex);
+	if (projSpeed > Threshold)
+		loader::play_sound(HardHitSoundId);
+	else if (projSpeed > 0.2f)
+		loader::play_sound(SoftHitSoundId);
 }
 
 int TCollisionComponent::FieldEffect(TBall* ball, vector2* vecDst)

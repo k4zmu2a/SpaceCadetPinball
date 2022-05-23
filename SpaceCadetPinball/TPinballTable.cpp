@@ -450,7 +450,7 @@ int TPinballTable::Message(int code, float value)
 			LightShowTimer = timer::set(time, this, LightShow_timeout);
 		}
 
-		midi::play_track(midi::track1);
+		midi::play_track(MidiTracks::Track1, true);
 		break;
 	case 1018:
 		if (ReplayTimer)

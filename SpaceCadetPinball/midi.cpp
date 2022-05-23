@@ -7,7 +7,8 @@
 
 
 std::vector<Mix_Music*> midi::LoadedTracks{};
-Mix_Music *midi::track1, *midi::track2, *midi::track3, *midi::active_track, *midi::NextTrack;
+Mix_Music* midi::track1, * midi::track2, * midi::track3;
+MidiTracks midi::active_track, midi::NextTrack;
 int midi::Volume = MIX_MAX_VOLUME;
 bool midi::IsPlaying = false;
 
@@ -36,8 +37,8 @@ void midi::music_play()
 	if (!IsPlaying)
 	{
 		IsPlaying = true;
-		play_track(NextTrack);
-		NextTrack = nullptr;
+		play_track(NextTrack, true);
+		NextTrack = MidiTracks::None;
 	}
 }
 
@@ -53,19 +54,20 @@ void midi::music_stop()
 
 void midi::StopPlayback()
 {
-	if (active_track != nullptr)
+	if (active_track != MidiTracks::None)
 	{
 		Mix_HaltMusic();
-		active_track = nullptr;
+		active_track = MidiTracks::None;
 	}
 }
 
 int midi::music_init(int volume)
 {
 	SetVolume(volume);
-	active_track = nullptr;
-	NextTrack = nullptr;
+	active_track = MidiTracks::None;
+	NextTrack = MidiTracks::None;
 	IsPlaying = false;
+	track1 = track2 = track3 = nullptr;
 
 	if (pb::FullTiltMode)
 	{
@@ -83,10 +85,6 @@ int midi::music_init(int volume)
 		track1 = load_track("PINBALL");
 	}
 
-	if (!track2)
-		track2 = track1;
-	if (!track3)
-		track3 = track1;
 	return track1 != nullptr;
 }
 
@@ -98,7 +96,7 @@ void midi::music_shutdown()
 	{
 		Mix_FreeMusic(midi);
 	}
-	active_track = nullptr;
+	active_track = MidiTracks::None;
 	LoadedTracks.clear();
 }
 
@@ -159,31 +157,62 @@ Mix_Music* midi::load_track(std::string fileName)
 	return audio;
 }
 
-bool midi::play_track(Mix_Music* midi)
+bool midi::play_track(MidiTracks track, bool replay)
 {
-	StopPlayback();
-	if (!midi)
+	auto midi = TrackToMidi(track);
+	if (!midi || (!replay && active_track == track))
 		return false;
+
+	StopPlayback();
 
 	if (!IsPlaying)
 	{
-		NextTrack = midi;
+		NextTrack = track;
 		return false;
 	}
 
 	if (Mix_PlayMusic(midi, -1))
 	{
-		active_track = nullptr;
+		active_track = MidiTracks::None;
 		return false;
 	}
 
 	// On Windows, MIDI volume can only be set during playback.
 	// And it changes application master volume for some reason.
 	SetVolume(Volume);
-	active_track = midi;
+	active_track = track;
 	return true;
 }
 
+MidiTracks midi::get_active_track()
+{
+	if (!IsPlaying)
+		return NextTrack;
+	else
+		return active_track;
+}
+
+Mix_Music* midi::TrackToMidi(MidiTracks track)
+{
+	Mix_Music* midi;
+	switch (track)
+	{
+	default:
+	case MidiTracks::None:
+		midi = nullptr;
+		break;
+	case MidiTracks::Track1:
+		midi = track1;
+		break;
+	case MidiTracks::Track2:
+		midi = track2;
+		break;
+	case MidiTracks::Track3:
+		midi = track3;
+		break;
+	}
+	return midi;
+}
 
 /// <summary>
 /// SDL_mixed does not support MIDS. To support FT music, a conversion to MIDI is required.

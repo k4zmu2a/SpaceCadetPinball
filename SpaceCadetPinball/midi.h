@@ -83,30 +83,33 @@ static_assert(sizeof(midi_track) == 8, "Wrong size of midi_track");
 
 #pragma pack(pop)
 
+enum class MidiTracks
+{
+	None,
+	Track1,
+	Track2,
+	Track3
+};
+
 class midi
 {
 public:
-	static Mix_Music * track1, * track2, * track3;
-	static void music_play();
-	static void music_stop();
 	static int music_init(int volume);
 	static void music_shutdown();
+	static void music_play();
+	static void music_stop();
 	static void SetVolume(int volume);
-	static bool play_track(Mix_Music* midi);
-	static Mix_Music* get_active_track()
-	{
-		if (active_track == nullptr)
-			return NextTrack;
-		else
-			return active_track;
-	}
+	static bool play_track(MidiTracks track, bool replay);
+	static MidiTracks get_active_track();
 private:
 	static std::vector<Mix_Music*> LoadedTracks;
-	static Mix_Music *active_track, *NextTrack;
+	static Mix_Music* track1, * track2, * track3;
+	static MidiTracks active_track, NextTrack;
 	static int Volume;
 	static bool IsPlaying;
 
 	static void StopPlayback();
 	static Mix_Music* load_track(std::string fileName);
+	static Mix_Music* TrackToMidi(MidiTracks track);
 	static std::vector<uint8_t>* MdsToMidi(std::string file);
 };

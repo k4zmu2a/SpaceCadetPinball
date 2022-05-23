@@ -22,5 +22,5 @@ public:
 	virtual void Collision(TBall* ball, vector2* nextPosition, vector2* direction, float distance,
 	                       TEdgeSegment* edge);
 	virtual int FieldEffect(TBall* ball, vector2* vecDst);
-	int DefaultCollision(TBall* ball, vector2* nextPosition, vector2* direction);
+	bool DefaultCollision(TBall* ball, vector2* nextPosition, vector2* direction);
 };

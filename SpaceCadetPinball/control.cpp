@@ -968,8 +968,7 @@ void control::table_set_flag_lights()
 void control::table_set_multiball()
 {
 	info_text_box->Display(pinball::get_rc_string(16, 0), 2.0);
-	if (midi::get_active_track() != midi::track3)
-		midi::play_track(midi::track3);
+	midi::play_track(MidiTracks::Track3, true);
 }
 
 void control::table_bump_ball_sink_lock()
@@ -2575,8 +2574,7 @@ void control::BallDrainControl(int code, TPinballComponent* caller)
 			{
 				lite200->Message(20, 0.0);
 				lite199->Message(20, 0.0);
-				if (midi::get_active_track() != midi::track1)
-					midi::play_track(midi::track1);
+				midi::play_track(MidiTracks::Track1, false);
 			}
 			if (light_on(&control_lite200_tag))
 			{
@@ -3107,8 +3105,7 @@ void control::GameoverController(int code, TPinballComponent* caller)
 		flip1->Message(1022, 0.0);
 		flip2->Message(1022, 0.0);
 		mission_text_box->MessageField = 0;
-		if (midi::get_active_track() != midi::track1)
-			midi::play_track(midi::track1);
+		midi::play_track(MidiTracks::Track1, false);
 		return;
 	}
 	if (code != 67)
@@ -4015,8 +4012,7 @@ void control::SelectMissionController(int code, TPinballComponent* caller)
 					int addedScore = SpecialAddScore(mission_select_scores[scoreId]);
 					snprintf(Buffer, sizeof Buffer, pinball::get_rc_string(77, 0), addedScore);
 					mission_text_box->Display(Buffer, 4.0);
-					if (midi::get_active_track() != midi::track2)
-						midi::play_track(midi::track2);
+					midi::play_track(MidiTracks::Track2, true);
 				}
 				return;
 			}
@@ -4130,8 +4126,7 @@ void control::SelectMissionController(int code, TPinballComponent* caller)
 			return;
 		}
 	case 66:
-		if (midi::get_active_track() != midi::track1)
-			midi::play_track(midi::track1);
+		midi::play_track(MidiTracks::Track1, false);
 		lite198->Message(20, 0.0);
 		outer_circle->Message(34, 0.0);
 		ramp_tgt_lights->Message(20, 0.0);
@@ -4419,8 +4414,7 @@ void control::WaitingDeploymentController(int code, TPinballComponent* caller)
 	case 66:
 		mission_text_box->Clear();
 		waiting_deployment_flag = 0;
-		if (midi::get_active_track() != midi::track1)
-			midi::play_track(midi::track1);
+		midi::play_track(MidiTracks::Track1, false);
 		break;
 	case 67:
 		mission_text_box->Display(pinball::get_rc_string(50, 0), -1.0);
