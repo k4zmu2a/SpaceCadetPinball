@@ -49,33 +49,72 @@ static_assert(sizeof(riff_data) == 0x18, "Wrong size of riff_data");
 static_assert(sizeof(riff_header) == 0x38, "Wrong size of riff_header");
 #pragma pack(pop)
 
+class BaseMidi
+{
+public:
+	bool IsOpen = false, IsPlaying = false;
+
+	virtual ~BaseMidi() = default;
+	virtual void Play() = 0;
+	virtual void Stop() = 0;
+};
+
+class MdsMidi : public BaseMidi
+{
+public:
+	MdsMidi(LPCSTR fileName);
+	~MdsMidi() override;
+	void Play() override;
+	void Stop() override;
+private:
+	midi_struct midi{};
+
+	static int stream_open(midi_struct& midi, char flags);
+	static int stream_close(midi_struct& midi);
+	static int load_file(midi_struct& midi, void* filePtrOrPath, int fileSizeP, int flags);
+	static int read_file(midi_struct& midi, riff_header* filePtr, unsigned int fileSize);
+	static void CALLBACK midi_callback(HMIDIOUT hmo, UINT wMsg, DWORD_PTR dwInstance, DWORD_PTR dwParam1,
+		DWORD_PTR dwParam2);
+};
+
+class MciMidi : public BaseMidi
+{
+public:
+	MciMidi(LPCSTR fileName, HWND notifyHwnd);
+	~MciMidi() override;
+	void Play() override;
+	void Stop() override;
+private:
+	MCIDEVICEID DeviceId{};
+	HWND midi_notify_hwnd;
+};
+
+enum class MidiTracks
+{
+	None,
+	Track1,
+	Track2,
+	Track3
+};
+
+
 class midi
 {
 public:
-	static MCIERROR play_pb_theme(int flag);
-	static MCIERROR music_stop();
+	static void music_play();
+	static void music_stop();
 	static int music_init(HWND hwnd);
-	static MCIERROR restart_midi_seq(LPARAM param);
+	static void restart_midi_seq(LPARAM param);
 	static void music_shutdown();
+	static bool play_track(MidiTracks track, bool replay);
 private:
-	static tagMCI_OPEN_PARMSA mci_open_info;
-	static char midi_file_name[28];
 	static HWND midi_notify_hwnd;
-	static int midi_seq1_open, midi_seq1_playing;
+	static objlist_class<BaseMidi>* TrackList;
+	static BaseMidi* track1, * track2, * track3;
+	static MidiTracks ActiveTrack, NextTrack;
+	static bool IsPlaying;
 
-	static objlist_class<midi_struct>* TrackList;
-	static midi_struct *track1, *track2, *track3, *active_track, *active_track2;
-	static int some_flag1;
-	static int music_init_ft(HWND hwnd);
-	static void music_shutdown_ft();
-	static midi_struct* load_track(LPCSTR fileName);
-	static int load_file(midi_struct** midi_res, void* filePtrOrPath, int fileSizeP, int flags);
-	static int read_file(midi_struct* midi, riff_header* filePtr, unsigned int fileSize);
-	static int play_ft(midi_struct* midi);
-	static int stop_ft();
-	static int unload_track(midi_struct* midi);
-	static int stream_open(midi_struct* midi, char flags);
-	static int stream_close(midi_struct* midi);
-	static void CALLBACK midi_callback(HMIDIOUT hmo, UINT wMsg, DWORD_PTR dwInstance, DWORD_PTR dwParam1,
-	                                 DWORD_PTR dwParam2);
+	static void StopPlayback();
+	static BaseMidi* LoadTrack(LPCSTR fileName);
+	static BaseMidi* TrackToMidi(MidiTracks track);
 };

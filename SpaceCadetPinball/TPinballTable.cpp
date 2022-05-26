@@ -40,6 +40,7 @@
 #include "TPlunger.h"
 #include "TFlipper.h"
 #include "TDrain.h"
+#include "midi.h"
 
 int TPinballTable::score_multipliers[5] = {1, 2, 3, 5, 10};
 
@@ -466,6 +467,8 @@ int TPinballTable::Message(int code, float value)
 			auto time = loader::play_sound(SoundIndex1);
 			LightShowTimer = timer::set(time, this, LightShow_timeout);
 		}
+
+		midi::play_track(MidiTracks::Track1, true);
 		break;
 	case 1018:
 		if (ReplayTimer)

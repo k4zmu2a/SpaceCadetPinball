@@ -27,6 +27,7 @@
 #include "TRamp.h"
 #include "TPlunger.h"
 #include "TWall.h"
+#include "midi.h"
 
 int control_bump_scores1[] = {500, 1000, 1500, 2000};
 int control_roll_scores1[] = {2000};
@@ -730,6 +731,7 @@ void control::table_set_flag_lights()
 void control::table_set_multiball()
 {
 	control_info_text_box_tag.Component->Display(pinball::get_rc_Wstring(16, 0), 2.0);
+	midi::play_track(MidiTracks::Track3, true);
 }
 
 void control::table_bump_ball_sink_lock()
@@ -2339,6 +2341,7 @@ void control::BallDrainControl(int code, TPinballComponent* caller)
 			{
 				control_lite200_tag.Component->Message(20, 0.0);
 				control_lite199_tag.Component->Message(20, 0.0);
+				midi::play_track(MidiTracks::Track1, false);
 			}
 			if (light_on(&control_lite200_tag))
 			{
@@ -2871,6 +2874,7 @@ void control::GameoverController(int code, TPinballComponent* caller)
 		control_flip1_tag.Component->Message(1022, 0.0);
 		control_flip2_tag.Component->Message(1022, 0.0);
 		control_mission_text_box_tag.Component->MessageField = 0;
+		midi::play_track(MidiTracks::Track1, false);
 		return;
 	}
 	if (code != 67)
@@ -3777,6 +3781,7 @@ void control::SelectMissionController(int code, TPinballComponent* caller)
 					int addedScore = SpecialAddScore(mission_select_scores[scoreId]);
 					wsprintfW(Buffer, pinball::get_rc_Wstring(77, 0), addedScore);
 					control_mission_text_box_tag.Component->Display(Buffer, 4.0);
+					midi::play_track(MidiTracks::Track2, true);
 				}
 				return;
 			}
@@ -3890,6 +3895,7 @@ void control::SelectMissionController(int code, TPinballComponent* caller)
 			return;
 		}
 	case 66:
+		midi::play_track(MidiTracks::Track1, false);
 		control_lite198_tag.Component->Message(20, 0.0);
 		control_outer_circle_tag.Component->Message(34, 0.0);
 		control_ramp_tgt_lights_tag.Component->Message(20, 0.0);
@@ -4179,6 +4185,7 @@ void control::WaitingDeploymentController(int code, TPinballComponent* caller)
 	case 66:
 		control_mission_text_box_tag.Component->Clear();
 		waiting_deployment_flag = 0;
+		midi::play_track(MidiTracks::Track1, false);
 		break;
 	case 67:
 		control_mission_text_box_tag.Component->Display(pinball::get_rc_Wstring(50, 0), -1.0);

@@ -386,7 +386,7 @@ LRESULT CALLBACK winmain::message_handler(HWND hWnd, UINT Msg, WPARAM wParam, LP
 				activated = 1;
 				Sound::Activate();
 				if (options::Options.Music && !single_step)
-					midi::play_pb_theme(0);
+					midi::music_play();
 				no_time_loss = 1;
 				pinball::adjust_priority(options::Options.PriorityAdj);
 			}

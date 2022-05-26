@@ -1,155 +1,269 @@
 #include "pch.h"
 #include "midi.h"
 
-
 #include "pb.h"
 #include "pinball.h"
 
-tagMCI_OPEN_PARMSA midi::mci_open_info;
-char midi::midi_file_name[28];
 HWND midi::midi_notify_hwnd;
-int midi::midi_seq1_open, midi::midi_seq1_playing;
+objlist_class<BaseMidi>* midi::TrackList;
+BaseMidi* midi::track1, * midi::track2, * midi::track3;
+MidiTracks midi::ActiveTrack, midi::NextTrack;
+bool midi::IsPlaying;
 
-MCIERROR midi::play_pb_theme(int flag)
+void midi::music_play()
 {
-	if (pb::FullTiltMode)
+	if (!IsPlaying)
 	{
-		return play_ft(track1);
+		IsPlaying = true;
+		play_track(NextTrack, true);
+		NextTrack = MidiTracks::None;
 	}
-
-	MCI_PLAY_PARMS playParams;
-	MCIERROR result = 0;
-
-	music_stop();
-	playParams.dwFrom = 0;
-	playParams.dwCallback = (DWORD_PTR)midi_notify_hwnd;
-	if (!flag && midi_seq1_open)
-	{
-		result = mciSendCommandA(mci_open_info.wDeviceID, MCI_PLAY, MCI_FROM | MCI_NOTIFY, (DWORD_PTR)&playParams);
-		midi_seq1_playing = result == 0;
-	}
-	return result;
 }
 
-MCIERROR midi::music_stop()
+void midi::music_stop()
 {
-	if (pb::FullTiltMode)
+	if (IsPlaying)
 	{
-		return stop_ft();
+		IsPlaying = false;
+		NextTrack = ActiveTrack;
+		StopPlayback();
 	}
-
-	MCIERROR result = 0;
-	if (midi_seq1_playing)
-		result = mciSendCommandA(mci_open_info.wDeviceID, MCI_STOP, 0, 0);
-	return result;
 }
 
 int midi::music_init(HWND hwnd)
 {
-	if (pb::FullTiltMode)
+	TrackList = new objlist_class<BaseMidi>(0, 1);
+	midi_notify_hwnd = hwnd;
+	ActiveTrack = NextTrack = MidiTracks::None;
+	track1 = track2 = track3 = nullptr;
+	if (!pb::FullTiltMode)
 	{
-		return music_init_ft(hwnd);
+		track1 = LoadTrack("PINBALL.MID");
+	}
+	else 
+	{
+		track1 = LoadTrack("TABA1.MDS");
+		track2 = LoadTrack("TABA2.MDS");
+		track3 = LoadTrack("TABA3.MDS");
 	}
 
-	mci_open_info.wDeviceID = 0;
-	midi_notify_hwnd = hwnd;
-	lstrcpyA(midi_file_name, pinball::get_rc_string(156, 0));
-	mci_open_info.lpstrElementName = midi_file_name;
-	mci_open_info.lpstrDeviceType = nullptr;
-	auto result = mciSendCommandA(0, MCI_OPEN, MCI_OPEN_ELEMENT | MCI_NOTIFY_SUPERSEDED, (DWORD_PTR)&mci_open_info);
-	midi_seq1_open = result == 0;
-	return midi_seq1_open;
+	return track1 != nullptr;
 }
 
-MCIERROR midi::restart_midi_seq(LPARAM param)
+void midi::restart_midi_seq(LPARAM param)
 {
-	if (pb::FullTiltMode)
-	{
-		return play_ft(active_track);
-	}
-
-	MCI_PLAY_PARMS playParams;
-	MCIERROR result = 0;
-
-	playParams.dwFrom = 0;
-	playParams.dwCallback = (DWORD_PTR)midi_notify_hwnd;
-	if (midi_seq1_playing)
-		result = mciSendCommandA(mci_open_info.wDeviceID, MCI_PLAY, MCI_FROM | MCI_NOTIFY, (DWORD_PTR)&playParams);
-	return result;
+	auto midi = TrackToMidi(ActiveTrack);
+	if (midi != nullptr)
+		midi->Play();
 }
 
 void midi::music_shutdown()
 {
-	if (pb::FullTiltMode)
-	{
-		music_shutdown_ft();
-		return;
-	}
+	music_stop();
 
-	if (midi_seq1_open)
-		mciSendCommandA(mci_open_info.wDeviceID, MCI_CLOSE, 0, 0);
-	midi_seq1_open = 0;
-}
-
-
-objlist_class<midi_struct>* midi::TrackList;
-midi_struct *midi::track1, *midi::track2, *midi::track3, *midi::active_track, *midi::active_track2;
-int midi::some_flag1;
-
-int midi::music_init_ft(HWND hwnd)
-{
-	midi_notify_hwnd = hwnd;
-	active_track = nullptr;
-	TrackList = new objlist_class<midi_struct>(0, 1);
-
-	track1 = load_track("taba1");
-	track2 = load_track("taba2");
-	track3 = load_track("taba3");
-	if (!track2)
-		track2 = track1;
-	if (!track3)
-		track3 = track1;
-	return 1;
-}
-
-void midi::music_shutdown_ft()
-{
-	if (active_track)
-		stream_close(active_track);
-	while (TrackList->GetCount())
-	{
-		midi_struct* midi = TrackList->Get(0);
-		unload_track(midi);
+	while (TrackList->GetCount()) {
+		auto midi = TrackList->Get(0);
 		TrackList->Delete(midi);
+		delete midi;
 	}
-	active_track = nullptr;
+
 	delete TrackList;
 }
 
-midi_struct* midi::load_track(LPCSTR fileName)
+void midi::StopPlayback()
 {
-	midi_struct* midi;
+	auto midi = TrackToMidi(ActiveTrack);
+	if (midi != nullptr) 
+	{
+		midi->Stop();
+		ActiveTrack = MidiTracks::None;
+	}
+}
+
+BaseMidi* midi::LoadTrack(LPCSTR fileName)
+{
+	BaseMidi* track;
+	if (pb::FullTiltMode)
+	{
+		track = new MdsMidi(fileName);
+	}
+	else 
+	{
+		track = new MciMidi(fileName, midi_notify_hwnd);
+	}
+	if (track->IsOpen) 
+	{
+		TrackList->Add(track);
+		return track;
+	}
+
+	delete track;
+	return nullptr;
+}
+
+BaseMidi* midi::TrackToMidi(MidiTracks track)
+{
+	BaseMidi* midi;
+	switch (track)
+	{
+	default:
+	case MidiTracks::None:
+		midi = nullptr;
+		break;
+	case MidiTracks::Track1:
+		midi = track1;
+		break;
+	case MidiTracks::Track2:
+		midi = track2;
+		break;
+	case MidiTracks::Track3:
+		midi = track3;
+		break;
+	}
+	return midi;
+}
+
+bool midi::play_track(MidiTracks track, bool replay)
+{
+	auto midi = TrackToMidi(track);
+	if (!midi || (!replay && ActiveTrack == track))
+		return false;
+
+	StopPlayback();
+
+	if (!IsPlaying)
+	{
+		NextTrack = track;
+		return false;
+	}
+
+	midi->Play();
+	ActiveTrack = track;
+	return true;
+}
+
+#pragma region MdsMidi
+MdsMidi::MdsMidi(LPCSTR fileName)
+{
 	char filePath[256];
 	char fileName2[256];
 
 	lstrcpyA(fileName2, "sound\\");
 	lstrcatA(fileName2, fileName);
 	pinball::make_path_name(filePath, fileName2, 254u);
-	lstrcatA(filePath, ".MDS");
-	if (load_file(&midi, filePath, 0, 1))
-		return nullptr;
-
-	if (midi)
-		TrackList->Add(midi);
-	return midi;
+	IsOpen = load_file(midi, filePath, 0, 1) == 0;
 }
 
-int midi::load_file(midi_struct** midi_res, void* filePtrOrPath, int fileSizeP, int flags)
+MdsMidi::~MdsMidi()
+{
+	if (midi.Magic == mmioFOURCC('M', 'D', 'S', 'I'))
+	{
+		if (midi.StreamHandle)
+			stream_close(midi);
+		if (midi.DataPtr1)
+		{
+			memory::free(midi.DataPtr1);
+		}
+		midi.Magic = mmioFOURCC('d', 'a', 't', 'a');
+	}
+}
+
+void MdsMidi::Play()
+{
+	Stop();
+	stream_open(midi, 1);
+}
+
+void MdsMidi::Stop()
+{
+	stream_close(midi);
+}
+
+int MdsMidi::stream_close(midi_struct& midi)
+{
+	int returnCode;
+
+	if (midi.Magic != mmioFOURCC('M', 'D', 'S', 'I'))
+		return 6;
+	if (!midi.StreamHandle)
+		return 7;
+	midi.SomeFlag2 |= 1u;
+	if (midiOutReset(reinterpret_cast<HMIDIOUT>(midi.StreamHandle)))
+	{
+		returnCode = 5;
+		midi.SomeFlag2 &= ~1;
+	}
+	else
+	{
+		midihdr_tag* blockPtr = midi.DataPtr1;
+		for (int i = midi.BlockCount; i; --i)
+		{
+			midiOutUnprepareHeader(reinterpret_cast<HMIDIOUT>(midi.StreamHandle), blockPtr, sizeof(MIDIHDR));
+			blockPtr = reinterpret_cast<midihdr_tag*>(reinterpret_cast<char*>(&blockPtr[1]) + blockPtr->dwBufferLength);
+		}
+		midiStreamClose(midi.StreamHandle);
+		returnCode = 0;
+		midi.StreamHandle = nullptr;
+		midi.SomeFlag2 = 0;
+	}
+	return returnCode;
+}
+
+int MdsMidi::stream_open(midi_struct& midi, char flags)
+{
+	auto returnCode = 0;
+	if (midi.Magic != mmioFOURCC('M', 'D', 'S', 'I'))
+		return 6;
+
+	UINT puDeviceID = -1;
+	auto steamOpenedFg = !midi.StreamHandle;
+	MIDIPROPTIMEDIV propdata{ 8, midi.DwTimeFormat };
+	if (steamOpenedFg &&
+		!midiStreamOpen(&midi.StreamHandle, &puDeviceID, 1u, reinterpret_cast<DWORD_PTR>(midi_callback), 0,
+			CALLBACK_FUNCTION) &&
+		!midiStreamProperty(midi.StreamHandle, reinterpret_cast<LPBYTE>(&propdata), MIDIPROP_TIMEDIV | MIDIPROP_SET))
+	{
+		midihdr_tag* blockPtr = midi.DataPtr1;
+		for (auto blockIndex = midi.BlockCount; blockIndex; blockIndex--)
+		{
+			if (midiOutPrepareHeader(reinterpret_cast<HMIDIOUT>(midi.StreamHandle), blockPtr, sizeof(MIDIHDR)) ||
+				midiStreamOut(midi.StreamHandle, blockPtr, sizeof(MIDIHDR)))
+			{
+				returnCode = 5;
+				break;
+			}
+
+			++midi.PreparedBlocksCount;
+			blockPtr = reinterpret_cast<midihdr_tag*>(reinterpret_cast<char*>(&blockPtr[1]) + blockPtr->dwBufferLength);
+		}
+	}
+
+	if (!returnCode)
+	{
+		if (!steamOpenedFg && (midi.SomeFlag2 & 4) == 0)
+			return 7;
+
+		midi.SomeFlag2 &= ~2;
+		if ((flags & 1) != 0)
+			midi.SomeFlag2 |= 2;
+		midi.SomeFlag2 &= ~4;
+		if (midiStreamRestart(midi.StreamHandle))
+			returnCode = 5;
+	}
+
+	if (returnCode && steamOpenedFg)
+	{
+		if (midi.StreamHandle)
+			stream_close(midi);
+	}
+	return returnCode;
+}
+
+int MdsMidi::load_file(midi_struct& midi, void* filePtrOrPath, int fileSizeP, int flags)
 {
 	int returnCode;
 	unsigned int fileSize;
 	HANDLE mapHandle = nullptr;
-	midi_struct* midi = nullptr;
 	HANDLE fileHandle = INVALID_HANDLE_VALUE;
 	int fileFlag = 0;
 
@@ -161,15 +275,9 @@ int midi::load_file(midi_struct** midi_res, void* filePtrOrPath, int fileSizeP, 
 			break;
 		}
 
-		midi = static_cast<midi_struct*>(LocalAlloc(0x40u, sizeof(midi_struct)));
-		if (!midi)
-		{
-			returnCode = 1;
-			break;
-		}
-		midi->Magic = mmioFOURCC('M', 'D', 'S', 'I');
-		midi->StreamHandle = nullptr;
-		midi->PreparedBlocksCount = 0;
+		midi.Magic = mmioFOURCC('M', 'D', 'S', 'I');
+		midi.StreamHandle = nullptr;
+		midi.PreparedBlocksCount = 0;
 
 		if ((flags & 2) != 0)
 		{
@@ -179,7 +287,7 @@ int midi::load_file(midi_struct** midi_res, void* filePtrOrPath, int fileSizeP, 
 		{
 			fileFlag = 1;
 			fileHandle = CreateFileA(static_cast<LPCSTR>(filePtrOrPath), GENERIC_READ, 1u, nullptr, OPEN_EXISTING,
-			                         0x80u, nullptr);
+				0x80u, nullptr);
 			if (fileHandle == INVALID_HANDLE_VALUE)
 			{
 				returnCode = 2;
@@ -202,19 +310,7 @@ int midi::load_file(midi_struct** midi_res, void* filePtrOrPath, int fileSizeP, 
 			}
 		}
 		returnCode = read_file(midi, static_cast<riff_header*>(filePtrOrPath), fileSize);
-	}
-	while (false);
-
-
-	if (returnCode)
-	{
-		if (midi)
-			LocalFree(midi);
-	}
-	else
-	{
-		*midi_res = midi;
-	}
+	} while (false);
 
 	if (fileFlag)
 	{
@@ -228,13 +324,13 @@ int midi::load_file(midi_struct** midi_res, void* filePtrOrPath, int fileSizeP, 
 	return returnCode;
 }
 
-int midi::read_file(midi_struct* midi, riff_header* filePtr, unsigned fileSize)
+int MdsMidi::read_file(midi_struct& midi, riff_header* filePtr, unsigned fileSize)
 {
 	auto returnCode = 0;
 
 	do
 	{
-		midi->DataPtr1 = nullptr;
+		midi.DataPtr1 = nullptr;
 		if (fileSize < 12)
 		{
 			returnCode = 3;
@@ -276,9 +372,9 @@ int midi::read_file(midi_struct* midi, riff_header* filePtr, unsigned fileSize)
 			break;
 		}
 
-		midi->DwTimeFormat = filePtr->dwTimeFormat;
-		midi->CbMaxBuffer = filePtr->cbMaxBuffer;
-		midi->DwFlagsFormat = filePtr->dwFlags;
+		midi.DwTimeFormat = filePtr->dwTimeFormat;
+		midi.CbMaxBuffer = filePtr->cbMaxBuffer;
+		midi.DwFlagsFormat = filePtr->dwFlags;
 		auto blocksSize = fileSize - 20 - filePtr->FmtSize;
 		if (blocksSize < 8)
 		{
@@ -287,8 +383,8 @@ int midi::read_file(midi_struct* midi, riff_header* filePtr, unsigned fileSize)
 		}
 
 		auto dataChunk = reinterpret_cast<riff_data*>(reinterpret_cast<char*>(&filePtr->dwTimeFormat) + filePtr->FmtSize
-		);
-		if (dataChunk->Data != mmioFOURCC('d','a','t','a'))
+			);
+		if (dataChunk->Data != mmioFOURCC('d', 'a', 't', 'a'))
 		{
 			returnCode = 3;
 			break;
@@ -299,15 +395,15 @@ int midi::read_file(midi_struct* midi, riff_header* filePtr, unsigned fileSize)
 			break;
 		}
 
-		midi->BlockCount = dataChunk->BlocksPerChunk;
-		midi->DataPtr1 = reinterpret_cast<midihdr_tag*>(memory::allocate(
-			dataChunk->BlocksPerChunk * (midi->CbMaxBuffer + sizeof(midihdr_tag))));
-		if (!midi->DataPtr1)
+		midi.BlockCount = dataChunk->BlocksPerChunk;
+		midi.DataPtr1 = reinterpret_cast<midihdr_tag*>(memory::allocate(
+			dataChunk->BlocksPerChunk * (midi.CbMaxBuffer + sizeof(midihdr_tag))));
+		if (!midi.DataPtr1)
 		{
 			returnCode = 1;
 			break;
 		}
-		if (!midi->BlockCount)
+		if (!midi.BlockCount)
 		{
 			returnCode = 3;
 			break;
@@ -315,13 +411,13 @@ int midi::read_file(midi_struct* midi, riff_header* filePtr, unsigned fileSize)
 
 		auto blocksSizeIndex = blocksSize - 12;
 		auto srcPtr = dataChunk->Blocks;
-		auto* dstPtr = midi->DataPtr1;
-		for (auto blockIndex = midi->BlockCount; blockIndex; blockIndex--)
+		auto* dstPtr = midi.DataPtr1;
+		for (auto blockIndex = midi.BlockCount; blockIndex; blockIndex--)
 		{
 			dstPtr->lpData = reinterpret_cast<LPSTR>(&dstPtr[1]);
-			dstPtr->dwBufferLength = midi->CbMaxBuffer;
+			dstPtr->dwBufferLength = midi.CbMaxBuffer;
 			dstPtr->dwFlags = 0;
-			dstPtr->dwUser = reinterpret_cast<DWORD_PTR>(midi);
+			dstPtr->dwUser = reinterpret_cast<DWORD_PTR>(&midi);
 			dstPtr->lpNext = nullptr;
 			if (blocksSizeIndex < 8)
 			{
@@ -330,17 +426,17 @@ int midi::read_file(midi_struct* midi, riff_header* filePtr, unsigned fileSize)
 			}
 
 			auto blockSize = srcPtr->CbBuffer;
-			if (blockSize > midi->CbMaxBuffer || blockSize > blocksSizeIndex - 8)
+			if (blockSize > midi.CbMaxBuffer || blockSize > blocksSizeIndex - 8)
 			{
 				returnCode = 3;
 				break;
 			}
 
-			if ((midi->DwFlagsFormat & 1) != 0)
+			if ((midi.DwFlagsFormat & 1) != 0)
 			{
 				/*Not used in FT, some kind of compression*/
 				assertm(false, "Unimplemented code reached");
-				/*int a1[16]; 
+				/*int a1[16];
 				a1[0] = (int)blockDataPtr;
 				a1[2] = blockSize;
 				a1[1] = blockSize;
@@ -356,148 +452,18 @@ int midi::read_file(midi_struct* midi, riff_header* filePtr, unsigned fileSize)
 			}
 			blocksSizeIndex -= blockSize + 8;
 			srcPtr = reinterpret_cast<riff_block*>(&srcPtr->AData[blockSize]);
-			dstPtr = reinterpret_cast<midihdr_tag*>(reinterpret_cast<char*>(&dstPtr[1]) + midi->CbMaxBuffer);
+			dstPtr = reinterpret_cast<midihdr_tag*>(reinterpret_cast<char*>(&dstPtr[1]) + midi.CbMaxBuffer);
 		}
-	}
-	while (false);
+	} while (false);
 
-	if (returnCode && midi->DataPtr1)
+	if (returnCode && midi.DataPtr1)
 	{
-		memory::free(midi->DataPtr1);
+		memory::free(midi.DataPtr1);
 	}
 	return returnCode;
 }
 
-int midi::play_ft(midi_struct* midi)
-{
-	int result;
-
-	stop_ft();
-	if (!midi)
-		return 0;
-	if (some_flag1)
-	{
-		active_track2 = midi;
-		return 0;
-	}
-	if (stream_open(midi, 1))
-	{
-		active_track = nullptr;
-		result = 0;
-	}
-	else
-	{
-		active_track = midi;
-		result = 1;
-	}
-	return result;
-}
-
-int midi::stop_ft()
-{
-	int returnCode = 0;
-	if (active_track)
-		returnCode = stream_close(active_track);
-	active_track = nullptr;
-	return returnCode;
-}
-
-int midi::unload_track(midi_struct* midi)
-{
-	if (midi->Magic != mmioFOURCC('M', 'D', 'S', 'I'))
-		return 6;
-	if (midi->StreamHandle)
-		stream_close(midi);
-	if (midi->DataPtr1)
-	{
-		memory::free(midi->DataPtr1);
-	}
-	midi->Magic = mmioFOURCC('d','a','t','a');
-	LocalFree(midi);
-	return 0;
-}
-
-int midi::stream_open(midi_struct* midi, char flags)
-{
-	auto returnCode = 0;
-	if (midi->Magic != mmioFOURCC('M', 'D', 'S', 'I'))
-		return 6;
-
-	UINT puDeviceID = -1;
-	auto steamOpenedFg = !midi->StreamHandle;
-	MIDIPROPTIMEDIV propdata{8, midi->DwTimeFormat};
-	if (steamOpenedFg &&
-		!midiStreamOpen(&midi->StreamHandle, &puDeviceID, 1u, reinterpret_cast<DWORD_PTR>(midi_callback), 0,
-		                CALLBACK_FUNCTION) &&
-		!midiStreamProperty(midi->StreamHandle, reinterpret_cast<LPBYTE>(&propdata),MIDIPROP_TIMEDIV | MIDIPROP_SET))
-	{
-		midihdr_tag* blockPtr = midi->DataPtr1;
-		for (auto blockIndex = midi->BlockCount; blockIndex; blockIndex--)
-		{
-			if (midiOutPrepareHeader(reinterpret_cast<HMIDIOUT>(midi->StreamHandle), blockPtr, sizeof(MIDIHDR)) ||
-				midiStreamOut(midi->StreamHandle, blockPtr, sizeof(MIDIHDR)))
-			{
-				returnCode = 5;
-				break;
-			}
-
-			++midi->PreparedBlocksCount;
-			blockPtr = reinterpret_cast<midihdr_tag*>(reinterpret_cast<char*>(&blockPtr[1]) + blockPtr->dwBufferLength);
-		}
-	}
-
-	if (!returnCode)
-	{
-		if (!steamOpenedFg && (midi->SomeFlag2 & 4) == 0)
-			return 7;
-
-		midi->SomeFlag2 &= ~2;
-		if ((flags & 1) != 0)
-			midi->SomeFlag2 |= 2;
-		midi->SomeFlag2 &= ~4;
-		if (midiStreamRestart(midi->StreamHandle))
-			returnCode = 5;
-	}
-
-	if (returnCode && steamOpenedFg)
-	{
-		if (midi->StreamHandle)
-			stream_close(midi);
-	}
-	return returnCode;
-}
-
-int midi::stream_close(midi_struct* midi)
-{
-	int returnCode;
-
-	if (midi->Magic != mmioFOURCC('M', 'D', 'S', 'I'))
-		return 6;
-	if (!midi->StreamHandle)
-		return 7;
-	midi->SomeFlag2 |= 1u;
-	if (midiOutReset(reinterpret_cast<HMIDIOUT>(midi->StreamHandle)))
-	{
-		returnCode = 5;
-		midi->SomeFlag2 &= ~1;
-	}
-	else
-	{
-		midihdr_tag* blockPtr = midi->DataPtr1;
-		for (int i = midi->BlockCount; i; --i)
-		{
-			midiOutUnprepareHeader(reinterpret_cast<HMIDIOUT>(midi->StreamHandle), blockPtr, sizeof(MIDIHDR));
-			blockPtr = reinterpret_cast<midihdr_tag*>(reinterpret_cast<char*>(&blockPtr[1]) + blockPtr->dwBufferLength);
-		}
-		midiStreamClose(midi->StreamHandle);
-		returnCode = 0;
-		midi->StreamHandle = nullptr;
-		midi->SomeFlag2 = 0;
-	}
-	return returnCode;
-}
-
-void midi::midi_callback(HMIDIOUT hmo, UINT wMsg, DWORD_PTR dwInstance, DWORD_PTR dwParam1, DWORD_PTR dwParam2)
+void MdsMidi::midi_callback(HMIDIOUT hmo, UINT wMsg, DWORD_PTR dwInstance, DWORD_PTR dwParam1, DWORD_PTR dwParam2)
 {
 	if (wMsg == 969)
 	{
@@ -508,3 +474,49 @@ void midi::midi_callback(HMIDIOUT hmo, UINT wMsg, DWORD_PTR dwInstance, DWORD_PT
 			--midi->PreparedBlocksCount;
 	}
 }
+
+#pragma endregion
+
+#pragma region MciMidi
+
+MciMidi::MciMidi(LPCSTR fileName, HWND notifyHwnd)
+{
+	char filePath[256];
+	MCI_OPEN_PARMS mci_open_info{};
+	midi_notify_hwnd = notifyHwnd;
+
+	pinball::make_path_name(filePath, fileName, 254u);
+	mci_open_info.lpstrElementName = filePath;
+	auto result = mciSendCommandA(0, MCI_OPEN, MCI_OPEN_ELEMENT | MCI_NOTIFY_SUPERSEDED, (DWORD_PTR)&mci_open_info);
+	IsOpen = result == 0;
+	DeviceId = mci_open_info.wDeviceID;
+}
+
+MciMidi::~MciMidi()
+{
+	if (IsOpen)
+		mciSendCommandA(DeviceId, MCI_CLOSE, 0, 0);
+	IsOpen = false;
+}
+
+void MciMidi::Play()
+{
+	MCI_PLAY_PARMS playParams{ (DWORD_PTR)midi_notify_hwnd, 0, 0 };
+
+	Stop();
+
+	if (IsOpen)
+	{
+		auto result = mciSendCommandA(DeviceId, MCI_PLAY, MCI_FROM | MCI_NOTIFY, (DWORD_PTR)&playParams);
+		IsPlaying = result == 0;
+	}
+}
+
+void MciMidi::Stop()
+{
+	if (IsPlaying)
+		mciSendCommandA(DeviceId, MCI_STOP, 0, 0);
+	IsPlaying = false;
+}
+
+#pragma endregion

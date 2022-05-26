@@ -427,7 +427,7 @@ void options::toggle(UINT uIDCheckItem)
 		if (!newValue)
 			midi::music_stop();
 		else
-			midi::play_pb_theme(0);
+			midi::music_play();
 		menu_check(uIDCheckItem, newValue);
 		return;
 	case Menu1_Full_Screen:
