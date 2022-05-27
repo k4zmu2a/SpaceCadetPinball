@@ -227,7 +227,8 @@ std::vector<uint8_t>* midi::MdsToMidi(std::string file)
 
 	fseek(fileHandle, 0, SEEK_END);
 	auto fileSize = static_cast<uint32_t>(ftell(fileHandle));
-	auto fileBuf = reinterpret_cast<riff_header*>(new uint8_t [fileSize]);
+	auto buffer = new uint8_t[fileSize];
+	auto fileBuf = reinterpret_cast<riff_header*>(buffer);
 	fseek(fileHandle, 0, SEEK_SET);
 	fread(fileBuf, 1, fileSize, fileHandle);
 	fclose(fileHandle);
@@ -371,7 +372,7 @@ std::vector<uint8_t>* midi::MdsToMidi(std::string file)
 	}
 	while (false);
 
-	delete[] fileBuf;
+	delete[] buffer;
 	if (returnCode && midiOut)
 	{
 		delete midiOut;

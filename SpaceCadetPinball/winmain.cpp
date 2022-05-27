@@ -211,11 +211,22 @@ int winmain::WinMain(LPCSTR lpCmdLine)
 				float dy = static_cast<float>(y - last_mouse_y) / static_cast<float>(h);
 				pb::ballset(dx, dy);
 
-				SDL_WarpMouseInWindow(window, last_mouse_x, last_mouse_y);
+				// Original creates continuous mouse movement with mouse capture.
+				// Alternative solution: mouse warp at window edges.
+				int xMod = 0, yMod = 0;
+				if (x == 0 || x >= w - 1)
+					xMod = w - 2;
+				if (y == 0 || y >= h - 1)
+					yMod = h - 2;
+				if (xMod != 0 || yMod != 0)
+				{
+					// Mouse warp does not work over remote desktop or in some VMs
+					x = abs(x - xMod); y = abs(y - yMod);
+					SDL_WarpMouseInWindow(window, x, y);
+				}
 
-				// Mouse warp does not work over remote desktop or in some VMs
-				//last_mouse_x = x;
-				//last_mouse_y = y;
+				last_mouse_x = x;
+				last_mouse_y = y;
 			}
 			if (!single_step && !no_time_loss)
 			{

@@ -21,6 +21,8 @@ gdrv_bitmap8* DebugOverlay::dbScreen = nullptr;
 
 static int SDL_RenderDrawCircle(SDL_Renderer* renderer, int x, int y, int radius)
 {
+	SDL_Point points[256];
+	int pointCount = 0;
 	int offsetx, offsety, d;
 	int status;
 
@@ -29,20 +31,27 @@ static int SDL_RenderDrawCircle(SDL_Renderer* renderer, int x, int y, int radius
 	d = radius - 1;
 	status = 0;
 
-	while (offsety >= offsetx) {
-		status += SDL_RenderDrawPoint(renderer, x + offsetx, y + offsety);
-		status += SDL_RenderDrawPoint(renderer, x + offsety, y + offsetx);
-		status += SDL_RenderDrawPoint(renderer, x - offsetx, y + offsety);
-		status += SDL_RenderDrawPoint(renderer, x - offsety, y + offsetx);
-		status += SDL_RenderDrawPoint(renderer, x + offsetx, y - offsety);
-		status += SDL_RenderDrawPoint(renderer, x + offsety, y - offsetx);
-		status += SDL_RenderDrawPoint(renderer, x - offsetx, y - offsety);
-		status += SDL_RenderDrawPoint(renderer, x - offsety, y - offsetx);
+	while (offsety >= offsetx)
+	{
+		if (pointCount + 8 > 256)
+		{
+			status = SDL_RenderDrawPoints(renderer, points, pointCount);
+			pointCount = 0;
 
-		if (status < 0) {
-			status = -1;
-			break;
+			if (status < 0) {
+				status = -1;
+				break;
+			}
 		}
+
+		points[pointCount++] = { x + offsetx, y + offsety };
+		points[pointCount++] = { x + offsety, y + offsetx };
+		points[pointCount++] = { x - offsetx, y + offsety };
+		points[pointCount++] = { x - offsety, y + offsetx };
+		points[pointCount++] = { x + offsetx, y - offsety };
+		points[pointCount++] = { x + offsety, y - offsetx };
+		points[pointCount++] = { x - offsetx, y - offsety };
+		points[pointCount++] = { x - offsety, y - offsetx };
 
 		if (d >= 2 * offsetx) {
 			d -= 2 * offsetx + 1;
@@ -58,6 +67,9 @@ static int SDL_RenderDrawCircle(SDL_Renderer* renderer, int x, int y, int radius
 			offsetx += 1;
 		}
 	}
+
+	if (pointCount > 0)
+		status = SDL_RenderDrawPoints(renderer, points, pointCount);
 
 	return status;
 }
