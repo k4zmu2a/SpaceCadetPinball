@@ -122,7 +122,7 @@ void TKickout::Collision(TBall* ball, vector2* nextPosition, vector2* direction,
 		}
 		else
 		{
-			loader::play_sound(SoftHitSoundId);
+			loader::play_sound(SoftHitSoundId, ball, "TKickout1");
 			control::handler(63, this);
 		}
 	}
@@ -153,12 +153,12 @@ void TKickout::TimerExpired(int timerId, void* caller)
 		kick->Timer = timer::set(kick->TimerTime2, kick, ResetTimerExpired);
 		if (kick->Ball)
 		{		
+			loader::play_sound(kick->HardHitSoundId, kick->Ball, "TKickout2");
 			kick->Ball->Position.Z = kick->OriginalBallZ;
 			TBall::throw_ball(kick->Ball, &kick->BallThrowDirection, kick->ThrowAngleMult, kick->ThrowSpeedMult1,
 			                  kick->ThrowSpeedMult2);
 			kick->ActiveFlag = 0;
 			kick->Ball = nullptr;
-			loader::play_sound(kick->HardHitSoundId);
 		}
 	}
 }

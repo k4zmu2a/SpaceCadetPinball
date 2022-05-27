@@ -292,7 +292,7 @@ void TPinballTable::tilt(float time)
 		pinball::InfoTextBox->Clear();
 		pinball::MissTextBox->Clear();
 		pinball::InfoTextBox->Display(pinball::get_rc_string(35, 0), -1.0);
-		loader::play_sound(SoundIndex3);
+		loader::play_sound(SoundIndex3, nullptr, "TPinballTable1");
 		TiltTimeoutTimer = timer::set(30.0, this, tilt_timeout);
 
 		for (auto component : ComponentList)
@@ -446,7 +446,7 @@ int TPinballTable::Message(int code, float value)
 			pinball::InfoTextBox->Clear();
 			pinball::MissTextBox->Clear();
 			LightGroup->Message(28, 0.2f);
-			auto time = loader::play_sound(SoundIndex1);
+			auto time = loader::play_sound(SoundIndex1, nullptr, "TPinballTable2");
 			LightShowTimer = timer::set(time, this, LightShow_timeout);
 		}
 
@@ -543,7 +543,7 @@ int TPinballTable::Message(int code, float value)
 		}
 		break;
 	case 1022:
-		loader::play_sound(SoundIndex2);
+		loader::play_sound(SoundIndex2, nullptr, "TPinballTable3");
 		pinball::MissTextBox->Clear();
 		pinball::InfoTextBox->Display(pinball::get_rc_string(34, 0), -1.0);
 		EndGameTimeoutTimer = timer::set(3.0, this, EndGame_timeout);

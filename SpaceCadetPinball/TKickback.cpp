@@ -62,7 +62,7 @@ void TKickback::TimerExpired(int timerId, void* caller)
 	{
 		kick->Threshold = 0.0;
 		kick->Timer = timer::set(kick->TimerTime2, kick, TimerExpired);
-		loader::play_sound(kick->HardHitSoundId);
+		loader::play_sound(kick->HardHitSoundId, kick, "TKickback");
 		if (kick->ListBitmap)
 		{
 			auto bmp = kick->ListBitmap->at(1);

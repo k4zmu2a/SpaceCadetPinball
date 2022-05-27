@@ -51,7 +51,7 @@ void TOneway::Collision(TBall* ball, vector2* nextPosition, vector2* direction, 
 		if (!PinballTable->TiltLockFlag)
 		{
 			if (HardHitSoundId)
-				loader::play_sound(HardHitSoundId);
+				loader::play_sound(HardHitSoundId, ball, "TOneway1");
 			control::handler(63, this);
 		}
 	}
@@ -69,7 +69,7 @@ void TOneway::Collision(TBall* ball, vector2* nextPosition, vector2* direction, 
 		Boost) > 0.2f)
 	{
 		if (SoftHitSoundId)
-			loader::play_sound(SoftHitSoundId);
+			loader::play_sound(SoftHitSoundId, ball, "TOneway2");
 	}
 }
 

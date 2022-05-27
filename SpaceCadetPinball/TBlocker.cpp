@@ -40,11 +40,11 @@ int TBlocker::Message(int code, float value)
 		ActiveFlag = 0;
 		render::sprite_set_bitmap(RenderSprite, nullptr);
 		if (code == 51)
-			loader::play_sound(SoundIndex3);
+			loader::play_sound(SoundIndex3, this, "TBlocker1");
 		return 0;
 	case 52:
 		ActiveFlag = 1;
-		loader::play_sound(SoundIndex4);
+		loader::play_sound(SoundIndex4, this, "TBlocker2");
 		render::sprite_set_bitmap(RenderSprite, ListBitmap->at(0));
 		break;
 	case 59:

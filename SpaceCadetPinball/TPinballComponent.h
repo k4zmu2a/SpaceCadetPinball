@@ -1,4 +1,5 @@
 #pragma once
+#include "maths.h"
 
 struct zmap_header_type;
 struct gdrv_bitmap8;
@@ -23,6 +24,7 @@ public:
 	virtual void port_draw();
 	virtual void put_scoring(int index, int score);
 	virtual int get_scoring(int index);
+	virtual vector2 get_coordinates();
 
 	char UnusedBaseFlag;
 	char ActiveFlag;
@@ -34,4 +36,5 @@ public:
 	TPinballTable* PinballTable;
 	std::vector<gdrv_bitmap8*>* ListBitmap;
 	std::vector<zmap_header_type*>* ListZMap;
+	vector2 Coordinates;
 };

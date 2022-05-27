@@ -73,12 +73,12 @@ int TFlipper::Message(int code, float value)
 		{
 			control::handler(1, this);
 			TimerTime = ExtendAnimationFrameTime;
-			loader::play_sound(HardHitSoundId);
+			loader::play_sound(HardHitSoundId, this, "TFlipper1");
 		}
 		else if (code == 2)
 		{
 			TimerTime = RetractAnimationFrameTime;
-			loader::play_sound(SoftHitSoundId);
+			loader::play_sound(HardHitSoundId, this, "TFlipper2");
 		}
 		else
 		{

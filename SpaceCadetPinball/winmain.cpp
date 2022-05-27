@@ -454,6 +454,10 @@ void winmain::RenderUi()
 				{
 					options::toggle(Menu1::Sounds);
 				}
+				if (ImGui::MenuItem("Stereo Sound Effects", nullptr, Options.SoundStereo))
+				{
+					options::toggle(Menu1::SoundStereo);
+				}
 				ImGui::TextUnformatted("Sound Volume");
 				if (ImGui::SliderInt("##Sound Volume", &Options.SoundVolume, options::MinVolume, options::MaxVolume, "%d",
 					ImGuiSliderFlags_AlwaysClamp))

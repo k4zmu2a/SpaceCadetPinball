@@ -117,7 +117,7 @@ void TFlagSpinner::NextFrame()
 	{
 		control::handler(63, this);
 		if (SoftHitSoundId)
-			loader::play_sound(SoftHitSoundId);
+			loader::play_sound(SoftHitSoundId, this, "TFlagSpinner");
 		if (!BmpIndex)
 			control::handler(62, this);
 	}
