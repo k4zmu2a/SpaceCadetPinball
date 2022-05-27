@@ -78,7 +78,7 @@ int TFlipper::Message(int code, float value)
 		else if (code == 2)
 		{
 			TimerTime = RetractAnimationFrameTime;
-			loader::play_sound(HardHitSoundId, this, "TFlipper2");
+			loader::play_sound(SoftHitSoundId, this, "TFlipper2");
 		}
 		else
 		{
