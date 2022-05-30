@@ -1,6 +1,7 @@
 #include "options.h"
 #include "pch.h"
 #include "Sound.h"
+#include "maths.h"
 
 int Sound::num_channels;
 bool Sound::enabled_flag = false;

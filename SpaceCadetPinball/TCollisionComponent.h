@@ -1,9 +1,9 @@
 #pragma once
 #include "TPinballComponent.h"
-#include "TBall.h"
 
 struct vector2;
 class TEdgeSegment;
+class TBall;
 
 class TCollisionComponent : public TPinballComponent
 {

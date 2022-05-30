@@ -4,6 +4,7 @@
 #include "maths.h"
 #include "TEdgeSegment.h"
 #include "TPinballTable.h"
+#include "TBall.h"
 
 
 TCollisionComponent::TCollisionComponent(TPinballTable* table, int groupIndex, bool createWall) :

@@ -102,7 +102,7 @@ void options::InitPrimary()
 	Options.HybridSleep = get_int("HybridSleep", false);
 	Options.Prefer3DPBGameData = get_int("Prefer 3DPB Game Data", false);
 	Options.IntegerScaling = get_int("Integer Scaling", false);
-	Options.SoundStereo = get_int("Stereo Sound Effects", true);
+	Options.SoundStereo = get_int("Stereo Sound Effects", false);
 	Options.SoundVolume = Clamp(get_int("Sound Volume", DefVolume), MinVolume, MaxVolume);
 	Options.MusicVolume = Clamp(get_int("Music Volume", DefVolume), MinVolume, MaxVolume);
 	Options.DebugOverlay = get_int("Debug Overlay", false);

@@ -1,10 +1,10 @@
 #pragma once
-#include "maths.h"
 
 struct zmap_header_type;
 struct gdrv_bitmap8;
 struct render_sprite_type_struct;
 struct component_control;
+struct vector2;
 class TPinballTable;
 
 enum class message_code
@@ -36,5 +36,7 @@ public:
 	TPinballTable* PinballTable;
 	std::vector<gdrv_bitmap8*>* ListBitmap;
 	std::vector<zmap_header_type*>* ListZMap;
-	vector2 Coordinates;
+private:
+	float VisualPosNormX;
+	float VisualPosNormY;
 };
