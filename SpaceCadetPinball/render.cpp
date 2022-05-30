@@ -29,12 +29,8 @@ void render::init(gdrv_bitmap8* bmp, float zMin, float zScaler, int width, int h
 	vscreen_rect.Height = height;
 	vscreen.YPosition = 0;
 	vscreen.XPosition = 0;
-	gdrv_bitmap8* ballBmp = ball_bitmap;
-	while (ballBmp < &ball_bitmap[20])
-	{
-		gdrv::create_raw_bitmap(ballBmp, 64, 64, 1);
-		++ballBmp;
-	}
+	for (auto& ballBmp : ball_bitmap)
+		gdrv::create_raw_bitmap(&ballBmp, 64, 64, 1);
 	background_bitmap = bmp;
 	if (bmp)
 		gdrv::copy_bitmap(&vscreen, width, height, 0, 0, bmp, 0, 0);
@@ -51,6 +47,8 @@ void render::uninit()
 		remove_sprite(sprite_list[i]);
 	for (auto j = many_balls - 1; j >= 0; --j)
 		remove_ball(ball_list[j]);
+	for (auto& ballBmp : ball_bitmap)
+		gdrv::destroy_bitmap(&ballBmp);
 	memory::free(ball_list);
 	memory::free(dirty_list);
 	memory::free(sprite_list);

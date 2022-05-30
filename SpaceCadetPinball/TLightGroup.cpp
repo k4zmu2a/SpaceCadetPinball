@@ -14,7 +14,7 @@ TLightGroup::TLightGroup(TPinballTable* table, int groupIndex) : TPinballCompone
 	List = new objlist_class<TLight>(4, 4);
 	Timer = 0;
 	NotifyTimer = 0;
-	Reset();
+	TLightGroup::Reset();
 	if (groupIndex > 0)
 	{
 		int count;
