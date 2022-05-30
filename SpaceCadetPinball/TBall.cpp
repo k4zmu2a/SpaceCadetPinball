@@ -135,3 +135,12 @@ void TBall::throw_ball(TBall* ball, vector3* direction, float angleMult, float s
 	rnd = RandFloat();
 	ball->Speed = (1.0f - (rnd + rnd)) * (speedMult1 * speedMult2) + speedMult1;
 }
+
+vector2 TBall::get_coordinates()
+{
+	vector2  coordinates;
+	vector2i pos2D = proj::xform_to_2d(Position);
+	coordinates.X = (float)pos2D.X / PinballTable->Width;
+	coordinates.Y = (float)pos2D.Y / PinballTable->Height;
+	return coordinates;
+}

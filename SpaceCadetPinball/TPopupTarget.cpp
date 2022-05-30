@@ -79,7 +79,7 @@ void TPopupTarget::Collision(TBall* ball, vector2* nextPosition, vector2* direct
 		this->Boost) > this->Threshold)
 	{
 		if (this->HardHitSoundId)
-			loader::play_sound(this->HardHitSoundId);
+			loader::play_sound(this->HardHitSoundId, this, "TPopupTarget1");
 		this->Message(49, 0.0);
 		control::handler(63, this);
 	}
@@ -94,6 +94,6 @@ void TPopupTarget::TimerExpired(int timerId, void* caller)
 	if (timerId)
 	{
 		if (target->SoftHitSoundId)
-			loader::play_sound(target->SoftHitSoundId);
+			loader::play_sound(target->SoftHitSoundId, target, "TPopupTarget2");
 	}
 }

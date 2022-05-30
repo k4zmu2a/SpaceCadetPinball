@@ -1,4 +1,5 @@
 #pragma once
+#include "TPinballComponent.h"
 
 
 class Sound
@@ -9,7 +10,7 @@ public:
 	static void Activate();
 	static void Deactivate();
 	static void Close();
-	static void PlaySound(Mix_Chunk* wavePtr, int time);
+	static void PlaySound(Mix_Chunk* wavePtr, int time, TPinballComponent *soundSource, const char* info);
 	static Mix_Chunk* LoadWaveFile(const std::string& lpName);
 	static void FreeSound(Mix_Chunk* wave);
 	static void SetChannels(int channels);

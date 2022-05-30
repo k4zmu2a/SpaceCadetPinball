@@ -932,7 +932,7 @@ void control::pbctrl_bdoor_controller(char key)
 void control::table_add_extra_ball(float count)
 {
 	++TableG->ExtraBalls;
-	soundwave28->Play();
+	soundwave28->Play(nullptr, "table_add_extra_ball");
 	auto msg = pinball::get_rc_string(9, 0);
 	info_text_box->Display(msg, count);
 }
@@ -981,7 +981,7 @@ void control::table_bump_ball_sink_lock()
 	else
 	{
 		TableG->BallLockedCounter = TableG->BallLockedCounter + 1;
-		soundwave44->Play();
+		soundwave44->Play(nullptr, "table_bump_ball_sink_lock");
 		info_text_box->Display(pinball::get_rc_string(1, 0), 2.0);
 		TableG->Plunger->Message(1016, 0.0);
 	}
@@ -1004,7 +1004,7 @@ void control::cheat_bump_rank()
 		auto rankText = pinball::get_rc_string(RankRcArray[rank], 1);
 		snprintf(Buffer,sizeof Buffer, pinball::get_rc_string(83, 0), rankText);
 		mission_text_box->Display(Buffer, 8.0);
-		soundwave10->Play();
+		soundwave10->Play(nullptr, "cheat_bump_rank");
 	}
 }
 
@@ -1055,7 +1055,7 @@ int control::AddRankProgress(int rank)
 			auto rankText = pinball::get_rc_string(RankRcArray[midActiveCount], 1);
 			snprintf(Buffer, sizeof Buffer, pinball::get_rc_string(83, 0), rankText);
 			mission_text_box->Display(Buffer, 8.0);
-			soundwave10->Play();
+			soundwave10->Play(nullptr, "AddRankProgress");
 		}
 	}
 	else if (activeCount >= 3 * totalCount / 4)
@@ -1175,7 +1175,7 @@ void control::DeploymentChuteToEscapeChuteOneWayControl(int code, TPinballCompon
 		int count = skill_shot_lights->Message(37, 0.0);
 		if (count)
 		{
-			soundwave3->Play();
+			soundwave3->Play(nullptr, "DeploymentChuteToEscapeChuteOneWayControl");
 			int score = TableG->AddScore(caller->get_scoring(count - 1));
 			snprintf(Buffer, sizeof Buffer, pinball::get_rc_string(21, 0), score);
 			info_text_box->Display(Buffer, 2.0);
@@ -1267,7 +1267,7 @@ void control::LaunchRampControl(int code, TPinballComponent* caller)
 			TableG->AddScore(caller->get_scoring(0));
 			sound = soundwave30;
 		}
-		sound->Play();
+		sound->Play(lite198, "LaunchRampControl");
 	}
 }
 
@@ -1404,7 +1404,7 @@ void control::OutLaneRolloverControl(int code, TPinballComponent* caller)
 		}
 		else
 		{
-			soundwave26->Play();
+			soundwave26->Play(caller, "OutLaneRolloverControl");
 		}
 		if (roll4 == caller)
 		{
@@ -1483,12 +1483,12 @@ void control::BonusLaneRolloverControl(int code, TPinballComponent* caller)
 			snprintf(Buffer, sizeof Buffer, pinball::get_rc_string(3, 0), addedScore);
 			info_text_box->Display(Buffer, 2.0);
 			lite16->Message(20, 0.0);
-			soundwave50_1->Play();
+			soundwave50_1->Play(caller, "BonusLaneRolloverControl1");
 		}
 		else
 		{
 			TableG->AddScore(caller->get_scoring(0));
-			soundwave25->Play();
+			soundwave25->Play(caller, "BonusLaneRolloverControl2");
 			info_text_box->Display(pinball::get_rc_string(44, 0), 2.0);
 		}
 		fuel_bargraph->Message(45, 11.0);
@@ -1756,7 +1756,7 @@ void control::BoosterTargetControl(int code, TPinballComponent* caller)
 			}
 		}
 		if (sound)
-			sound->Play();
+			sound->Play(caller, "BoosterTargetControl");
 
 		target1->MessageField = 0;
 		target1->Message(50, 0.0);
@@ -1844,12 +1844,12 @@ void control::FuelSpotTargetControl(int code, TPinballComponent* caller)
 		{
 			top_circle_tgt_lights->Message(16, 2.0);
 			fuel_bargraph->Message(45, 11.0);
-			soundwave25->Play();
+			soundwave25->Play(caller, "FuelSpotTargetControl1");
 			info_text_box->Display(pinball::get_rc_string(44, 0), 2.0);
 		}
 		else
 		{
-			soundwave49D->Play();
+			soundwave49D->Play(caller, "FuelSpotTargetControl2");
 		}
 	}
 }
@@ -1883,7 +1883,7 @@ void control::MissionSpotTargetControl(int code, TPinballComponent* caller)
 		}
 		else
 			sound = soundwave49D;
-		sound->Play();
+		sound->Play(caller, "MissionSpotTargetControl");
 		TableG->AddScore(caller->get_scoring(0));
 		if (ramp_tgt_lights->Message(37, 0.0) == 3)
 			ramp_tgt_lights->Message(16, 2.0);
@@ -1915,13 +1915,13 @@ void control::LeftHazardSpotTargetControl(int code, TPinballComponent* caller)
 		TableG->AddScore(caller->get_scoring(0));
 		if (lchute_tgt_lights->Message(37, 0.0) == 3)
 		{
-			soundwave14_1->Play();
+			soundwave14_1->Play(caller, "LeftHazardSpotTargetControl1");
 			gate1->Message(53, 0.0);
 			lchute_tgt_lights->Message(16, 2.0);
 		}
 		else
 		{
-			soundwave49D->Play();
+			soundwave49D->Play(caller, "LeftHazardSpotTargetControl2");
 		}
 	}
 }
@@ -1951,13 +1951,13 @@ void control::RightHazardSpotTargetControl(int code, TPinballComponent* caller)
 		TableG->AddScore(caller->get_scoring(0));
 		if (bpr_solotgt_lights->Message(37, 0.0) == 3)
 		{
-			soundwave14_1->Play();
+			soundwave14_1->Play(caller, "RightHazardSpotTargetControl1");
 			gate2->Message(53, 0.0);
 			bpr_solotgt_lights->Message(16, 2.0);
 		}
 		else
 		{
-			soundwave49D->Play();
+			soundwave49D->Play(caller, "RightHazardSpotTargetControl2");
 		}
 	}
 }
@@ -2015,7 +2015,7 @@ void control::GravityWellKickoutControl(int code, TPinballComponent* caller)
 			info_text_box->Display(Buffer, 2.0);
 			lite62->Message(20, 0.0);
 			caller->ActiveFlag = 0;
-			auto duration = soundwave7->Play();
+			auto duration = soundwave7->Play(lite62, "GravityWellKickoutControl");
 			caller->Message(55, duration);
 			break;
 		}
@@ -2054,7 +2054,7 @@ void control::SkillShotGate1Control(int code, TPinballComponent* caller)
 			lite54->Message(7, 5.0);
 			lite25->Message(7, 5.0);
 			fuel_bargraph->Message(45, 11.0);
-			soundwave14_2->Play();
+			soundwave14_2->Play(lite67, "SkillShotGate1Control");
 		}
 	}
 }
@@ -2066,7 +2066,7 @@ void control::SkillShotGate2Control(int code, TPinballComponent* caller)
 		if (light_on(&control_lite67_tag))
 		{
 			lite68->Message(19, 0.0);
-			soundwave14_2->Play();
+			soundwave14_2->Play(lite68, "SkillShotGate2Control");
 		}
 	}
 }
@@ -2078,7 +2078,7 @@ void control::SkillShotGate3Control(int code, TPinballComponent* caller)
 		if (light_on(&control_lite67_tag))
 		{
 			lite69->Message(19, 0.0);
-			soundwave14_2->Play();
+			soundwave14_2->Play(lite69, "SkillShotGate3Control");
 		}
 	}
 }
@@ -2090,7 +2090,7 @@ void control::SkillShotGate4Control(int code, TPinballComponent* caller)
 		if (light_on(&control_lite67_tag))
 		{
 			lite131->Message(19, 0.0);
-			soundwave14_2->Play();
+			soundwave14_2->Play(lite131, "SkillShotGate4Control");
 		}
 	}
 }
@@ -2102,7 +2102,7 @@ void control::SkillShotGate5Control(int code, TPinballComponent* caller)
 		if (light_on(&control_lite67_tag))
 		{
 			lite132->Message(19, 0.0);
-			soundwave14_2->Play();
+			soundwave14_2->Play(lite132, "SkillShotGate5Control");
 		}
 	}
 }
@@ -2114,7 +2114,7 @@ void control::SkillShotGate6Control(int code, TPinballComponent* caller)
 		if (light_on(&control_lite67_tag))
 		{
 			lite133->Message(19, 0.0);
-			soundwave14_2->Play();
+			soundwave14_2->Play(lite133, "SkillShotGate6Control");
 		}
 	}
 }
@@ -2384,9 +2384,9 @@ void control::HyperspaceKickOutControl(int code, TPinballComponent* caller)
 		{
 			if (someFlag < 1 || someFlag > 3)
 			{
-				auto duration = soundwave41->Play();
-				soundwave36_1->Play();
-				soundwave50_2->Play();
+				auto duration = soundwave41->Play(lite24, "HyperspaceKickOutControl1");
+				soundwave36_1->Play(lite24, "HyperspaceKickOutControl2");
+				soundwave50_2->Play(lite24, "HyperspaceKickOutControl3");
 				lite25->Message(7, 5.0);
 				caller->Message(55, duration);
 				return;
@@ -2415,7 +2415,7 @@ void control::HyperspaceKickOutControl(int code, TPinballComponent* caller)
 			break;
 		}
 	}
-	auto duration = sound->Play();
+	auto duration = sound->Play(lite24, "HyperspaceKickOutControl4");
 	lite25->Message(7, 5.0);
 	caller->Message(55, duration);
 }
@@ -2550,7 +2550,7 @@ void control::BallDrainControl(int code, TPinballComponent* caller)
 			TableG->Message(1022, 0.0);
 			if (pb::chk_highscore())
 			{
-				soundwave3->Play();
+				soundwave3->Play(nullptr, "BallDrainControl1");
 				TableG->LightGroup->Message(16, 3.0);
 				char* v11 = pinball::get_rc_string(177, 0);
 				mission_text_box->Display(v11, -1.0);
@@ -2578,23 +2578,23 @@ void control::BallDrainControl(int code, TPinballComponent* caller)
 			}
 			if (light_on(&control_lite200_tag))
 			{
-				soundwave27->Play();
+				soundwave27->Play(nullptr, "BallDrainControl2");
 				lite200->Message(19, 0.0);
 				info_text_box->Display(pinball::get_rc_string(96, 0), -1.0);
-				soundwave59->Play();
+				soundwave59->Play(nullptr, "BallDrainControl3");
 			}
 			else if (light_on(&control_lite199_tag))
 			{
-				soundwave27->Play();
+				soundwave27->Play(nullptr, "BallDrainControl4");
 				lite199->Message(20, 0.0);
 				lite200->Message(19, 0.0);
 				info_text_box->Display(pinball::get_rc_string(95, 0), 2.0);
-				soundwave59->Play();
+				soundwave59->Play(nullptr, "BallDrainControl5");
 				--TableG->UnknownP78;
 			}
 			else if (TableG->UnknownP75)
 			{
-				soundwave27->Play();
+				soundwave27->Play(nullptr, "BallDrainControl6");
 				--TableG->UnknownP75;
 			}
 			else
@@ -2610,7 +2610,7 @@ void control::BallDrainControl(int code, TPinballComponent* caller)
 					TableG->ExtraBalls--;
 
 					char* shootAgainText;
-					soundwave59->Play();
+					soundwave59->Play(nullptr, "BallDrainControl7");
 					switch (TableG->CurrentPlayer)
 					{
 					case 0:
@@ -2641,7 +2641,7 @@ void control::BallDrainControl(int code, TPinballComponent* caller)
 					{
 						lite199->MessageField = 1;
 					}
-					soundwave27->Play();
+					soundwave27->Play(nullptr, "BallDrainControl8");
 				}
 				bmpr_inc_lights->Message(20, 0.0);
 				ramp_bmpr_inc_lights->Message(20, 0.0);
@@ -2812,7 +2812,7 @@ void control::AlienMenacePartTwoController(int code, TPinballComponent* caller)
 			if (!AddRankProgress(7))
 			{
 				mission_text_box->Display(Buffer, 8.0);
-				soundwave9->Play();
+				soundwave9->Play(nullptr, "AlienMenacePartTwoController");
 			}
 		}
 	}
@@ -2844,7 +2844,7 @@ void control::BlackHoleThreatController(int code, TPinballComponent* caller)
 			if (!AddRankProgress(8))
 			{
 				mission_text_box->Display(Buffer, 8.0);
-				soundwave9->Play();
+				soundwave9->Play(nullptr, "BlackHoleThreatController");
 			}
 		}
 	}
@@ -2969,7 +2969,7 @@ void control::BugHuntController(int code, TPinballComponent* caller)
 			if (!AddRankProgress(7))
 			{
 				mission_text_box->Display(Buffer, 8.0);
-				soundwave9->Play();
+				soundwave9->Play(nullptr, "BugHuntController");
 			}
 		}
 	}
@@ -3044,7 +3044,7 @@ void control::CosmicPlaguePartTwoController(int code, TPinballComponent* caller)
 		if (!AddRankProgress(11))
 		{
 			mission_text_box->Display(Buffer, 8.0);
-			soundwave9->Play();
+			soundwave9->Play(nullptr, "CosmicPlaguePartTwoController");
 		}
 	}
 }
@@ -3088,7 +3088,7 @@ void control::DoomsdayMachineController(int code, TPinballComponent* caller)
 			if (!AddRankProgress(9))
 			{
 				mission_text_box->Display(Buffer, 8.0);
-				soundwave9->Play();
+				soundwave9->Play(nullptr, "DoomsdayMachineController");
 			}
 		}
 	}
@@ -3229,7 +3229,7 @@ void control::LaunchTrainingController(int code, TPinballComponent* caller)
 			if (!AddRankProgress(6))
 			{
 				mission_text_box->Display(Buffer, 8.0);
-				soundwave9->Play();
+				soundwave9->Play(nullptr, "LaunchTrainingController");
 			}
 		}
 	}
@@ -3312,7 +3312,7 @@ void control::MaelstromPartEightController(int code, TPinballComponent* caller)
 		if (!AddRankProgress(18))
 		{
 			mission_text_box->Display(Buffer, 8.0);
-			soundwave9->Play();
+			soundwave9->Play(nullptr, "MaelstromPartEightController");
 		}
 	}
 }
@@ -3573,7 +3573,7 @@ void control::PracticeMissionController(int code, TPinballComponent* caller)
 			if (!AddRankProgress(6))
 			{
 				mission_text_box->Display(Buffer, 8.0);
-				soundwave9->Play();
+				soundwave9->Play(nullptr, "PracticeMissionController");
 			}
 		}
 	}
@@ -3636,7 +3636,7 @@ void control::ReconnaissanceController(int code, TPinballComponent* caller)
 			if (!AddRankProgress(9))
 			{
 				mission_text_box->Display(Buffer, 8.0);
-				soundwave9->Play();
+				soundwave9->Play(nullptr, "ReconnaissanceController");
 			}
 		}
 	}
@@ -3687,7 +3687,7 @@ void control::ReentryTrainingController(int code, TPinballComponent* caller)
 			if (!AddRankProgress(6))
 			{
 				mission_text_box->Display(Buffer, 8.0);
-				soundwave9->Play();
+				soundwave9->Play(nullptr, "ReentryTrainingController");
 			}
 		}
 	}
@@ -3728,7 +3728,7 @@ void control::RescueMissionController(int code, TPinballComponent* caller)
 			if (!AddRankProgress(7))
 			{
 				mission_text_box->Display(Buffer, 8.0);
-				soundwave9->Play();
+				soundwave9->Play(nullptr, "RescueMissionController");
 			}
 			break;
 		}
@@ -3801,7 +3801,7 @@ void control::SatelliteController(int code, TPinballComponent* caller)
 			if (!AddRankProgress(9))
 			{
 				mission_text_box->Display(Buffer, 8.0);
-				soundwave9->Play();
+				soundwave9->Play(nullptr, "SatelliteController");
 			}
 		}
 	}
@@ -3874,7 +3874,7 @@ void control::ScienceMissionController(int code, TPinballComponent* caller)
 			if (!AddRankProgress(9))
 			{
 				mission_text_box->Display(Buffer, 8.0);
-				soundwave9->Play();
+				soundwave9->Play(nullptr, "ScienceMissionController");
 			}
 		}
 	}
@@ -3911,7 +3911,7 @@ void control::SecretMissionGreenController(int code, TPinballComponent* caller)
 		if (!AddRankProgress(10))
 		{
 			mission_text_box->Display(Buffer, 8.0);
-			soundwave9->Play();
+			soundwave9->Play(nullptr, "SecretMissionGreenController");
 		}
 	}
 }
@@ -4219,7 +4219,7 @@ void control::SpaceRadiationController(int code, TPinballComponent* caller)
 			if (!AddRankProgress(8))
 			{
 				mission_text_box->Display(Buffer, 8.0);
-				soundwave9->Play();
+				soundwave9->Play(nullptr, "SpaceRadiationController");
 			}
 		}
 	}
@@ -4272,7 +4272,7 @@ void control::StrayCometController(int code, TPinballComponent* caller)
 			if (!AddRankProgress(8))
 			{
 				mission_text_box->Display(Buffer, 8.0);
-				soundwave9->Play();
+				soundwave9->Play(nullptr, "StrayCometController");
 			}
 		}
 	}
@@ -4381,7 +4381,7 @@ void control::TimeWarpPartTwoController(int code, TPinballComponent* caller)
 		if (!AddRankProgress(12))
 		{
 			mission_text_box->Display(Buffer, 8.0);
-			soundwave10->Play();
+			soundwave10->Play(nullptr, "TimeWarpPartTwoController");
 		}
 	}
 	SpecialAddScore(2000000);

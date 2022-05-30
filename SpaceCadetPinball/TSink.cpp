@@ -86,7 +86,7 @@ void TSink::Collision(TBall* ball, vector2* nextPosition, vector2* direction, fl
 	{
 		ball->ActiveFlag = 0;
 		render::sprite_set_bitmap(ball->RenderSprite, nullptr);
-		loader::play_sound(SoundIndex4);
+		loader::play_sound(SoundIndex4, ball, "TSink1");
 		control::handler(63, this);
 	}
 }
@@ -102,6 +102,6 @@ void TSink::TimerExpired(int timerId, void* caller)
 	TBall::throw_ball(ball, &sink->BallThrowDirection, sink->ThrowAngleMult, sink->ThrowSpeedMult1,
 	                  sink->ThrowSpeedMult2);
 	if (sink->SoundIndex3)
-		loader::play_sound(sink->SoundIndex3);
+		loader::play_sound(sink->SoundIndex3, ball, "TSink2");
 	sink->Timer = 0;
 }

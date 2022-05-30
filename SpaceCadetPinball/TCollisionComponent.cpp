@@ -61,9 +61,9 @@ bool TCollisionComponent::DefaultCollision(TBall* ball, vector2* nextPosition, v
 
 	auto projSpeed = maths::basic_collision(ball, nextPosition, direction, Elasticity, Smoothness, Threshold, Boost);
 	if (projSpeed > Threshold)
-		loader::play_sound(HardHitSoundId);
+		loader::play_sound(HardHitSoundId, ball, "TCollisionComponent1");
 	else if (projSpeed > 0.2f)
-		loader::play_sound(SoftHitSoundId);
+		loader::play_sound(SoftHitSoundId, ball, "TCollisionComponent2");
 	else
 		return false;
 	return true;
@@ -87,9 +87,9 @@ void TCollisionComponent::Collision(TBall* ball, vector2* nextPosition, vector2*
 		Threshold,
 		Boost);
 	if (projSpeed > Threshold)
-		loader::play_sound(HardHitSoundId);
+		loader::play_sound(HardHitSoundId, ball, "TCollisionComponent3");
 	else if (projSpeed > 0.2f)
-		loader::play_sound(SoftHitSoundId);
+		loader::play_sound(SoftHitSoundId, ball, "TCollisionComponent4");
 }
 
 int TCollisionComponent::FieldEffect(TBall* ball, vector2* vecDst)

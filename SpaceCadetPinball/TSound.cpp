@@ -10,7 +10,7 @@ TSound::TSound(TPinballTable* table, int groupIndex) : TPinballComponent(table, 
 	this->SoundIndex = visual.SoundIndex4;
 }
 
-float TSound::Play()
+float TSound::Play(TPinballComponent *soundSource, const char* info)
 {
-	return loader::play_sound(this->SoundIndex);
+	return loader::play_sound(this->SoundIndex, soundSource, info);
 }

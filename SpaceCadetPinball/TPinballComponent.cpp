@@ -17,6 +17,8 @@ TPinballComponent::TPinballComponent(TPinballTable* table, int groupIndex, bool 
 	ListZMap = nullptr;
 	GroupName = nullptr;
 	Control = nullptr;
+	Coordinates.X = -1.0f;
+	Coordinates.Y = -1.0f;
 	if (table)
 		table->ComponentList.push_back(this);
 	if (groupIndex >= 0)
@@ -69,6 +71,8 @@ TPinballComponent::TPinballComponent(TPinballTable* table, int groupIndex, bool 
 				rootBmp->XPosition - table->XOffset,
 				rootBmp->YPosition - table->YOffset,
 				&bmp1Rect);
+			Coordinates.X = (bmp1Rect.XPosition + (bmp1Rect.Width  / 2.0f)) / PinballTable->Width;
+			Coordinates.Y = (bmp1Rect.YPosition + (bmp1Rect.Height / 2.0f)) / PinballTable->Height;
 		}
 	}
 	GroupIndex = groupIndex;
@@ -110,4 +114,9 @@ void TPinballComponent::put_scoring(int index, int score)
 int TPinballComponent::get_scoring(int index)
 {
 	return 0;
+}
+
+vector2 TPinballComponent::get_coordinates()
+{
+	return this->Coordinates;
 }

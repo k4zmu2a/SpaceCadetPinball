@@ -36,9 +36,9 @@ int TBumper::Message(int code, float value)
 			if (nextBmp != BmpIndex)
 			{
 				if (nextBmp >= BmpIndex)
-					loader::play_sound(SoundIndex4);
+					loader::play_sound(SoundIndex4, this, "TBumper1");
 				if (nextBmp < BmpIndex)
-					loader::play_sound(SoundIndex3);
+					loader::play_sound(SoundIndex3, this, "TBumper2");
 				BmpIndex = nextBmp;
 				Fire();
 				control::handler(11, this);

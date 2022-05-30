@@ -102,6 +102,7 @@ void options::InitPrimary()
 	Options.HybridSleep = get_int("HybridSleep", false);
 	Options.Prefer3DPBGameData = get_int("Prefer 3DPB Game Data", false);
 	Options.IntegerScaling = get_int("Integer Scaling", false);
+	Options.SoundStereo = get_int("Stereo Sound Effects", true);
 	Options.SoundVolume = Clamp(get_int("Sound Volume", DefVolume), MinVolume, MaxVolume);
 	Options.MusicVolume = Clamp(get_int("Music Volume", DefVolume), MinVolume, MaxVolume);
 	Options.DebugOverlay = get_int("Debug Overlay", false);
@@ -147,6 +148,7 @@ void options::uninit()
 	set_int("HybridSleep", Options.HybridSleep);
 	set_int("Prefer 3DPB Game Data", Options.Prefer3DPBGameData);
 	set_int("Integer Scaling", Options.IntegerScaling);
+	set_int("Stereo Sound Effects", Options.SoundStereo);
 	set_int("Sound Volume", Options.SoundVolume);
 	set_int("Music Volume", Options.MusicVolume);
 	set_int("Debug Overlay", Options.DebugOverlay);
@@ -220,6 +222,9 @@ void options::toggle(Menu1 uIDCheckItem)
 	case Menu1::Sounds:
 		Options.Sounds ^= true;
 		Sound::Enable(Options.Sounds);
+		return;
+	case Menu1::SoundStereo:
+		Options.SoundStereo ^= true;
 		return;
 	case Menu1::Music:
 		Options.Music ^= true;

@@ -26,14 +26,14 @@ int TGate::Message(int code, float value)
 		{
 			ActiveFlag = 0;
 			render::sprite_set_bitmap(RenderSprite, nullptr);
-			loader::play_sound(SoundIndex3);
+			loader::play_sound(SoundIndex3, this, "TGate1");
 		}
 		else if (code == 54 || code == 1024)
 		{
 			ActiveFlag = 1;
 			render::sprite_set_bitmap(RenderSprite, ListBitmap->at(0));
 			if (code == 54)
-				loader::play_sound(SoundIndex4);
+				loader::play_sound(SoundIndex4, this, "TGate2");
 		}
 		control::handler(code, this);
 	}

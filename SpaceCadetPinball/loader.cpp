@@ -1,6 +1,7 @@
 ﻿#include "pch.h"
 #include "loader.h"
 #include "GroupData.h"
+#include "TPinballComponent.h"
 #include "pb.h"
 #include "pinball.h"
 #include "Sound.h"
@@ -326,12 +327,11 @@ int loader::material(int groupIndex, visualStruct* visual)
 	return 0;
 }
 
-
-float loader::play_sound(int soundIndex)
+float loader::play_sound(int soundIndex, TPinballComponent *soundSource, const char *info)
 {
 	if (soundIndex <= 0)
 		return 0.0;
-	Sound::PlaySound(sound_list[soundIndex].WavePtr, pb::time_ticks);
+	Sound::PlaySound(sound_list[soundIndex].WavePtr, pb::time_ticks, soundSource, info);
 	return sound_list[soundIndex].Duration;
 }
 
