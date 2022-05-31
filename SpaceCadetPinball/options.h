@@ -88,6 +88,7 @@ struct optionsStruct
 	bool DebugOverlayBallPosition;
 	bool DebugOverlayBallEdges;
 	bool DebugOverlayCollisionMask;
+	bool DebugOverlaySprites;
 };
 
 struct ControlRef

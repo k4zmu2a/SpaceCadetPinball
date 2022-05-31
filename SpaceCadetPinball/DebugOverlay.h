@@ -19,4 +19,5 @@ private:
 	static void DrawBoxGrid();
 	static void DrawAllEdges();
 	static void DrawBallInfo();
+	static void DrawAllSprites();
 };

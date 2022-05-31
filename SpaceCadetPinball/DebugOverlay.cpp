@@ -101,6 +101,10 @@ void DebugOverlay::DrawOverlay()
 	if (options::Options.DebugOverlayGrid)
 		DrawBoxGrid();
 
+	// Draw bounding boxes around sprites
+	if (options::Options.DebugOverlaySprites)
+		DrawAllSprites();
+
 	// Draw all edges registered in TCollisionComponent.EdgeList + flippers
 	if (options::Options.DebugOverlayAllEdges)
 		DrawAllEdges();
@@ -199,6 +203,23 @@ void DebugOverlay::DrawBallInfo()
 				maths::vector_add(nextPos, maths::vector_mul(ball->Direction, ball->Speed / 10.0f));
 				auto pt2 = proj::xform_to_2d(nextPos);
 				SDL_RenderDrawLine(winmain::Renderer, pt1.X, pt1.Y, pt2.X, pt2.Y);
+			}
+		}
+	}
+}
+
+void DebugOverlay::DrawAllSprites()
+{
+	SDL_SetRenderDrawColor(winmain::Renderer, 200, 200, 0, 255);
+	for (auto cmp : pb::MainTable->ComponentList)
+	{
+		if (cmp->RenderSprite)
+		{
+			auto& bmpR = cmp->RenderSprite->BmpRect;
+			if (bmpR.Width != 0 && bmpR.Height != 0)
+			{
+				SDL_Rect rect{ bmpR.XPosition, bmpR.YPosition, bmpR.Width, bmpR.Height };
+				SDL_RenderDrawRect(winmain::Renderer, &rect);
 			}
 		}
 	}

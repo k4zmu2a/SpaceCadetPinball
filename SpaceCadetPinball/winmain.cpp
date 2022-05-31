@@ -600,6 +600,8 @@ void winmain::RenderUi()
 			{
 				if (ImGui::MenuItem("Box Grid", nullptr, Options.DebugOverlayGrid))
 					Options.DebugOverlayGrid ^= true;
+				if (ImGui::MenuItem("Sprite Positions", nullptr, Options.DebugOverlaySprites))
+					Options.DebugOverlaySprites ^= true;
 				if (ImGui::MenuItem("All Edges", nullptr, Options.DebugOverlayAllEdges))
 					Options.DebugOverlayAllEdges ^= true;
 				if (ImGui::MenuItem("Ball Position", nullptr, Options.DebugOverlayBallPosition))
