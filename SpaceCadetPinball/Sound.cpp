@@ -5,7 +5,7 @@
 
 int Sound::num_channels;
 bool Sound::enabled_flag = false;
-int* Sound::TimeStamps = nullptr;
+std::vector<ChannelInfo> Sound::Channels{};
 int Sound::Volume = MIX_MAX_VOLUME;
 
 bool Sound::Init(int channels, bool enableFlag, int volume)
@@ -37,106 +37,79 @@ void Sound::Deactivate()
 
 void Sound::Close()
 {
-	delete[] TimeStamps;
-	TimeStamps = nullptr;
+	Channels.clear();
 	Mix_CloseAudio();
 	Mix_Quit();
 }
 
-void Sound::PlaySound(Mix_Chunk* wavePtr, int time, TPinballComponent *soundSource, const char* info)
+void Sound::PlaySound(Mix_Chunk* wavePtr, int time, TPinballComponent* soundSource, const char* info)
 {
 	if (wavePtr && enabled_flag)
 	{
 		if (Mix_Playing(-1) == num_channels)
 		{
-			auto oldestChannel = std::min_element(TimeStamps, TimeStamps + num_channels) - TimeStamps;
+			auto cmp = [](const ChannelInfo& a, const ChannelInfo& b)
+			{
+				return a.TimeStamp < b.TimeStamp;
+			};
+			auto min = std::min_element(Channels.begin(), Channels.end(), cmp);
+			auto oldestChannel = std::distance(Channels.begin(), min);
 			Mix_HaltChannel(oldestChannel);
 		}
 
 		auto channel = Mix_PlayChannel(-1, wavePtr, 0);
-		if (channel != -1) {
-			TimeStamps[channel] = time;
-			if (options::Options.SoundStereo) {
-				/* Think 3D sound positioning, where:
-				 *   - x goes from 0 to 1, left to right on the screen,
-				 *   - y goes from 0 to 1, top to bottom on the screen,
-				 *   - z goes from 0 to infinity, from table-level to the sky.
-				 *
-				 * We position the listener at the bottom center of the table,
-				 * at 0.5 height, so roughly a table half-length.  Coords of
-				 * the listener are thus {0.5, 1.0, 0.5}.
-				 *
-				 * We use basic trigonometry to calculate the angle and distance
-				 * from a sound source to the listener.
-				 *
-				 * Mix_SetPosition expects an angle in (Sint16)degrees, where
-				 * 0 degrees is in front, 90 degrees is to the right, and so on.
-				 * Mix_SetPosition expects a (Uint8)distance from 0 (near) to 255 (far).
-				 */
+		if (channel != -1)
+		{
+			Channels[channel].TimeStamp = time;
+			if (options::Options.SoundStereo)
+			{
+				// Positional audio uses collision grid 2D coordinates normalized to [0, 1]
+				// Point (0, 0) is bottom left table corner; point (1, 1) is top right table corner.
+				// Z is defined as: 0 at table level, positive axis goes up from table surface.
 
-				/* Get the sound source position. */
-				vector2 coordinates;
-				/* Some sounds are unpositioned; for that case the caller sends
-				 * a NULL pointer as a soundSource; in those cases we position
-				 * the sound at the center top of the table.
-				 */
-				if (!soundSource) {
-					coordinates.X = 0.5f;
-					coordinates.Y = 0.0f;
+				// Get the source sound position.
+				// Sound without position are assumed to be at the center top of the table.
+				vector3 soundPos{};
+				if (soundSource)
+				{
+					auto soundPos2D = soundSource->get_coordinates();
+					soundPos = {soundPos2D.X, soundPos2D.Y, 0.0f};
 				}
-				else {
-					coordinates = soundSource->get_coordinates();
-				};
-
-				/* Player position. */
-				auto pX = 0.5f;
-				auto pY = 1.0f;
-				auto pZ = 0.5f;
-
-				/* Calculate lengths of three sides of a triangle.
-				 * ptos (Player-to-sound):  distance from listener to the sound source,
-				 * ptom (player-to-middle): distance from listener to the sound source
-				 *                          when the latter is repositioned to the
-				 *                          X center,
-				 * stom (sound-to-middle):  distance from ptos to ptom.
-				 */
-				auto ptos = sqrt(((coordinates.X - pX) * (coordinates.X - pX)) + ((coordinates.Y - pY) * (coordinates.Y - pY)) + (pZ * pZ));
-				auto ptom = sqrt(((coordinates.Y - pY) * (coordinates.Y - pY)) + (pZ * pZ));
-				auto stom = fabs(coordinates.X - 0.5);
-
-				/* Calculate the angle using the law of cosines and acos().
-				 * That will return an angle in radians, e.g. in the [0,PI] range;
-				 * we remap to [0,180], and cast to an integer.
-				 */
-				Sint16 angle = (Sint16)(acos(((stom * stom) - (ptos * ptos) - (ptom * ptom)) / (-2.0f * ptos * ptom)) * 180.0f / IM_PI);
-
-				/* Because we are using distances to calculate the angle,
-				 * we now have no clue if the sound is to the right or the
-				 * left.  If the sound is to the right, the current value
-				 * is good, but to the left, we need substract it from 360.
-				 */
-				if (coordinates.X < 0.5) {
-					angle = (360 - angle);
+				else
+				{
+					soundPos = {0.5f, 1.0f, 0.0f};
 				}
+				Channels[channel].Position = soundPos;
 
-				/* Distance from listener to the ball (ptos) is roughly
-				 * in the [0.5,1.55] range; remap to 50-155 by multiplying
-				 * by 100 and cast to an integer. */
-				Uint8 distance = (Uint8)(100.0f * ptos);
-				Mix_SetPosition(channel, angle, distance);
+				// Listener is positioned at the bottom center of the table,
+				// at 0.5 height, so roughly a table half - length.
+				vector3 playerPos = {0.5f, 0.0f, 0.5f};
+				auto soundDir = maths::vector_sub(soundPos, playerPos);
 
-				/* Output position of each sound emitted so we can verify
-				 * the sanity of the implementation.
-				 */
-				/*
-				printf("X: %3.3f Y: %3.3f Angle: %3d Distance: %3d, Object: %s\n",
-					coordinates.X,
-					coordinates.Y,
-					angle,
-					distance,
-					info
-				);
-				*/
+				// Find sound angle from positive Y axis in clockwise direction with atan2
+				// Remap atan2 output from (-Pi, Pi] to [0, 2 * Pi)
+				auto angle = fmodf(atan2(soundDir.X, soundDir.Y) + Pi * 2, Pi * 2);
+				auto angleDeg = angle * 180.0f / Pi;
+				auto angleSdl = static_cast<Sint16>(angleDeg);
+
+				// Distance from listener to the sound position is roughly in the [0, ~1.22] range.
+				// Remap to [0, 122] by multiplying by 100 and cast to an integer.
+				auto distance = static_cast<Uint8>(100.0f * maths::magnitude(soundDir));
+
+				// Mix_SetPosition expects an angle in (Sint16)degrees, where
+				// angle 0 is due north, and rotates clockwise as the value increases.
+				// Mix_SetPosition expects a (Uint8)distance from 0 (near) to 255 (far).
+				Mix_SetPosition(channel, angleSdl, distance);
+
+				// Output position of each sound emitted so we can verify
+				// the sanity of the implementation.
+				/*printf("X: %3.3f Y: %3.3f Angle: %3.3f Distance: %3d, Object: %s\n",
+				       soundPos.X,
+				       soundPos.Y,
+				       angleDeg,
+				       distance,
+				       info
+				);*/
 			}
 		}
 	}
@@ -164,8 +137,7 @@ void Sound::SetChannels(int channels)
 		channels = 8;
 
 	num_channels = channels;
-	delete[] TimeStamps;
-	TimeStamps = new int[num_channels]();
+	Channels.resize(num_channels);
 	Mix_AllocateChannels(num_channels);
 	SetVolume(Volume);
 }

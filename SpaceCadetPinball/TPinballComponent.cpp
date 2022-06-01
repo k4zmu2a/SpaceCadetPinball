@@ -1,8 +1,10 @@
 #include "pch.h"
 #include "TPinballComponent.h"
 #include "loader.h"
+#include "proj.h"
 #include "render.h"
 #include "TPinballTable.h"
+#include "TTableLayer.h"
 
 TPinballComponent::TPinballComponent(TPinballTable* table, int groupIndex, bool loadVisuals)
 {
@@ -72,9 +74,13 @@ TPinballComponent::TPinballComponent(TPinballTable* table, int groupIndex, bool 
 				rootBmp->YPosition - table->YOffset,
 				&bmp1Rect);
 
+			// Sound position = center of root visual, reverse-projected, normalized.
 			auto& rect = RenderSprite->BmpRect;
-			VisualPosNormX = (rect.XPosition + (rect.Width  / 2.0f)) / PinballTable->Width;
-			VisualPosNormY = (rect.YPosition + (rect.Height / 2.0f)) / PinballTable->Height;
+			vector2i pos2D{ rect.XPosition + rect.Width / 2, rect.YPosition + rect.Height / 2 };
+			auto pos3D = proj::ReverseXForm(pos2D);
+			auto posNorm = TTableLayer::edge_manager->NormalizeBox(pos3D);
+			VisualPosNormX = posNorm.X;
+			VisualPosNormY = posNorm.Y;
 		}
 	}
 	GroupIndex = groupIndex;

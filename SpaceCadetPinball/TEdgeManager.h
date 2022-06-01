@@ -14,7 +14,7 @@ struct field_effect_type
 class TEdgeManager
 {
 public:
-	TEdgeManager(float posX, float posY, float width, float height);
+	TEdgeManager(float xMin, float yMin, float width, float height);
 	~TEdgeManager();
 	void FieldEffects(TBall* ball, struct vector2* dstVec);
 	int box_x(float x);
@@ -25,15 +25,19 @@ public:
 	void add_field_to_box(int x, int y, field_effect_type* field);
 	int TestGridBox(int x, int y, float* distPtr, TEdgeSegment** edgeDst, ray_type* ray, TBall* ball, int edgeIndex);
 	float FindCollisionDistance(ray_type* ray, TBall* ball, TEdgeSegment** edge);
+	vector2 NormalizeBox(vector2 pt) const;
+	vector2 DeNormalizeBox(vector2 pt) const;
 
 	float AdvanceX;
 	float AdvanceY;
-	float AdvanceXInv;
-	float AdvanceYInv;
 	int MaxBoxX;
 	int MaxBoxY;
-	float X;
-	float Y;
+	float MinX;
+	float MinY;
+	float MaxX;
+	float MaxY;
+	float Width;
+	float Height;
 	TEdgeBox* BoxArray;
 	TEdgeSegment* EdgeArray[1000]{};
 };

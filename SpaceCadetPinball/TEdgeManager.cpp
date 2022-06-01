@@ -8,16 +8,18 @@
 #include "TEdgeSegment.h"
 #include "TTableLayer.h"
 
-TEdgeManager::TEdgeManager(float posX, float posY, float width, float height)
+TEdgeManager::TEdgeManager(float xMin, float yMin, float width, float height)
 {
-	X = posX;
-	Y = posY;
+	Width = width;
+	Height = height;
+	MinX = xMin;
+	MinY = yMin;
+	MaxX = MinX + width;
+	MaxY = MinY + height;
 	MaxBoxX = 10;
 	MaxBoxY = 15;
 	AdvanceX = width / static_cast<float>(MaxBoxX);
 	AdvanceY = height / static_cast<float>(MaxBoxY);
-	AdvanceXInv = 1.0f / AdvanceX;
-	AdvanceYInv = 1.0f / AdvanceY;
 	BoxArray = new TEdgeBox[MaxBoxX * MaxBoxY];
 }
 
@@ -28,12 +30,12 @@ TEdgeManager::~TEdgeManager()
 
 int TEdgeManager::box_x(float x)
 {
-	return std::max(0, std::min(static_cast<int>(floor((x - X) * AdvanceXInv)), MaxBoxX - 1));
+	return std::max(0, std::min(static_cast<int>(floor((x - MinX) / AdvanceX)), MaxBoxX - 1));
 }
 
 int TEdgeManager::box_y(float y)
 {
-	return std::max(0, std::min(static_cast<int>(floor((y - Y) * AdvanceYInv)), MaxBoxY - 1));
+	return std::max(0, std::min(static_cast<int>(floor((y - MinY) / AdvanceY)), MaxBoxY - 1));
 }
 
 int TEdgeManager::increment_box_x(int x)
@@ -180,8 +182,8 @@ float TEdgeManager::FindCollisionDistance(ray_type* ray, TBall* ball, TEdgeSegme
 		for (auto indexX = xBox0, indexY = yBox0; indexX != xBox1 || indexY != yBox1;)
 		{
 			// Calculate y from indexY and from line formula
-			auto yDiscrete = (indexY + yBias) * AdvanceY + Y;
-			auto ylinear = ((indexX + xBias) * AdvanceX + X) * dyDx + precomp;
+			auto yDiscrete = (indexY + yBias) * AdvanceY + MinY;
+			auto ylinear = ((indexX + xBias) * AdvanceX + MinX) * dyDx + precomp;
 			if (dirY == 1 ? ylinear >= yDiscrete : ylinear <= yDiscrete)
 			{
 				// Advance indexY when discrete value is ahead/behind
@@ -206,4 +208,24 @@ float TEdgeManager::FindCollisionDistance(ray_type* ray, TBall* ball, TEdgeSegme
 	}
 
 	return distance;
+}
+
+vector2 TEdgeManager::NormalizeBox(vector2 pt) const
+{
+	// Standard PB Box ranges: X [-8, 8]; Y [-14, 15]; Top right corner: (-8, -14)
+	// Bring them to: X [0, 16]; Y [0, 29]; Top right corner: (0, 0)
+	auto x = Clamp(pt.X, MinX, MaxX) + abs(MinX);
+	auto y = Clamp(pt.Y, MinY, MaxY) + abs(MinY);
+
+	// Normalize and invert to: X [0, 1]; Y [0, 1]; Top right corner: (1, 1)
+	x /= Width; y /= Height;
+	return vector2{ 1 - x, 1 - y };
+}
+
+vector2 TEdgeManager::DeNormalizeBox(vector2 pt) const
+{
+	// Undo normalization by applying steps in reverse
+	auto x = (1 - pt.X) * Width - abs(MinX);
+	auto y = (1 - pt.Y) * Height - abs(MinY);
+	return vector2{ x, y };
 }

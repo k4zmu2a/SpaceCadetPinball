@@ -21,10 +21,10 @@ public:
 	static void edges_insert_circle(circle_type* circle, TEdgeSegment* edge, field_effect_type* field);
 
 	gdrv_bitmap8* VisBmp;
-	float Unknown1F;
-	float Unknown2F;
-	float Unknown3F;
-	float Unknown4F;
+	float XMin;
+	float YMin;
+	float XMax;
+	float YMax;
 	float GraityDirX;
 	float GraityDirY;
 	float GraityMult;

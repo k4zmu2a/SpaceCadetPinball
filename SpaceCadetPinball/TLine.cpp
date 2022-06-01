@@ -102,8 +102,8 @@ void TLine::place_in_grid()
 		for (auto indexX = xBox0, indexY = yBox0; indexX != xBox1 || indexY != yBox1;)
 		{
 			// Calculate y from indexY and from line formula
-			auto yDiscrete = (indexY + yBias) * edgeMan->AdvanceY + edgeMan->Y;
-			auto ylinear = ((indexX + xBias) * edgeMan->AdvanceX + edgeMan->X) * dyDx + precomp;
+			auto yDiscrete = (indexY + yBias) * edgeMan->AdvanceY + edgeMan->MinY;
+			auto ylinear = ((indexX + xBias) * edgeMan->AdvanceX + edgeMan->MinX) * dyDx + precomp;
 			if (dirY == 1 ? ylinear >= yDiscrete : ylinear <= yDiscrete)
 			{
 				// Advance indexY when discrete value is ahead/behind

@@ -1,10 +1,18 @@
 #pragma once
+#include "maths.h"
 #include "TPinballComponent.h"
 
+struct ChannelInfo
+{
+	int TimeStamp;
+	vector2 Position;
+};
 
 class Sound
 {
 public:
+	static std::vector<ChannelInfo> Channels;
+
 	static bool Init(int channels, bool enableFlag, int volume);
 	static void Enable(bool enableFlag);
 	static void Activate();
@@ -18,6 +26,5 @@ public:
 private:
 	static int num_channels;
 	static bool enabled_flag;
-	static int* TimeStamps;
 	static int Volume;
 };

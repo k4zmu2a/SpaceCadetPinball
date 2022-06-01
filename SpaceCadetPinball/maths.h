@@ -108,6 +108,7 @@ public:
 	static float magnitude(const vector3& vec);
 	static void vector_add(vector2& vec1Dst, const vector2& vec2);
 	static vector2 vector_sub(const vector2& vec1, const vector2& vec2);
+	static vector3 vector_sub(const vector3& vec1, const vector3& vec2);
 	static vector2 vector_mul(const vector2& vec1, float val);
 	static float basic_collision(TBall* ball, vector2* nextPosition, vector2* direction, float elasticity,
 	                             float smoothness,

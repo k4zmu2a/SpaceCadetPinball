@@ -15,6 +15,7 @@
 #include "TBall.h"
 #include "render.h"
 #include "options.h"
+#include "Sound.h"
 
 
 gdrv_bitmap8* DebugOverlay::dbScreen = nullptr;
@@ -109,9 +110,13 @@ void DebugOverlay::DrawOverlay()
 	if (options::Options.DebugOverlayAllEdges)
 		DrawAllEdges();
 
-	// Draw ball collision
+	// Draw ball collision info
 	if (options::Options.DebugOverlayBallPosition || options::Options.DebugOverlayBallEdges)
 		DrawBallInfo();
+
+	// Draw positions associated with currently playing sound channels
+	if (options::Options.DebugOverlaySounds)
+		DrawSoundPositions();
 
 	// Restore render target
 	SDL_SetRenderTarget(winmain::Renderer, initialRenderTarget);
@@ -133,18 +138,18 @@ void DebugOverlay::DrawBoxGrid()
 	SDL_SetRenderDrawColor(winmain::Renderer, 0, 255, 0, 255);
 	for (int x = 0; x <= edgeMan.MaxBoxX; x++)
 	{
-		vector2 boxPt{ x * edgeMan.AdvanceX + edgeMan.X , edgeMan.Y };
+		vector2 boxPt{ x * edgeMan.AdvanceX + edgeMan.MinX , edgeMan.MinY };
 		auto pt1 = proj::xform_to_2d(boxPt);
-		boxPt.Y = edgeMan.MaxBoxY * edgeMan.AdvanceY + edgeMan.Y;
+		boxPt.Y = edgeMan.MaxBoxY * edgeMan.AdvanceY + edgeMan.MinY;
 		auto pt2 = proj::xform_to_2d(boxPt);
 
 		SDL_RenderDrawLine(winmain::Renderer, pt1.X, pt1.Y, pt2.X, pt2.Y);
 	}
 	for (int y = 0; y <= edgeMan.MaxBoxY; y++)
 	{
-		vector2 boxPt{ edgeMan.X, y * edgeMan.AdvanceY + edgeMan.Y };
+		vector2 boxPt{ edgeMan.MinX, y * edgeMan.AdvanceY + edgeMan.MinY };
 		auto pt1 = proj::xform_to_2d(boxPt);
-		boxPt.X = edgeMan.MaxBoxX * edgeMan.AdvanceX + edgeMan.X;
+		boxPt.X = edgeMan.MaxBoxX * edgeMan.AdvanceX + edgeMan.MinX;
 		auto pt2 = proj::xform_to_2d(boxPt);
 
 		SDL_RenderDrawLine(winmain::Renderer, pt1.X, pt1.Y, pt2.X, pt2.Y);
@@ -222,6 +227,19 @@ void DebugOverlay::DrawAllSprites()
 				SDL_RenderDrawRect(winmain::Renderer, &rect);
 			}
 		}
+	}
+}
+
+void DebugOverlay::DrawSoundPositions()
+{
+	auto& edgeMan = *TTableLayer::edge_manager;
+	SDL_SetRenderDrawColor(winmain::Renderer, 200, 0, 200, 255);
+
+	for (auto& posNorm : Sound::Channels)
+	{
+		auto pos3D = edgeMan.DeNormalizeBox(posNorm.Position);
+		auto pos2D = proj::xform_to_2d(pos3D);
+		SDL_RenderDrawCircle(winmain::Renderer, pos2D.X, pos2D.Y, 7);
 	}
 }
 

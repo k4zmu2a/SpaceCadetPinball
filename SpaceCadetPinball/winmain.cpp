@@ -608,6 +608,8 @@ void winmain::RenderUi()
 					Options.DebugOverlayBallPosition ^= true;
 				if (ImGui::MenuItem("Ball Box Edges", nullptr, Options.DebugOverlayBallEdges))
 					Options.DebugOverlayBallEdges ^= true;
+				if (ImGui::MenuItem("Sound Positions", nullptr, Options.DebugOverlaySounds))
+					Options.DebugOverlaySounds ^= true;
 				if (ImGui::MenuItem("Apply Collision Mask", nullptr, Options.DebugOverlayCollisionMask))
 					Options.DebugOverlayCollisionMask ^= true;
 				ImGui::EndMenu();

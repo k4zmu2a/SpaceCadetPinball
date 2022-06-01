@@ -71,37 +71,33 @@ TTableLayer::TTableLayer(TPinballTable* table): TCollisionComponent(table, -1, f
 	Threshold = visual.Kicker.Threshold;
 	Boost = 15.0f;
 
-	auto visArrPtr = visual.FloatArr;
-	Unknown1F = std::min(visArrPtr[0], std::min(visArrPtr[2], visArrPtr[4]));
-	Unknown2F = std::min(visArrPtr[1], std::min(visArrPtr[3], visArrPtr[5]));
-	Unknown3F = std::max(visArrPtr[0], std::max(visArrPtr[2], visArrPtr[4]));
-	Unknown4F = std::max(visArrPtr[1], std::max(visArrPtr[3], visArrPtr[5]));
-	auto a2 = Unknown4F - Unknown2F;
-	auto a1 = Unknown3F - Unknown1F;
-	edge_manager = new TEdgeManager(Unknown1F, Unknown2F, a1, a2);
+	auto edgePoints = reinterpret_cast<vector2*>(visual.FloatArr);
+	XMin = std::min(edgePoints[0].X, std::min(edgePoints[1].X, edgePoints[2].X));
+	YMin = std::min(edgePoints[0].Y, std::min(edgePoints[1].Y, edgePoints[2].Y));
+	XMax = std::max(edgePoints[0].X, std::max(edgePoints[1].X, edgePoints[2].X));
+	YMax = std::max(edgePoints[0].Y, std::max(edgePoints[1].Y, edgePoints[2].Y));
 
-	for (auto visFloatArrCount = visual.FloatArrCount; visFloatArrCount > 0; visFloatArrCount--)
+	auto height = YMax - YMin;
+	auto width = XMax - XMin;
+	edge_manager = new TEdgeManager(XMin, YMin, width, height);
+
+	for (auto i = 0; i < visual.FloatArrCount; i++)
 	{
 		auto line = new TLine(this,
 		                      &ActiveFlag,
 		                      visual.CollisionGroup,
-		                      visArrPtr[2],
-		                      visArrPtr[3],
-		                      visArrPtr[0],
-		                      visArrPtr[1]);
-		if (line)
-		{
-			line->place_in_grid();
-			EdgeList.push_back(line);
-		}
-
-		visArrPtr += 2;
+		                      edgePoints[i + 1].X,
+		                      edgePoints[i + 1].Y,
+		                      edgePoints[i].X,
+		                      edgePoints[i].Y);
+		line->place_in_grid();
+		EdgeList.push_back(line);
 	}
 
 	Field.CollisionGroup = -1;
 	Field.ActiveFlag = &ActiveFlag;
 	Field.CollisionComp = this;
-	edges_insert_square(Unknown2F, Unknown1F, Unknown4F, Unknown3F, nullptr,
+	edges_insert_square(YMin, XMin, YMax, XMax, nullptr,
 	                    &Field);
 }
 
@@ -134,10 +130,10 @@ void TTableLayer::edges_insert_square(float y0, float x0, float y1, float x1, TE
 	int xMaxBox = edge_manager->box_x(xMax);
 	int yMaxBox = edge_manager->box_y(yMax);
 
-	float boxX = static_cast<float>(xMinBox) * edge_manager->AdvanceX + edge_manager->X;
+	float boxX = static_cast<float>(xMinBox) * edge_manager->AdvanceX + edge_manager->MinX;
 	for (int indexX = xMinBox; indexX <= xMaxBox; ++indexX)
 	{
-		float boxY = static_cast<float>(yMinBox) * edge_manager->AdvanceY + edge_manager->Y;
+		float boxY = static_cast<float>(yMinBox) * edge_manager->AdvanceY + edge_manager->MinY;
 		for (int indexY = yMinBox; indexY <= yMaxBox; ++indexY)
 		{
 			if (xMax >= boxX && xMin <= boxX + edge_manager->AdvanceX &&
@@ -182,10 +178,10 @@ void TTableLayer::edges_insert_circle(circle_type* circle, TEdgeSegment* edge, f
 	xMaxBox = edge_manager->increment_box_x(xMaxBox);
 	yMaxBox = edge_manager->increment_box_y(yMaxBox);
 
-	vec1.X = static_cast<float>(dirX) * edge_manager->AdvanceX + edge_manager->X;
+	vec1.X = static_cast<float>(dirX) * edge_manager->AdvanceX + edge_manager->MinX;
 	for (auto indexX = dirX; indexX <= xMaxBox; ++indexX)
 	{
-		vec1.Y = static_cast<float>(dirY) * edge_manager->AdvanceY + edge_manager->Y;
+		vec1.Y = static_cast<float>(dirY) * edge_manager->AdvanceY + edge_manager->MinY;
 		for (int indexY = dirY; indexY <= yMaxBox; ++indexY)
 		{
 			auto vec1XAdv = vec1.X + edge_manager->AdvanceX;

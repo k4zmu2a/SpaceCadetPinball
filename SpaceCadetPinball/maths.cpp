@@ -220,6 +220,11 @@ vector2 maths::vector_sub(const vector2& vec1, const vector2& vec2)
 	return { vec1.X - vec2.X, vec1.Y - vec2.Y };
 }
 
+vector3 maths::vector_sub(const vector3& vec1, const vector3& vec2)
+{
+	return { vec1.X - vec2.X, vec1.Y - vec2.Y, vec1.Z - vec2.Z };
+}
+
 vector2 maths::vector_mul(const vector2& vec1, float val)
 {
 	return { vec1.X * val, vec1.Y * val };

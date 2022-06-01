@@ -111,4 +111,6 @@ constexpr const char* PlatformDataPaths[2] =
 	#endif
 };
 
+constexpr float Pi = 3.14159265358979323846f;
+
 #endif //PCH_H
