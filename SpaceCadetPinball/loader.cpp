@@ -94,8 +94,7 @@ void loader::loadfrom(datFileStruct* datFile)
 		{
 			if (sound_count < 65)
 			{
-				sound_list[sound_count].WavePtr = nullptr;
-				sound_list[sound_count].GroupIndex = groupIndex;
+				sound_list[sound_count] = {nullptr, groupIndex, 0, 0, nullptr};
 				sound_count++;
 			}
 		}
@@ -111,6 +110,7 @@ void loader::unload()
 
 	if (sound_list[index].PtrToSmth)
 		memory::free(sound_list[index].PtrToSmth);
+	sound_list[index] = {};
 	sound_count = 1;
 }
 
@@ -151,11 +151,17 @@ int loader::get_sound_id(int groupIndex)
 				sprintf_s(fileName2, pb::FullTiltMode ? "SOUND\\%s" : "%s", fileName);
 				pinball::make_path_name(filePath, fileName2);
 
+				float duration = -1;
 				HFILE hFile = _lopen(filePath, 0);
-				_lread(hFile, &wavHeader, sizeof wavHeader);
-				_lclose(hFile);
-				auto sampleCount = wavHeader.data_size / (wavHeader.channels * (wavHeader.bits_per_sample / 8.0));
-				sound_list[soundIndex].Duration = static_cast<float>(sampleCount / wavHeader.sample_rate);
+				if (hFile != HFILE_ERROR)
+				{
+					_lread(hFile, &wavHeader, sizeof wavHeader);
+					_lclose(hFile);
+					auto sampleCount = wavHeader.data_size / (wavHeader.channels * (wavHeader.bits_per_sample / 8.0));
+					duration = static_cast<float>(sampleCount / wavHeader.sample_rate);
+				}
+
+				sound_list[soundIndex].Duration = duration;
 				sound_list[soundIndex].WavePtr = Sound::LoadWaveFile(filePath);
 			}
 		}

@@ -465,6 +465,8 @@ int TPinballTable::Message(int code, float value)
 			Sound::Idle();
 			LightGroup->Message(28, 0.2f);
 			auto time = loader::play_sound(SoundIndex1);
+			if (time < 0)
+				time = 5.0f;
 			LightShowTimer = timer::set(time, this, LightShow_timeout);
 		}
 
