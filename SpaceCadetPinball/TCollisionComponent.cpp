@@ -60,14 +60,17 @@ bool TCollisionComponent::DefaultCollision(TBall* ball, vector2* nextPosition, v
 		return false;
 	}
 
+	bool collision = false;
 	auto projSpeed = maths::basic_collision(ball, nextPosition, direction, Elasticity, Smoothness, Threshold, Boost);
 	if (projSpeed > Threshold)
+	{
 		loader::play_sound(HardHitSoundId, ball, "TCollisionComponent1");
+		collision = true;
+	}
 	else if (projSpeed > 0.2f)
 		loader::play_sound(SoftHitSoundId, ball, "TCollisionComponent2");
-	else
-		return false;
-	return true;
+
+	return collision;
 }
 
 void TCollisionComponent::Collision(TBall* ball, vector2* nextPosition, vector2* direction,
