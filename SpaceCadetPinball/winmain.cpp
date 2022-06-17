@@ -67,7 +67,8 @@ int winmain::WinMain(LPCSTR lpCmdLine)
 		pinball::get_rc_string(38, 0),
 		SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED,
 		800, 556,
-		SDL_WINDOW_HIDDEN | SDL_WINDOW_RESIZABLE
+		SDL_WINDOW_HIDDEN | SDL_WINDOW_RESIZABLE | SDL_WINDOW_ALLOW_HIGHDPI
+		// Enable HiDPI support by adding SDL_WINDOW_ALLOW_HIGHDPI, only tested on macOS
 	);
 	MainWindow = window;
 	if (!window)
