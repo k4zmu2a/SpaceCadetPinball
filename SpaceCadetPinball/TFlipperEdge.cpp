@@ -418,19 +418,17 @@ float TFlipperEdge::flipper_angle(float timeNow)
 {
 	if (!FlipperFlag)
 		return Angle1;
-	float angle = (Angle1 - Angle2) / AngleMax * AngleMult;
-	if (angle < 0.0f)
-		angle = -angle;
 
-	if (angle >= 0.0000001f)
-		angle = (timeNow - InputTime) / angle;
+	float currentAngleDuration = fabsf((Angle1 - Angle2) / AngleMax * AngleMult);
+	float currentAngleRatio;
+
+	if (currentAngleDuration >= 0.0000001f)
+		currentAngleRatio = (timeNow - InputTime) / currentAngleDuration;
 	else
-		angle = 1.0;
+		currentAngleRatio = 1.0;
 
-	angle = std::min(1.0f, std::max(angle, 0.0f));
-	if (FlipperFlag == 2)
-		angle = 1.0f - angle;
-	return angle * AngleMax;
+	currentAngleRatio = std::min(1.0f, std::max(currentAngleRatio, 0.0f));
+	return currentAngleRatio * (Angle1 - Angle2) + Angle2;
 }
 
 int TFlipperEdge::is_ball_inside(float x, float y)
@@ -482,8 +480,7 @@ void TFlipperEdge::SetMotion(int code, float value)
 	default: break;
 	}
 
-	if (!FlipperFlag)
-		InputTime = value;
+	InputTime = value;
 	FlipperFlag = code;
 	AngleStopTime = AngleMult + InputTime;
 }

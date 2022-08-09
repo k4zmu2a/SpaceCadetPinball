@@ -137,7 +137,7 @@ void TFlipper::TimerExpired(int timerId, void* caller)
 	auto flip = static_cast<TFlipper*>(caller);
 	int bmpCountSub1 = flip->ListBitmap->size() - 1;
 
-	auto newBmpIndex = static_cast<int>(floor((pb::time_now - flip->InputTime) / flip->TimerTime));
+	auto newBmpIndex = static_cast<int>(floor(flip->FlipperEdge->flipper_angle(pb::time_now) / flip->FlipperEdge->AngleMax * bmpCountSub1 + 0.5));
 	if (newBmpIndex > bmpCountSub1)
 		newBmpIndex = bmpCountSub1;
 	if (newBmpIndex < 0)
@@ -155,7 +155,7 @@ void TFlipper::TimerExpired(int timerId, void* caller)
 	}
 	if (flip->MessageField == 2)
 	{
-		flip->BmpIndex = bmpCountSub1 - newBmpIndex;
+		flip->BmpIndex = newBmpIndex;
 		if (flip->BmpIndex <= 0)
 		{
 			flip->BmpIndex = 0;
