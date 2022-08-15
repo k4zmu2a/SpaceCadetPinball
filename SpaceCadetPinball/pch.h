@@ -29,6 +29,7 @@
 #include <string>
 #include <thread>
 #include <map>
+#include <initializer_list>
 //#include <array>
 
 #define SDL_MAIN_HANDLED

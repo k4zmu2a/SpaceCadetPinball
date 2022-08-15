@@ -1,5 +1,7 @@
 #pragma once
 
+#include "translations.h"
+
 enum class Menu1:int
 {
 	New_Game = 101,
@@ -94,7 +96,7 @@ struct optionsStruct
 
 struct ControlRef
 {
-	const char* Name;
+	translation_id_e NameStringId;
 	GameInput (&Option)[3];
 };
 

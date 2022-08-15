@@ -189,13 +189,7 @@ void TTextBox::Draw()
 	{
 		if (!Font)
 		{
-			gdrv::grtext_draw_ttext_in_box(
-				Message1->Text,
-				render::vscreen->XPosition + OffsetX,
-				render::vscreen->YPosition + OffsetY,
-				Width,
-				Height,
-				255);
+			// Handled by gdrv::grtext_draw_ttext_in_box()
 			return;
 		}
 

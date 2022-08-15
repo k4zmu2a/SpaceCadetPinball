@@ -1,5 +1,7 @@
 #pragma once
 
+class TTextBox;
+
 enum class BitmapTypes : uint8_t
 {
 	None = 0,
@@ -80,9 +82,10 @@ public:
 	static void copy_bitmap_w_transparency(gdrv_bitmap8* dstBmp, int width, int height, int xOff, int yOff,
 	                                       gdrv_bitmap8* srcBmp, int srcXOff, int srcYOff);
 	static void ScrollBitmapHorizontal(gdrv_bitmap8* bmp, int xStart);
-	static void grtext_draw_ttext_in_box(LPCSTR text, int xOff, int yOff, int width, int height, int a6);
+	static void grtext_draw_ttext_in_box(TTextBox* textBox);
 	static void ApplyPalette(gdrv_bitmap8& bmp);
 	static void CreatePreview(gdrv_bitmap8& bmp);
+
 private:
 	static ColorRgba current_palette[256];
 };

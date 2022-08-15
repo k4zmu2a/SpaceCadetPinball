@@ -3,6 +3,7 @@
 
 #include "fullscrn.h"
 #include "midi.h"
+#include "pinball.h"
 #include "render.h"
 #include "Sound.h"
 #include "winmain.h"
@@ -18,12 +19,12 @@ bool options::ShowDialog = false;
 GameInput* options::ControlWaitingForInput = nullptr;
 const ControlRef options::Controls[6]
 {
-	{"Left Flipper", RebindControls.LeftFlipper},
-	{"Right Flipper", RebindControls.RightFlipper},
-	{"Left Table Bump", RebindControls.LeftTableBump},
-	{"Right Table Bump", RebindControls.RightTableBump},
-	{"Bottom Table Bump", RebindControls.BottomTableBump},
-	{"Plunger", RebindControls.Plunger},
+	{translation_id_e::KEYMAPPER_FlipperL, RebindControls.LeftFlipper},
+	{translation_id_e::KEYMAPPER_FlipperR, RebindControls.RightFlipper},
+	{translation_id_e::KEYMAPPER_BumpLeft, RebindControls.LeftTableBump},
+	{translation_id_e::KEYMAPPER_BumpRight, RebindControls.RightTableBump},
+	{translation_id_e::KEYMAPPER_BumpBottom, RebindControls.BottomTableBump},
+	{translation_id_e::KEYMAPPER_Plunger, RebindControls.Plunger},
 };
 
 
@@ -113,6 +114,7 @@ void options::InitPrimary()
 	Options.DebugOverlayCollisionMask = get_int("Debug Overlay Collision Mask", true);
 	Options.DebugOverlaySprites = get_int("Debug Overlay Sprites", true);
 	Options.DebugOverlaySounds = get_int("Debug Overlay Sounds", true);
+	translations::set_current_language(get_string("Language", translations::get_current_language()).c_str());
 }
 
 void options::InitSecondary()
@@ -160,7 +162,8 @@ void options::uninit()
 	set_int("Debug Overlay Ball Edges", Options.DebugOverlayBallEdges);
 	set_int("Debug Overlay Collision Mask", Options.DebugOverlayCollisionMask);
 	set_int("Debug Overlay Sprites", Options.DebugOverlaySprites);
-	get_int("Debug Overlay Sounds", Options.DebugOverlaySounds);
+	set_int("Debug Overlay Sounds", Options.DebugOverlaySounds);
+	set_string("Language", translations::get_current_language());
 }
 
 
@@ -339,18 +342,16 @@ void options::RenderControlDialog()
 		return;
 
 	ImGui::PushStyleVar(ImGuiStyleVar_WindowMinSize, ImVec2{550, 450});
-	if (ImGui::Begin("3D Pinball: Player Controls", &ShowDialog))
+	if (ImGui::Begin(pinball::get_rc_string(translation_id_e::KEYMAPPER_Caption), &ShowDialog))
 	{
-		ImGui::TextUnformatted("Instructions");
+		ImGui::TextUnformatted(pinball::get_rc_string(translation_id_e::KEYMAPPER_Groupbox2));
 		ImGui::Separator();
 
-		ImGui::TextWrapped(
-			"To change game controls, click the control button, press the new key, and then choose OK.");
-		ImGui::TextWrapped(
-			"To restore 3D Pinball to its original settings, choose Default, and then choose OK.");
+		ImGui::TextWrapped(pinball::get_rc_string(translation_id_e::KEYMAPPER_Help1));
+		ImGui::TextWrapped(pinball::get_rc_string(translation_id_e::KEYMAPPER_Help2));
 		ImGui::Spacing();
 
-		ImGui::TextUnformatted("Control Options");
+		ImGui::TextUnformatted(pinball::get_rc_string(translation_id_e::KEYMAPPER_Groupbox1));
 
 		ImGui::PushStyleVar(ImGuiStyleVar_CellPadding, ImVec2{5, 10});
 		if (ImGui::BeginTable("Controls", 4, ImGuiTableFlags_NoSavedSettings | ImGuiTableFlags_Borders))
@@ -366,7 +367,7 @@ void options::RenderControlDialog()
 			{
 				ImGui::TableNextColumn();
 				ImGui::PushStyleColor(ImGuiCol_Button, ImVec4{0.5, 0, 0, 1});
-				if (ImGui::Button(row.Name))
+				if (ImGui::Button(pinball::get_rc_string(row.NameStringId)))
 				{
 					for (auto i = 0u; i <= 2; i++)
 						row.Option[i] = {};
@@ -419,20 +420,20 @@ void options::RenderControlDialog()
 		ImGui::PopStyleVar();
 		ImGui::Spacing();
 
-		if (ImGui::Button("OK"))
+		if (ImGui::Button(pinball::get_rc_string(translation_id_e::KEYMAPPER_Ok)))
 		{
 			Options.Key = RebindControls;
 			ShowDialog = false;
 		}
 
 		ImGui::SameLine();
-		if (ImGui::Button("Cancel"))
+		if (ImGui::Button(pinball::get_rc_string(translation_id_e::KEYMAPPER_Cancel)))
 		{
 			ShowDialog = false;
 		}
 
 		ImGui::SameLine();
-		if (ImGui::Button("Default"))
+		if (ImGui::Button(pinball::get_rc_string(translation_id_e::KEYMAPPER_Default)))
 		{
 			RebindControls = Options.KeyDft;
 			ControlWaitingForInput = nullptr;
