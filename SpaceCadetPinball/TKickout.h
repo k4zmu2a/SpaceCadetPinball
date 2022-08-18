@@ -9,8 +9,6 @@ class TKickout :
 public:
 	TKickout(TPinballTable* table, int groupIndex, bool someFlag);
 	int Message(int code, float value) override;
-	void put_scoring(int index, int score) override;
-	int get_scoring(int index) override;
 	void Collision(TBall* ball, vector2* nextPosition, vector2* direction, float distance,
 	               TEdgeSegment* edge) override;
 	int FieldEffect(TBall* ball, vector2* vecDst) override;
@@ -33,5 +31,4 @@ public:
 	float ThrowSpeedMult1;
 	float ThrowSpeedMult2;
 	field_effect_type Field{};
-	int Scores[5]{};
 };

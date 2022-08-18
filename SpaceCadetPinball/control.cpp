@@ -806,22 +806,17 @@ void control::make_links(TPinballTable* table)
 {
 	TableG = table;
 
-	for (int index = 0; index < 88; index++)
+	for (auto& score_component : score_components)
 	{
-		auto compPtr = &score_components[index];
-		TPinballComponent* comp = make_component_link(compPtr->Tag);
-		if (comp)
+		auto linkedComp = make_component_link(score_component.Tag);
+		if (linkedComp)
 		{
-			comp->Control = &compPtr->Control;
-			for (int scoreId = 0; scoreId < compPtr->Control.ScoreCount; scoreId++)
-			{
-				comp->put_scoring(scoreId, compPtr->Control.Scores[scoreId]);
-			}
+			linkedComp->Control = &score_component.Control;
 		}
 	}
 
-	for (int i = 0; i < 142; ++i)
-		make_component_link(*simple_components[i]);
+	for (auto& simple_component : simple_components)
+		make_component_link(*simple_component);
 }
 
 void control::ClearLinks()
@@ -859,13 +854,6 @@ void control::handler(int code, TPinballComponent* cmp)
 	
 	if (control)
 	{
-		if (code == 1019)
-		{
-			for (auto scoreInd = 0; scoreInd < control->ScoreCount; ++scoreInd)
-			{
-				cmp->put_scoring(scoreInd, control->Scores[scoreInd]);
-			}
-		}
 		control->ControlFunc(code, cmp);
 	}
 	MissionControl(code, cmp);

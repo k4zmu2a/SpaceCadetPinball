@@ -51,17 +51,6 @@ int TPopupTarget::Message(int code, float value)
 	return 0;
 }
 
-void TPopupTarget::put_scoring(int index, int score)
-{
-	if (index < 3)
-		Scores[index] = score;
-}
-
-int TPopupTarget::get_scoring(int index)
-{
-	return index < 3 ? Scores[index] : 0;
-}
-
 void TPopupTarget::Collision(TBall* ball, vector2* nextPosition, vector2* direction, float distance,
                              TEdgeSegment* edge)
 {

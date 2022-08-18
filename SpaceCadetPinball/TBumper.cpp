@@ -109,18 +109,6 @@ void TBumper::Collision(TBall* ball, vector2* nextPosition, vector2* direction, 
 	}
 }
 
-void TBumper::put_scoring(int index, int score)
-{
-	if (index < 4)
-		Scores[index] = score;
-}
-
-
-int TBumper::get_scoring(int index)
-{
-	return index < 4 ? Scores[index] : 0;
-}
-
 void TBumper::TimerExpired(int timerId, void* caller)
 {
 	auto bump = static_cast<TBumper*>(caller);

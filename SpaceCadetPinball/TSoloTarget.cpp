@@ -53,17 +53,6 @@ int TSoloTarget::Message(int code, float value)
 	return 0;
 }
 
-void TSoloTarget::put_scoring(int index, int score)
-{
-	if (index < 1)
-		Scores[index] = score;
-}
-
-int TSoloTarget::get_scoring(int index)
-{
-	return index < 1 ? Scores[index] : 0;
-}
-
 void TSoloTarget::Collision(TBall* ball, vector2* nextPosition, vector2* direction, float distance,
                             TEdgeSegment* edge)
 {

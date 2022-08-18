@@ -64,17 +64,6 @@ int TSink::Message(int code, float value)
 	return 0;
 }
 
-void TSink::put_scoring(int index, int score)
-{
-	if (index < 3)
-		Scores[index] = score;
-}
-
-int TSink::get_scoring(int index)
-{
-	return index < 3 ? Scores[index] : 0;
-}
-
 void TSink::Collision(TBall* ball, vector2* nextPosition, vector2* direction, float distance, TEdgeSegment* edge)
 {
 	Timer = 0;

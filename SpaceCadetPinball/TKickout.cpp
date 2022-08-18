@@ -93,17 +93,6 @@ int TKickout::Message(int code, float value)
 	return 0;
 }
 
-void TKickout::put_scoring(int index, int score)
-{
-	if (index < 5)
-		Scores[index] = score;
-}
-
-int TKickout::get_scoring(int index)
-{
-	return index < 5 ? Scores[index] : 0;
-}
-
 void TKickout::Collision(TBall* ball, vector2* nextPosition, vector2* direction, float distance, TEdgeSegment* edge)
 {
 	if (!KickFlag1)

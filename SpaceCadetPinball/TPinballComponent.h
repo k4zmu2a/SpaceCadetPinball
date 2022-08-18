@@ -22,8 +22,7 @@ public:
 	virtual ~TPinballComponent();
 	virtual int Message(int code, float value);
 	virtual void port_draw();
-	virtual void put_scoring(int index, int score);
-	virtual int get_scoring(int index);
+	int get_scoring(unsigned int index) const;
 	virtual vector2 get_coordinates();
 
 	char UnusedBaseFlag;

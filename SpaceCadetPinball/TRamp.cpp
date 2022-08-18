@@ -127,17 +127,6 @@ TRamp::TRamp(TPinballTable* table, int groupIndex) : TCollisionComponent(table, 
 	TTableLayer::edges_insert_square(y0, x0, y1, x1, nullptr, &Field);
 }
 
-void TRamp::put_scoring(int index, int score)
-{
-	if (index < 4)
-		Scores[index] = score;
-}
-
-int TRamp::get_scoring(int index)
-{
-	return index < 4 ? Scores[index] : 0;
-}
-
 void TRamp::Collision(TBall* ball, vector2* nextPosition, vector2* direction, float distance, TEdgeSegment* edge)
 {
 	ball->not_again(edge);

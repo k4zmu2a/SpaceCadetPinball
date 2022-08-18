@@ -72,14 +72,3 @@ void TOneway::Collision(TBall* ball, vector2* nextPosition, vector2* direction, 
 			loader::play_sound(SoftHitSoundId, ball, "TOneway2");
 	}
 }
-
-void TOneway::put_scoring(int index, int score)
-{
-	if (index < 6)
-		Scores[index] = score;
-}
-
-int TOneway::get_scoring(int index)
-{
-	return index < 6 ? Scores[index] : 0;
-}

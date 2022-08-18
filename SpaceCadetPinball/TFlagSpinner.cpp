@@ -92,17 +92,6 @@ void TFlagSpinner::Collision(TBall* ball, vector2* nextPosition, vector2* direct
 	NextFrame();
 }
 
-void TFlagSpinner::put_scoring(int index, int score)
-{
-	if (index < 2)
-		Scores[index] = score;
-}
-
-int TFlagSpinner::get_scoring(int index)
-{
-	return index < 2 ? Scores[index] : 0;
-}
-
 void TFlagSpinner::NextFrame()
 {
 	BmpIndex += SpinDirection;

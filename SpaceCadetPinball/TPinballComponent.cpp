@@ -1,5 +1,7 @@
 #include "pch.h"
 #include "TPinballComponent.h"
+
+#include "control.h"
 #include "loader.h"
 #include "proj.h"
 #include "render.h"
@@ -115,13 +117,9 @@ void TPinballComponent::port_draw()
 {
 }
 
-void TPinballComponent::put_scoring(int index, int score)
+int TPinballComponent::get_scoring(unsigned int index) const
 {
-}
-
-int TPinballComponent::get_scoring(int index)
-{
-	return 0;
+	return Control == nullptr || index >= Control->ScoreCount ? 0 : Control->Scores[index];
 }
 
 vector2 TPinballComponent::get_coordinates()

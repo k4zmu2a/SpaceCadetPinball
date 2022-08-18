@@ -37,17 +37,6 @@ void TWall::Collision(TBall* ball, vector2* nextPosition, vector2* direction, fl
 	}
 }
 
-void TWall::put_scoring(int index, int score)
-{
-	if (index < 1)
-		Scores[index] = score;
-}
-
-int TWall::get_scoring(int index)
-{
-	return index < 1 ? Scores[index] : 0;
-}
-
 void TWall::TimerExpired(int timerId, void* caller)
 {
 	auto wall = static_cast<TWall*>(caller);

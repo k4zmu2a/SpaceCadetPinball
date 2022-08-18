@@ -67,18 +67,6 @@ void TRollover::Collision(TBall* ball, vector2* nextPosition, vector2* direction
 	}
 }
 
-void TRollover::put_scoring(int index, int score)
-{
-	if (index < 2)
-		Scores[index] = score;
-}
-
-int TRollover::get_scoring(int index)
-{
-	return index < 2 ? Scores[index] : 0;
-}
-
-
 void TRollover::build_walls(int groupIndex)
 {
 	visualStruct visual{};

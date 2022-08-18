@@ -16,8 +16,6 @@ public:
 	int Message(int code, float value) override;
 	void Collision(TBall* ball, vector2* nextPosition, vector2* direction, float distance,
 		TEdgeSegment* edge) override;
-	void put_scoring(int index, int score) override;
-	int get_scoring(int index) override;
 	void Fire();
 
 	static void TimerExpired(int timerId, void* caller);
@@ -28,6 +26,5 @@ public:
 	float OriginalThreshold;
 	int SoundIndex4;
 	int SoundIndex3;
-	int Scores[4]{};
 	TBumper_player_backup PlayerData[4]{};
 };
