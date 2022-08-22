@@ -92,6 +92,7 @@ struct optionsStruct
 	bool DebugOverlayCollisionMask;
 	bool DebugOverlaySprites;
 	bool DebugOverlaySounds;
+	std::string FontFileName;
 };
 
 struct ControlRef

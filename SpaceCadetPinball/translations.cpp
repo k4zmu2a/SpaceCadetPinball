@@ -115,6 +115,22 @@ const char* translations::get_translation(translation_id_e id)
 	return translated_strings[id][current_language];
 }
 
+void translations::get_glyph_range(ImVector<ImWchar>* ranges)
+{
+    ImFontGlyphRangesBuilder builder;
+
+    for(int i = 0; i < (int)translation_id_e::NUMBER; i++) {
+        const char* translation = get_translation((translation_id_e)i);
+        if(translation)
+        {
+            builder.AddText(translation); 
+        }
+    }
+    
+    builder.AddRanges(ImGui::GetIO().Fonts->GetGlyphRangesDefault());
+    builder.BuildRanges(ranges);
+}
+
 namespace {
 const InitializedArray<
     translation_id_e,

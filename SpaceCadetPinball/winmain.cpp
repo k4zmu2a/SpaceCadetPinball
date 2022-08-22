@@ -10,6 +10,7 @@
 #include "render.h"
 #include "Sound.h"
 #include "translations.h"
+#include "font_selection.h"
 
 SDL_Window* winmain::MainWindow = nullptr;
 SDL_Renderer* winmain::Renderer = nullptr;
@@ -107,9 +108,6 @@ int winmain::WinMain(LPCSTR lpCmdLine)
 	ImGui::StyleColorsDark();
 	ImGuiIO& io = ImGui::GetIO();
 	ImIO = &io;
-	// ImGui_ImplSDL2_Init is private, we are not actually using ImGui OpenGl backend
-	ImGui_ImplSDL2_InitForOpenGL(window, nullptr);
-	io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard | ImGuiConfigFlags_NavEnableGamepad;
 
 	auto prefPath = SDL_GetPrefPath(nullptr, "SpaceCadetPinball");
 	auto iniPath = std::string(prefPath) + "imgui_pb.ini";
@@ -117,6 +115,25 @@ int winmain::WinMain(LPCSTR lpCmdLine)
 
 	// First step: just load the options
 	options::InitPrimary();
+
+	if(!Options.FontFileName.empty()) {
+		ImGuiSDL::Deinitialize();
+		io.Fonts->Clear();
+		ImVector<ImWchar> ranges;
+		translations::get_glyph_range(&ranges);
+		ImFontConfig fontConfig;
+		fontConfig.OversampleV = 2;
+		fontConfig.OversampleH = 8;
+		
+		io.Fonts->AddFontFromFileTTF(Options.FontFileName.c_str(), 13.f, &fontConfig, ranges.Data);
+		io.Fonts->Build();
+
+		ImGuiSDL::Initialize(renderer, 0, 0);
+	}
+
+	// ImGui_ImplSDL2_Init is private, we are not actually using ImGui OpenGl backend
+	ImGui_ImplSDL2_InitForOpenGL(window, nullptr);
+	io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard | ImGuiConfigFlags_NavEnableGamepad;
 
 	// Data search order: WD, executable path, user pref path, platform specific paths.
 	auto basePath = SDL_GetBasePath();
@@ -501,6 +518,10 @@ void winmain::RenderUi()
 
 			if (ImGui::BeginMenu("Graphics"))
 			{
+				if (ImGui::MenuItem("Change Font"))
+				{
+					font_selection::show_dialog();
+				}
 				if (ImGui::MenuItem("Uniform Scaling", nullptr, Options.UniformScaling))
 				{
 					options::toggle(Menu1::WindowUniformScale);
@@ -670,6 +691,7 @@ void winmain::RenderUi()
 
 	a_dialog();
 	high_score::RenderHighScoreDialog();
+	font_selection::RenderDialog();
 	if (ShowSpriteViewer)
 		render::SpriteViewer(&ShowSpriteViewer);
 	options::RenderControlDialog();

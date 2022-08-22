@@ -115,6 +115,7 @@ void options::InitPrimary()
 	Options.DebugOverlaySprites = get_int("Debug Overlay Sprites", true);
 	Options.DebugOverlaySounds = get_int("Debug Overlay Sounds", true);
 	translations::set_current_language(get_string("Language", translations::get_current_language()).c_str());
+	Options.FontFileName = get_string("FontFileName", "");
 }
 
 void options::InitSecondary()
@@ -164,6 +165,7 @@ void options::uninit()
 	set_int("Debug Overlay Sprites", Options.DebugOverlaySprites);
 	set_int("Debug Overlay Sounds", Options.DebugOverlaySounds);
 	set_string("Language", translations::get_current_language());
+	set_string("FontFileName", Options.FontFileName.c_str());
 }
 
 

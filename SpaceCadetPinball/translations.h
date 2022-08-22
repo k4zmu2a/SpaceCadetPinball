@@ -267,4 +267,5 @@ public:
     static const char* get_translation(translation_id_e id);
     static void set_current_language(const char* language_name);
     static const char* get_current_language();
+    static void get_glyph_range(ImVector<ImWchar>* ranges);
 };

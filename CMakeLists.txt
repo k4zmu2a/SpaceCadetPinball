@@ -38,6 +38,8 @@ set(SOURCE_FILES
         SpaceCadetPinball/control.h
         SpaceCadetPinball/EmbeddedData.cpp
         SpaceCadetPinball/EmbeddedData.h
+        SpaceCadetPinball/font_selection.cpp
+        SpaceCadetPinball/font_selection.h
         SpaceCadetPinball/fullscrn.cpp
         SpaceCadetPinball/fullscrn.h
         SpaceCadetPinball/gdrv.cpp
