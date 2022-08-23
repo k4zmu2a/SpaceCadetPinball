@@ -1,6 +1,7 @@
 #pragma once
 
 class TBall;
+class TFlipperEdge;
 
 struct vector2
 {
@@ -118,7 +119,7 @@ public:
 	static float Distance(const vector2& vec1, const vector2& vec2);
 	static void SinCos(float angle, float& sinOut, float& cosOut);
 	static void RotatePt(vector2& point, float sin, float cos, const vector2& origin);
-	static float distance_to_flipper(const ray_type& ray1, ray_type& ray2);
+	static float distance_to_flipper(TFlipperEdge* flipper, const ray_type& ray1, ray_type& ray2);
 	static void RotateVector(vector2& vec, float angle);
 	static void find_closest_edge(ramp_plane_type* plane, int planeCount, wall_point_type* wall, vector2& lineEnd,
 	                              vector2& lineStart);

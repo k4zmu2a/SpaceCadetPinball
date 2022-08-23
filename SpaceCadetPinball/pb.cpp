@@ -24,6 +24,7 @@
 #include "GroupData.h"
 #include "partman.h"
 #include "score.h"
+#include "TFlipper.h"
 #include "TPinballTable.h"
 #include "TTextBox.h"
 
@@ -327,6 +328,11 @@ void pb::timed_frame(float timeNow, float timeDelta, bool drawBalls)
 				}
 			}
 		}
+	}
+
+	for (auto flipper : MainTable->FlipperList)
+	{
+		flipper->UpdateSprite(timeNow);
 	}
 
 	if (drawBalls)

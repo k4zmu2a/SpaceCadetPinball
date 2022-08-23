@@ -300,29 +300,29 @@ void maths::RotatePt(vector2& point, float sin, float cos, const vector2& origin
 
 // Return the distance from ray1 origin to the intersection point with the closest flipper feature. 
 // Sets ray2 origin to intersection point, direction to collision direction
-float maths::distance_to_flipper(const ray_type& ray1, ray_type& ray2)
+float maths::distance_to_flipper(TFlipperEdge* flipper, const ray_type& ray1, ray_type& ray2)
 {
 	auto distance = 1000000000.0f;
 	auto distanceType = FlipperIntersect::none;
-	auto newDistance = ray_intersect_line(ray1, TFlipperEdge::lineA);
+	auto newDistance = ray_intersect_line(ray1, flipper->lineA);
 	if (newDistance < distance)
 	{
 		distance = newDistance;
 		distanceType = FlipperIntersect::lineA;
 	}
-	newDistance = ray_intersect_circle(ray1, TFlipperEdge::circlebase);
+	newDistance = ray_intersect_circle(ray1, flipper->circlebase);
 	if (newDistance < distance)
 	{
 		distance = newDistance;
 		distanceType = FlipperIntersect::circlebase;
 	}
-	newDistance = ray_intersect_circle(ray1, TFlipperEdge::circleT1);
+	newDistance = ray_intersect_circle(ray1, flipper->circleT1);
 	if (newDistance < distance)
 	{
 		distance = newDistance;
 		distanceType = FlipperIntersect::circleT1;
 	}
-	newDistance = ray_intersect_line(ray1, TFlipperEdge::lineB);
+	newDistance = ray_intersect_line(ray1, flipper->lineB);
 	if (newDistance < distance)
 	{
 		distance = newDistance;
@@ -332,19 +332,19 @@ float maths::distance_to_flipper(const ray_type& ray1, ray_type& ray2)
 	switch (distanceType)
 	{
 	case FlipperIntersect::lineA:
-		ray2.Direction = TFlipperEdge::lineA.PerpendicularC;
-		ray2.Origin = TFlipperEdge::lineA.RayIntersect;
+		ray2.Direction = flipper->lineA.PerpendicularC;
+		ray2.Origin = flipper->lineA.RayIntersect;
 		break;
 	case FlipperIntersect::lineB:
-		ray2.Direction = TFlipperEdge::lineB.PerpendicularC;
-		ray2.Origin = TFlipperEdge::lineB.RayIntersect;
+		ray2.Direction = flipper->lineB.PerpendicularC;
+		ray2.Origin = flipper->lineB.RayIntersect;
 		break;
 	case FlipperIntersect::circlebase:
 	case FlipperIntersect::circleT1:
 		ray2.Origin.X = distance * ray1.Direction.X + ray1.Origin.X;
 		ray2.Origin.Y = distance * ray1.Direction.Y + ray1.Origin.Y;
 		ray2.Direction = vector_sub(ray2.Origin, distanceType == FlipperIntersect::circlebase ?
-			TFlipperEdge::circlebase.Center : TFlipperEdge::circleT1.Center);
+			flipper->circlebase.Center : flipper->circleT1.Center);
 		normalize_2d(ray2.Direction);
 		break;
 	case FlipperIntersect::none:

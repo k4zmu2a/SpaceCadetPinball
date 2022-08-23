@@ -2,14 +2,11 @@
 #include "TFlipperEdge.h"
 
 
+#include "pb.h"
 #include "TLine.h"
 #include "TPinballTable.h"
 #include "TTableLayer.h"
 
-float TFlipperEdge::flipper_sin_angle, TFlipperEdge::flipper_cos_angle;
-vector2 TFlipperEdge::A1, TFlipperEdge::A2, TFlipperEdge::B1, TFlipperEdge::B2, TFlipperEdge::T1;
-line_type TFlipperEdge::lineA, TFlipperEdge::lineB;
-circle_type TFlipperEdge::circlebase, TFlipperEdge::circleT1;
 
 TFlipperEdge::TFlipperEdge(TCollisionComponent* collComp, char* activeFlag, unsigned int collisionGroup, TPinballTable* table,
                            vector3* origin, vector3* vecT1, vector3* vecT2, float extendTime, float retractTime,
@@ -19,8 +16,6 @@ TFlipperEdge::TFlipperEdge(TCollisionComponent* collComp, char* activeFlag, unsi
 
 	Elasticity = elasticity;
 	Smoothness = smoothness;
-	ExtendTime = extendTime;
-	RetractTime = retractTime;
 	CollisionMult = collMult;
 
 	T1Src = static_cast<vector2>(*vecT1);
@@ -51,7 +46,19 @@ TFlipperEdge::TFlipperEdge(TCollisionComponent* collComp, char* activeFlag, unsi
 	if (crossProd.Z < 0.0f)
 		AngleMax = -AngleMax;
 	FlipperFlag = 0;
-	Angle1 = 0.0;
+	AngleDst = 0.0;
+
+	// 3DPB and FT have different formats for flipper speed:
+	// 3DPB: Time it takes for flipper to go from source to destination, in sec.
+	// FT: Flipper movement speed, in radians per sec.
+	if (pb::FullTiltMode)
+	{
+		auto angleMax = std::abs(AngleMax);
+		retractTime = angleMax / retractTime;
+		extendTime = angleMax / extendTime;
+	}
+	ExtendTime = extendTime;
+	RetractTime = retractTime;
 
 	auto dirX1 = vecDir1.X;
 	auto dirY1 = -vecDir1.Y;
@@ -87,13 +94,12 @@ TFlipperEdge::TFlipperEdge(TCollisionComponent* collComp, char* activeFlag, unsi
 	InputTime = 0.0;
 	CollisionFlag1 = 0;
 	AngleStopTime = 0.0;
-	AngleMult = 0.0;
+	AngleAdvanceTime = 0.0;
 }
 
 void TFlipperEdge::port_draw()
 {
 	set_control_points(InputTime);
-	build_edges_in_motion();
 }
 
 float TFlipperEdge::FindCollisionDistance(ray_type* ray)
@@ -112,7 +118,6 @@ float TFlipperEdge::FindCollisionDistance(ray_type* ray)
 			CollisionFlag1 = 0;
 			CollisionFlag2 = 0;
 			set_control_points(ogRay->TimeNow);
-			build_edges_in_motion();
 			auto ballInside = is_ball_inside(ogRay->Origin.X, ogRay->Origin.Y);
 			srcRay.MinDistance = ogRay->MinDistance;
 			if (ballInside == 0)
@@ -120,7 +125,7 @@ float TFlipperEdge::FindCollisionDistance(ray_type* ray)
 				srcRay.Direction = ogRay->Direction;
 				srcRay.MaxDistance = ogRay->MaxDistance;
 				srcRay.Origin = ogRay->Origin;
-				auto distance = maths::distance_to_flipper(srcRay, dstRay);
+				auto distance = maths::distance_to_flipper(this, srcRay, dstRay);
 				if (distance == 0.0f)
 				{
 					NextBallPosition = dstRay.Origin;
@@ -166,14 +171,14 @@ float TFlipperEdge::FindCollisionDistance(ray_type* ray)
 			srcRay.Origin.X = ogRay->Origin.X - srcRay.Direction.X * 5.0f;
 			srcRay.Origin.Y = ogRay->Origin.Y - srcRay.Direction.Y * 5.0f;
 			srcRay.MaxDistance = ogRay->MaxDistance + 10.0f;
-			if (maths::distance_to_flipper(srcRay, dstRay) >= 1e+09f)
+			if (maths::distance_to_flipper(this, srcRay, dstRay) >= 1e+09f)
 			{
 				srcRay.Direction.X = RotOrigin.X - ogRay->Origin.X;
 				srcRay.Direction.Y = RotOrigin.Y - ogRay->Origin.Y;
 				maths::normalize_2d(srcRay.Direction);
 				srcRay.Origin.X = ogRay->Origin.X - srcRay.Direction.X * 5.0f;
 				srcRay.Origin.Y = ogRay->Origin.Y - srcRay.Direction.Y * 5.0f;
-				if (maths::distance_to_flipper(srcRay, dstRay) >= 1e+09f)
+				if (maths::distance_to_flipper(this, srcRay, dstRay) >= 1e+09f)
 				{
 					return 1e+09;
 				}
@@ -196,7 +201,6 @@ float TFlipperEdge::FindCollisionDistance(ray_type* ray)
 		while (timeNow < stopTime)
 		{
 			set_control_points(timeNow);
-			build_edges_in_motion();
 			auto ballInside = is_ball_inside(posX, posY);
 			if (ballInside != 0)
 			{
@@ -220,7 +224,7 @@ float TFlipperEdge::FindCollisionDistance(ray_type* ray)
 						srcRay.Origin.X = posX - srcRay.Direction.X * 5.0f;
 						srcRay.Origin.Y = posY - srcRay.Direction.Y * 5.0f;
 						srcRay.MaxDistance = ogRay->MaxDistance + 10.0f;
-						if (maths::distance_to_flipper(srcRay, dstRay) >= 1e+09f)
+						if (maths::distance_to_flipper(this, srcRay, dstRay) >= 1e+09f)
 						{
 							NextBallPosition.X = posX;
 							NextBallPosition.Y = posY;
@@ -249,7 +253,7 @@ float TFlipperEdge::FindCollisionDistance(ray_type* ray)
 				srcRay.Origin.X = ogRay->Origin.X - srcRay.Direction.X * 5.0f;
 				srcRay.Origin.Y = ogRay->Origin.Y - srcRay.Direction.Y * 5.0f;
 				srcRay.MaxDistance = ogRay->MaxDistance + 10.0f;
-				auto distance = maths::distance_to_flipper(srcRay, dstRay);
+				auto distance = maths::distance_to_flipper(this, srcRay, dstRay);
 				CollisionDirection = dstRay.Direction;
 				if (distance >= 1e+09f)
 				{
@@ -265,7 +269,7 @@ float TFlipperEdge::FindCollisionDistance(ray_type* ray)
 			srcRay.MinDistance = ogRay->MinDistance;
 			srcRay.Origin = ogRay->Origin;
 			srcRay.MaxDistance = rayMaxDistance;
-			auto distance = maths::distance_to_flipper(srcRay, dstRay);
+			auto distance = maths::distance_to_flipper(this, srcRay, dstRay);
 			if (distance < 1e+09f)
 			{
 				NextBallPosition = dstRay.Origin;
@@ -312,7 +316,7 @@ void TFlipperEdge::EdgeCollision(TBall* ball, float distance)
 			if (circlebase.RadiusSq * 1.01f < distanceSq)
 			{
 				float v11;
-				float v20 = sqrt(distanceSq / DistanceDivSq) * (fabs(AngleMax) / AngleMult);
+				float v20 = sqrt(distanceSq / DistanceDivSq) * (fabs(AngleMax) / AngleAdvanceTime);
 				float dot1 = maths::DotProduct(CollisionLinePerp, CollisionDirection);
 				if (dot1 >= 0.0f)
 					v11 = dot1 * v20;
@@ -389,46 +393,39 @@ void TFlipperEdge::place_in_grid()
 
 void TFlipperEdge::set_control_points(float timeNow)
 {
-	maths::SinCos(flipper_angle(timeNow), flipper_sin_angle, flipper_cos_angle);
+	float sin, cos;
+	maths::SinCos(flipper_angle(timeNow), sin, cos);
 	A1 = A1Src;
 	A2 = A2Src;
 	B1 = B1Src;
 	B2 = B2Src;
 	T1 = T1Src;
-	maths::RotatePt(A1, flipper_sin_angle, flipper_cos_angle, RotOrigin);
-	maths::RotatePt(A2, flipper_sin_angle, flipper_cos_angle, RotOrigin);
-	maths::RotatePt(T1, flipper_sin_angle, flipper_cos_angle, RotOrigin);
-	maths::RotatePt(B1, flipper_sin_angle, flipper_cos_angle, RotOrigin);
-	maths::RotatePt(B2, flipper_sin_angle, flipper_cos_angle, RotOrigin);
-}
-
-void TFlipperEdge::build_edges_in_motion()
-{
+	maths::RotatePt(A1, sin, cos, RotOrigin);
+	maths::RotatePt(A2, sin, cos, RotOrigin);
+	maths::RotatePt(T1, sin, cos, RotOrigin);
+	maths::RotatePt(B1, sin, cos, RotOrigin);
+	maths::RotatePt(B2, sin, cos, RotOrigin);
 	maths::line_init(lineA, A1.X, A1.Y, A2.X, A2.Y);
 	maths::line_init(lineB, B1.X, B1.Y, B2.X, B2.Y);
-	circlebase.RadiusSq = CirclebaseRadiusSq;
-	circlebase.Center.X = RotOrigin.X;
-	circlebase.Center.Y = RotOrigin.Y;
-	circleT1.RadiusSq = CircleT1RadiusSq;
-	circleT1.Center.X = T1.X;
-	circleT1.Center.Y = T1.Y;
+	circlebase = {RotOrigin, CirclebaseRadiusSq};
+	circleT1 = {T1, CircleT1RadiusSq};
 }
 
 float TFlipperEdge::flipper_angle(float timeNow)
 {
+	// When not moving, flipper is at destination angle.
 	if (!FlipperFlag)
-		return Angle1;
+		return AngleDst;
 
-	float currentAngleDuration = fabsf((Angle1 - Angle2) / AngleMax * AngleMult);
-	float currentAngleRatio;
+	// How much time it takes to go from source to destination angle, in sec.
+	auto arcDuration = std::abs((AngleDst - AngleSrc) / AngleMax * AngleAdvanceTime);
 
-	if (currentAngleDuration >= 0.0000001f)
-		currentAngleRatio = (timeNow - InputTime) / currentAngleDuration;
-	else
-		currentAngleRatio = 1.0;
+	// How close the flipper is to destination, in [0, 1] range.
+	auto t = arcDuration >= 0.0000001f ? (timeNow - InputTime) / arcDuration : 1.0f;
+	t = Clamp(t, 0.0f, 1.0f);
 
-	currentAngleRatio = std::min(1.0f, std::max(currentAngleRatio, 0.0f));
-	return currentAngleRatio * (Angle1 - Angle2) + Angle2;
+	// Result = linear interpolation between source and destination angle.
+	return AngleSrc + t * (AngleDst - AngleSrc);
 }
 
 int TFlipperEdge::is_ball_inside(float x, float y)
@@ -459,28 +456,32 @@ int TFlipperEdge::is_ball_inside(float x, float y)
 	return 0;
 }
 
-void TFlipperEdge::SetMotion(int code, float value)
+int TFlipperEdge::SetMotion(int code, float value)
 {
 	switch (code)
 	{
 	case 1:
-		Angle2 = flipper_angle(value);
-		Angle1 = AngleMax;
-		AngleMult = ExtendTime;
+		AngleSrc = flipper_angle(value);
+		AngleDst = AngleMax;
+		AngleAdvanceTime = ExtendTime;
 		break;
 	case 2:
-		Angle2 = flipper_angle(value);
-		Angle1 = 0.0;
-		AngleMult = RetractTime;
+		AngleSrc = flipper_angle(value);
+		AngleDst = 0.0f;
+		AngleAdvanceTime = RetractTime;
 		break;
 	case 1024:
-		FlipperFlag = 0;
-		Angle1 = 0.0;
-		return;
+		AngleSrc = 0.0f;
+		AngleDst = 0.0f;
+		break;
 	default: break;
 	}
 
+	if (AngleSrc == AngleDst)
+		code = 0;
+
 	InputTime = value;
 	FlipperFlag = code;
-	AngleStopTime = AngleMult + InputTime;
+	AngleStopTime = AngleAdvanceTime + InputTime;
+	return code;
 }

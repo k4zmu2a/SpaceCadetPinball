@@ -18,19 +18,11 @@ TFlipper::TFlipper(TPinballTable* table, int groupIndex) : TCollisionComponent(t
 	HardHitSoundId = visual.SoundIndex4;
 	SoftHitSoundId = visual.SoundIndex3;
 	Elasticity = visual.Elasticity;
-	Timer = 0;
 	Smoothness = visual.Smoothness;
 
 	auto collMult = *loader::query_float_attribute(groupIndex, 0, 803);
 	auto retractTime = *loader::query_float_attribute(groupIndex, 0, 805);
 	auto extendTime = *loader::query_float_attribute(groupIndex, 0, 804);
-
-	/*Full tilt hack: different flipper speed*/
-	if (pb::FullTiltMode)
-	{
-		retractTime = 0.08f;
-		extendTime = 0.04f;
-	}
 	auto vecT2 = reinterpret_cast<vector3*>(loader::query_float_attribute(groupIndex, 0, 802));
 	auto vecT1 = reinterpret_cast<vector3*>(loader::query_float_attribute(groupIndex, 0, 801));
 	auto origin = reinterpret_cast<vector3*>(loader::query_float_attribute(groupIndex, 0, 800));
@@ -49,75 +41,53 @@ TFlipper::TFlipper(TPinballTable* table, int groupIndex) : TCollisionComponent(t
 		Smoothness);
 
 	FlipperEdge = flipperEdge;
-	if (flipperEdge)
-	{
-		ExtendAnimationFrameTime = flipperEdge->ExtendTime / static_cast<float>(ListBitmap->size() - 1);
-		RetractAnimationFrameTime = flipperEdge->RetractTime / static_cast<float>(ListBitmap->size() - 1);
-	}
 	BmpIndex = 0;
-	InputTime = 0.0;
+	if (table)
+		table->FlipperList.push_back(this);
 }
 
 TFlipper::~TFlipper()
 {
 	delete FlipperEdge;
+	if (PinballTable)
+	{
+		auto& flippers = PinballTable->FlipperList;
+		auto position = std::find(flippers.begin(), flippers.end(), this);
+		if (position != flippers.end())
+			flippers.erase(position);
+	}
 }
 
 int TFlipper::Message(int code, float value)
 {
 	if (code == 1 || code == 2 || (code > 1008 && code <= 1011) || code == 1022)
 	{
-		float timerTime;
-		int command = code;
 		if (code == 1)
 		{
 			control::handler(1, this);
-			TimerTime = ExtendAnimationFrameTime;
 			loader::play_sound(HardHitSoundId, this, "TFlipper1");
 		}
 		else if (code == 2)
 		{
-			TimerTime = RetractAnimationFrameTime;
 			loader::play_sound(SoftHitSoundId, this, "TFlipper2");
 		}
 		else
 		{
 			// Retract for all non-input messages
-			command = 2;
-			TimerTime = RetractAnimationFrameTime;
+			code = 2;
 		}
 
-		if (MessageField)
-		{
-			// Message arrived before animation is finished
-			auto inputDt = value - FlipperEdge->InputTime;
-			timerTime = inputDt - floor(inputDt / TimerTime) * TimerTime;
-			if (timerTime < 0.0f)
-				timerTime = 0.0;
-		}
-		else
-		{
-			timerTime = TimerTime;
-		}
-
-		MessageField = command;
-		InputTime = value;
-		if (Timer)
-			timer::kill(Timer);
-		Timer = timer::set(timerTime, this, TimerExpired);
-		FlipperEdge->SetMotion(command, value);
+		MessageField = FlipperEdge->SetMotion(code, value);
+		return 0;
 	}
 
 	if (code == 1020 || code == 1024)
 	{
 		if (MessageField)
 		{
-			if (Timer)
-				timer::kill(Timer);
-			BmpIndex = -1;
-			MessageField = 2;
-			TimerExpired(Timer, this);
-			FlipperEdge->SetMotion(code, value);
+			MessageField = 0;
+			FlipperEdge->SetMotion(1024, value);
+			UpdateSprite(0);
 		}
 	}
 	return 0;
@@ -132,53 +102,22 @@ void TFlipper::Collision(TBall* ball, vector2* nextPosition, vector2* direction,
 {
 }
 
-void TFlipper::TimerExpired(int timerId, void* caller)
+void TFlipper::UpdateSprite(float timeNow)
 {
-	auto flip = static_cast<TFlipper*>(caller);
-	int bmpCountSub1 = flip->ListBitmap->size() - 1;
+	int bmpCountSub1 = ListBitmap->size() - 1;
 
-	auto newBmpIndex = static_cast<int>(floor(flip->FlipperEdge->flipper_angle(pb::time_now) / flip->FlipperEdge->AngleMax * bmpCountSub1 + 0.5));
-	if (newBmpIndex > bmpCountSub1)
-		newBmpIndex = bmpCountSub1;
-	if (newBmpIndex < 0)
-		newBmpIndex = 0;
+	auto newBmpIndex = static_cast<int>(floor(FlipperEdge->flipper_angle(timeNow) / FlipperEdge->AngleMax * bmpCountSub1 + 0.5f));
+	newBmpIndex = Clamp(newBmpIndex, 0, bmpCountSub1);
+	if (BmpIndex == newBmpIndex)
+		return;
 
-	bool bmpIndexOutOfBounds = false;
-	if (flip->MessageField == 1)
-	{
-		flip->BmpIndex = newBmpIndex;
-		if (flip->BmpIndex >= bmpCountSub1)
-		{
-			flip->BmpIndex = bmpCountSub1;
-			bmpIndexOutOfBounds = true;
-		}
-	}
-	if (flip->MessageField == 2)
-	{
-		flip->BmpIndex = newBmpIndex;
-		if (flip->BmpIndex <= 0)
-		{
-			flip->BmpIndex = 0;
-			bmpIndexOutOfBounds = true;
-		}
-	}
-
-	if (bmpIndexOutOfBounds)
-	{
-		flip->MessageField = 0;
-		flip->Timer = 0;
-	}
-	else
-	{
-		flip->Timer = timer::set(flip->TimerTime, flip, TimerExpired);
-	}
-
-	auto bmp = flip->ListBitmap->at(flip->BmpIndex);
-	auto zMap = flip->ListZMap->at(flip->BmpIndex);
+	BmpIndex = newBmpIndex;
+	auto bmp = ListBitmap->at(BmpIndex);
+	auto zMap = ListZMap->at(BmpIndex);
 	render::sprite_set(
-		flip->RenderSprite,
+		RenderSprite,
 		bmp,
 		zMap,
-		bmp->XPosition - flip->PinballTable->XOffset,
-		bmp->YPosition - flip->PinballTable->YOffset);
+		bmp->XPosition - PinballTable->XOffset,
+		bmp->YPosition - PinballTable->YOffset);
 }

@@ -296,11 +296,10 @@ void DebugOverlay::DrawEdge(TEdgeSegment* edge)
 	if (flip)
 	{
 		flip->set_control_points(pb::time_now);
-		flip->build_edges_in_motion();
 
-		DrawLineType(TFlipperEdge::lineA);
-		DrawLineType(TFlipperEdge::lineB);
-		DrawCicleType(TFlipperEdge::circlebase);
-		DrawCicleType(TFlipperEdge::circleT1);
+		DrawLineType(flip->lineA);
+		DrawLineType(flip->lineB);
+		DrawCicleType(flip->circlebase);
+		DrawCicleType(flip->circleT1);
 	}
 }

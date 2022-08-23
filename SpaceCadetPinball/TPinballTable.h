@@ -67,6 +67,7 @@ public:
 	int Height{};
 	std::vector<TPinballComponent*> ComponentList;
 	std::vector<TBall*> BallList;
+	std::vector<TFlipper*> FlipperList;
 	TLightGroup* LightGroup;
 	float GravityDirVectMult{};
 	float GravityAngleX{};
