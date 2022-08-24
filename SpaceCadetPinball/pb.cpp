@@ -513,6 +513,12 @@ void pb::InputDown(GameInput input)
 		case SDLK_F12:
 			MainTable->port_draw();
 			break;
+		case 'i':
+			MainTable->LightGroup->Message(-24, 1.0f);
+			break;
+		case 'j':
+			MainTable->LightGroup->Message(-25, 1.0f);
+			break;
 		}
 	}
 }

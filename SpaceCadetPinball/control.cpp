@@ -999,7 +999,7 @@ void control::cheat_bump_rank()
 bool control::light_on(component_tag<TLight>* tag)
 {
 	auto light = tag->Component;
-	return light->BmpIndex1 || light->FlasherFlag2 || light->FlasherActive;
+	return light->LightOnFlag || light->ToggledOnFlag || light->FlasherOnFlag;
 }
 
 int control::SpecialAddScore(int score)
@@ -1297,9 +1297,9 @@ void control::ReentryLanesRolloverControl(int code, TPinballComponent* caller)
 			if (roll2 != caller)
 				light = lite10;
 		}
-		if (!light->FlasherActive)
+		if (!light->FlasherOnFlag)
 		{
-			if (light->BmpIndex1)
+			if (light->LightOnFlag)
 			{
 				light->Message(20, 0.0);
 			}
@@ -1353,9 +1353,9 @@ void control::LaunchLanesRolloverControl(int code, TPinballComponent* caller)
 			if (roll111 != caller)
 				light = lite169;
 		}
-		if (!light->FlasherActive)
+		if (!light->FlasherOnFlag)
 		{
-			if (light->BmpIndex1)
+			if (light->LightOnFlag)
 			{
 				light->Message(20, 0.0);
 			}
@@ -1865,7 +1865,7 @@ void control::MissionSpotTargetControl(int code, TPinballComponent* caller)
 		lite->Message(15, 2.0);
 
 		TSound* sound;
-		if (!light_on(&control_lite198_tag) || lite198->FlasherActive)
+		if (!light_on(&control_lite198_tag) || lite198->FlasherOnFlag)
 		{
 			sound = soundwave52;
 		}
