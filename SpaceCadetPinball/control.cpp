@@ -108,6 +108,9 @@ component_tag<TLight> control_lite27_tag = {"lite27"};
 component_tag<TLight> control_lite28_tag = {"lite28"};
 component_tag<TLight> control_lite29_tag = {"lite29"};
 component_tag<TLight> control_lite30_tag = {"lite30"};
+component_tag<TLight> control_lite38_tag = {"lite38"};
+component_tag<TLight> control_lite39_tag = {"lite39"};
+component_tag<TLight> control_lite40_tag = {"lite40"};
 component_tag<TLight> control_lite54_tag = {"lite54"};
 component_tag<TLight> control_lite55_tag = {"lite55"};
 component_tag<TLight> control_lite56_tag = {"lite56"};
@@ -341,6 +344,9 @@ TLight*& lite27 = control_lite27_tag.Component;
 TLight*& lite28 = control_lite28_tag.Component;
 TLight*& lite29 = control_lite29_tag.Component;
 TLight*& lite30 = control_lite30_tag.Component;
+TLight*& lite38 = control_lite38_tag.Component;
+TLight*& lite39 = control_lite39_tag.Component;
+TLight*& lite40 = control_lite40_tag.Component;
 TLight*& lite54 = control_lite54_tag.Component;
 TLight*& lite55 = control_lite55_tag.Component;
 TLight*& lite56 = control_lite56_tag.Component;
@@ -615,7 +621,7 @@ component_info control::score_components[88]
 };
 
 
-component_tag_base* control::simple_components[142]
+component_tag_base* control::simple_components[145]
 {
 	&control_lite8_tag,
 	&control_lite9_tag,
@@ -758,7 +764,10 @@ component_tag_base* control::simple_components[142]
 	&control_lite322_tag,
 	&control_goal_lights_tag,
 	&control_soundwave25_tag,
-	&control_soundwave7_tag
+	&control_soundwave7_tag,
+	&control_lite38_tag,
+	&control_lite39_tag,
+	&control_lite40_tag,
 };
 
 int control::waiting_deployment_flag;
@@ -953,25 +962,40 @@ void control::table_set_flag_lights()
 	info_text_box->Display(pinball::get_rc_string(51, 0), 2.0);
 }
 
-void control::table_set_multiball()
+void control::table_set_multiball(float time)
 {
-	info_text_box->Display(pinball::get_rc_string(16, 0), 2.0);
-	midi::play_track(MidiTracks::Track3, true);
+	if (TableG->MultiballCount <= 1)
+	{
+		TableG->MultiballCount += 3;
+		sink1->Message(56, time);
+		sink2->Message(56, time);
+		sink3->Message(56, time);
+		lite38->Message(7, -1.0f);
+		lite39->Message(7, -1.0f);
+		lite40->Message(7, -1.0f);
+		info_text_box->Display(pinball::get_rc_string(16, 0), 2.0);
+		midi::play_track(MidiTracks::Track3, true);
+	}
 }
 
 void control::table_bump_ball_sink_lock()
 {
-	if (TableG->BallLockedCounter == 2)
+	if (TableG->MultiballCount <= 1)
 	{
-		table_set_multiball();
-		TableG->BallLockedCounter = 0;
-	}
-	else
-	{
-		TableG->BallLockedCounter = TableG->BallLockedCounter + 1;
-		soundwave44->Play(nullptr, "table_bump_ball_sink_lock");
-		info_text_box->Display(pinball::get_rc_string(1, 0), 2.0);
-		TableG->Plunger->Message(1016, 0.0);
+		TableG->MultiballCount--;
+		if (TableG->BallLockedCounter == 2)
+		{
+			soundwave41->Play(nullptr, "table_bump_ball_sink_lock_set_multiball");
+			table_set_multiball(2.0);
+			TableG->BallLockedCounter = 0;
+		}
+		else
+		{
+			TableG->BallLockedCounter = TableG->BallLockedCounter + 1;
+			soundwave44->Play(nullptr, "table_bump_ball_sink_lock");
+			info_text_box->Display(pinball::get_rc_string(1, 0), 2.0);
+			TableG->Plunger->Message(1018, 2.0f);
+		}
 	}
 }
 
@@ -1630,19 +1654,30 @@ void control::WormHoleControl(int code, TPinballComponent* caller)
 			{
 				if (TableG->MultiballFlag)
 				{
-					table_bump_ball_sink_lock();
-					TableG->AddScore(10000);
+					if (TableG->MultiballCount == 1)
+					{
+						table_bump_ball_sink_lock();
+						TableG->AddScore(10000);
+						return;
+					}
+					else
+					{
+						table_set_replay(4.0);
+						TableG->AddScore(50000);
+					}
 				}
 				else
 				{
-					info_text_box->Display(pinball::get_rc_string(49, 0), 2.0);
+					
 					table_set_replay(4.0);
 					TableG->AddScore(sink->get_scoring(1));
-					wormhole_tag_array2[sinkFlag]->GetComponent()->Message(16, sink->TimerTime);
-					wormhole_tag_array3[sinkFlag]->GetComponent()->Message(11, static_cast<float>(2 - sinkFlag));
-					wormhole_tag_array3[sinkFlag]->GetComponent()->Message(16, sink->TimerTime);
-					wormhole_tag_array1[sinkFlag]->GetComponent()->Message(56, sink->TimerTime);
 				}
+
+				info_text_box->Display(pinball::get_rc_string(49, 0), 2.0);
+				wormhole_tag_array2[sinkFlag]->GetComponent()->Message(16, sink->TimerTime);
+				wormhole_tag_array3[sinkFlag]->GetComponent()->Message(11, static_cast<float>(2 - sinkFlag));
+				wormhole_tag_array3[sinkFlag]->GetComponent()->Message(16, sink->TimerTime);
+				wormhole_tag_array1[sinkFlag]->GetComponent()->Message(56, sink->TimerTime);
 				return;
 			}
 			TableG->AddScore(sink->get_scoring(2));
@@ -2352,7 +2387,8 @@ void control::HyperspaceKickOutControl(int code, TPinballComponent* caller)
 
 		if (TableG->MultiballFlag)
 		{
-			table_set_multiball();
+			auto duration = soundwave41->Play(nullptr, "HyperspaceKickOutControl_setMultiball");
+			table_set_multiball(duration);
 		}
 		if (TableG->ScoreSpecial3 < 100000)
 			TableG->ScoreSpecial3 = 100000;
@@ -2580,10 +2616,18 @@ void control::BallDrainControl(int code, TPinballComponent* caller)
 				soundwave59->Play(nullptr, "BallDrainControl5");
 				--TableG->UnknownP78;
 			}
-			else if (TableG->UnknownP75)
+			else if (TableG->MultiballCount)
 			{
-				soundwave27->Play(nullptr, "BallDrainControl6");
-				--TableG->UnknownP75;
+				if (TableG->MultiballCount == 1)
+				{
+					lite38->Message(20, 0.0f);
+					lite39->Message(20, 0.0f);
+					midi::play_track(MidiTracks::Track1, false);
+				}
+				else if (TableG->MultiballCount == 2)
+				{
+					lite40->Message(20, 0.0f);
+				}
 			}
 			else
 			{

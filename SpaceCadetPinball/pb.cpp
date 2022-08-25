@@ -241,10 +241,16 @@ void pb::ballset(float dx, float dy)
 {
 	// dx and dy are normalized to window, ideally in [-1, 1]
 	static constexpr float sensitivity = 7000;
-	TBall* ball = MainTable->BallList.at(0);
-	ball->Direction.X = dx * sensitivity;
-	ball->Direction.Y = dy * sensitivity;
-	ball->Speed = maths::normalize_2d(ball->Direction);
+
+	for (auto ball : MainTable->BallList)
+	{
+		if (ball->ActiveFlag)
+		{
+			ball->Direction.X = dx * sensitivity;
+			ball->Direction.Y = dy * sensitivity;
+			ball->Speed = maths::normalize_2d(ball->Direction);
+		}
+	}
 }
 
 void pb::frame(float dtMilliSec)
@@ -469,33 +475,8 @@ void pb::InputDown(GameInput input)
 		switch (input.Value)
 		{
 		case 'b':
-			TBall* ball;
-			if (MainTable->BallList.empty())
-			{
-				ball = new TBall(MainTable);
-			}
-			else
-			{
-				for (auto index = 0u; ;)
-				{
-					ball = MainTable->BallList.at(index);
-					if (!ball->ActiveFlag)
-						break;
-					++index;
-					if (index >= MainTable->BallList.size())
-					{
-						ball = new TBall(MainTable);
-						break;
-					}
-				}
-			}
-			ball->ActiveFlag = 1;
-			ball->Position.X = 1.0;
-			ball->Position.Z = ball->Offset;
-			ball->Position.Y = 1.0;
-			ball->Direction.Z = 0.0;
-			ball->Direction.Y = 0.0;
-			ball->Direction.X = 0.0;
+			if (MainTable->AddBall(6.0f, 7.0f))
+				MainTable->MultiballCount++;
 			break;
 		case 'h':
 		{

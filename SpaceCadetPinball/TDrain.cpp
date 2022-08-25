@@ -23,16 +23,21 @@ int TDrain::Message(int code, float value)
 			timer::kill(Timer);
 			Timer = 0;
 		}
-		PinballTable->BallInSink = 0;
+		PinballTable->BallInDrainFlag = 0;
 	}
 	return 0;
 }
 
 void TDrain::Collision(TBall* ball, vector2* nextPosition, vector2* direction, float distance, TEdgeSegment* edge)
 {
-	ball->Message(1024, 0.0);
-	PinballTable->BallInSink = 1;
-	Timer = timer::set(TimerTime, this, TimerCallback);
+	ball->Disable();
+	--PinballTable->MultiballCount;
+	if (PinballTable->MultiballCount <= 0)
+	{
+		PinballTable->MultiballCount = 0;
+		PinballTable->BallInDrainFlag = 1;
+		Timer = timer::set(TimerTime, this, TimerCallback);
+	}
 	control::handler(63, this);
 }
 

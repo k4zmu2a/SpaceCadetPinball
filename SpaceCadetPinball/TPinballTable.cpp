@@ -49,20 +49,19 @@ TPinballTable::TPinballTable(): TPinballComponent(nullptr, -1, false)
 	CurScoreStruct = nullptr;
 	ScoreBallcount = nullptr;
 	ScorePlayerNumber1 = nullptr;
-	BallInSink = 0;
+	BallInDrainFlag = 0;
 	ActiveFlag = 1;
 	TiltLockFlag = 0;
 	EndGameTimeoutTimer = 0;
 	LightShowTimer = 0;
 	ReplayTimer = 0;
 	TiltTimeoutTimer = 0;
-	MultiballFlag = 0;
+	MultiballFlag = false;
 	PlayerCount = 0;
 
-	auto ballObj = new TBall(this);
-	BallList.push_back(ballObj);
-	if (ballObj)
-		ballObj->ActiveFlag = 0;
+	auto ball = AddBall(0.0f, 0.0f);
+	ball->Disable();
+
 	new TTableLayer(this);
 	LightGroup = new TLightGroup(this, 0);
 
@@ -287,7 +286,7 @@ void TPinballTable::ChangeBallCount(int count)
 
 void TPinballTable::tilt(float time)
 {
-	if (!TiltLockFlag && !BallInSink)
+	if (!TiltLockFlag && !BallInDrainFlag)
 	{
 		pinball::InfoTextBox->Clear();
 		pinball::MissTextBox->Clear();
@@ -452,6 +451,9 @@ int TPinballTable::Message(int code, float value)
 			LightShowTimer = timer::set(time, this, LightShow_timeout);
 		}
 
+		// Multi-ball is FT exclusive feature, at least for now.
+		if (pb::FullTiltMode)
+			MultiballFlag = true;
 		midi::play_track(MidiTracks::Track1, true);
 		break;
 	case 1018:
@@ -573,9 +575,9 @@ int TPinballTable::Message(int code, float value)
 		ScoreSpecial3Flag = 0;
 		UnknownP71 = 0;
 		ExtraBalls = 0;
-		UnknownP75 = 0;
+		MultiballCount = 0;
 		BallLockedCounter = 0;
-		MultiballFlag = 0;
+		MultiballFlag = false;
 		UnknownP78 = 0;
 		ReplayActiveFlag = 0;
 		ReplayTimer = 0;
@@ -587,6 +589,63 @@ int TPinballTable::Message(int code, float value)
 
 	control::table_control_handler(code);
 	return 0;
+}
+
+TBall* TPinballTable::AddBall(float x, float y)
+{
+	TBall* ball = nullptr;
+
+	for (auto curBall : BallList)
+	{
+		if (!curBall->ActiveFlag)
+		{
+			ball = curBall;
+			break;
+		}
+	}
+
+	if (ball != nullptr)
+	{
+		ball->ActiveFlag = 1;
+		ball->Position.Z = ball->Offset;
+		ball->Direction = {};
+		ball->Speed = 0;
+		ball->TimeDelta = 0;
+		ball->TimeNow = 0;
+		ball->EdgeCollisionCount = 0;
+		ball->CollisionFlag = 0;
+		ball->CollisionMask = 1;
+		ball->CollisionComp = nullptr;
+	}
+	else
+	{
+		if (BallList.size() >= 20)
+			return nullptr;
+		ball = new TBall(this);
+		BallList.push_back(ball);
+	}
+
+	ball->Position.X = x;
+	ball->Position.Y = y;
+
+	return ball;
+}
+
+int TPinballTable::BallCountInRect(const RectF& rect)
+{
+	int count = 0;
+	for (const auto ball : BallList)
+	{
+		if (ball->ActiveFlag &&
+			ball->Position.X >= rect.XMin &&
+			ball->Position.Y >= rect.YMin &&
+			ball->Position.X <= rect.XMax &&
+			ball->Position.Y <= rect.YMax)
+		{
+			count++;
+		}
+	}
+	return count;
 }
 
 void TPinballTable::EndGame_timeout(int timerId, void* caller)

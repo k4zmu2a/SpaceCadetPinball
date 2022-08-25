@@ -9,6 +9,7 @@ class TPlunger;
 class TDrain;
 class TDemo;
 class TLightGroup;
+struct RectF;
 
 struct score_struct_super
 {
@@ -34,6 +35,8 @@ public:
 	void tilt(float time);
 	void port_draw() override;
 	int Message(int code, float value) override;
+	TBall* AddBall(float x, float y);
+	int BallCountInRect(const RectF& rect);
 
 	static void EndGame_timeout(int timerId, void* caller);
 	static void LightShow_timeout(int timerId, void* caller);
@@ -49,7 +52,7 @@ public:
 	int SoundIndex1{};
 	int SoundIndex2{};
 	int SoundIndex3{};
-	int BallInSink;
+	int BallInDrainFlag;
 	int CurScore{};
 	int CurScoreE9{};
 	int LightShowTimer;
@@ -86,9 +89,9 @@ public:
 	int BallCount{};
 	int MaxBallCount;
 	int ExtraBalls{};
-	int UnknownP75{};
+	int MultiballCount{};
 	int BallLockedCounter{};
-	int MultiballFlag;
+	bool MultiballFlag;
 	int UnknownP78{};
 	int ReplayActiveFlag{};
 	int ReplayTimer;

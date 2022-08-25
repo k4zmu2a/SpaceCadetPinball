@@ -61,6 +61,35 @@ int timer::kill(int timerId)
 	return timerId;
 }
 
+int timer::kill(void(* callback)(int, void*))
+{
+	auto count = 0;
+	timer_struct* current = ActiveList, * prev = nullptr;
+	for (auto index = 0; index < Count; index++)
+	{
+		if (current->Callback == callback)
+		{
+			count++;
+			if (prev)
+				prev->NextTimer = current->NextTimer;
+			else
+				ActiveList = current->NextTimer;
+			current->NextTimer = FreeList;
+			FreeList = current;
+			if (--Count == index)
+				break;
+			current = current->NextTimer;
+		}
+		else
+		{
+			prev = current;
+			current = current->NextTimer;
+		}
+	}
+
+	return count;
+}
+
 int timer::set(float time, void* caller, void (* callback)(int, void*))
 {
 	if (Count >= MaxCount)

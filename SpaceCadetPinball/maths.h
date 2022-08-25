@@ -85,6 +85,11 @@ struct ramp_plane_type
 	vector2 FieldForce;
 };
 
+struct RectF
+{
+	float XMax, YMax, XMin, YMin;
+};
+
 enum class FlipperIntersect
 {
 	none = -1,

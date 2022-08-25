@@ -63,7 +63,7 @@ class control
 public:
 	static TPinballTable* TableG;
 	static component_info score_components[88];
-	static component_tag_base* simple_components[142];
+	static component_tag_base* simple_components[145];
 	static int waiting_deployment_flag;
 	static bool table_unlimited_balls;
 	static int RankRcArray[9], MissionRcArray[17], mission_select_scores[17];
@@ -79,7 +79,7 @@ public:
 	static void table_set_bonus();
 	static void table_set_jackpot();
 	static void table_set_flag_lights();
-	static void table_set_multiball();
+	static void table_set_multiball(float time);
 	static void table_bump_ball_sink_lock();
 	static void table_set_replay(float value);
 	static void cheat_bump_rank();

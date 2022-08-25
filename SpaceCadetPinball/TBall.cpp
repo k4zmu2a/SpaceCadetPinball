@@ -141,3 +141,9 @@ vector2 TBall::get_coordinates()
 {
 	return TTableLayer::edge_manager->NormalizeBox(Position);
 }
+
+void TBall::Disable()
+{
+	ActiveFlag = false;
+	render::sprite_set_bitmap(RenderSprite, nullptr);
+}

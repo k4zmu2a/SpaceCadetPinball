@@ -15,6 +15,7 @@ public:
 	static int init(int count);
 	static void uninit();
 	static int kill(int timerId);
+	static int kill(void (*callback)(int, void*));
 	static int set(float time, void* caller, void (* callback)(int, void*));
 	static int check();
 

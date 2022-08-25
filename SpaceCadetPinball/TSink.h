@@ -13,7 +13,6 @@ public:
 
 	static void TimerExpired(int timerId, void* caller);
 
-	int Timer;
 	float TimerTime;
 	vector2 BallPosition{};
 	vector3 BallThrowDirection{};
