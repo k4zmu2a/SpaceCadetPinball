@@ -125,7 +125,10 @@ int winmain::WinMain(LPCSTR lpCmdLine)
 		fontConfig.OversampleV = 2;
 		fontConfig.OversampleH = 8;
 		
-		io.Fonts->AddFontFromFileTTF(Options.FontFileName.c_str(), 13.f, &fontConfig, ranges.Data);
+		if(!io.Fonts->AddFontFromFileTTF(Options.FontFileName.c_str(), 13.f, &fontConfig, ranges.Data)) {
+			// Font loading failed, load default font instead
+			io.Fonts->AddFontDefault();
+		}
 		io.Fonts->Build();
 
 		ImGuiSDL::Initialize(renderer, 0, 0);
