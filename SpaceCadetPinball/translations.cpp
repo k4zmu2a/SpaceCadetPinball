@@ -22,6 +22,11 @@ struct InitializedArray
 		}
 	}
 
+	bool contains(Key index) const
+	{
+		return Store.size() > static_cast<int>(index);
+	}
+
 	const Value& operator[](Key index) const
 	{
 		return Store[static_cast<int>(index)];
@@ -95,7 +100,7 @@ const languageInfo* translations::get_languages(size_t* languages_number) {
 void translations::set_current_language(const char* short_name) 
 {
 	for(int i = 0; i < languages.size(); i++) {
-		if(!strcmp(short_name, languages[i].short_name)) {
+		if(!strcmp(short_name, languages[static_cast<lang>(i)].short_name)) {
 			current_language = (lang) i;
 			return;
 		}
@@ -105,12 +110,38 @@ void translations::set_current_language(const char* short_name)
 
 const languageInfo* translations::get_current_language()
 {
-	return &current_language[current_language];
+	if(!languages.contains(current_language))
+	{
+		current_language = lang::English;
+	}
+	return &languages[current_language];
 }
 
 const char* translations::get_translation(Msg id)
 {
-	return translated_strings[id][current_language];
+	if(!translated_strings.contains(id))
+	{
+		return "";
+	}
+
+	const auto& translation = translated_strings[id];
+
+	if(!translation.contains(current_language))
+	{
+		// fallback to english if available
+		if(translation.contains(lang::English))
+		{
+			return translation[lang::English];
+		}
+		else
+		{
+			return "";
+		}
+	}
+	else
+	{
+		return translation[current_language];
+	}
 }
 
 void translations::get_glyph_range(ImVector<ImWchar>* ranges)
