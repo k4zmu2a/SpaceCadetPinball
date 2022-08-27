@@ -1,9 +1,5 @@
 #pragma once
 
-#include <map>
-#include <string>
-#include <stdint.h>
-
 enum class translation_id_e
 {
     STRING101,
