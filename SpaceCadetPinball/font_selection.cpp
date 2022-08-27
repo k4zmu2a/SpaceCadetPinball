@@ -34,7 +34,7 @@ void font_selection::RenderDialog()
 		ImGui::SameLine();
 		ImGui::InputText("", DialogInputBuffer, IM_ARRAYSIZE(DialogInputBuffer));
 		
-		if (ImGui::Button(pinball::get_rc_string(translation_id_e::HIGHSCORES_Ok)))
+		if (ImGui::Button(pinball::get_rc_string(Msg::HIGHSCORES_Ok)))
 		{
 			options::Options.FontFileName = DialogInputBuffer;
 			ImGui::CloseCurrentPopup();
@@ -42,7 +42,7 @@ void font_selection::RenderDialog()
 		}
 
 		ImGui::SameLine();
-		if (ImGui::Button(pinball::get_rc_string(translation_id_e::HIGHSCORES_Cancel)))
+		if (ImGui::Button(pinball::get_rc_string(Msg::HIGHSCORES_Cancel)))
 			ImGui::CloseCurrentPopup();
 
 		ImGui::EndPopup();

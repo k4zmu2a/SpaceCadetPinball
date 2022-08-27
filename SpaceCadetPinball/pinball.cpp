@@ -3,7 +3,7 @@
 #include "translations.h"
 #include "winmain.h"
 
-int LoadStringAlt(translation_id_e uID, LPSTR lpBuffer, int cchBufferMax)
+int LoadStringAlt(Msg uID, LPSTR lpBuffer, int cchBufferMax)
 {
 	const char* text = translations::get_translation(uID);
 
@@ -20,7 +20,7 @@ int pinball::LeftShift = -1;
 int pinball::RightShift = -1;
 std::string pinball::BasePath;
 
-char* pinball::get_rc_string(translation_id_e uID)
+char* pinball::get_rc_string(Msg uID)
 {
 	char* result = &getRcBuffer[256 * rc_string_slot];
 	if (!LoadStringAlt(uID, &getRcBuffer[256 * rc_string_slot], 255))
@@ -31,7 +31,7 @@ char* pinball::get_rc_string(translation_id_e uID)
 	return result;
 }
 
-int pinball::get_rc_int(translation_id_e uID, int* dst)
+int pinball::get_rc_int(Msg uID, int* dst)
 {
 	char buffer[255];
 	int result = LoadStringAlt(uID, buffer, 255);

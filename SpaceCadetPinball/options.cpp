@@ -19,12 +19,12 @@ bool options::ShowDialog = false;
 GameInput* options::ControlWaitingForInput = nullptr;
 const ControlRef options::Controls[6]
 {
-	{translation_id_e::KEYMAPPER_FlipperL, RebindControls.LeftFlipper},
-	{translation_id_e::KEYMAPPER_FlipperR, RebindControls.RightFlipper},
-	{translation_id_e::KEYMAPPER_BumpLeft, RebindControls.LeftTableBump},
-	{translation_id_e::KEYMAPPER_BumpRight, RebindControls.RightTableBump},
-	{translation_id_e::KEYMAPPER_BumpBottom, RebindControls.BottomTableBump},
-	{translation_id_e::KEYMAPPER_Plunger, RebindControls.Plunger},
+	{Msg::KEYMAPPER_FlipperL, RebindControls.LeftFlipper},
+	{Msg::KEYMAPPER_FlipperR, RebindControls.RightFlipper},
+	{Msg::KEYMAPPER_BumpLeft, RebindControls.LeftTableBump},
+	{Msg::KEYMAPPER_BumpRight, RebindControls.RightTableBump},
+	{Msg::KEYMAPPER_BumpBottom, RebindControls.BottomTableBump},
+	{Msg::KEYMAPPER_Plunger, RebindControls.Plunger},
 };
 
 
@@ -114,7 +114,7 @@ void options::InitPrimary()
 	Options.DebugOverlayCollisionMask = get_int("Debug Overlay Collision Mask", true);
 	Options.DebugOverlaySprites = get_int("Debug Overlay Sprites", true);
 	Options.DebugOverlaySounds = get_int("Debug Overlay Sounds", true);
-	translations::set_current_language(get_string("Language", translations::get_current_language()).c_str());
+	translations::set_current_language(get_string("Language", translations::get_current_language()->short_name).c_str());
 	Options.FontFileName = get_string("FontFileName", "");
 }
 
@@ -164,7 +164,7 @@ void options::uninit()
 	set_int("Debug Overlay Collision Mask", Options.DebugOverlayCollisionMask);
 	set_int("Debug Overlay Sprites", Options.DebugOverlaySprites);
 	set_int("Debug Overlay Sounds", Options.DebugOverlaySounds);
-	set_string("Language", translations::get_current_language());
+	set_string("Language", translations::get_current_language()->short_name);
 	set_string("FontFileName", Options.FontFileName.c_str());
 }
 
@@ -344,16 +344,16 @@ void options::RenderControlDialog()
 		return;
 
 	ImGui::PushStyleVar(ImGuiStyleVar_WindowMinSize, ImVec2{550, 450});
-	if (ImGui::Begin(pinball::get_rc_string(translation_id_e::KEYMAPPER_Caption), &ShowDialog))
+	if (ImGui::Begin(pinball::get_rc_string(Msg::KEYMAPPER_Caption), &ShowDialog))
 	{
-		ImGui::TextUnformatted(pinball::get_rc_string(translation_id_e::KEYMAPPER_Groupbox2));
+		ImGui::TextUnformatted(pinball::get_rc_string(Msg::KEYMAPPER_Groupbox2));
 		ImGui::Separator();
 
-		ImGui::TextWrapped(pinball::get_rc_string(translation_id_e::KEYMAPPER_Help1));
-		ImGui::TextWrapped(pinball::get_rc_string(translation_id_e::KEYMAPPER_Help2));
+		ImGui::TextWrapped(pinball::get_rc_string(Msg::KEYMAPPER_Help1));
+		ImGui::TextWrapped(pinball::get_rc_string(Msg::KEYMAPPER_Help2));
 		ImGui::Spacing();
 
-		ImGui::TextUnformatted(pinball::get_rc_string(translation_id_e::KEYMAPPER_Groupbox1));
+		ImGui::TextUnformatted(pinball::get_rc_string(Msg::KEYMAPPER_Groupbox1));
 
 		ImGui::PushStyleVar(ImGuiStyleVar_CellPadding, ImVec2{5, 10});
 		if (ImGui::BeginTable("Controls", 4, ImGuiTableFlags_NoSavedSettings | ImGuiTableFlags_Borders))
@@ -422,20 +422,20 @@ void options::RenderControlDialog()
 		ImGui::PopStyleVar();
 		ImGui::Spacing();
 
-		if (ImGui::Button(pinball::get_rc_string(translation_id_e::KEYMAPPER_Ok)))
+		if (ImGui::Button(pinball::get_rc_string(Msg::KEYMAPPER_Ok)))
 		{
 			Options.Key = RebindControls;
 			ShowDialog = false;
 		}
 
 		ImGui::SameLine();
-		if (ImGui::Button(pinball::get_rc_string(translation_id_e::KEYMAPPER_Cancel)))
+		if (ImGui::Button(pinball::get_rc_string(Msg::KEYMAPPER_Cancel)))
 		{
 			ShowDialog = false;
 		}
 
 		ImGui::SameLine();
-		if (ImGui::Button(pinball::get_rc_string(translation_id_e::KEYMAPPER_Default)))
+		if (ImGui::Button(pinball::get_rc_string(Msg::KEYMAPPER_Default)))
 		{
 			RebindControls = Options.KeyDft;
 			ControlWaitingForInput = nullptr;

@@ -66,7 +66,7 @@ int winmain::WinMain(LPCSTR lpCmdLine)
 	// SDL window
 	SDL_Window* window = SDL_CreateWindow
 	(
-		pinball::get_rc_string(translation_id_e::STRING139),
+		pinball::get_rc_string(Msg::STRING139),
 		SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED,
 		800, 556,
 		SDL_WINDOW_HIDDEN | SDL_WINDOW_RESIZABLE
@@ -390,34 +390,34 @@ void winmain::RenderUi()
 			fullscrn::window_size_changed();
 		}
 
-		if (ImGui::BeginMenu(pinball::get_rc_string(translation_id_e::Menu1_Game)))
+		if (ImGui::BeginMenu(pinball::get_rc_string(Msg::Menu1_Game)))
 		{
-			if (ImGui::MenuItem(pinball::get_rc_string(translation_id_e::Menu1_New_Game), "F2"))
+			if (ImGui::MenuItem(pinball::get_rc_string(Msg::Menu1_New_Game), "F2"))
 			{
 				new_game();
 			}
-			if (ImGui::MenuItem(pinball::get_rc_string(translation_id_e::Menu1_Launch_Ball), nullptr, false, LaunchBallEnabled))
+			if (ImGui::MenuItem(pinball::get_rc_string(Msg::Menu1_Launch_Ball), nullptr, false, LaunchBallEnabled))
 			{
 				end_pause();
 				pb::launch_ball();
 			}
-			if (ImGui::MenuItem(pinball::get_rc_string(translation_id_e::Menu1_Pause_Resume_Game), "F3"))
+			if (ImGui::MenuItem(pinball::get_rc_string(Msg::Menu1_Pause_Resume_Game), "F3"))
 			{
 				pause();
 			}
 			ImGui::Separator();
 
-			if (ImGui::MenuItem(pinball::get_rc_string(translation_id_e::Menu1_High_Scores), nullptr, false, HighScoresEnabled))
+			if (ImGui::MenuItem(pinball::get_rc_string(Msg::Menu1_High_Scores), nullptr, false, HighScoresEnabled))
 			{
 				pause(false);
 				pb::high_scores();
 			}
-			if (ImGui::MenuItem(pinball::get_rc_string(translation_id_e::Menu1_Demo), nullptr, DemoActive))
+			if (ImGui::MenuItem(pinball::get_rc_string(Msg::Menu1_Demo), nullptr, DemoActive))
 			{
 				end_pause();
 				pb::toggle_demo();
 			}
-			if (ImGui::MenuItem(pinball::get_rc_string(translation_id_e::Menu1_Exit)))
+			if (ImGui::MenuItem(pinball::get_rc_string(Msg::Menu1_Exit)))
 			{
 				SDL_Event event{SDL_QUIT};
 				SDL_PushEvent(&event);
@@ -425,53 +425,57 @@ void winmain::RenderUi()
 			ImGui::EndMenu();
 		}
 
-		if (ImGui::BeginMenu(pinball::get_rc_string(translation_id_e::Menu1_Options)))
+		if (ImGui::BeginMenu(pinball::get_rc_string(Msg::Menu1_Options)))
 		{
 			if (ImGui::MenuItem("Show Menu", "F9", Options.ShowMenu))
 			{
 				options::toggle(Menu1::Show_Menu);
 			}
-			if (ImGui::MenuItem(pinball::get_rc_string(translation_id_e::Menu1_Full_Screen), "F4", Options.FullScreen))
+			if (ImGui::MenuItem(pinball::get_rc_string(Msg::Menu1_Full_Screen), "F4", Options.FullScreen))
 			{
 				options::toggle(Menu1::Full_Screen);
 			}
-			if (ImGui::BeginMenu(pinball::get_rc_string(translation_id_e::Menu1_Select_Players)))
+			if (ImGui::BeginMenu(pinball::get_rc_string(Msg::Menu1_Select_Players)))
 			{
-				if (ImGui::MenuItem(pinball::get_rc_string(translation_id_e::Menu1_1Player), nullptr, Options.Players == 1))
+				if (ImGui::MenuItem(pinball::get_rc_string(Msg::Menu1_1Player), nullptr, Options.Players == 1))
 				{
 					options::toggle(Menu1::OnePlayer);
 					new_game();
 				}
-				if (ImGui::MenuItem(pinball::get_rc_string(translation_id_e::Menu1_2Players), nullptr, Options.Players == 2))
+				if (ImGui::MenuItem(pinball::get_rc_string(Msg::Menu1_2Players), nullptr, Options.Players == 2))
 				{
 					options::toggle(Menu1::TwoPlayers);
 					new_game();
 				}
-				if (ImGui::MenuItem(pinball::get_rc_string(translation_id_e::Menu1_3Players), nullptr, Options.Players == 3))
+				if (ImGui::MenuItem(pinball::get_rc_string(Msg::Menu1_3Players), nullptr, Options.Players == 3))
 				{
 					options::toggle(Menu1::ThreePlayers);
 					new_game();
 				}
-				if (ImGui::MenuItem(pinball::get_rc_string(translation_id_e::Menu1_4Players), nullptr, Options.Players == 4))
+				if (ImGui::MenuItem(pinball::get_rc_string(Msg::Menu1_4Players), nullptr, Options.Players == 4))
 				{
 					options::toggle(Menu1::FourPlayers);
 					new_game();
 				}
 				ImGui::EndMenu();
 			}
-			if (ImGui::MenuItem(pinball::get_rc_string(translation_id_e::Menu1_Player_Controls), "F8"))
+			if (ImGui::MenuItem(pinball::get_rc_string(Msg::Menu1_Player_Controls), "F8"))
 			{
 				pause(false);
 				options::ShowControlDialog();
 			}
 			if (ImGui::BeginMenu("Language"))
 			{
-				std::string current_language = translations::get_current_language();
-				for(const auto& item : translations::Languages)
+				std::string current_language = translations::get_current_language()->short_name;
+				size_t language_number;
+				const languageInfo* languages = translations::get_languages(&language_number);
+
+				for(size_t i = 0; i < language_number; i++)
 				{
-					if (ImGui::MenuItem(item, nullptr, current_language == item))
+					const languageInfo* item = &languages[i];
+					if (ImGui::MenuItem(item->display_name, nullptr, current_language == item->short_name))
 					{
-						translations::set_current_language(item);
+						translations::set_current_language(item->short_name);
 						winmain::Restart();
 					}
 				}
@@ -503,7 +507,7 @@ void winmain::RenderUi()
 				}
 				ImGui::Separator();
 
-				if (ImGui::MenuItem(pinball::get_rc_string(translation_id_e::Menu1_Music), "F6", Options.Music))
+				if (ImGui::MenuItem(pinball::get_rc_string(Msg::Menu1_Music), "F6", Options.Music))
 				{
 					options::toggle(Menu1::Music);
 				}
@@ -578,15 +582,15 @@ void winmain::RenderUi()
 				ImGui::EndMenu();
 			}
 
-			if (ImGui::BeginMenu(pinball::get_rc_string(translation_id_e::Menu1_Table_Resolution)))
+			if (ImGui::BeginMenu(pinball::get_rc_string(Msg::Menu1_Table_Resolution)))
 			{
 				char buffer[20]{};
-				translation_id_e resolutionStringId = translation_id_e::Menu1_UseMaxResolution_640x480;
+				Msg resolutionStringId = Msg::Menu1_UseMaxResolution_640x480;
 
 				switch(fullscrn::GetMaxResolution()) {
-					case 0: resolutionStringId = translation_id_e::Menu1_UseMaxResolution_640x480; break;
-					case 1: resolutionStringId = translation_id_e::Menu1_UseMaxResolution_800x600; break;
-					case 2: resolutionStringId = translation_id_e::Menu1_UseMaxResolution_1024x768; break;
+					case 0: resolutionStringId = Msg::Menu1_UseMaxResolution_640x480; break;
+					case 1: resolutionStringId = Msg::Menu1_UseMaxResolution_800x600; break;
+					case 2: resolutionStringId = Msg::Menu1_UseMaxResolution_1024x768; break;
 				}
 				
 				auto maxResText = pinball::get_rc_string(resolutionStringId);
@@ -617,7 +621,7 @@ void winmain::RenderUi()
 			ImGui::EndMenu();
 		}
 
-		if (ImGui::BeginMenu(pinball::get_rc_string(translation_id_e::Menu1_Help)))
+		if (ImGui::BeginMenu(pinball::get_rc_string(Msg::Menu1_Help)))
 		{
 #ifndef NDEBUG
 			if (ImGui::MenuItem("ImGui Demo", nullptr, ShowImGuiDemo))
@@ -676,7 +680,7 @@ void winmain::RenderUi()
 			}
 			ImGui::Separator();
 
-			if (ImGui::MenuItem(pinball::get_rc_string(translation_id_e::Menu1_About_Pinball)))
+			if (ImGui::MenuItem(pinball::get_rc_string(Msg::Menu1_About_Pinball)))
 			{
 				pause(false);
 				ShowAboutDialog = true;
@@ -977,8 +981,8 @@ void winmain::memalloc_failure()
 {
 	midi::music_stop();
 	Sound::Close();
-	const char* caption = pinball::get_rc_string(translation_id_e::STRING270);
-	const char* text = pinball::get_rc_string(translation_id_e::STRING279);
+	const char* caption = pinball::get_rc_string(Msg::STRING270);
+	const char* text = pinball::get_rc_string(Msg::STRING279);
 	SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, caption, text, MainWindow);
 	std::exit(1);
 }
@@ -988,13 +992,13 @@ void winmain::a_dialog()
 	if (ShowAboutDialog == true)
 	{
 		ShowAboutDialog = false;
-		ImGui::OpenPopup(pinball::get_rc_string(translation_id_e::STRING204));
+		ImGui::OpenPopup(pinball::get_rc_string(Msg::STRING204));
 	}
 
 	bool unused_open = true;
-	if (ImGui::BeginPopupModal(pinball::get_rc_string(translation_id_e::STRING204), &unused_open, ImGuiWindowFlags_AlwaysAutoResize))
+	if (ImGui::BeginPopupModal(pinball::get_rc_string(Msg::STRING204), &unused_open, ImGuiWindowFlags_AlwaysAutoResize))
 	{
-		ImGui::TextUnformatted(pinball::get_rc_string(translation_id_e::STRING139));
+		ImGui::TextUnformatted(pinball::get_rc_string(Msg::STRING139));
 		ImGui::TextUnformatted("Original game by Cinematronics, Microsoft");
 		ImGui::Separator();
 

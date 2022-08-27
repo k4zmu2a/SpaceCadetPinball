@@ -97,7 +97,7 @@ struct optionsStruct
 
 struct ControlRef
 {
-	translation_id_e NameStringId;
+	Msg NameStringId;
 	GameInput (&Option)[3];
 };
 

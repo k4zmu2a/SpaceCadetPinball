@@ -1,6 +1,6 @@
 #pragma once
 
-enum class translation_id_e
+enum class Msg
 {
     STRING101,
     STRING102,
@@ -257,11 +257,16 @@ enum class translation_id_e
     NUMBER,
 };
 
+struct languageInfo {
+    const char* short_name;
+    const char* display_name;
+};
+
 class translations {
 public:
-    static std::vector<const char*> Languages;
-    static const char* get_translation(translation_id_e id);
-    static void set_current_language(const char* language_name);
-    static const char* get_current_language();
+    static const languageInfo* get_languages(size_t* languages_number);
+    static const char* get_translation(Msg id);
+    static void set_current_language(const char* short_name);
+    static const languageInfo* get_current_language();
     static void get_glyph_range(ImVector<ImWchar>* ranges);
 };
