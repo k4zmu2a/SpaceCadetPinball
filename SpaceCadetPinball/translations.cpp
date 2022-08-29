@@ -2,97 +2,8 @@
 #include "translations.h"
 #include "options.h"
 
-template <typename Key, typename Value, int N>
-struct InitializedArray
-{
 
-	InitializedArray() : Store{}
-	{
-	}
-
-	InitializedArray(const std::initializer_list<std::pair<Key, Value>>& iList)
-	{
-		Store.reserve(iList.size());
-		for (const auto& pair : iList)
-		{
-			size_t index = static_cast<int>(pair.first);
-			if(Store.size() <= index)
-				Store.resize(index + 1);
-			Store[index] = pair.second;
-		}
-	}
-
-	bool contains(Key index) const
-	{
-		return Store.size() > static_cast<int>(index);
-	}
-
-	const Value& operator[](Key index) const
-	{
-		return Store[static_cast<int>(index)];
-	}
-
-	const Value* data() const
-	{
-		return Store.data();
-	}
-
-	size_t size() const {
-		return Store.size();
-	}
-
-private:
-	std::vector<Value> Store;
-};
-
-enum class lang {
-	Arabic,
-	Czech,
-	Danish,
-	German,
-	Greek,
-	English,
-	Spanish,
-	Finnish,
-	French,
-	Hebrew,
-	Hungarian,
-	Italian,
-	Japanese,
-	Korean,
-	Norwegian,
-	Dutch,
-	Polish,
-	BrazilianPortuguese,
-	Portuguese,
-	Russian,
-	Swedish,
-	Turkish,
-	SimplifiedChinese,
-	TraditionalChinese,
-	NUMBER
-};
-
-namespace {
-	// Use anonymous namespace instead of static to be able to forward declare translated_strings
-	extern const InitializedArray<
-		lang,
-		languageInfo,
-		(int)lang::NUMBER
-	> languages;
-
-	extern const InitializedArray<
-		Msg,
-		InitializedArray<
-			lang,
-			const char*,
-			(int)lang::NUMBER
-		>,
-		(int)Msg::NUMBER
-	> translated_strings;
-
-	lang current_language = lang::English;
-}
+lang translations::current_language = lang::English;
 
 const languageInfo* translations::get_languages(size_t* languages_number) {
 	if(languages_number) {
@@ -164,12 +75,11 @@ void translations::get_glyph_range(ImVector<ImWchar>* ranges)
 	builder.BuildRanges(ranges);
 }
 
-namespace {
 const InitializedArray<
 		lang,
 		languageInfo,
 		(int)lang::NUMBER
-	> languages =
+	>  translations::languages =
 {
 	{ lang::Arabic, {"ar", "Arabic" } },
 	{ lang::Czech, {"cs", "Czech" } },
@@ -205,7 +115,7 @@ const InitializedArray<
 		(int)lang::NUMBER
 	>,
 	(int)Msg::NUMBER
-> translated_strings =
+>  translations::translated_strings =
 {
 	{
 		Msg::STRING101,
@@ -7371,5 +7281,3 @@ const InitializedArray<
 		},
 	},
 };
-
-} /* namespace */
