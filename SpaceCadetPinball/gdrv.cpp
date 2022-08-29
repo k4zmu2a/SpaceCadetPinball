@@ -302,7 +302,7 @@ void gdrv::grtext_draw_ttext_in_box(TTextBox* textBox)
 	{
 		ImGui::SetWindowFontScale(fullscrn::GetScreenToPinballRatio());
 		if(textBox->Message1)
-			ImGui::TextWrapped(textBox->Message1->Text);
+			ImGui::TextWrapped("%s", textBox->Message1->Text);
 	}
 	ImGui::End();
 }

@@ -349,8 +349,8 @@ void options::RenderControlDialog()
 		ImGui::TextUnformatted(pinball::get_rc_string(Msg::KEYMAPPER_Groupbox2));
 		ImGui::Separator();
 
-		ImGui::TextWrapped(pinball::get_rc_string(Msg::KEYMAPPER_Help1));
-		ImGui::TextWrapped(pinball::get_rc_string(Msg::KEYMAPPER_Help2));
+		ImGui::TextWrapped("%s", pinball::get_rc_string(Msg::KEYMAPPER_Help1));
+		ImGui::TextWrapped("%s", pinball::get_rc_string(Msg::KEYMAPPER_Help2));
 		ImGui::Spacing();
 
 		ImGui::TextUnformatted(pinball::get_rc_string(Msg::KEYMAPPER_Groupbox1));

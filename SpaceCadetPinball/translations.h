@@ -292,7 +292,7 @@ enum class lang : int
 template <typename Key, typename Value, int N>
 struct InitializedArray
 {
-	static_assert(std::is_enum_v<Key>, "Key is not an enum");
+	static_assert(std::is_enum<Key>::value, "Key is not an enum");
 
 	InitializedArray(const std::initializer_list<std::pair<Key, Value>>& iList)
 	{
