@@ -120,7 +120,7 @@ int winmain::WinMain(LPCSTR lpCmdLine)
 		ImGuiSDL::Deinitialize();
 		io.Fonts->Clear();
 		ImVector<ImWchar> ranges;
-		translations::get_glyph_range(&ranges);
+		translations::GetGlyphRange(&ranges);
 		ImFontConfig fontConfig;
 		fontConfig.OversampleV = 2;
 		fontConfig.OversampleH = 8;
@@ -469,12 +469,12 @@ void winmain::RenderUi()
 			}
 			if (ImGui::BeginMenu("Language"))
 			{
-				auto currentLanguage = translations::get_current_language();
+				auto currentLanguage = translations::GetCurrentLanguage();
 				for (auto &item : translations::Languages)
 				{
-					if (ImGui::MenuItem(item.display_name, nullptr, currentLanguage->Language == item.Language))
+					if (ImGui::MenuItem(item.DisplayName, nullptr, currentLanguage->Language == item.Language))
 					{
-						translations::set_current_language(item.short_name);
+						translations::SetCurrentLanguage(item.ShortName);
 						winmain::Restart();
 					}
 				}
@@ -523,7 +523,7 @@ void winmain::RenderUi()
 			{
 				if (ImGui::MenuItem("Change Font"))
 				{
-					font_selection::show_dialog();
+					font_selection::ShowDialog();
 				}
 				if (ImGui::MenuItem("Uniform Scaling", nullptr, Options.UniformScaling))
 				{

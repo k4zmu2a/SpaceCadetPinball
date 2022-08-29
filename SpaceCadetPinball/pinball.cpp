@@ -5,7 +5,7 @@
 
 int LoadStringAlt(Msg uID, LPSTR lpBuffer, int cchBufferMax)
 {
-	const char* text = translations::get_translation(uID);
+	const char* text = translations::GetTranslation(uID);
 
 	strncpy(lpBuffer, text, cchBufferMax);
 	return 1;

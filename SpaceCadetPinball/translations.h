@@ -258,7 +258,7 @@ enum class Msg : int
 	Max,
 };
 
-enum class lang : int
+enum class Lang : int
 {
 	Min = 0,
 	Arabic = 0,
@@ -290,7 +290,7 @@ enum class lang : int
 
 struct TextArray
 {
-	TextArray(const std::initializer_list<std::pair<Msg, std::initializer_list<std::pair<lang, LPCSTR>>>>& iList)
+	TextArray(const std::initializer_list<std::pair<Msg, std::initializer_list<std::pair<Lang, LPCSTR>>>>& iList)
 	{
 		for (const auto& msgPair : iList)
 		{
@@ -302,14 +302,14 @@ struct TextArray
 		}
 	}
 
-	LPCSTR Get(Msg msgId, lang langId) const
+	LPCSTR Get(Msg msgId, Lang langId) const
 	{
 		assertm(TextArray::contains(msgId), "Message Id out of bounds");
 		assertm(TextArray::contains(langId), "Language Id out of bounds");
 		return Store[static_cast<int>(msgId)][static_cast<int>(langId)];
 	}
 
-	bool contains(Msg msgId, lang langId) const
+	bool contains(Msg msgId, Lang langId) const
 	{
 		return contains(msgId) && Get(msgId, langId) != nullptr;
 	}
@@ -319,15 +319,15 @@ struct TextArray
 		return msgId >= Msg::Min && msgId < Msg::Max;
 	}
 
-	static bool contains(lang langId)
+	static bool contains(Lang langId)
 	{
-		return langId >= lang::Min && langId < lang::Max;
+		return langId >= Lang::Min && langId < Lang::Max;
 	}
 
 private:
-	LPCSTR Store[static_cast<int>(Msg::Max )][static_cast<int>(lang::Max)]{ nullptr };
+	LPCSTR Store[static_cast<int>(Msg::Max )][static_cast<int>(Lang::Max)]{ nullptr };
 
-	void Set(Msg msgId, lang langId, LPCSTR value)
+	void Set(Msg msgId, Lang langId, LPCSTR value)
 	{
 		assertm(TextArray::contains(msgId), "Message Id out of bounds");
 		assertm(TextArray::contains(langId), "Language Id out of bounds");
@@ -335,24 +335,24 @@ private:
 	}
 };
 
-struct languageInfo
+struct LanguageInfo
 {
-	const lang Language;
-	const char* short_name;
-	const char* display_name;
+	const Lang Language;
+	const char* ShortName;
+	const char* DisplayName;
 };
 
 class translations
 {
 public:
-	static const languageInfo Languages[static_cast<int>(lang::Max)];
+	static const LanguageInfo Languages[static_cast<int>(Lang::Max)];
 
-	static const char* get_translation(Msg id);
-	static void set_current_language(const char* short_name);
-	static const languageInfo* get_current_language();
-	static void get_glyph_range(ImVector<ImWchar>* ranges);
+	static const char* GetTranslation(Msg id);
+	static void SetCurrentLanguage(const char* short_name);
+	static const LanguageInfo* GetCurrentLanguage();
+	static void GetGlyphRange(ImVector<ImWchar>* ranges);
 
 private:
 	static const TextArray Translations;
-	static lang current_language;
+	static Lang CurrentLanguage;
 };

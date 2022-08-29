@@ -7,20 +7,20 @@
 #include "winmain.h"
 
 static const char* popupName = "Font Selection";
-bool font_selection::ShowDialog = false;
+bool font_selection::ShowDialogFlag = false;
 char font_selection::DialogInputBuffer[512];
 
-void font_selection::show_dialog()
+void font_selection::ShowDialog()
 {
-	ShowDialog = true;
+	ShowDialogFlag = true;
 }
 
 void font_selection::RenderDialog()
 {
-	if (ShowDialog == true)
+	if (ShowDialogFlag == true)
 	{
 		strncpy(DialogInputBuffer, options::Options.FontFileName.c_str(), sizeof(DialogInputBuffer));
-		ShowDialog = false;
+		ShowDialogFlag = false;
 		if (!ImGui::IsPopupOpen(popupName))
 		{
 			ImGui::OpenPopup(popupName);
@@ -33,7 +33,7 @@ void font_selection::RenderDialog()
 		ImGui::Text("Font file to use: ");
 		ImGui::SameLine();
 		ImGui::InputText("", DialogInputBuffer, IM_ARRAYSIZE(DialogInputBuffer));
-		
+
 		if (ImGui::Button(pinball::get_rc_string(Msg::HIGHSCORES_Ok)))
 		{
 			options::Options.FontFileName = DialogInputBuffer;
