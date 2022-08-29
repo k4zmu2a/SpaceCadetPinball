@@ -255,7 +255,8 @@ enum class Msg
     Menu1_UseMaxResolution_1024x768,
 };
 
-struct languageInfo {
+struct languageInfo
+{
     const char* short_name;
     const char* display_name;
 };
