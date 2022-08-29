@@ -2,7 +2,7 @@
 #include "translations.h"
 #include "options.h"
 
-template <typename Key, typename Value>
+template <typename Key, typename Value, int N>
 struct InitializedArray
 {
 
@@ -70,21 +70,25 @@ enum class lang {
 	Turkish,
 	SimplifiedChinese,
 	TraditionalChinese,
+	NUMBER
 };
 
 namespace {
 	// Use anonymous namespace instead of static to be able to forward declare translated_strings
 	extern const InitializedArray<
 		lang,
-		languageInfo
+		languageInfo,
+		(int)lang::NUMBER
 	> languages;
 
 	extern const InitializedArray<
 		Msg,
 		InitializedArray<
 			lang,
-			const char*
-		>
+			const char*,
+			(int)lang::NUMBER
+		>,
+		(int)Msg::NUMBER
 	> translated_strings;
 
 	lang current_language = lang::English;
@@ -99,8 +103,8 @@ const languageInfo* translations::get_languages(size_t* languages_number) {
 
 void translations::set_current_language(const char* short_name) 
 {
-	for(int i = 0; i < languages.size(); i++) {
-		if(!strcmp(short_name, languages[static_cast<lang>(i)].short_name)) {
+	for(int i = 0; i < (int)lang::NUMBER; i++) {
+		if(!strcmp(short_name, languages[(lang)i].short_name)) {
 			current_language = (lang) i;
 			return;
 		}
@@ -148,7 +152,7 @@ void translations::get_glyph_range(ImVector<ImWchar>* ranges)
 {
 	ImFontGlyphRangesBuilder builder;
 
-	for(int i = 0; i < translated_strings.size(); i++) {
+	for(int i = 0; i < (int)Msg::NUMBER; i++) {
 		const char* translation = get_translation((Msg)i);
 		if(translation)
 		{
@@ -163,7 +167,8 @@ void translations::get_glyph_range(ImVector<ImWchar>* ranges)
 namespace {
 const InitializedArray<
 		lang,
-		languageInfo
+		languageInfo,
+		(int)lang::NUMBER
 	> languages =
 {
 	{ lang::Arabic, {"ar", "Arabic" } },
@@ -196,8 +201,10 @@ const InitializedArray<
 	Msg,
 	InitializedArray<
 		lang,
-		const char*
-	>
+		const char*,
+		(int)lang::NUMBER
+	>,
+	(int)Msg::NUMBER
 > translated_strings =
 {
 	{
