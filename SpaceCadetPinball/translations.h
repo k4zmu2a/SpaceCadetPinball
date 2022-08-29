@@ -242,8 +242,6 @@ enum class Msg : int
 	Menu1_1024x768,
 	Menu1_WindowUniformScale,
 	Menu1_AlternativeRender,
-	Menu1_Language,
-	Menu1_LanguageMax,
 	Menu1_Game,
 	Menu1_Options,
 	Menu1_Select_Players,
@@ -299,6 +297,11 @@ struct TextArray
 				assertm(!contains(msgPair.first, languagePair.first), "Key redefinition");
 				Set(msgPair.first, languagePair.first, languagePair.second);
 			}
+		}
+
+		for (auto i = Msg::Min; i < Msg::Max; i = static_cast<Msg>(static_cast<int>(i) + 1))
+		{
+			assertm(contains(i, Lang::English), "English text is mandatory for all keys");
 		}
 	}
 

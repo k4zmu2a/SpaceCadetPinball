@@ -1,7 +1,5 @@
 #pragma once
 
-class TTextBox;
-
 enum class BitmapTypes : uint8_t
 {
 	None = 0,
@@ -85,7 +83,6 @@ public:
 	static void grtext_draw_ttext_in_box();
 	static void ApplyPalette(gdrv_bitmap8& bmp);
 	static void CreatePreview(gdrv_bitmap8& bmp);
-
 private:
 	static ColorRgba current_palette[256];
 };
