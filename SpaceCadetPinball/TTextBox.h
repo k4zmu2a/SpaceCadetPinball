@@ -22,6 +22,7 @@ public:
 	int Message(int code, float value) override;
 	void Clear();
 	void Display(const char* text, float time);
+	void DrawImGui();
 
 private:
 	struct LayoutResult

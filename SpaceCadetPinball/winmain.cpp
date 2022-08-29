@@ -714,13 +714,7 @@ void winmain::RenderUi()
 		RenderFrameTimeDialog();
 	
 	// Print game texts on the sidebar
-	for(auto textToDraw : {pinball::InfoTextBox, pinball::MissTextBox})
-	{
-		if(textToDraw)
-		{
-			gdrv::grtext_draw_ttext_in_box(textToDraw);
-		}
-	}
+	gdrv::grtext_draw_ttext_in_box();
 }
 
 int winmain::event_handler(const SDL_Event* event)

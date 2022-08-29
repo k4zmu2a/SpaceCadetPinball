@@ -8,6 +8,7 @@
 #include "winmain.h"
 #include "TTextBox.h"
 #include "fullscrn.h"
+#include "pinball.h"
 
 ColorRgba gdrv::current_palette[256]{};
 
@@ -271,40 +272,15 @@ void gdrv::ScrollBitmapHorizontal(gdrv_bitmap8* bmp, int xStart)
 }
 
 
-void gdrv::grtext_draw_ttext_in_box(TTextBox* textBox)
+void gdrv::grtext_draw_ttext_in_box()
 {
-	// Do nothing when using a font (the text will be rendered in TTextBox::Draw)
-	if(textBox->Font)
-		return;
-
-	char windowName[64];
-	SDL_Rect rect;
-	ImGuiWindowFlags window_flags =
-		ImGuiWindowFlags_NoBackground |
-		ImGuiWindowFlags_NoDecoration |
-		ImGuiWindowFlags_NoSavedSettings |
-		ImGuiWindowFlags_NoFocusOnAppearing |
-		ImGuiWindowFlags_NoInputs;
-	
-	rect.x = textBox->OffsetX;
-	rect.y = textBox->OffsetY;
-	rect.w = textBox->Width;
-	rect.h = textBox->Height;
-
-	rect = fullscrn::GetScreenRectFromPinballRect(rect);
-
-	ImGui::SetNextWindowPos(ImVec2(rect.x, rect.y));
-	ImGui::SetNextWindowSize(ImVec2(rect.w, rect.h));
-
-	// Use the pointer to generate a window unique name per text box
-	snprintf(windowName, sizeof(windowName), "TTextBox_%p", textBox);
-	if (ImGui::Begin(windowName, nullptr, window_flags))
+	for (const auto textBox : { pinball::InfoTextBox, pinball::MissTextBox })
 	{
-		ImGui::SetWindowFontScale(fullscrn::GetScreenToPinballRatio());
-		if(textBox->Message1)
-			ImGui::TextWrapped("%s", textBox->Message1->Text);
+		if (textBox)
+		{
+			textBox->DrawImGui();
+		}
 	}
-	ImGui::End();
 }
 
 void gdrv::ApplyPalette(gdrv_bitmap8& bmp)
