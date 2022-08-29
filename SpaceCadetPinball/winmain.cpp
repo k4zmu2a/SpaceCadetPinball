@@ -116,21 +116,33 @@ int winmain::WinMain(LPCSTR lpCmdLine)
 	// First step: just load the options
 	options::InitPrimary();
 
-	if(!Options.FontFileName.empty()) {
+	if(!Options.FontFileName.empty()) 
+	{
 		ImGuiSDL::Deinitialize();
 		io.Fonts->Clear();
 		ImVector<ImWchar> ranges;
 		translations::GetGlyphRange(&ranges);
-		ImFontConfig fontConfig;
-		fontConfig.OversampleV = 2;
-		fontConfig.OversampleH = 8;
-		
-		if(!io.Fonts->AddFontFromFileTTF(Options.FontFileName.c_str(), 13.f, &fontConfig, ranges.Data)) {
-			// Font loading failed, load default font instead
-			io.Fonts->AddFontDefault();
-		}
-		io.Fonts->Build();
+		ImFontConfig fontConfig{};
 
+		// ToDo: further tweak font options, maybe try imgui_freetype
+		fontConfig.OversampleV = 2;
+		fontConfig.OversampleH = 4;
+
+		// ToDo: improve font file test, checking if file exists is not enough
+		auto fileName = Options.FontFileName.c_str();
+		auto fileHandle = fopenu(fileName, "rb");
+		if (fileHandle)
+		{
+			fclose(fileHandle);
+
+			// ToDo: Bind font size to UI scale
+			if (!io.Fonts->AddFontFromFileTTF(fileName, 13.f, &fontConfig, ranges.Data))
+				io.Fonts->AddFontDefault();
+		}
+		else
+			io.Fonts->AddFontDefault();
+
+		io.Fonts->Build();
 		ImGuiSDL::Initialize(renderer, 0, 0);
 	}
 
