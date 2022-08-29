@@ -4,32 +4,59 @@
 
 
 lang translations::current_language = lang::English;
-
-const languageInfo* translations::get_languages(size_t* languages_number) {
-	if(languages_number) {
-		*languages_number = languages.size();
-	}
-	return languages.data();
-}
+const languageInfo translations::Languages[static_cast<int>(lang::Max)] =
+{
+	{ lang::Arabic, "ar", "Arabic" },
+	{ lang::Czech, "cs", "Czech" },
+	{ lang::Danish, "da", "Danish" },
+	{ lang::German, "de", "German" },
+	{ lang::Greek, "el", "Greek" },
+	{ lang::English, "en", "English" },
+	{ lang::Spanish, "es", "Spanish" },
+	{ lang::Finnish, "fi", "Finnish" },
+	{ lang::French, "fr", "French" },
+	{ lang::Hebrew, "he", "Hebrew" },
+	{ lang::Hungarian, "hu", "Hungarian" },
+	{ lang::Italian, "it", "Italian" },
+	{ lang::Japanese, "ja", "Japanese" },
+	{ lang::Korean, "ko", "Korean" },
+	{ lang::Norwegian, "nb", "Norwegian" },
+	{ lang::Dutch, "nl", "Dutch" },
+	{ lang::Polish, "pl", "Polish" },
+	{ lang::BrazilianPortuguese, "pt_BR", "Brazilian Portuguese" },
+	{ lang::Portuguese, "pt_PT", "Portuguese" },
+	{ lang::Russian, "ru", "Russian" },
+	{ lang::Swedish, "sv", "Swedish" },
+	{ lang::Turkish, "tr", "Turkish" },
+	{ lang::SimplifiedChinese, "zh_CN", "Simplified Chinese" },
+	{ lang::TraditionalChinese, "zh_TW", "Traditional Chinese" },
+};
 
 void translations::set_current_language(const char* short_name) 
 {
-	for(int i = 0; i < (int)lang::Max; i++) {
-		if(!strcmp(short_name, languages[(lang)i].short_name)) {
-			current_language = (lang) i;
+	for (const auto& langInfo : Languages)
+	{
+		if (!strcmp(short_name, langInfo.short_name))
+		{
+			current_language = langInfo.Language;
 			return;
 		}
 	}
-	printf("Unknown language \"%s\"\n", short_name);
+
+	assertm(false, "Unknown language");
 }
 
 const languageInfo* translations::get_current_language()
 {
-	if(!TextArray::contains(current_language))
+	for (const auto& langInfo : Languages)
 	{
-		current_language = lang::English;
+		if (langInfo.Language == current_language)
+		{
+			return &langInfo;
+		}
 	}
-	return &languages[current_language];
+
+	return nullptr;
 }
 
 const char* translations::get_translation(Msg id)
@@ -64,38 +91,6 @@ void translations::get_glyph_range(ImVector<ImWchar>* ranges)
 	builder.AddRanges(ImGui::GetIO().Fonts->GetGlyphRangesDefault());
 	builder.BuildRanges(ranges);
 }
-
-const InitializedArray<
-		lang,
-		languageInfo,
-		(int)lang::Max
-	>  translations::languages =
-{
-	{ lang::Arabic, {"ar", "Arabic" } },
-	{ lang::Czech, {"cs", "Czech" } },
-	{ lang::Danish, {"da", "Danish" } },
-	{ lang::German, {"de", "German" } },
-	{ lang::Greek, {"el", "Greek" } },
-	{ lang::English, {"en", "English" } },
-	{ lang::Spanish, {"es", "Spanish" } },
-	{ lang::Finnish, {"fi", "Finnish" } },
-	{ lang::French, {"fr", "French" } },
-	{ lang::Hebrew, {"he", "Hebrew" } },
-	{ lang::Hungarian, {"hu", "Hungarian" } },
-	{ lang::Italian, {"it", "Italian" } },
-	{ lang::Japanese, {"ja", "Japanese" } },
-	{ lang::Korean, {"ko", "Korean" } },
-	{ lang::Norwegian, {"nb", "Norwegian" } },
-	{ lang::Dutch, {"nl", "Dutch" } },
-	{ lang::Polish, {"pl", "Polish" } },
-	{ lang::BrazilianPortuguese, {"pt_BR", "Brazilian Portuguese" } },
-	{ lang::Portuguese, {"pt_PT", "Portuguese" } },
-	{ lang::Russian, {"ru", "Russian" } },
-	{ lang::Swedish, {"sv", "Swedish" } },
-	{ lang::Turkish, {"tr", "Turkish" } },
-	{ lang::SimplifiedChinese, {"zh_CN", "Simplified Chinese" } },
-	{ lang::TraditionalChinese, {"zh_TW", "Traditional Chinese" } },
-};
 
 const TextArray translations::Translations =
 {

@@ -288,45 +288,6 @@ enum class lang : int
 	Max
 };
 
-
-template <typename Key, typename Value, int N>
-struct InitializedArray
-{
-	static_assert(std::is_enum<Key>::value, "Key is not an enum");
-
-	InitializedArray(const std::initializer_list<std::pair<Key, Value>>& iList)
-	{
-		for (const auto& pair : iList)
-		{
-			auto index = static_cast<int>(pair.first);
-			Store[index] = pair.second;
-		}
-	}
-
-	const Value& operator[](Key index) const
-	{
-		return Store[static_cast<int>(index)];
-	}
-
-	const Value* data() const
-	{
-		return Store;
-	}
-
-	static bool contains(Key index)
-	{
-		return N >= 0 && N > static_cast<int>(index);
-	}
-
-	static size_t size()
-	{
-		return N;
-	}
-
-private:
-	Value Store[N]{};
-};
-
 struct TextArray
 {
 	TextArray(const std::initializer_list<std::pair<Msg, std::initializer_list<std::pair<lang, LPCSTR>>>>& iList)
@@ -376,6 +337,7 @@ private:
 
 struct languageInfo
 {
+	const lang Language;
 	const char* short_name;
 	const char* display_name;
 };
@@ -383,7 +345,8 @@ struct languageInfo
 class translations
 {
 public:
-	static const languageInfo* get_languages(size_t* languages_number);
+	static const languageInfo Languages[static_cast<int>(lang::Max)];
+
 	static const char* get_translation(Msg id);
 	static void set_current_language(const char* short_name);
 	static const languageInfo* get_current_language();
@@ -391,10 +354,5 @@ public:
 
 private:
 	static const TextArray Translations;
-	static const InitializedArray<
-		lang,
-		languageInfo,
-		static_cast<int>(lang::Max)
-	> languages;
 	static lang current_language;
 };

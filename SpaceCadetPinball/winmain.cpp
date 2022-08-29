@@ -469,16 +469,12 @@ void winmain::RenderUi()
 			}
 			if (ImGui::BeginMenu("Language"))
 			{
-				std::string current_language = translations::get_current_language()->short_name;
-				size_t language_number;
-				const languageInfo* languages = translations::get_languages(&language_number);
-
-				for(size_t i = 0; i < language_number; i++)
+				auto currentLanguage = translations::get_current_language();
+				for (auto &item : translations::Languages)
 				{
-					const languageInfo* item = &languages[i];
-					if (ImGui::MenuItem(item->display_name, nullptr, current_language == item->short_name))
+					if (ImGui::MenuItem(item.display_name, nullptr, currentLanguage->Language == item.Language))
 					{
-						translations::set_current_language(item->short_name);
+						translations::set_current_language(item.short_name);
 						winmain::Restart();
 					}
 				}
