@@ -1,8 +1,9 @@
 #pragma once
 
-enum class Msg
+enum class Msg : int
 {
-	STRING101,
+	Min = 0,
+	STRING101 = 0,
 	STRING102,
 	STRING103,
 	STRING104,
@@ -254,12 +255,13 @@ enum class Msg
 	Menu1_UseMaxResolution_800x600,
 	Menu1_UseMaxResolution_1024x768,
 
-	NUMBER,
+	Max,
 };
 
-enum class lang
+enum class lang : int
 {
-	Arabic,
+	Min = 0,
+	Arabic = 0,
 	Czech,
 	Danish,
 	German,
@@ -283,33 +285,22 @@ enum class lang
 	Turkish,
 	SimplifiedChinese,
 	TraditionalChinese,
-	NUMBER
+	Max
 };
 
 
 template <typename Key, typename Value, int N>
 struct InitializedArray
 {
-	static_assert(std::is_enum<Key>::value, "Key is not an enum");
-	InitializedArray() : Store{}
-	{
-	}
+	static_assert(std::is_enum_v<Key>, "Key is not an enum");
 
 	InitializedArray(const std::initializer_list<std::pair<Key, Value>>& iList)
 	{
-		Store.reserve(iList.size());
 		for (const auto& pair : iList)
 		{
-			size_t index = static_cast<int>(pair.first);
-			if (Store.size() <= index)
-				Store.resize(index + 1);
+			auto index = static_cast<int>(pair.first);
 			Store[index] = pair.second;
 		}
-	}
-
-	bool contains(Key index) const
-	{
-		return Store.size() > static_cast<int>(index);
 	}
 
 	const Value& operator[](Key index) const
@@ -319,16 +310,68 @@ struct InitializedArray
 
 	const Value* data() const
 	{
-		return Store.data();
+		return Store;
 	}
 
-	size_t size() const
+	static bool contains(Key index)
 	{
-		return Store.size();
+		return N >= 0 && N > static_cast<int>(index);
+	}
+
+	static size_t size()
+	{
+		return N;
 	}
 
 private:
-	std::vector<Value> Store;
+	Value Store[N]{};
+};
+
+struct TextArray
+{
+	TextArray(const std::initializer_list<std::pair<Msg, std::initializer_list<std::pair<lang, LPCSTR>>>>& iList)
+	{
+		for (const auto& msgPair : iList)
+		{
+			for (const auto& languagePair : msgPair.second)
+			{
+				assertm(!contains(msgPair.first, languagePair.first), "Key redefinition");
+				Set(msgPair.first, languagePair.first, languagePair.second);
+			}
+		}
+	}
+
+	LPCSTR Get(Msg msgId, lang langId) const
+	{
+		assertm(TextArray::contains(msgId), "Message Id out of bounds");
+		assertm(TextArray::contains(langId), "Language Id out of bounds");
+		return Store[static_cast<int>(msgId)][static_cast<int>(langId)];
+	}
+
+	bool contains(Msg msgId, lang langId) const
+	{
+		return contains(msgId) && Get(msgId, langId) != nullptr;
+	}
+
+	static bool contains(Msg msgId)
+	{
+		return msgId >= Msg::Min && msgId < Msg::Max;
+	}
+
+	static bool contains(lang langId)
+	{
+		return langId >= lang::Min && langId < lang::Max;
+	}
+
+private:
+	LPCSTR Store[static_cast<int>(Msg::Max )][static_cast<int>(lang::Max)]{ nullptr };
+
+	void Set(Msg msgId, lang langId, LPCSTR value)
+	{
+		assertm(TextArray::contains(msgId), "Message Id out of bounds");
+		assertm(TextArray::contains(langId), "Language Id out of bounds");
+		Store[static_cast<int>(msgId)][static_cast<int>(langId)] = value;
+	}
 };
 
 struct languageInfo
@@ -347,19 +390,11 @@ public:
 	static void get_glyph_range(ImVector<ImWchar>* ranges);
 
 private:
-	static const InitializedArray<
-		Msg,
-		InitializedArray<
-			lang,
-			const char*,
-			static_cast<int>(lang::NUMBER)
-		>,
-		static_cast<int>(Msg::NUMBER)
-	> translated_strings;
+	static const TextArray Translations;
 	static const InitializedArray<
 		lang,
 		languageInfo,
-		(int)lang::NUMBER
+		static_cast<int>(lang::Max)
 	> languages;
 	static lang current_language;
 };

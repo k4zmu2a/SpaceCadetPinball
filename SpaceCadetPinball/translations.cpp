@@ -14,7 +14,7 @@ const languageInfo* translations::get_languages(size_t* languages_number) {
 
 void translations::set_current_language(const char* short_name) 
 {
-	for(int i = 0; i < (int)lang::NUMBER; i++) {
+	for(int i = 0; i < (int)lang::Max; i++) {
 		if(!strcmp(short_name, languages[(lang)i].short_name)) {
 			current_language = (lang) i;
 			return;
@@ -25,7 +25,7 @@ void translations::set_current_language(const char* short_name)
 
 const languageInfo* translations::get_current_language()
 {
-	if(!languages.contains(current_language))
+	if(!TextArray::contains(current_language))
 	{
 		current_language = lang::English;
 	}
@@ -34,36 +34,26 @@ const languageInfo* translations::get_current_language()
 
 const char* translations::get_translation(Msg id)
 {
-	if(!translated_strings.contains(id))
-	{
-		return "";
-	}
+	if(!TextArray::contains(id))
+		return "!Missing MsgId!";
+	
+	// Current language assumed in bounds at this point
+	auto text = Translations.Get(id, current_language);
 
-	const auto& translation = translated_strings[id];
+	// Fallback to english if available
+	if (text == nullptr)
+		text = Translations.Get(id, lang::English);
+	if (text == nullptr)
+		text = "!Missing English text!";
 
-	if(!translation.contains(current_language))
-	{
-		// fallback to english if available
-		if(translation.contains(lang::English))
-		{
-			return translation[lang::English];
-		}
-		else
-		{
-			return "";
-		}
-	}
-	else
-	{
-		return translation[current_language];
-	}
+	return text;
 }
 
 void translations::get_glyph_range(ImVector<ImWchar>* ranges)
 {
 	ImFontGlyphRangesBuilder builder;
 
-	for(int i = 0; i < (int)Msg::NUMBER; i++) {
+	for(int i = 0; i < (int)Msg::Max; i++) {
 		const char* translation = get_translation((Msg)i);
 		if(translation)
 		{
@@ -78,7 +68,7 @@ void translations::get_glyph_range(ImVector<ImWchar>* ranges)
 const InitializedArray<
 		lang,
 		languageInfo,
-		(int)lang::NUMBER
+		(int)lang::Max
 	>  translations::languages =
 {
 	{ lang::Arabic, {"ar", "Arabic" } },
@@ -107,15 +97,7 @@ const InitializedArray<
 	{ lang::TraditionalChinese, {"zh_TW", "Traditional Chinese" } },
 };
 
-const InitializedArray<
-	Msg,
-	InitializedArray<
-		lang,
-		const char*,
-		(int)lang::NUMBER
-	>,
-	(int)Msg::NUMBER
->  translations::translated_strings =
+const TextArray translations::Translations =
 {
 	{
 		Msg::STRING101,
