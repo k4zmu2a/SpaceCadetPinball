@@ -63,8 +63,6 @@ set(SOURCE_FILES
         SpaceCadetPinball/pb.cpp
         SpaceCadetPinball/pb.h
         SpaceCadetPinball/pch.h
-        SpaceCadetPinball/pinball.cpp
-        SpaceCadetPinball/pinball.h
         SpaceCadetPinball/proj.cpp
         SpaceCadetPinball/proj.h
         SpaceCadetPinball/render.cpp

@@ -2,7 +2,7 @@
 #include "font_selection.h"
 
 #include "options.h"
-#include "pinball.h"
+#include "pb.h"
 #include "score.h"
 #include "winmain.h"
 #include "translations.h"
@@ -35,7 +35,7 @@ void font_selection::RenderDialog()
 		ImGui::SameLine();
 		ImGui::InputText("", DialogInputBuffer, IM_ARRAYSIZE(DialogInputBuffer));
 
-		if (ImGui::Button(pinball::get_rc_string(Msg::HIGHSCORES_Ok)))
+		if (ImGui::Button(pb::get_rc_string(Msg::HIGHSCORES_Ok)))
 		{
 			options::Options.FontFileName = DialogInputBuffer;
 			ImGui::CloseCurrentPopup();
@@ -43,7 +43,7 @@ void font_selection::RenderDialog()
 		}
 
 		ImGui::SameLine();
-		if (ImGui::Button(pinball::get_rc_string(Msg::HIGHSCORES_Cancel)))
+		if (ImGui::Button(pb::get_rc_string(Msg::HIGHSCORES_Cancel)))
 			ImGui::CloseCurrentPopup();
 
 		ImGui::EndPopup();

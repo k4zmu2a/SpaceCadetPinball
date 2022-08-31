@@ -3,7 +3,6 @@
 #include "GroupData.h"
 #include "TPinballComponent.h"
 #include "pb.h"
-#include "pinball.h"
 #include "Sound.h"
 #include "zdrv.h"
 
@@ -138,7 +137,7 @@ int loader::get_sound_id(int groupIndex)
 
 		int soundGroupId = sound_list[soundIndex].GroupIndex;
 		sound_list[soundIndex].Duration = 0.0;
-		if (soundGroupId > 0 && !pinball::quickFlag)
+		if (soundGroupId > 0 && !pb::quickFlag)
 		{
 			auto value = reinterpret_cast<int16_t*>(loader_table->field(soundGroupId,
 			                                                            FieldTypes::ShortValue));
@@ -157,7 +156,7 @@ int loader::get_sound_id(int groupIndex)
 				}
 
 				float duration = -1;
-				auto filePath = pinball::make_path_name(fileName);
+				auto filePath = pb::make_path_name(fileName);
 				auto file = fopenu(filePath.c_str(), "rb");
 				if (file)
 				{

@@ -3,7 +3,6 @@
 
 
 #include "pb.h"
-#include "pinball.h"
 
 
 std::vector<Mix_Music*> midi::LoadedTracks{};
@@ -118,7 +117,7 @@ Mix_Music* midi::load_track(std::string fileName)
 
 	// FT has music in two formats, depending on game version: MIDI in 16bit, MIDS in 32bit.
 	// 3DPB music is MIDI only.
-	auto basePath = pinball::make_path_name(fileName);
+	auto basePath = pb::make_path_name(fileName);
 	for (int i = 0; i <= 1 && !audio; i++)
 	{
 		if (i == 0)

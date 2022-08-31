@@ -3,7 +3,7 @@
 
 #include "fullscrn.h"
 #include "midi.h"
-#include "pinball.h"
+#include "pb.h"
 #include "render.h"
 #include "Sound.h"
 #include "winmain.h"
@@ -345,16 +345,16 @@ void options::RenderControlDialog()
 		return;
 
 	ImGui::PushStyleVar(ImGuiStyleVar_WindowMinSize, ImVec2{550, 450});
-	if (ImGui::Begin(pinball::get_rc_string(Msg::KEYMAPPER_Caption), &ShowDialog))
+	if (ImGui::Begin(pb::get_rc_string(Msg::KEYMAPPER_Caption), &ShowDialog))
 	{
-		ImGui::TextUnformatted(pinball::get_rc_string(Msg::KEYMAPPER_Groupbox2));
+		ImGui::TextUnformatted(pb::get_rc_string(Msg::KEYMAPPER_Groupbox2));
 		ImGui::Separator();
 
-		ImGui::TextWrapped("%s", pinball::get_rc_string(Msg::KEYMAPPER_Help1));
-		ImGui::TextWrapped("%s", pinball::get_rc_string(Msg::KEYMAPPER_Help2));
+		ImGui::TextWrapped("%s", pb::get_rc_string(Msg::KEYMAPPER_Help1));
+		ImGui::TextWrapped("%s", pb::get_rc_string(Msg::KEYMAPPER_Help2));
 		ImGui::Spacing();
 
-		ImGui::TextUnformatted(pinball::get_rc_string(Msg::KEYMAPPER_Groupbox1));
+		ImGui::TextUnformatted(pb::get_rc_string(Msg::KEYMAPPER_Groupbox1));
 
 		ImGui::PushStyleVar(ImGuiStyleVar_CellPadding, ImVec2{5, 10});
 		if (ImGui::BeginTable("Controls", 4, ImGuiTableFlags_NoSavedSettings | ImGuiTableFlags_Borders))
@@ -370,7 +370,7 @@ void options::RenderControlDialog()
 			{
 				ImGui::TableNextColumn();
 				ImGui::PushStyleColor(ImGuiCol_Button, ImVec4{0.5, 0, 0, 1});
-				if (ImGui::Button(pinball::get_rc_string(row.NameStringId)))
+				if (ImGui::Button(pb::get_rc_string(row.NameStringId)))
 				{
 					for (auto i = 0u; i <= 2; i++)
 						row.Option[i] = {};
@@ -423,20 +423,20 @@ void options::RenderControlDialog()
 		ImGui::PopStyleVar();
 		ImGui::Spacing();
 
-		if (ImGui::Button(pinball::get_rc_string(Msg::KEYMAPPER_Ok)))
+		if (ImGui::Button(pb::get_rc_string(Msg::KEYMAPPER_Ok)))
 		{
 			Options.Key = RebindControls;
 			ShowDialog = false;
 		}
 
 		ImGui::SameLine();
-		if (ImGui::Button(pinball::get_rc_string(Msg::KEYMAPPER_Cancel)))
+		if (ImGui::Button(pb::get_rc_string(Msg::KEYMAPPER_Cancel)))
 		{
 			ShowDialog = false;
 		}
 
 		ImGui::SameLine();
-		if (ImGui::Button(pinball::get_rc_string(Msg::KEYMAPPER_Default)))
+		if (ImGui::Button(pb::get_rc_string(Msg::KEYMAPPER_Default)))
 		{
 			RebindControls = Options.KeyDft;
 			ControlWaitingForInput = nullptr;
