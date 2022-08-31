@@ -145,6 +145,43 @@ void TTextBox::Display(const char* text, float time)
 	}
 }
 
+void TTextBox::DrawImGui()
+{
+	// Do nothing when using a font (the text will be rendered to VScreen in TTextBox::Draw)
+	if (Font || !Message1)
+		return;
+
+	char windowName[64];
+	SDL_Rect rect;
+	ImGuiWindowFlags window_flags =
+		ImGuiWindowFlags_NoBackground |
+		ImGuiWindowFlags_NoDecoration |
+		ImGuiWindowFlags_NoSavedSettings |
+		ImGuiWindowFlags_NoFocusOnAppearing |
+		ImGuiWindowFlags_NoInputs;
+
+	rect.x = OffsetX;
+	rect.y = OffsetY;
+	rect.w = Width;
+	rect.h = Height;
+
+	rect = fullscrn::GetScreenRectFromPinballRect(rect);
+
+	ImGui::SetNextWindowPos(ImVec2(rect.x, rect.y));
+	ImGui::SetNextWindowSize(ImVec2(rect.w, rect.h));
+
+	// Use the pointer to generate a window unique name per text box
+	snprintf(windowName, sizeof(windowName), "TTextBox_%p", this);
+	if (ImGui::Begin(windowName, nullptr, window_flags))
+	{
+		ImGui::SetWindowFontScale(fullscrn::GetScreenToPinballRatio());
+
+		// ToDo: centered text in FT
+		ImGui::TextWrapped("%s", Message1->Text);
+	}
+	ImGui::End();
+}
+
 void TTextBox::Draw()
 {
 	auto bmp = BgBmp;
@@ -189,13 +226,7 @@ void TTextBox::Draw()
 	{
 		if (!Font)
 		{
-			gdrv::grtext_draw_ttext_in_box(
-				Message1->Text,
-				render::vscreen->XPosition + OffsetX,
-				render::vscreen->YPosition + OffsetY,
-				Width,
-				Height,
-				255);
+			// Immediate mode drawing using system font is handled by TTextBox::DrawImGui
 			return;
 		}
 

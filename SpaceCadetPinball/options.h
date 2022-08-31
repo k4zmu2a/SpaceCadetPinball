@@ -1,5 +1,7 @@
 #pragma once
 
+#include "translations.h"
+
 enum class Menu1:int
 {
 	New_Game = 101,
@@ -90,11 +92,12 @@ struct optionsStruct
 	bool DebugOverlayCollisionMask;
 	bool DebugOverlaySprites;
 	bool DebugOverlaySounds;
+	std::string FontFileName;
 };
 
 struct ControlRef
 {
-	const char* Name;
+	Msg NameStringId;
 	GameInput (&Option)[3];
 };
 

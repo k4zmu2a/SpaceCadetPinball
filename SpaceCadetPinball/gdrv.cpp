@@ -6,6 +6,9 @@
 #include "pb.h"
 #include "score.h"
 #include "winmain.h"
+#include "TTextBox.h"
+#include "fullscrn.h"
+#include "pinball.h"
 
 ColorRgba gdrv::current_palette[256]{};
 
@@ -269,8 +272,15 @@ void gdrv::ScrollBitmapHorizontal(gdrv_bitmap8* bmp, int xStart)
 }
 
 
-void gdrv::grtext_draw_ttext_in_box(LPCSTR text, int xOff, int yOff, int width, int height, int a6)
+void gdrv::grtext_draw_ttext_in_box()
 {
+	for (const auto textBox : { pinball::InfoTextBox, pinball::MissTextBox })
+	{
+		if (textBox)
+		{
+			textBox->DrawImGui();
+		}
+	}
 }
 
 void gdrv::ApplyPalette(gdrv_bitmap8& bmp)

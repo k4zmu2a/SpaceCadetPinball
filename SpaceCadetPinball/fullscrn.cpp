@@ -140,3 +140,21 @@ void fullscrn::window_size_changed()
 		width - offset2X, height - offset2Y
 	};
 }
+
+SDL_Rect fullscrn::GetScreenRectFromPinballRect(SDL_Rect rect)
+{
+	SDL_Rect converted_rect;
+
+	converted_rect.x = rect.x * render::DestinationRect.w / render::vscreen->Width + render::DestinationRect.x;
+	converted_rect.y = rect.y * render::DestinationRect.h / render::vscreen->Height + render::DestinationRect.y;
+
+	converted_rect.w = rect.w * render::DestinationRect.w / render::vscreen->Width;
+	converted_rect.h = rect.h * render::DestinationRect.h / render::vscreen->Height;
+
+	return converted_rect;
+}
+
+float fullscrn::GetScreenToPinballRatio()
+{
+	return (float) render::DestinationRect.w / render::vscreen->Width;
+}

@@ -38,6 +38,8 @@ set(SOURCE_FILES
         SpaceCadetPinball/control.h
         SpaceCadetPinball/EmbeddedData.cpp
         SpaceCadetPinball/EmbeddedData.h
+        SpaceCadetPinball/font_selection.cpp
+        SpaceCadetPinball/font_selection.h
         SpaceCadetPinball/fullscrn.cpp
         SpaceCadetPinball/fullscrn.h
         SpaceCadetPinball/gdrv.cpp
@@ -131,6 +133,8 @@ set(SOURCE_FILES
         SpaceCadetPinball/TPopupTarget.h
         SpaceCadetPinball/TRamp.cpp
         SpaceCadetPinball/TRamp.h
+        SpaceCadetPinball/translations.cpp
+        SpaceCadetPinball/translations.h
         SpaceCadetPinball/TRollover.cpp
         SpaceCadetPinball/TRollover.h
         SpaceCadetPinball/TSink.cpp
@@ -177,7 +181,7 @@ set(SOURCE_FILES
 # On Windows, include resource file with the icon
 if(WIN32)
     set_source_files_properties(SpaceCadetPinball/SpaceCadetPinball.rc LANGUAGE RC)
-    list(APPEND SOURCE_FILES SpaceCadetPinball/SpaceCadetPinball.rc)   
+    list(APPEND SOURCE_FILES SpaceCadetPinball/SpaceCadetPinball.rc)
 endif(WIN32)
 
 add_executable(SpaceCadetPinball ${SOURCE_FILES})

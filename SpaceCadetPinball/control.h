@@ -1,5 +1,7 @@
 #pragma once
 
+#include "translations.h"
+
 class TLight;
 class TSound;
 class TPinballTable;
@@ -66,7 +68,8 @@ public:
 	static component_tag_base* simple_components[145];
 	static int waiting_deployment_flag;
 	static bool table_unlimited_balls;
-	static int RankRcArray[9], MissionRcArray[17], mission_select_scores[17];
+	static Msg RankRcArray[9], MissionRcArray[17];
+	static int mission_select_scores[17];
 	static component_tag_base *wormhole_tag_array1[3], *wormhole_tag_array2[3], *wormhole_tag_array3[3];
 
 	static void make_links(TPinballTable* table);
