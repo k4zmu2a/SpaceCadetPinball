@@ -1,8 +1,7 @@
 #pragma once
 
-#include "translations.h"
-
 class TTextBox;
+enum class Msg : int;
 
 class pinball
 {

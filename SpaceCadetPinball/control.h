@@ -1,11 +1,10 @@
 #pragma once
 
-#include "translations.h"
-
 class TLight;
 class TSound;
 class TPinballTable;
 class TPinballComponent;
+enum class Msg : int;
 
 struct component_tag_base
 {

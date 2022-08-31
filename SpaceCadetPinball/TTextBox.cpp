@@ -177,7 +177,9 @@ void TTextBox::DrawImGui()
 		ImGui::SetWindowFontScale(fullscrn::GetScreenToPinballRatio());
 
 		// ToDo: centered text in FT
+		ImGui::PushStyleColor(ImGuiCol_Text, pb::TextBoxColor);
 		ImGui::TextWrapped("%s", Message1->Text);
+		ImGui::PopStyleColor();
 	}
 	ImGui::End();
 }

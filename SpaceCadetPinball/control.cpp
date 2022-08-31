@@ -29,6 +29,7 @@
 #include "TPlunger.h"
 #include "TWall.h"
 #include "TTextBox.h"
+#include "translations.h"
 
 int control_bump_scores1[] = {500, 1000, 1500, 2000};
 int control_roll_scores1[] = {2000};

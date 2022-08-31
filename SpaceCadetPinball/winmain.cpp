@@ -537,7 +537,7 @@ void winmain::RenderUi()
 				{
 					font_selection::ShowDialog();
 				}
-				if (ImGui::MenuItem("Uniform Scaling", nullptr, Options.UniformScaling))
+				if (ImGui::MenuItem(pinball::get_rc_string(Msg::Menu1_WindowUniformScale), nullptr, Options.UniformScaling))
 				{
 					options::toggle(Menu1::WindowUniformScale);
 				}

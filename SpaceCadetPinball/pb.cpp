@@ -27,6 +27,7 @@
 #include "TFlipper.h"
 #include "TPinballTable.h"
 #include "TTextBox.h"
+#include "translations.h"
 
 TPinballTable* pb::MainTable = nullptr;
 DatFile* pb::record_table = nullptr;
@@ -35,6 +36,7 @@ GameModes pb::game_mode = GameModes::GameOver;
 float pb::time_now = 0, pb::time_next = 0, pb::ball_speed_limit, pb::time_ticks_remainder = 0;
 bool pb::FullTiltMode = false, pb::FullTiltDemoMode = false, pb::cheat_mode = false, pb::demo_mode = false;
 std::string pb::DatFileName;
+ImU32 pb::TextBoxColor;
 
 
 int pb::init()
@@ -47,7 +49,7 @@ int pb::init()
 	record_table = partman::load_records(dataFilePath.c_str(), FullTiltMode);
 
 	auto useBmpFont = 0;
-	pinball::get_rc_int(Msg::STRING258, &useBmpFont);
+	pinball::get_rc_int(Msg::TextBoxUseBitmapFont, &useBmpFont);
 	if (useBmpFont)
 		score::load_msg_font("pbmsg_ft");
 
@@ -100,6 +102,13 @@ int pb::init()
 
 	high_score::read();
 	ball_speed_limit = MainTable->BallList.at(0)->Offset * 200.0f;
+
+	int red = 255, green = 255, blue = 255;
+	auto fontColor = pinball::get_rc_string(Msg::TextBoxColor);
+	if (fontColor)
+		sscanf(fontColor, "%d %d %d", &red, &green, &blue);
+	TextBoxColor = IM_COL32(red, green, blue, 255);
+
 	return 0;
 }
 
@@ -124,7 +133,7 @@ void pb::SelectDatFile(const std::vector<const char*>& dataSearchPaths)
 	std::string datFileNames[3]
 	{
 		"CADET.DAT",
-		options::get_string("Pinball Data", pinball::get_rc_string(Msg::STRING268)),
+		"PINBALL.DAT",
 		"DEMO.DAT",
 	};
 

@@ -47,6 +47,7 @@ public:
 	static TPinballTable* MainTable;
 	static bool FullTiltMode, FullTiltDemoMode;
 	static std::string DatFileName;
+	static ImU32 TextBoxColor;
 
 	static int init();
 	static int uninit();

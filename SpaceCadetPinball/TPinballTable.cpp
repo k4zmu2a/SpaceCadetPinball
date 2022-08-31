@@ -38,6 +38,7 @@
 #include "TPlunger.h"
 #include "TFlipper.h"
 #include "TDrain.h"
+#include "translations.h"
 
 int TPinballTable::score_multipliers[5] = {1, 2, 3, 5, 10};
 
@@ -214,6 +215,7 @@ TPinballTable::~TPinballTable()
 		delete ComponentList[0];
 	}
 	control::ClearLinks();
+	pinball::InfoTextBox = pinball::MissTextBox = nullptr;
 }
 
 TPinballComponent* TPinballTable::find_component(LPCSTR componentName)

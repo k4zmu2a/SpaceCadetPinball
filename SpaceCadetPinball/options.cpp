@@ -7,6 +7,7 @@
 #include "render.h"
 #include "Sound.h"
 #include "winmain.h"
+#include "translations.h"
 
 constexpr int options::MaxUps, options::MaxFps, options::MinUps, options::MinFps, options::DefUps, options::DefFps;
 constexpr int options::MaxSoundChannels, options::MinSoundChannels, options::DefSoundChannels;

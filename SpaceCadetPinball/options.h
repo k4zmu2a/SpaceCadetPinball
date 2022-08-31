@@ -1,6 +1,6 @@
 #pragma once
 
-#include "translations.h"
+enum class Msg : int;
 
 enum class Menu1:int
 {

@@ -4,6 +4,7 @@
 #include "options.h"
 #include "pinball.h"
 #include "score.h"
+#include "translations.h"
 
 bool high_score::dlg_enter_name;
 bool high_score::ShowDialog = false;

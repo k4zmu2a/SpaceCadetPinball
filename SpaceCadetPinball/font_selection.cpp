@@ -5,6 +5,7 @@
 #include "pinball.h"
 #include "score.h"
 #include "winmain.h"
+#include "translations.h"
 
 static const char* popupName = "Font Selection";
 bool font_selection::ShowDialogFlag = false;
