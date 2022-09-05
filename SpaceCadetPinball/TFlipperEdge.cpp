@@ -470,7 +470,7 @@ int TFlipperEdge::SetMotion(int code, float value)
 		AngleDst = 0.0f;
 		AngleAdvanceTime = RetractTime;
 		break;
-	case 1024:
+	case ~MessageCode::Reset:
 		AngleSrc = 0.0f;
 		AngleDst = 0.0f;
 		break;

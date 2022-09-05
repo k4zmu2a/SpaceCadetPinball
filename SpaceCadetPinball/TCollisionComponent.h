@@ -24,3 +24,18 @@ public:
 	virtual int FieldEffect(TBall* ball, vector2* vecDst);
 	bool DefaultCollision(TBall* ball, vector2* nextPosition, vector2* direction);
 };
+
+
+class TCollisionComponent2 : public TCollisionComponent
+{
+public:
+	TCollisionComponent2(TPinballTable* table, int group_index, bool create_wall)
+		: TCollisionComponent(table, group_index, create_wall)
+	{
+	}
+
+	DEPRECATED int Message(int code, float value) override
+	{
+		return Message2(static_cast<MessageCode>(code), value);
+	}
+};

@@ -33,10 +33,10 @@ int TLightGroup::Message(int code, float value)
 	auto const count = static_cast<int>(List.size());
 	switch (code)
 	{
-	case 1011:
-	case 1022:
+	case ~MessageCode::SetTiltLock:
+	case ~MessageCode::GameOver:
 		break;
-	case 1020:
+	case ~MessageCode::PlayerChanged:
 		{
 			auto playerPtr = &PlayerData[PinballTable->CurrentPlayer];
 			playerPtr->MessageField = MessageField;
@@ -53,7 +53,7 @@ int TLightGroup::Message(int code, float value)
 				TimerExpired(0, this);
 			break;
 		}
-	case 1024:
+	case ~MessageCode::Reset:
 		Reset();
 		for (auto index = 0; index < PinballTable->PlayerCount; index++)
 		{

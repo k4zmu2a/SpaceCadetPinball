@@ -10,7 +10,7 @@
 #include "timer.h"
 #include "TPinballTable.h"
 
-TFlipper::TFlipper(TPinballTable* table, int groupIndex) : TCollisionComponent(table, groupIndex, false)
+TFlipper::TFlipper(TPinballTable* table, int groupIndex) : TCollisionComponent2(table, groupIndex, false)
 {
 	visualStruct visual{};
 
@@ -58,38 +58,45 @@ TFlipper::~TFlipper()
 	}
 }
 
-int TFlipper::Message(int code, float value)
+int TFlipper::Message2(MessageCode code, float value)
 {
-	if (code == 1 || code == 2 || (code > 1008 && code <= 1011) || code == 1022)
+	switch (code)
 	{
-		if (code == 1)
+	case MessageCode::TFlipperExtend:
+	case MessageCode::TFlipperRetract:
+	case MessageCode::Resume:
+	case MessageCode::LooseFocus:
+	case MessageCode::SetTiltLock:
+	case MessageCode::GameOver:
+		if (code == MessageCode::TFlipperExtend)
 		{
 			control::handler(1, this);
 			loader::play_sound(HardHitSoundId, this, "TFlipper1");
 		}
-		else if (code == 2)
+		else if (code == MessageCode::TFlipperRetract)
 		{
 			loader::play_sound(SoftHitSoundId, this, "TFlipper2");
 		}
 		else
 		{
 			// Retract for all non-input messages
-			code = 2;
+			code = MessageCode::TFlipperRetract;
 		}
 
-		MessageField = FlipperEdge->SetMotion(code, value);
-		return 0;
-	}
-
-	if (code == 1020 || code == 1024)
-	{
+		MessageField = FlipperEdge->SetMotion(~code, value);
+		break;
+	case MessageCode::PlayerChanged:
+	case MessageCode::Reset:
 		if (MessageField)
 		{
 			MessageField = 0;
 			FlipperEdge->SetMotion(1024, value);
 			UpdateSprite(0);
 		}
+		break;
+	default: break;
 	}
+
 	return 0;
 }
 

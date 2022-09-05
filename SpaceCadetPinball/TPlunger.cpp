@@ -11,7 +11,7 @@
 #include "timer.h"
 #include "TPinballTable.h"
 
-TPlunger::TPlunger(TPinballTable* table, int groupIndex) : TCollisionComponent(table, groupIndex, true)
+TPlunger::TPlunger(TPinballTable* table, int groupIndex) : TCollisionComponent2(table, groupIndex, true)
 {
 	visualStruct visual{};
 
@@ -47,7 +47,7 @@ void TPlunger::Collision(TBall* ball, vector2* nextPosition, vector2* direction,
 		maths::basic_collision(ball, nextPosition, direction, Elasticity, Smoothness, 0, boost);
 		if (SomeCounter)
 			SomeCounter--;
-		Message(1005, 0.0);
+		Message2(MessageCode::PlungerInputReleased, 0.0);
 	}
 	else 
 	{
@@ -56,11 +56,11 @@ void TPlunger::Collision(TBall* ball, vector2* nextPosition, vector2* direction,
 	}
 }
 
-int TPlunger::Message(int code, float value)
+int TPlunger::Message2(MessageCode code, float value)
 {
 	switch (code)
 	{
-	case 1004:
+	case MessageCode::PlungerInputPressed:
 		if (!PullbackStartedFlag && PinballTable->MultiballCount > 0 && !PinballTable->TiltLockFlag)
 		{
 			PullbackStartedFlag = true;
@@ -70,7 +70,7 @@ int TPlunger::Message(int code, float value)
 			PullbackTimer(0, this);
 		}
 		break;
-	case 1015:
+	case MessageCode::PlungerFeedBall:
 		{
 			RectF rect{};
 			rect.XMin = PinballTable->CollisionCompOffset * -1.2f + PinballTable->PlungerPositionX;
@@ -91,23 +91,23 @@ int TPlunger::Message(int code, float value)
 			}
 			break;
 		}
-	case 1016:
+	case MessageCode::PlungerStartFeedTimer:
 		timer::set(0.95999998f, this, BallFeedTimer);
 		loader::play_sound(SoundIndexP1, this, "TPlunger2");
 		break;
-	case 1017:
+	case MessageCode::PlungerLaunchBall:
 		PullbackStartedFlag = true;
 		Boost = MaxPullback;
-		Message(1005, 0.0f);
+		Message2(MessageCode::PlungerInputReleased, 0.0f);
 		break;
-	case 1018:
+	case MessageCode::PlungerRelaunchBall:
 		SomeCounter++;
 		timer::set(value, this, BallFeedTimer);
 		loader::play_sound(SoundIndexP1, this, "TPlunger2_1");
 		PullbackStartedFlag = true;
 		PullbackTimer(0, this);
 		break;
-	case 1020:
+	case MessageCode::PlayerChanged:
 		PullbackStartedFlag = false;
 		Boost = 0.0f;
 		Threshold = 1000000000.0f;
@@ -116,13 +116,13 @@ int TPlunger::Message(int code, float value)
 		timer::kill(PullbackTimer);
 		timer::kill(ReleasedTimer);
 		break;
-	case 1011:
+	case MessageCode::SetTiltLock:
 		SomeCounter = 0;
 		timer::kill(BallFeedTimer);
 		break;
-	case 1005:
-	case 1009:
-	case 1010:
+	case MessageCode::PlungerInputReleased:
+	case MessageCode::Resume:
+	case MessageCode::LooseFocus:
 		if (PullbackStartedFlag && !SomeCounter)
 		{
 			PullbackStartedFlag = false;
@@ -143,7 +143,7 @@ int TPlunger::Message(int code, float value)
 			timer::set(PullbackDelay, this, ReleasedTimer);
 		}
 		break;
-	case 1024:
+	case MessageCode::Reset:
 	{
 		PullbackStartedFlag = false;
 		Boost = 0.0f;
@@ -168,14 +168,14 @@ int TPlunger::Message(int code, float value)
 		break;
 	}
 
-	control::handler(code, this);
+	control::handler(~code, this);
 	return 0;
 }
 
 void TPlunger::BallFeedTimer(int timerId, void* caller)
 {
 	auto plunger = static_cast<TPlunger*>(caller);
-	plunger->Message(1015, 0.0);
+	plunger->Message2(MessageCode::PlungerFeedBall, 0.0);
 }
 
 void TPlunger::PullbackTimer(int timerId, void* caller)

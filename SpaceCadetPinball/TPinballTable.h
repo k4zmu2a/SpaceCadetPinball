@@ -23,7 +23,7 @@ struct score_struct_super
 };
 
 
-class TPinballTable : public TPinballComponent
+class TPinballTable : public TPinballComponent2
 {
 public:
 	TPinballTable();
@@ -34,7 +34,7 @@ public:
 	void ChangeBallCount(int count);
 	void tilt(float time);
 	void port_draw() override;
-	int Message(int code, float value) override;
+	int Message2(MessageCode code, float value) override;
 	TBall* AddBall(float x, float y);
 	int BallCountInRect(const RectF& rect);
 

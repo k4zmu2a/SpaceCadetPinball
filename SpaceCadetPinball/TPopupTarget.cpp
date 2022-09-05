@@ -25,12 +25,12 @@ int TPopupTarget::Message(int code, float value)
 	case 50:
 		this->Timer = timer::set(this->TimerTime, this, TimerExpired);
 		break;
-	case 1020:
+	case ~MessageCode::PlayerChanged:
 		this->PlayerMessagefieldBackup[this->PinballTable->CurrentPlayer] = this->MessageField;
 		this->MessageField = this->PlayerMessagefieldBackup[static_cast<int>(floor(value))];
 		TPopupTarget::Message(50 - (MessageField != 0), 0.0);
 		break;
-	case 1024:
+	case ~MessageCode::Reset:
 		{
 			this->MessageField = 0;
 			int* playerPtr = this->PlayerMessagefieldBackup;

@@ -62,7 +62,7 @@ int TBumper::Message(int code, float value)
 			TBumper::Message(11, static_cast<float>(nextBmp));
 			break;
 		}
-	case 1020:
+	case ~MessageCode::PlayerChanged:
 		{
 			auto playerPtr = &PlayerData[PinballTable->CurrentPlayer];
 			playerPtr->BmpIndex = BmpIndex;
@@ -74,7 +74,7 @@ int TBumper::Message(int code, float value)
 			TBumper::Message(11, static_cast<float>(BmpIndex));
 			break;
 		}
-	case 1024:
+	case ~MessageCode::Reset:
 		{
 			if (Timer)
 			{

@@ -1023,7 +1023,7 @@ void control::table_bump_ball_sink_lock()
 			TableG->BallLockedCounter = TableG->BallLockedCounter + 1;
 			soundwave44->Play(nullptr, "table_bump_ball_sink_lock");
 			info_text_box->Display(pb::get_rc_string(Msg::STRING102), 2.0);
-			TableG->Plunger->Message(1018, 2.0f);
+			TableG->Plunger->Message2(MessageCode::PlungerRelaunchBall, 2.0f);
 		}
 	}
 }
@@ -2087,7 +2087,7 @@ void control::GravityWellKickoutControl(int code, TPinballComponent* caller)
 			kickout1->ActiveFlag = 1;
 			break;
 		}
-	case 1024:
+	case ~MessageCode::Reset:
 		kickout1->ActiveFlag = 0;
 		break;
 	}
@@ -2225,7 +2225,7 @@ void control::MissionControl(int code, TPinballComponent* caller)
 		if (mission_text_box == caller)
 			code = 67;
 		break;
-	case 1009:
+	case ~MessageCode::Resume:
 		code = 67;
 		break;
 	default:
@@ -2600,7 +2600,7 @@ void control::BallDrainControl(int code, TPinballComponent* caller)
 	{
 		if (lite199->MessageField)
 		{
-			TableG->Message(1022, 0.0);
+			TableG->Message2(MessageCode::GameOver, 0.0);
 			if (pb::chk_highscore())
 			{
 				soundwave3->Play(nullptr, "BallDrainControl1");
@@ -2610,14 +2610,14 @@ void control::BallDrainControl(int code, TPinballComponent* caller)
 		}
 		else
 		{
-			plunger->Message(1016, 0.0);
+			plunger->Message2(MessageCode::PlungerStartFeedTimer, 0.0);
 		}
 	}
 	else if (code == 63)
 	{
 		if (table_unlimited_balls)
 		{
-			drain->Message(1024, 0.0);
+			drain->Message2(MessageCode::Reset, 0.0);
 			sink3->Message(56, 0.0);
 		}
 		else
@@ -2694,7 +2694,7 @@ void control::BallDrainControl(int code, TPinballComponent* caller)
 					TableG->ChangeBallCount(TableG->BallCount - 1);
 					if (TableG->CurrentPlayer + 1 != TableG->PlayerCount || TableG->BallCount)
 					{
-						TableG->Message(1021, 0.0);
+						TableG->Message2(MessageCode::SwitchToNextPlayer, 0.0);
 						lite199->MessageField = 0;
 					}
 					else
@@ -2742,7 +2742,7 @@ void control::BallDrainControl(int code, TPinballComponent* caller)
 				lite196->Message(20, 0.0);
 				lite195->Message(20, 0.0);
 				fuel_bargraph->Message(20, 0.0);
-				fuel_bargraph->Message(1024, 0.0);
+				fuel_bargraph->Message2(MessageCode::Reset, 0.0);
 				GravityWellKickoutControl(1024, nullptr);
 				lite62->Message(20, 0.0);
 				lite4->MessageField = 0;
@@ -2752,26 +2752,26 @@ void control::BallDrainControl(int code, TPinballComponent* caller)
 				ramp_tgt_lights->MessageField = 0;
 				outer_circle->Message(34, 0.0);
 				middle_circle->Message(34, 0.0);
-				attack_bump->Message(1024, 0.0);
-				launch_bump->Message(1024, 0.0);
-				gate1->Message(1024, 0.0);
-				gate2->Message(1024, 0.0);
-				block1->Message(1024, 0.0);
-				target1->Message(1024, 0.0);
-				target2->Message(1024, 0.0);
-				target3->Message(1024, 0.0);
-				target6->Message(1024, 0.0);
-				target5->Message(1024, 0.0);
-				target4->Message(1024, 0.0);
-				target9->Message(1024, 0.0);
-				target8->Message(1024, 0.0);
-				target7->Message(1024, 0.0);
+				attack_bump->Message2(MessageCode::Reset, 0.0);
+				launch_bump->Message2(MessageCode::Reset, 0.0);
+				gate1->Message2(MessageCode::Reset, 0.0);
+				gate2->Message2(MessageCode::Reset, 0.0);
+				block1->Message2(MessageCode::Reset, 0.0);
+				target1->Message2(MessageCode::Reset, 0.0);
+				target2->Message2(MessageCode::Reset, 0.0);
+				target3->Message2(MessageCode::Reset, 0.0);
+				target6->Message2(MessageCode::Reset, 0.0);
+				target5->Message2(MessageCode::Reset, 0.0);
+				target4->Message2(MessageCode::Reset, 0.0);
+				target9->Message2(MessageCode::Reset, 0.0);
+				target8->Message2(MessageCode::Reset, 0.0);
+				target7->Message2(MessageCode::Reset, 0.0);
 				if (lite199->MessageField)
 					lite198->MessageField = 32;
 				else
 					lite198->MessageField = 0;
 				MissionControl(66, nullptr);
-				TableG->Message(1012, 0.0);
+				TableG->Message2(MessageCode::ResetTiltLock, 0.0);
 				if (light_on(&control_lite58_tag))
 					lite58->Message(20, 0.0);
 				else
@@ -3162,8 +3162,8 @@ void control::GameoverController(int code, TPinballComponent* caller)
 	{
 		goal_lights->Message(20, 0.0);
 		pb::mode_change(GameModes::GameOver);
-		flip1->Message(1022, 0.0);
-		flip2->Message(1022, 0.0);
+		flip1->Message2(MessageCode::GameOver, 0.0);
+		flip2->Message2(MessageCode::GameOver, 0.0);
 		mission_text_box->MessageField = 0;
 		midi::play_track(MidiTracks::Track1, false);
 		return;

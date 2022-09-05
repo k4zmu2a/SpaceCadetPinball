@@ -29,7 +29,7 @@ int TLight::Message(int code, float value)
 
 	switch (code)
 	{
-	case 1024:
+	case ~MessageCode::Reset:
 		Reset();
 		for (auto index = 0; index < PinballTable->PlayerCount; ++index)
 		{
@@ -40,7 +40,7 @@ int TLight::Message(int code, float value)
 			playerPtr->MessageField = MessageField;
 		}
 		break;
-	case 1020:
+	case ~MessageCode::PlayerChanged:
 		{
 			auto playerPtr = &PlayerData[PinballTable->CurrentPlayer];
 			playerPtr->FlasherOnFlag = FlasherOnFlag;

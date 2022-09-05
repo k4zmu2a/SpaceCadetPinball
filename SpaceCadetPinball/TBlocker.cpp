@@ -27,9 +27,9 @@ int TBlocker::Message(int code, float value)
 {
 	switch (code)
 	{
-	case 1011:
-	case 1020:
-	case 1024:
+	case ~MessageCode::SetTiltLock:
+	case ~MessageCode::PlayerChanged:
+	case ~MessageCode::Reset:
 	case 51:
 		if (Timer)
 		{

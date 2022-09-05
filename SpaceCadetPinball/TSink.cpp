@@ -36,12 +36,12 @@ int TSink::Message(int code, float value)
 			value = TimerTime;
 		timer::set(value, this, TimerExpired);
 		break;
-	case 1020:
+	case ~MessageCode::PlayerChanged:
 		timer::kill(TimerExpired);
 		PlayerMessagefieldBackup[PinballTable->CurrentPlayer] = MessageField;
 		MessageField = PlayerMessagefieldBackup[static_cast<int>(floor(value))];
 		break;
-	case 1024:
+	case ~MessageCode::Reset:
 		{
 			timer::kill(TimerExpired);
 			MessageField = 0;

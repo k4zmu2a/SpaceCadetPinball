@@ -72,11 +72,11 @@ int TKickout::Message(int code, float value)
 			Timer = timer::set(value, this, TimerExpired);
 		}
 		break;
-	case 1011:
+	case ~MessageCode::SetTiltLock:
 		if (NotSomeFlag)
 			ActiveFlag = 0;
 		break;
-	case 1024:
+	case ~MessageCode::Reset:
 		if (KickFlag1)
 		{
 			if (Timer)

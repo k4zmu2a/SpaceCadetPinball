@@ -27,7 +27,7 @@ int TSoloTarget::Message(int code, float value)
 	case 50:
 		ActiveFlag = code == 50;
 		break;
-	case 1024:
+	case ~MessageCode::Reset:
 		if (Timer)
 			timer::kill(Timer);
 		Timer = 0;

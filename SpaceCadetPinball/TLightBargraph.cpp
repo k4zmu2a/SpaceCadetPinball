@@ -65,10 +65,10 @@ int TLightBargraph::Message(int code, float value)
 			}
 			break;
 		}
-	case 1011:
+	case ~MessageCode::SetTiltLock:
 		Reset();
 		break;
-	case 1020:
+	case ~MessageCode::PlayerChanged:
 		if (TimerBargraph)
 		{
 			timer::kill(TimerBargraph);
@@ -82,7 +82,7 @@ int TLightBargraph::Message(int code, float value)
 			TLightBargraph::Message(45, static_cast<float>(TimeIndex));
 		}
 		break;
-	case 1024:
+	case ~MessageCode::Reset:
 		{
 			Reset();
 			int* playerPtr = PlayerTimerIndexBackup;
@@ -92,7 +92,7 @@ int TLightBargraph::Message(int code, float value)
 
 				++playerPtr;
 			}
-			TLightGroup::Message(1024, value);
+			TLightGroup::Message(~MessageCode::Reset, value);
 			break;
 		}
 	default:

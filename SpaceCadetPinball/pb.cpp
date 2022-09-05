@@ -170,7 +170,7 @@ void pb::SelectDatFile(const std::vector<const char*>& dataSearchPaths)
 void pb::reset_table()
 {
 	if (MainTable)
-		MainTable->Message(1024, 0.0);
+		MainTable->Message2(MessageCode::Reset, 0.0);
 }
 
 
@@ -226,7 +226,7 @@ void pb::toggle_demo()
 	if (demo_mode)
 	{
 		demo_mode = false;
-		MainTable->Message(1024, 0.0);
+		MainTable->Message2(MessageCode::Reset, 0.0);
 		mode_change(GameModes::GameOver);
 		MissTextBox->Clear();
 		InfoTextBox->Display(get_rc_string(Msg::STRING125), -1.0);
@@ -243,7 +243,7 @@ void pb::replay_level(bool demoMode)
 	mode_change(GameModes::InGame);
 	if (options::Options.Music)
 		midi::music_play();
-	MainTable->Message(1014, static_cast<float>(options::Options.Players));
+	MainTable->Message2(MessageCode::NewGame, static_cast<float>(options::Options.Players));
 }
 
 void pb::ballset(float dx, float dy)
@@ -374,7 +374,7 @@ void pb::pause_continue()
 	if (winmain::single_step)
 	{
 		if (MainTable)
-			MainTable->Message(1008, time_now);
+			MainTable->Message2(MessageCode::Pause, time_now);
 		InfoTextBox->Display(get_rc_string(Msg::STRING123), -1.0);
 		midi::music_stop();
 		Sound::Deactivate();
@@ -382,7 +382,7 @@ void pb::pause_continue()
 	else
 	{
 		if (MainTable)
-			MainTable->Message(1009, 0.0);
+			MainTable->Message2(MessageCode::Resume, 0.0);
 		if (!demo_mode)
 		{
 			const char* text;
@@ -408,7 +408,7 @@ void pb::pause_continue()
 void pb::loose_focus()
 {
 	if (MainTable)
-		MainTable->Message(1010, time_now);
+		MainTable->Message2(MessageCode::LooseFocus, time_now);
 }
 
 void pb::InputUp(GameInput input)
@@ -418,15 +418,15 @@ void pb::InputUp(GameInput input)
 
 	if (AnyBindingMatchesInput(options::Options.Key.LeftFlipper, input))
 	{
-		MainTable->Message(1001, time_now);
+		MainTable->Message2(MessageCode::LeftFlipperInputReleased, time_now);
 	}
 	if (AnyBindingMatchesInput(options::Options.Key.RightFlipper, input))
 	{
-		MainTable->Message(1003, time_now);
+		MainTable->Message2(MessageCode::RightFlipperInputReleased, time_now);
 	}
 	if (AnyBindingMatchesInput(options::Options.Key.Plunger, input))
 	{
-		MainTable->Message(1005, time_now);
+		MainTable->Message2(MessageCode::PlungerInputReleased, time_now);
 	}
 	if (AnyBindingMatchesInput(options::Options.Key.LeftTableBump, input))
 	{
@@ -453,15 +453,15 @@ void pb::InputDown(GameInput input)
 
 	if (AnyBindingMatchesInput(options::Options.Key.LeftFlipper, input))
 	{
-		MainTable->Message(1000, time_now);
+		MainTable->Message2(MessageCode::LeftFlipperInputPressed, time_now);
 	}
 	if (AnyBindingMatchesInput(options::Options.Key.RightFlipper, input))
 	{
-		MainTable->Message(1002, time_now);
+		MainTable->Message2(MessageCode::RightFlipperInputPressed, time_now);
 	}
 	if (AnyBindingMatchesInput(options::Options.Key.Plunger, input))
 	{
-		MainTable->Message(1004, time_now);
+		MainTable->Message2(MessageCode::PlungerInputPressed, time_now);
 	}
 	if (AnyBindingMatchesInput(options::Options.Key.LeftTableBump, input))
 	{
@@ -515,7 +515,7 @@ void pb::InputDown(GameInput input)
 
 void pb::launch_ball()
 {
-	MainTable->Plunger->Message(1017, 0.0f);
+	MainTable->Plunger->Message2(MessageCode::PlungerLaunchBall, 0.0f);
 }
 
 void pb::end_game()
