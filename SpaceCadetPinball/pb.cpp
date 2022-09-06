@@ -215,7 +215,7 @@ void pb::mode_change(GameModes mode)
 			winmain::DemoActive = false;
 		}
 		if (MainTable && MainTable->LightGroup)
-			MainTable->LightGroup->Message(29, 1.4f);
+			MainTable->LightGroup->Message2(MessageCode::TLightGroupGameOverAnimation, 1.4f);
 		break;
 	}
 	game_mode = mode;
@@ -504,10 +504,10 @@ void pb::InputDown(GameInput input)
 			MainTable->port_draw();
 			break;
 		case 'i':
-			MainTable->LightGroup->Message(-24, 1.0f);
+			MainTable->LightGroup->Message2(MessageCode::TLightFtTmpOverrideOn, 1.0f);
 			break;
 		case 'j':
-			MainTable->LightGroup->Message(-25, 1.0f);
+			MainTable->LightGroup->Message2(MessageCode::TLightFtTmpOverrideOff, 1.0f);
 			break;
 		}
 	}

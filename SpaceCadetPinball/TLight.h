@@ -13,11 +13,11 @@ struct TLight_player_backup
 
 
 class TLight :
-	public TPinballComponent
+	public TPinballComponent2
 {
 public:
 	TLight(TPinballTable* table, int groupIndex);
-	int Message(int code, float value) override;
+	int Message2(MessageCode code, float value) override;
 	void Reset();
 	void schedule_timeout(float time);
 	void flasher_stop(int bmpIndex);

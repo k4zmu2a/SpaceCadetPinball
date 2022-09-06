@@ -8,7 +8,7 @@
 #include "TLight.h"
 #include "TPinballTable.h"
 
-TLightGroup::TLightGroup(TPinballTable* table, int groupIndex) : TPinballComponent(table, groupIndex, false)
+TLightGroup::TLightGroup(TPinballTable* table, int groupIndex) : TPinballComponent2(table, groupIndex, false)
 {
 	Timer = 0;
 	NotifyTimer = 0;
@@ -28,15 +28,15 @@ TLightGroup::TLightGroup(TPinballTable* table, int groupIndex) : TPinballCompone
 	}
 }
 
-int TLightGroup::Message(int code, float value)
+int TLightGroup::Message2(MessageCode code, float value)
 {
 	auto const count = static_cast<int>(List.size());
 	switch (code)
 	{
-	case ~MessageCode::SetTiltLock:
-	case ~MessageCode::GameOver:
+	case MessageCode::SetTiltLock:
+	case MessageCode::GameOver:
 		break;
-	case ~MessageCode::PlayerChanged:
+	case MessageCode::PlayerChanged:
 		{
 			auto playerPtr = &PlayerData[PinballTable->CurrentPlayer];
 			playerPtr->MessageField = MessageField;
@@ -53,7 +53,7 @@ int TLightGroup::Message(int code, float value)
 				TimerExpired(0, this);
 			break;
 		}
-	case ~MessageCode::Reset:
+	case MessageCode::Reset:
 		Reset();
 		for (auto index = 0; index < PinballTable->PlayerCount; index++)
 		{
@@ -63,99 +63,99 @@ int TLightGroup::Message(int code, float value)
 			playerPtr->Timer1Time = Timer1Time;
 		}
 		break;
-	case 24:
+	case MessageCode::TLightGroupStepBackward:
 		{
 			auto lastLight = List.at(count - 1);
 			if (lastLight->FlasherOnFlag || lastLight->ToggledOnFlag || lastLight->ToggledOffFlag)
 				break;
-			if (MessageField2)
+			if (MessageField2 != MessageCode::TLightGroupNull)
 			{
-				TLightGroup::Message(34, 0.0);
+				TLightGroup::Message2(MessageCode::TLightGroupReset, 0.0);
 			}
 			AnimationFlag = 1;
 			MessageField2 = code;
-			auto lightMessageField = lastLight->MessageField;
-			auto lightStatusBefore = lastLight->LightOnFlag;
+			auto lastMessage = lastLight->MessageField;
+			auto lastStatus = lastLight->LightOnFlag;
 			for (auto index = count - 1; index > 0; --index)
 			{
 				auto lightCur = List.at(index);
 				auto lightPrev = List.at(index - 1);
-				lightCur->Message(lightPrev->LightOnFlag, 0.0);
+				lightCur->Message2(lightPrev->LightOnFlag ? MessageCode::TLightTurnOn : MessageCode::TLightTurnOff, 0.0);
 				lightCur->MessageField = lightPrev->MessageField;
 			}
 			auto firstLight = List.at(0);
-			firstLight->Message(lightStatusBefore, 0.0);
-			firstLight->MessageField = lightMessageField;
+			firstLight->Message2(lastStatus ? MessageCode::TLightTurnOn : MessageCode::TLightTurnOff, 0.0);
+			firstLight->MessageField = lastMessage;
 			reschedule_animation(value);
 			break;
 		}
-	case 25:
+	case MessageCode::TLightGroupStepForward:
 		{
 			auto lastLight = List.at(count - 1);
 			if (lastLight->FlasherOnFlag || lastLight->ToggledOnFlag || lastLight->ToggledOffFlag)
 				break;
-			if (MessageField2)
+			if (MessageField2 != MessageCode::TLightGroupNull)
 			{
-				TLightGroup::Message(34, 0.0);
+				TLightGroup::Message2(MessageCode::TLightGroupReset, 0.0);
 			}
 			auto firstLight = List.at(0);
 			AnimationFlag = 1;
 			MessageField2 = code;
-			auto lightMessageField = firstLight->MessageField;
-			auto lightStatusBefore = firstLight->LightOnFlag;
+			auto firstMessage = firstLight->MessageField;
+			auto firstStatus = firstLight->LightOnFlag;
 			for (auto index = 0; index < count - 1; index++)
 			{
 				auto lightCur = List.at(index);
 				auto lightNext = List.at(index + 1);
-				lightCur->Message(lightNext->LightOnFlag, 0.0);
+				lightCur->Message2(lightNext->LightOnFlag ? MessageCode::TLightTurnOn : MessageCode::TLightTurnOff, 0.0);
 				lightCur->MessageField = lightNext->MessageField;
 			}
-			lastLight->Message(lightStatusBefore, 0.0);
-			lastLight->MessageField = lightMessageField;
+			lastLight->Message2(firstStatus ? MessageCode::TLightTurnOn : MessageCode::TLightTurnOff, 0.0);
+			lastLight->MessageField = firstMessage;
 			reschedule_animation(value);
 			break;
 		}
-	case 26:
+	case MessageCode::TLightGroupAnimationBackward:
 		{
-			if (AnimationFlag || !MessageField2)
+			if (AnimationFlag || MessageField2 == MessageCode::TLightGroupNull)
 				start_animation();
 			MessageField2 = code;
 			AnimationFlag = 0;
 			auto lastLight = List.at(count - 1);
-			auto flasherFlag2 = lastLight->ToggledOnFlag;
+			auto lastStatus = lastLight->ToggledOnFlag;
 			for (auto i = count - 1; i > 0; --i)
 			{
 				auto lightCur = List.at(i);
 				auto lightPrev = List.at(i - 1);
-				lightCur->Message(lightPrev->ToggledOnFlag + 8, 0.0);
+				lightCur->Message2(lightPrev->ToggledOnFlag ? MessageCode::TLightTurnOnTimed : MessageCode::TLightTurnOffTimed, 0.0);
 			}
 			auto firstLight = List.at(0);
-			firstLight->Message((flasherFlag2 != 0) + 8, 0);
+			firstLight->Message2(lastStatus ? MessageCode::TLightTurnOnTimed : MessageCode::TLightTurnOffTimed, 0);
 			reschedule_animation(value);
 			break;
 		}
-	case 27:
+	case MessageCode::TLightGroupAnimationForward:
 		{
-			if (AnimationFlag || !MessageField2)
+			if (AnimationFlag || MessageField2 == MessageCode::TLightGroupNull)
 				start_animation();
 			MessageField2 = code;
 			AnimationFlag = 0;
 			auto firstLight = List.at(0);
-			auto flasherFlag2 = firstLight->ToggledOnFlag;
+			auto firstStatus = firstLight->ToggledOnFlag;
 			for (auto i = 0; i < count - 1; i++)
 			{
 				auto lightCur = List.at(i);
 				auto lightNext = List.at(i + 1);
-				lightCur->Message(lightNext->ToggledOnFlag + 8, 0.0);
+				lightCur->Message2(lightNext->ToggledOnFlag ? MessageCode::TLightTurnOnTimed : MessageCode::TLightTurnOffTimed, 0.0);
 			}
 			auto lastLight = List.at(count - 1);
-			lastLight->Message((flasherFlag2 != 0) + 8, 0);
+			lastLight->Message2(firstStatus ? MessageCode::TLightTurnOnTimed : MessageCode::TLightTurnOffTimed, 0);
 			reschedule_animation(value);
 			break;
 		}
-	case 28:
+	case MessageCode::TLightGroupLightShowAnimation:
 		{
-			if (AnimationFlag || !MessageField2)
+			if (AnimationFlag || MessageField2 == MessageCode::TLightGroupNull)
 				start_animation();
 			MessageField2 = code;
 			AnimationFlag = 0;
@@ -164,27 +164,27 @@ int TLightGroup::Message(int code, float value)
 				if (rand() % 100 > 70)
 				{
 					auto randVal = RandFloat() * value * 3.0f + 0.1f;
-					light->Message(9, randVal);
+					light->Message2(MessageCode::TLightTurnOnTimed, randVal);
 				}
 			}
 			reschedule_animation(value);
 			break;
 		}
-	case 29:
+	case MessageCode::TLightGroupGameOverAnimation:
 		{
-			if (AnimationFlag || !MessageField2)
+			if (AnimationFlag || MessageField2 == MessageCode::TLightGroupNull)
 				start_animation();
 			MessageField2 = code;
 			AnimationFlag = 0;
 			for (auto light : List)
 			{
 				auto randVal = static_cast<float>(rand() % 100 > 70);
-				light->Message(18, randVal);
+				light->Message2(MessageCode::TLightResetAndToggleValue, randVal);
 			}
 			reschedule_animation(value);
 			break;
 		}
-	case 30:
+	case MessageCode::TLightGroupRandomAnimationSaturation:
 		{
 			auto noBmpInd1Count = 0;
 			for (auto light : List)
@@ -201,16 +201,16 @@ int TLightGroup::Message(int code, float value)
 				auto light = *it;
 				if (!light->LightOnFlag && randModCount-- == 0)
 				{
-					light->Message(1, 0.0);
+					light->Message2(MessageCode::TLightTurnOn, 0.0);
 					break;
 				}
 			}
 
-			if (MessageField2)
+			if (MessageField2 != MessageCode::TLightGroupNull)
 				start_animation();
 			break;
 		}
-	case 31:
+	case MessageCode::TLightGroupRandomAnimationDesaturation:
 		{
 			auto bmpInd1Count = 0;
 			for (auto light : List)
@@ -227,71 +227,72 @@ int TLightGroup::Message(int code, float value)
 				auto light = *it;
 				if (light->LightOnFlag && randModCount-- == 0)
 				{
-					light->Message(0, 0.0);
+					light->Message2(MessageCode::TLightTurnOff, 0.0);
 					break;
 				}
 			}
 
-			if (MessageField2)
+			if (MessageField2 != MessageCode::TLightGroupNull)
 				start_animation();
 			break;
 		}
-	case 32:
+	case MessageCode::TLightGroupOffsetAnimationForward:
 		{
 			auto index = next_light_up();
 			if (index < 0)
 				break;
-			List.at(index)->Message(1, 0.0);
-			if (MessageField2)
+			List.at(index)->Message2(MessageCode::TLightTurnOn, 0.0);
+			if (MessageField2 != MessageCode::TLightGroupNull)
 				start_animation();
 			return 1;
 		}
-	case 33:
+	case MessageCode::TLightGroupOffsetAnimationBackward:
 		{
 			auto index = next_light_down();
 			if (index < 0)
 				break;
-			List.at(index)->Message(0, 0.0);
-			if (MessageField2)
+			List.at(index)->Message2(MessageCode::TLightTurnOff, 0.0);
+			if (MessageField2 != MessageCode::TLightGroupNull)
 				start_animation();
 			return 1;
 		}
-	case 34:
+	case MessageCode::TLightGroupReset:
 		{
 			if (Timer)
 				timer::kill(Timer);
 			Timer = 0;
-			if (MessageField2 == 26 || MessageField2 == 27 || MessageField2 == 28)
-				TLightGroup::Message(14, 0.0);
-			MessageField2 = 0;
+			if (MessageField2 == MessageCode::TLightGroupAnimationBackward ||
+				MessageField2 == MessageCode::TLightGroupAnimationForward || MessageField2 == MessageCode::TLightGroupLightShowAnimation)
+				TLightGroup::Message2(MessageCode::TLightResetTimed, 0.0);
+			MessageField2 = MessageCode::TLightGroupNull;
 			AnimationFlag = 0;
 			break;
 		}
-	case 35:
+	case MessageCode::TLightGroupTurnOnAtIndex:
 		{
 			auto index = static_cast<int>(floor(value));
 			if (index >= count || index < 0)
 				break;
 
 			auto light = List.at(index);
-			light->Message(1, 0.0);
-			if (MessageField2)
+			light->Message2(MessageCode::TLightTurnOn, 0.0);
+			if (MessageField2 != MessageCode::TLightGroupNull)
 				start_animation();
 			break;
 		}
-	case 36:
+	case MessageCode::TLightGroupTurnOffAtIndex:
 		{
 			auto index = static_cast<int>(floor(value));
 			if (index >= count || index < 0)
 				break;
 
 			auto light = List.at(index);
-			light->Message(0, 0.0);
-			if (MessageField2)
+			light->Message2(MessageCode::TLightTurnOff, 0.0);
+			if (MessageField2 != MessageCode::TLightGroupNull)
 				start_animation();
 			break;
 		}
-	case 37:
+	case MessageCode::TLightGroupGetOnCount:
 		{
 			auto bmp1Count = 0;
 			for (auto light : List)
@@ -301,86 +302,86 @@ int TLightGroup::Message(int code, float value)
 			}
 			return bmp1Count;
 		}
-	case 38:
+	case MessageCode::TLightGroupGetLightCount:
 		return count;
-	case 39:
-		return MessageField2;
-	case 40:
+	case MessageCode::TLightGroupGetMessage2:
+		return ~MessageField2;
+	case MessageCode::TLightGroupGetAnimationFlag:
 		return AnimationFlag;
-	case 41:
+	case MessageCode::TLightGroupResetAndTurnOn:
 		{
 			auto index = next_light_up();
 			if (index < 0)
 				break;
-			if (MessageField2 || AnimationFlag)
-				TLightGroup::Message(34, 0.0);
-			List.at(index)->Message(15, value);
+			if (MessageField2 != MessageCode::TLightGroupNull || AnimationFlag)
+				TLightGroup::Message2(MessageCode::TLightGroupReset, 0.0);
+			List.at(index)->Message2(MessageCode::TLightFlasherStartTimedThenStayOn, value);
 			return 1;
 		}
-	case 42:
+	case MessageCode::TLightGroupResetAndTurnOff:
 		{
 			auto index = next_light_down();
 			if (index < 0)
 				break;
-			if (MessageField2 || AnimationFlag)
-				TLightGroup::Message(34, 0.0);
-			List.at(index)->Message(16, value);
+			if (MessageField2 != MessageCode::TLightGroupNull || AnimationFlag)
+				TLightGroup::Message2(MessageCode::TLightGroupReset, 0.0);
+			List.at(index)->Message2(MessageCode::TLightFlasherStartTimedThenStayOff, value);
 			return 1;
 		}
-	case 43:
+	case MessageCode::TLightGroupRestartNotifyTimer:
 		if (NotifyTimer)
 			timer::kill(NotifyTimer);
 		NotifyTimer = 0;
 		if (value > 0.0f)
 			NotifyTimer = timer::set(value, this, NotifyTimerExpired);
 		break;
-	case 44:
+	case MessageCode::TLightGroupFlashWhenOn:
 		{
 			for (auto it = List.rbegin(); it != List.rend(); ++it)
 			{
 				auto light = *it;
 				if (light->LightOnFlag)
 				{
-					light->Message(0, 0.0);
-					light->Message(16, value);
+					light->Message2(MessageCode::TLightTurnOff, 0.0);
+					light->Message2(MessageCode::TLightFlasherStartTimedThenStayOff, value);
 				}
 			}
 
 			break;
 		}
-	case 45:
+	case MessageCode::TLightGroupToggleSplitIndex:
 		{
-			control::handler(code, this);
+			control::handler(~code, this);
 			auto index = static_cast<int>(floor(value));
 			if (index >= 0 && index < count)
 			{
 				// Turn off lights (index, end]
 				for (auto i = count - 1; i > index; i--)
 				{
-					List.at(i)->Message(20, 0.0);
+					List.at(i)->Message2(MessageCode::TLightResetAndTurnOff, 0.0);
 				}
 
 				// Turn on lights [begin, index]
 				for (auto i = index; i >= 0; i--)
 				{
-					List.at(i)->Message(19, 0.0);
+					List.at(i)->Message2(MessageCode::TLightResetAndTurnOn, 0.0);
 				}
 			}
 			break;
 		}
-	case 46:
+	case MessageCode::TLightGroupStartFlasher:
 		{
 			auto index = next_light_down();
 			if (index >= 0)
 			{
-				List.at(index)->Message(4, 0.0);
+				List.at(index)->Message2(MessageCode::TLightFlasherStart, 0.0);
 			}
 			break;
 		}
 	default:
 		for (auto it = List.rbegin(); it != List.rend(); ++it)
 		{
-			(*it)->Message(code, value);
+			(*it)->Message2(code, value);
 		}
 		break;
 	}
@@ -395,7 +396,7 @@ void TLightGroup::Reset()
 	if (NotifyTimer)
 		timer::kill(NotifyTimer);
 	NotifyTimer = 0;
-	MessageField2 = 0;
+	MessageField2 = MessageCode::TLightGroupNull;
 	AnimationFlag = 0;
 	Timer1Time = Timer1TimeDefault;
 }
@@ -407,7 +408,7 @@ void TLightGroup::reschedule_animation(float time)
 	Timer = 0;
 	if (time == 0)
 	{
-		MessageField2 = 0;
+		MessageField2 = MessageCode::TLightGroupNull;
 		AnimationFlag = 0;
 		return;
 	}
@@ -422,9 +423,9 @@ void TLightGroup::start_animation()
 	{
 		auto light = *it;
 		if (light->LightOnFlag)
-			light->Message(9, 0.0);
+			light->Message2(MessageCode::TLightTurnOnTimed, 0.0);
 		else
-			light->Message(8, 0.0);
+			light->Message2(MessageCode::TLightTurnOffTimed, 0.0);
 	}
 }
 
@@ -452,7 +453,7 @@ void TLightGroup::TimerExpired(int timerId, void* caller)
 {
 	auto group = static_cast<TLightGroup*>(caller);
 	group->Timer = 0;
-	group->Message(group->MessageField2, group->Timer1Time);
+	group->Message2(group->MessageField2, group->Timer1Time);
 }
 
 void TLightGroup::NotifyTimerExpired(int timerId, void* caller)
