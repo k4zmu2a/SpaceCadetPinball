@@ -122,13 +122,6 @@ constexpr typename std::enable_if<std::is_enum<T>::value, X>::type operator~(T v
 {
 	return static_cast<X>(value);
 }
-#if defined(__GNUC__) || defined(__clang__)
-#define DEPRECATED __attribute__((deprecated))
-#elif defined(_MSC_VER)
-#define DEPRECATED __declspec(deprecated)
-#else
-#define DEPRECATED
-#endif
 
 
 class TPinballComponent
@@ -136,11 +129,7 @@ class TPinballComponent
 public:
 	TPinballComponent(TPinballTable* table, int groupIndex, bool loadVisuals);
 	virtual ~TPinballComponent();
-	virtual int Message(int code, float value);
-	virtual int Message2(MessageCode code, float value)
-	{
-		return Message(~code, value);
-	}
+	virtual int Message(MessageCode code, float value);
 	virtual void port_draw();
 	int get_scoring(unsigned int index) const;
 	virtual vector2 get_coordinates();
@@ -158,19 +147,4 @@ public:
 private:
 	float VisualPosNormX;
 	float VisualPosNormY;
-};
-
-
-class TPinballComponent2 : public TPinballComponent
-{
-public:
-	TPinballComponent2(TPinballTable* table, int group_index, bool load_visuals)
-		: TPinballComponent(table, group_index, load_visuals)
-	{
-	}
-
-	DEPRECATED int Message(int code, float value) override
-	{
-		return Message2(static_cast<MessageCode>(code), value);
-	}
 };

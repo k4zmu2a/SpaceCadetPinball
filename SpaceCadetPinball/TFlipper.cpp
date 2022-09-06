@@ -10,7 +10,7 @@
 #include "timer.h"
 #include "TPinballTable.h"
 
-TFlipper::TFlipper(TPinballTable* table, int groupIndex) : TCollisionComponent2(table, groupIndex, false)
+TFlipper::TFlipper(TPinballTable* table, int groupIndex) : TCollisionComponent(table, groupIndex, false)
 {
 	visualStruct visual{};
 
@@ -58,7 +58,7 @@ TFlipper::~TFlipper()
 	}
 }
 
-int TFlipper::Message2(MessageCode code, float value)
+int TFlipper::Message(MessageCode code, float value)
 {
 	switch (code)
 	{

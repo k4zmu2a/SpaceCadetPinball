@@ -14,12 +14,12 @@ struct TLightGroup_player_backup
 
 
 class TLightGroup :
-	public TPinballComponent2
+	public TPinballComponent
 {
 public:
 	TLightGroup(TPinballTable* table, int groupIndex);
 	~TLightGroup() override = default;
-	int Message2(MessageCode code, float value) override;
+	int Message(MessageCode code, float value) override;
 	virtual void Reset();
 	void reschedule_animation(float time);
 	void start_animation();

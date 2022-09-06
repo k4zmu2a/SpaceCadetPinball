@@ -32,7 +32,7 @@ TLightBargraph::~TLightBargraph()
 	delete[] TimerTimeArray;
 }
 
-int TLightBargraph::Message2(MessageCode code, float value)
+int TLightBargraph::Message(MessageCode code, float value)
 {
 	switch (code)
 	{
@@ -51,16 +51,16 @@ int TLightBargraph::Message2(MessageCode code, float value)
 				timeIndex = maxCount - 1;
 			if (timeIndex >= 0)
 			{
-				TLightGroup::Message2(MessageCode::TLightGroupToggleSplitIndex, static_cast<float>(timeIndex / 2));
+				TLightGroup::Message(MessageCode::TLightGroupToggleSplitIndex, static_cast<float>(timeIndex / 2));
 				if (!(timeIndex & 1))
-					TLightGroup::Message2(MessageCode::TLightGroupStartFlasher, 0.0);
+					TLightGroup::Message(MessageCode::TLightGroupStartFlasher, 0.0);
 				if (TimerTimeArray)
 					TimerBargraph = timer::set(TimerTimeArray[timeIndex], this, BargraphTimerExpired);
 				TimeIndex = timeIndex;
 			}
 			else
 			{
-				TLightGroup::Message2(MessageCode::TLightResetAndTurnOff, 0.0);
+				TLightGroup::Message(MessageCode::TLightResetAndTurnOff, 0.0);
 				TimeIndex = 0;
 			}
 			break;
@@ -79,7 +79,7 @@ int TLightBargraph::Message2(MessageCode code, float value)
 		TimeIndex = PlayerTimerIndexBackup[static_cast<int>(floor(value))];
 		if (TimeIndex)
 		{
-			TLightBargraph::Message2(MessageCode::TLightGroupToggleSplitIndex, static_cast<float>(TimeIndex));
+			TLightBargraph::Message(MessageCode::TLightGroupToggleSplitIndex, static_cast<float>(TimeIndex));
 		}
 		break;
 	case MessageCode::Reset:
@@ -92,11 +92,11 @@ int TLightBargraph::Message2(MessageCode code, float value)
 
 				++playerPtr;
 			}
-			TLightGroup::Message2(MessageCode::Reset, value);
+			TLightGroup::Message(MessageCode::Reset, value);
 			break;
 		}
 	default:
-		TLightGroup::Message2(code, value);
+		TLightGroup::Message(code, value);
 		break;
 	}
 	return 0;
@@ -119,12 +119,12 @@ void TLightBargraph::BargraphTimerExpired(int timerId, void* caller)
 	bar->TimerBargraph = 0;
 	if (bar->TimeIndex)
 	{
-		bar->Message2(MessageCode::TLightGroupToggleSplitIndex, static_cast<float>(bar->TimeIndex - 1));
+		bar->Message(MessageCode::TLightGroupToggleSplitIndex, static_cast<float>(bar->TimeIndex - 1));
 		control::handler(60, bar);
 	}
 	else
 	{
-		bar->Message2(MessageCode::TLightResetAndTurnOff, 0.0);
+		bar->Message(MessageCode::TLightResetAndTurnOff, 0.0);
 		control::handler(47, bar);
 	}
 }

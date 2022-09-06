@@ -2,14 +2,14 @@
 #include "TCollisionComponent.h"
 
 class TRollover :
-	public TCollisionComponent2
+	public TCollisionComponent
 {
 protected:
 	TRollover(TPinballTable* table, int groupIndex, bool createWall);
 public:
 	TRollover(TPinballTable* table, int groupIndex);
 	~TRollover() override = default;
-	int Message2(MessageCode code, float value) override;
+	int Message(MessageCode code, float value) override;
 	void Collision(TBall* ball, vector2* nextPosition, vector2* direction, float distance,
 		TEdgeSegment* edge) override;
 	void build_walls(int groupIndex);

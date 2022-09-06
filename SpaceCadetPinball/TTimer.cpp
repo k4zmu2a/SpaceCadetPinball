@@ -4,12 +4,12 @@
 #include "control.h"
 #include "timer.h"
 
-TTimer::TTimer(TPinballTable* table, int groupIndex) : TPinballComponent2(table, groupIndex, true)
+TTimer::TTimer(TPinballTable* table, int groupIndex) : TPinballComponent(table, groupIndex, true)
 {
 	Timer = 0;
 }
 
-int TTimer::Message2(MessageCode code, float value)
+int TTimer::Message(MessageCode code, float value)
 {
 	switch (code)
 	{

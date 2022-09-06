@@ -7,7 +7,7 @@ class TLightBargraph :
 public:
 	TLightBargraph(TPinballTable* table, int groupIndex);
 	~TLightBargraph() override;
-	int Message2(MessageCode code, float value) override;
+	int Message(MessageCode code, float value) override;
 	void Reset() override;
 
 	static void BargraphTimerExpired(int timerId, void* caller);

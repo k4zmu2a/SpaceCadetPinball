@@ -6,7 +6,7 @@
 #include "loader.h"
 #include "render.h"
 
-TGate::TGate(TPinballTable* table, int groupIndex) : TCollisionComponent2(table, groupIndex, true)
+TGate::TGate(TPinballTable* table, int groupIndex) : TCollisionComponent(table, groupIndex, true)
 {
 	visualStruct visual{};
 
@@ -18,7 +18,7 @@ TGate::TGate(TPinballTable* table, int groupIndex) : TCollisionComponent2(table,
 	control::handler(1024, this);
 }
 
-int TGate::Message2(MessageCode code, float value)
+int TGate::Message(MessageCode code, float value)
 {
 	switch (code)
 	{

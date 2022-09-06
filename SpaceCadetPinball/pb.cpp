@@ -170,7 +170,7 @@ void pb::SelectDatFile(const std::vector<const char*>& dataSearchPaths)
 void pb::reset_table()
 {
 	if (MainTable)
-		MainTable->Message2(MessageCode::Reset, 0.0);
+		MainTable->Message(MessageCode::Reset, 0.0);
 }
 
 
@@ -215,7 +215,7 @@ void pb::mode_change(GameModes mode)
 			winmain::DemoActive = false;
 		}
 		if (MainTable && MainTable->LightGroup)
-			MainTable->LightGroup->Message2(MessageCode::TLightGroupGameOverAnimation, 1.4f);
+			MainTable->LightGroup->Message(MessageCode::TLightGroupGameOverAnimation, 1.4f);
 		break;
 	}
 	game_mode = mode;
@@ -226,7 +226,7 @@ void pb::toggle_demo()
 	if (demo_mode)
 	{
 		demo_mode = false;
-		MainTable->Message2(MessageCode::Reset, 0.0);
+		MainTable->Message(MessageCode::Reset, 0.0);
 		mode_change(GameModes::GameOver);
 		MissTextBox->Clear();
 		InfoTextBox->Display(get_rc_string(Msg::STRING125), -1.0);
@@ -243,7 +243,7 @@ void pb::replay_level(bool demoMode)
 	mode_change(GameModes::InGame);
 	if (options::Options.Music)
 		midi::music_play();
-	MainTable->Message2(MessageCode::NewGame, static_cast<float>(options::Options.Players));
+	MainTable->Message(MessageCode::NewGame, static_cast<float>(options::Options.Players));
 }
 
 void pb::ballset(float dx, float dy)
@@ -374,7 +374,7 @@ void pb::pause_continue()
 	if (winmain::single_step)
 	{
 		if (MainTable)
-			MainTable->Message2(MessageCode::Pause, time_now);
+			MainTable->Message(MessageCode::Pause, time_now);
 		InfoTextBox->Display(get_rc_string(Msg::STRING123), -1.0);
 		midi::music_stop();
 		Sound::Deactivate();
@@ -382,7 +382,7 @@ void pb::pause_continue()
 	else
 	{
 		if (MainTable)
-			MainTable->Message2(MessageCode::Resume, 0.0);
+			MainTable->Message(MessageCode::Resume, 0.0);
 		if (!demo_mode)
 		{
 			const char* text;
@@ -408,7 +408,7 @@ void pb::pause_continue()
 void pb::loose_focus()
 {
 	if (MainTable)
-		MainTable->Message2(MessageCode::LooseFocus, time_now);
+		MainTable->Message(MessageCode::LooseFocus, time_now);
 }
 
 void pb::InputUp(GameInput input)
@@ -418,15 +418,15 @@ void pb::InputUp(GameInput input)
 
 	if (AnyBindingMatchesInput(options::Options.Key.LeftFlipper, input))
 	{
-		MainTable->Message2(MessageCode::LeftFlipperInputReleased, time_now);
+		MainTable->Message(MessageCode::LeftFlipperInputReleased, time_now);
 	}
 	if (AnyBindingMatchesInput(options::Options.Key.RightFlipper, input))
 	{
-		MainTable->Message2(MessageCode::RightFlipperInputReleased, time_now);
+		MainTable->Message(MessageCode::RightFlipperInputReleased, time_now);
 	}
 	if (AnyBindingMatchesInput(options::Options.Key.Plunger, input))
 	{
-		MainTable->Message2(MessageCode::PlungerInputReleased, time_now);
+		MainTable->Message(MessageCode::PlungerInputReleased, time_now);
 	}
 	if (AnyBindingMatchesInput(options::Options.Key.LeftTableBump, input))
 	{
@@ -453,15 +453,15 @@ void pb::InputDown(GameInput input)
 
 	if (AnyBindingMatchesInput(options::Options.Key.LeftFlipper, input))
 	{
-		MainTable->Message2(MessageCode::LeftFlipperInputPressed, time_now);
+		MainTable->Message(MessageCode::LeftFlipperInputPressed, time_now);
 	}
 	if (AnyBindingMatchesInput(options::Options.Key.RightFlipper, input))
 	{
-		MainTable->Message2(MessageCode::RightFlipperInputPressed, time_now);
+		MainTable->Message(MessageCode::RightFlipperInputPressed, time_now);
 	}
 	if (AnyBindingMatchesInput(options::Options.Key.Plunger, input))
 	{
-		MainTable->Message2(MessageCode::PlungerInputPressed, time_now);
+		MainTable->Message(MessageCode::PlungerInputPressed, time_now);
 	}
 	if (AnyBindingMatchesInput(options::Options.Key.LeftTableBump, input))
 	{
@@ -504,10 +504,10 @@ void pb::InputDown(GameInput input)
 			MainTable->port_draw();
 			break;
 		case 'i':
-			MainTable->LightGroup->Message2(MessageCode::TLightFtTmpOverrideOn, 1.0f);
+			MainTable->LightGroup->Message(MessageCode::TLightFtTmpOverrideOn, 1.0f);
 			break;
 		case 'j':
-			MainTable->LightGroup->Message2(MessageCode::TLightFtTmpOverrideOff, 1.0f);
+			MainTable->LightGroup->Message(MessageCode::TLightFtTmpOverrideOff, 1.0f);
 			break;
 		}
 	}
@@ -515,7 +515,7 @@ void pb::InputDown(GameInput input)
 
 void pb::launch_ball()
 {
-	MainTable->Plunger->Message2(MessageCode::PlungerLaunchBall, 0.0f);
+	MainTable->Plunger->Message(MessageCode::PlungerLaunchBall, 0.0f);
 }
 
 void pb::end_game()

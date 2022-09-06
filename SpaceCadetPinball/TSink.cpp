@@ -9,7 +9,7 @@
 #include "TBall.h"
 #include "timer.h"
 
-TSink::TSink(TPinballTable* table, int groupIndex) : TCollisionComponent2(table, groupIndex, true)
+TSink::TSink(TPinballTable* table, int groupIndex) : TCollisionComponent(table, groupIndex, true)
 {
 	visualStruct visual{};
 
@@ -27,7 +27,7 @@ TSink::TSink(TPinballTable* table, int groupIndex) : TCollisionComponent2(table,
 	TimerTime = *loader::query_float_attribute(groupIndex, 0, 407);
 }
 
-int TSink::Message2(MessageCode code, float value)
+int TSink::Message(MessageCode code, float value)
 {
 	switch (code)
 	{

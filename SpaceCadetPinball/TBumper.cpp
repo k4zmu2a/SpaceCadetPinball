@@ -8,7 +8,7 @@
 #include "timer.h"
 #include "TPinballTable.h"
 
-TBumper::TBumper(TPinballTable* table, int groupIndex) : TCollisionComponent2(table, groupIndex, true)
+TBumper::TBumper(TPinballTable* table, int groupIndex) : TCollisionComponent(table, groupIndex, true)
 {
 	visualStruct visual{};
 
@@ -21,7 +21,7 @@ TBumper::TBumper(TPinballTable* table, int groupIndex) : TCollisionComponent2(ta
 	OriginalThreshold = Threshold;
 }
 
-int TBumper::Message2(MessageCode code, float value)
+int TBumper::Message(MessageCode code, float value)
 {
 	switch (code)
 	{
@@ -51,7 +51,7 @@ int TBumper::Message2(MessageCode code, float value)
 			auto maxBmp = static_cast<int>(ListBitmap->size()) - 1;
 			if (2 * nextBmp > maxBmp)
 				nextBmp = maxBmp / 2;
-			TBumper::Message2(MessageCode::TBumperSetBmpIndex, static_cast<float>(nextBmp));
+			TBumper::Message(MessageCode::TBumperSetBmpIndex, static_cast<float>(nextBmp));
 			break;
 		}
 	case MessageCode::TBumperDecBmpIndex:
@@ -59,7 +59,7 @@ int TBumper::Message2(MessageCode code, float value)
 			auto nextBmp = BmpIndex - 1;
 			if (nextBmp < 0)
 				nextBmp = 0;
-			TBumper::Message2(MessageCode::TBumperSetBmpIndex, static_cast<float>(nextBmp));
+			TBumper::Message(MessageCode::TBumperSetBmpIndex, static_cast<float>(nextBmp));
 			break;
 		}
 	case MessageCode::PlayerChanged:
@@ -71,7 +71,7 @@ int TBumper::Message2(MessageCode code, float value)
 			playerPtr = &PlayerData[static_cast<int>(floor(value))];
 			BmpIndex = playerPtr->BmpIndex;
 			MessageField = playerPtr->MessageField;
-			TBumper::Message2(MessageCode::TBumperSetBmpIndex, static_cast<float>(BmpIndex));
+			TBumper::Message(MessageCode::TBumperSetBmpIndex, static_cast<float>(BmpIndex));
 			break;
 		}
 	case MessageCode::Reset:

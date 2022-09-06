@@ -10,7 +10,7 @@
 #include "TPinballTable.h"
 #include "TTableLayer.h"
 
-THole::THole(TPinballTable* table, int groupIndex) : TCollisionComponent2(table, groupIndex, false)
+THole::THole(TPinballTable* table, int groupIndex) : TCollisionComponent(table, groupIndex, false)
 {
 	visualStruct visual{};
 	circle_type circle{};
@@ -57,7 +57,7 @@ THole::THole(TPinballTable* table, int groupIndex) : TCollisionComponent2(table,
 	TTableLayer::edges_insert_circle(&circle, nullptr, &Field);
 }
 
-int THole::Message2(MessageCode code, float value)
+int THole::Message(MessageCode code, float value)
 {
 	if (code == MessageCode::Reset && BallCapturedFlag)
 	{

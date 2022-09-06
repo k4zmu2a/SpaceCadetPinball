@@ -6,7 +6,7 @@
 #include "render.h"
 #include "timer.h"
 
-TWall::TWall(TPinballTable* table, int groupIndex) : TCollisionComponent2(table, groupIndex, true)
+TWall::TWall(TPinballTable* table, int groupIndex) : TCollisionComponent(table, groupIndex, true)
 {
 	if (RenderSprite)
 		render::sprite_set_bitmap(RenderSprite, nullptr);
@@ -14,7 +14,7 @@ TWall::TWall(TPinballTable* table, int groupIndex) : TCollisionComponent2(table,
 		BmpPtr = ListBitmap->at(0);
 }
 
-int TWall::Message2(MessageCode code, float value)
+int TWall::Message(MessageCode code, float value)
 {
 	if (code == MessageCode::Reset && Timer)
 	{

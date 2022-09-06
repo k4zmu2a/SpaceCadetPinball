@@ -7,7 +7,7 @@
 #include "render.h"
 #include "timer.h"
 
-TBlocker::TBlocker(TPinballTable* table, int groupIndex) : TCollisionComponent2(table, groupIndex, true)
+TBlocker::TBlocker(TPinballTable* table, int groupIndex) : TCollisionComponent(table, groupIndex, true)
 {
 	visualStruct visual{};
 
@@ -23,7 +23,7 @@ TBlocker::TBlocker(TPinballTable* table, int groupIndex) : TCollisionComponent2(
 	render::sprite_set_bitmap(RenderSprite, nullptr);
 }
 
-int TBlocker::Message2(MessageCode code, float value)
+int TBlocker::Message(MessageCode code, float value)
 {
 	switch (code)
 	{

@@ -2,11 +2,11 @@
 #include "TCollisionComponent.h"
 
 class TPopupTarget :
-	public TCollisionComponent2
+	public TCollisionComponent
 {
 public:
 	TPopupTarget(TPinballTable* table, int groupIndex);
-	int Message2(MessageCode code, float value) override;
+	int Message(MessageCode code, float value) override;
 	void Collision(TBall* ball, vector2* nextPosition, vector2* direction, float distance,
 		TEdgeSegment* edge) override;	
 

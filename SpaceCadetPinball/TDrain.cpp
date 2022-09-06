@@ -8,13 +8,13 @@
 #include "timer.h"
 #include "TPinballTable.h"
 
-TDrain::TDrain(TPinballTable* table, int groupIndex) : TCollisionComponent2(table, groupIndex, true)
+TDrain::TDrain(TPinballTable* table, int groupIndex) : TCollisionComponent(table, groupIndex, true)
 {
 	Timer = 0;
 	TimerTime = *loader::query_float_attribute(groupIndex, 0, 407);
 }
 
-int TDrain::Message2(MessageCode code, float value)
+int TDrain::Message(MessageCode code, float value)
 {
 	if (code == MessageCode::Reset)
 	{

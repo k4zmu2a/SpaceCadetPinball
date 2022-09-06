@@ -11,7 +11,7 @@
 #include "TPinballTable.h"
 #include "TTableLayer.h"
 
-TKickout::TKickout(TPinballTable* table, int groupIndex, bool someFlag): TCollisionComponent2(
+TKickout::TKickout(TPinballTable* table, int groupIndex, bool someFlag): TCollisionComponent(
 	table, groupIndex, false)
 {
 	visualStruct visual{};
@@ -60,7 +60,7 @@ TKickout::TKickout(TPinballTable* table, int groupIndex, bool someFlag): TCollis
 	TTableLayer::edges_insert_circle(&circle, nullptr, &Field);
 }
 
-int TKickout::Message2(MessageCode code, float value)
+int TKickout::Message(MessageCode code, float value)
 {
 	switch (code)
 	{
@@ -107,7 +107,7 @@ void TKickout::Collision(TBall* ball, vector2* nextPosition, vector2* direction,
 		ball->Position.Z = CollisionBallSetZ;		
 		if (PinballTable->TiltLockFlag)
 		{
-			Message2(MessageCode::TKickoutRestartTimer, 0.1f);
+			Message(MessageCode::TKickoutRestartTimer, 0.1f);
 		}
 		else
 		{

@@ -10,7 +10,7 @@
 #include "TLine.h"
 #include "TPinballTable.h"
 
-TFlagSpinner::TFlagSpinner(TPinballTable* table, int groupIndex) : TCollisionComponent2(table, groupIndex, false)
+TFlagSpinner::TFlagSpinner(TPinballTable* table, int groupIndex) : TCollisionComponent(table, groupIndex, false)
 {
 	visualStruct visual{};
 	vector2 end{}, start{};
@@ -50,7 +50,7 @@ TFlagSpinner::TFlagSpinner(TPinballTable* table, int groupIndex) : TCollisionCom
 		MinSpeed = *minSpeed;
 }
 
-int TFlagSpinner::Message2(MessageCode code, float value)
+int TFlagSpinner::Message(MessageCode code, float value)
 {
 	if (code == MessageCode::Reset)
 	{

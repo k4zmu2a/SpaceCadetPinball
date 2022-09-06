@@ -105,10 +105,10 @@ TPinballComponent::~TPinballComponent()
 }
 
 
-int TPinballComponent::Message(int code, float value)
+int TPinballComponent::Message(MessageCode code, float value)
 {
-	MessageField = code;
-	if (code == ~MessageCode::Reset)
+	MessageField = ~code;
+	if (code == MessageCode::Reset)
 		MessageField = 0;
 	return 0;
 }

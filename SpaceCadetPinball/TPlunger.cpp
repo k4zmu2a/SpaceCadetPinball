@@ -11,7 +11,7 @@
 #include "timer.h"
 #include "TPinballTable.h"
 
-TPlunger::TPlunger(TPinballTable* table, int groupIndex) : TCollisionComponent2(table, groupIndex, true)
+TPlunger::TPlunger(TPinballTable* table, int groupIndex) : TCollisionComponent(table, groupIndex, true)
 {
 	visualStruct visual{};
 
@@ -47,7 +47,7 @@ void TPlunger::Collision(TBall* ball, vector2* nextPosition, vector2* direction,
 		maths::basic_collision(ball, nextPosition, direction, Elasticity, Smoothness, 0, boost);
 		if (SomeCounter)
 			SomeCounter--;
-		Message2(MessageCode::PlungerInputReleased, 0.0);
+		Message(MessageCode::PlungerInputReleased, 0.0);
 	}
 	else 
 	{
@@ -56,7 +56,7 @@ void TPlunger::Collision(TBall* ball, vector2* nextPosition, vector2* direction,
 	}
 }
 
-int TPlunger::Message2(MessageCode code, float value)
+int TPlunger::Message(MessageCode code, float value)
 {
 	switch (code)
 	{
@@ -98,7 +98,7 @@ int TPlunger::Message2(MessageCode code, float value)
 	case MessageCode::PlungerLaunchBall:
 		PullbackStartedFlag = true;
 		Boost = MaxPullback;
-		Message2(MessageCode::PlungerInputReleased, 0.0f);
+		Message(MessageCode::PlungerInputReleased, 0.0f);
 		break;
 	case MessageCode::PlungerRelaunchBall:
 		SomeCounter++;
@@ -175,7 +175,7 @@ int TPlunger::Message2(MessageCode code, float value)
 void TPlunger::BallFeedTimer(int timerId, void* caller)
 {
 	auto plunger = static_cast<TPlunger*>(caller);
-	plunger->Message2(MessageCode::PlungerFeedBall, 0.0);
+	plunger->Message(MessageCode::PlungerFeedBall, 0.0);
 }
 
 void TPlunger::PullbackTimer(int timerId, void* caller)

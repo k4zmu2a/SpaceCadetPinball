@@ -10,7 +10,7 @@
 #include "timer.h"
 
 
-TTextBox::TTextBox(TPinballTable* table, int groupIndex) : TPinballComponent2(table, groupIndex, true)
+TTextBox::TTextBox(TPinballTable* table, int groupIndex) : TPinballComponent(table, groupIndex, true)
 {
 	OffsetX = 0;
 	OffsetY = 0;
@@ -51,7 +51,7 @@ TTextBox::~TTextBox()
 	}
 }
 
-int TTextBox::Message2(MessageCode code, float value)
+int TTextBox::Message(MessageCode code, float value)
 {
 	return 0;
 }

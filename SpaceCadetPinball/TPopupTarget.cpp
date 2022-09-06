@@ -8,13 +8,13 @@
 #include "timer.h"
 #include "TPinballTable.h"
 
-TPopupTarget::TPopupTarget(TPinballTable* table, int groupIndex) : TCollisionComponent2(table, groupIndex, true)
+TPopupTarget::TPopupTarget(TPinballTable* table, int groupIndex) : TCollisionComponent(table, groupIndex, true)
 {
 	Timer = 0;
 	TimerTime = *loader::query_float_attribute(groupIndex, 0, 407);
 }
 
-int TPopupTarget::Message2(MessageCode code, float value)
+int TPopupTarget::Message(MessageCode code, float value)
 {
 	switch (code)
 	{
@@ -28,7 +28,7 @@ int TPopupTarget::Message2(MessageCode code, float value)
 	case MessageCode::PlayerChanged:
 		PlayerMessagefieldBackup[PinballTable->CurrentPlayer] = MessageField;
 		MessageField = PlayerMessagefieldBackup[static_cast<int>(floor(value))];
-		TPopupTarget::Message2(MessageField ? MessageCode::TPopupTargetDisable : MessageCode::TPopupTargetEnable, 0.0);
+		TPopupTarget::Message(MessageField ? MessageCode::TPopupTargetDisable : MessageCode::TPopupTargetEnable, 0.0);
 		break;
 	case MessageCode::Reset:
 	{
@@ -69,7 +69,7 @@ void TPopupTarget::Collision(TBall* ball, vector2* nextPosition, vector2* direct
 	{
 		if (HardHitSoundId)
 			loader::play_sound(HardHitSoundId, this, "TPopupTarget1");
-		Message2(MessageCode::TPopupTargetDisable, 0.0);
+		Message(MessageCode::TPopupTargetDisable, 0.0);
 		control::handler(63, this);
 	}
 }

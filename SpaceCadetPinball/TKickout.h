@@ -4,11 +4,11 @@
 #include "TEdgeManager.h"
 
 class TKickout :
-	public TCollisionComponent2
+	public TCollisionComponent
 {
 public:
 	TKickout(TPinballTable* table, int groupIndex, bool someFlag);
-	int Message2(MessageCode code, float value) override;
+	int Message(MessageCode code, float value) override;
 	void Collision(TBall* ball, vector2* nextPosition, vector2* direction, float distance,
 	               TEdgeSegment* edge) override;
 	int FieldEffect(TBall* ball, vector2* vecDst) override;

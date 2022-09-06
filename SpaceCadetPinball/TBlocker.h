@@ -2,11 +2,11 @@
 #include "TCollisionComponent.h"
 
 class TBlocker :
-	public TCollisionComponent2
+	public TCollisionComponent
 {
 public:
 	TBlocker(TPinballTable* table, int groupIndex);
-	int Message2(MessageCode code, float value) override;
+	int Message(MessageCode code, float value) override;
 
 	static void TimerExpired(int timerId, void* caller);
 

@@ -7,7 +7,7 @@
 #include "timer.h"
 #include "TPinballTable.h"
 
-TComponentGroup::TComponentGroup(TPinballTable* table, int groupIndex) : TPinballComponent2(table, groupIndex, false)
+TComponentGroup::TComponentGroup(TPinballTable* table, int groupIndex) : TPinballComponent(table, groupIndex, false)
 {
 	Timer = 0;
 	if (groupIndex > 0)
@@ -33,7 +33,7 @@ TComponentGroup::~TComponentGroup()
 	}
 }
 
-int TComponentGroup::Message2(MessageCode code, float value)
+int TComponentGroup::Message(MessageCode code, float value)
 {
 	if (code == MessageCode::TComponentGroupResetNotifyTimer)
 	{
@@ -50,7 +50,7 @@ int TComponentGroup::Message2(MessageCode code, float value)
 	{
 		for (auto component : List)
 		{
-			component->Message2(code, value);
+			component->Message(code, value);
 		}
 	}
 	return 0;

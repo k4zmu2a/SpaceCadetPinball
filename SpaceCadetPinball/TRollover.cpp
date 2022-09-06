@@ -11,13 +11,13 @@
 #include "timer.h"
 #include "TPinballTable.h"
 
-TRollover::TRollover(TPinballTable* table, int groupIndex, bool createWall) : TCollisionComponent2(
+TRollover::TRollover(TPinballTable* table, int groupIndex, bool createWall) : TCollisionComponent(
 	table, groupIndex, createWall)
 {
 }
 
 
-TRollover::TRollover(TPinballTable* table, int groupIndex) : TCollisionComponent2(table, groupIndex, false)
+TRollover::TRollover(TPinballTable* table, int groupIndex) : TCollisionComponent(table, groupIndex, false)
 {
 	if (ListBitmap)
 		render::sprite_set_bitmap(RenderSprite, ListBitmap->at(0));
@@ -25,7 +25,7 @@ TRollover::TRollover(TPinballTable* table, int groupIndex) : TCollisionComponent
 }
 
 
-int TRollover::Message2(MessageCode code, float value)
+int TRollover::Message(MessageCode code, float value)
 {
 	if (code == MessageCode::Reset)
 	{

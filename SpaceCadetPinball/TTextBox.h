@@ -4,7 +4,7 @@
 #include "TTextBoxMessage.h"
 
 class TTextBox :
-	public TPinballComponent2
+	public TPinballComponent
 {
 public:
 	int OffsetX;
@@ -19,7 +19,7 @@ public:
 
 	TTextBox(TPinballTable* table, int groupIndex);
 	~TTextBox() override;
-	int Message2(MessageCode code, float value) override;
+	int Message(MessageCode code, float value) override;
 	void Clear();
 	void Display(const char* text, float time);
 	void DrawImGui();

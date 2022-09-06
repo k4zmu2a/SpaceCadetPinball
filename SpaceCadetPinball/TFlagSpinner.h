@@ -2,11 +2,11 @@
 #include "TCollisionComponent.h"
 
 class TFlagSpinner :
-	public TCollisionComponent2
+	public TCollisionComponent
 {
 public:
 	TFlagSpinner(TPinballTable* table, int groupIndex);
-	int Message2(MessageCode code, float value) override;
+	int Message(MessageCode code, float value) override;
 	void Collision(TBall* ball, vector2* nextPosition, vector2* direction, float distance,
 		TEdgeSegment* edge) override;
 	void NextFrame();

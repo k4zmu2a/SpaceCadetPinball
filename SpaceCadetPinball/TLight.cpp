@@ -8,7 +8,7 @@
 #include "timer.h"
 #include "TPinballTable.h"
 
-TLight::TLight(TPinballTable* table, int groupIndex) : TPinballComponent2(table, groupIndex, true)
+TLight::TLight(TPinballTable* table, int groupIndex) : TPinballComponent(table, groupIndex, true)
 {
 	TimeoutTimer = 0;
 	FlasherOnFlag = false;
@@ -23,7 +23,7 @@ TLight::TLight(TPinballTable* table, int groupIndex) : TPinballComponent2(table,
 	SourceDelay[1] = *floatArr2;
 }
 
-int TLight::Message2(MessageCode code, float value)
+int TLight::Message(MessageCode code, float value)
 {
 	int bmpIndex;
 
@@ -57,12 +57,12 @@ int TLight::Message2(MessageCode code, float value)
 			MessageField = playerPtr->MessageField;
 			if (LightOnBmpIndex)
 			{
-				Message2(MessageCode::TLightSetOnStateBmpIndex, static_cast<float>(LightOnBmpIndex));
+				Message(MessageCode::TLightSetOnStateBmpIndex, static_cast<float>(LightOnBmpIndex));
 			}
 			if (LightOnFlag)
-				Message2(MessageCode::TLightTurnOn, 0.0);
+				Message(MessageCode::TLightTurnOn, 0.0);
 			if (FlasherOnFlag)
-				Message2(MessageCode::TLightFlasherStart, 0.0);
+				Message(MessageCode::TLightFlasherStart, 0.0);
 			break;
 		}
 	case MessageCode::TLightTurnOff:
@@ -164,13 +164,13 @@ int TLight::Message2(MessageCode code, float value)
 		bmpIndex = LightOnBmpIndex + 1;
 		if (bmpIndex >= static_cast<int>(ListBitmap->size()))
 			bmpIndex = static_cast<int>(ListBitmap->size()) - 1;
-		Message2(MessageCode::TLightSetOnStateBmpIndex, static_cast<float>(bmpIndex));
+		Message(MessageCode::TLightSetOnStateBmpIndex, static_cast<float>(bmpIndex));
 		break;
 	case MessageCode::TLightDecOnStateBmpIndex:
 		bmpIndex = LightOnBmpIndex - 1;
 		if (bmpIndex < 0)
 			bmpIndex = 0;
-		Message2(MessageCode::TLightSetOnStateBmpIndex, static_cast<float>(bmpIndex));
+		Message(MessageCode::TLightSetOnStateBmpIndex, static_cast<float>(bmpIndex));
 		break;
 	case MessageCode::TLightResetTimed:
 		if (TimeoutTimer)
@@ -188,36 +188,36 @@ int TLight::Message2(MessageCode code, float value)
 		if (UndoOverrideTimer)
 			timer::kill(UndoOverrideTimer);
 		UndoOverrideTimer = 0;
-		Message2(MessageCode::TLightTurnOn, 0.0);
-		Message2(MessageCode::TLightFlasherStartTimed, value);
+		Message(MessageCode::TLightTurnOn, 0.0);
+		Message(MessageCode::TLightFlasherStartTimed, value);
 		break;
 	case MessageCode::TLightFlasherStartTimedThenStayOff:
 		if (UndoOverrideTimer)
 			timer::kill(UndoOverrideTimer);
 		UndoOverrideTimer = 0;
-		Message2(MessageCode::TLightFlasherStartTimed, value);
+		Message(MessageCode::TLightFlasherStartTimed, value);
 		TurnOffAfterFlashingFg = true;
 		break;
 	case MessageCode::TLightToggleValue:
-		Message2(static_cast<int>(floor(value)) ? MessageCode::TLightTurnOn : MessageCode::TLightTurnOff, 0.0);
+		Message(static_cast<int>(floor(value)) ? MessageCode::TLightTurnOn : MessageCode::TLightTurnOff, 0.0);
 		return LightOnFlag;
 	case MessageCode::TLightResetAndToggleValue:
-		Message2(MessageCode::TLightToggleValue, value);
-		Message2(MessageCode::TLightResetTimed, 0.0);
+		Message(MessageCode::TLightToggleValue, value);
+		Message(MessageCode::TLightResetTimed, 0.0);
 		return LightOnFlag;
 	case MessageCode::TLightResetAndTurnOn:
-		Message2(MessageCode::TLightTurnOn, 0.0);
-		Message2(MessageCode::TLightResetTimed, 0.0);
+		Message(MessageCode::TLightTurnOn, 0.0);
+		Message(MessageCode::TLightResetTimed, 0.0);
 		break;
 	case MessageCode::TLightResetAndTurnOff:
-		Message2(MessageCode::TLightTurnOff, 0.0);
-		Message2(MessageCode::TLightResetTimed, 0.0);
+		Message(MessageCode::TLightTurnOff, 0.0);
+		Message(MessageCode::TLightResetTimed, 0.0);
 		break;
 	case MessageCode::TLightToggle:
-		Message2(MessageCode::TLightToggleValue, !LightOnFlag);
+		Message(MessageCode::TLightToggleValue, !LightOnFlag);
 		return LightOnFlag;
 	case MessageCode::TLightResetAndToggle:
-		Message2(MessageCode::TLightResetAndToggleValue, !LightOnFlag);
+		Message(MessageCode::TLightResetAndToggleValue, !LightOnFlag);
 		return LightOnFlag;
 	case MessageCode::TLightSetMessageField:
 		MessageField = static_cast<int>(floor(value));
@@ -298,7 +298,7 @@ void TLight::TimerExpired(int timerId, void* caller)
 	if (light->TurnOffAfterFlashingFg)
 	{
 		light->TurnOffAfterFlashingFg = false;
-		light->Message2(MessageCode::TLightResetAndTurnOff, 0.0);
+		light->Message(MessageCode::TLightResetAndTurnOff, 0.0);
 	}
 	if (light->Control)
 		control::handler(60, light);
@@ -341,5 +341,5 @@ void TLight::flasher_callback(int timerId, void* caller)
 void TLight::UndoTmpOverride(int timerId, void* caller)
 {
 	auto light = static_cast<TLight*>(caller);
-	light->Message2(MessageCode::TLightFtResetOverride, 0.0f);
+	light->Message(MessageCode::TLightFtResetOverride, 0.0f);
 }

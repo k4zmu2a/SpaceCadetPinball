@@ -8,7 +8,7 @@
 #include "timer.h"
 #include "TPinballTable.h"
 
-TSoloTarget::TSoloTarget(TPinballTable* table, int groupIndex) : TCollisionComponent2(table, groupIndex, true)
+TSoloTarget::TSoloTarget(TPinballTable* table, int groupIndex) : TCollisionComponent(table, groupIndex, true)
 {
 	visualStruct visual{};
 
@@ -16,10 +16,10 @@ TSoloTarget::TSoloTarget(TPinballTable* table, int groupIndex) : TCollisionCompo
 	TimerTime = 0.1f;
 	loader::query_visual(groupIndex, 0, &visual);
 	SoundIndex4 = visual.SoundIndex4;
-	TSoloTarget::Message2(MessageCode::TSoloTargetEnable, 0.0);
+	TSoloTarget::Message(MessageCode::TSoloTargetEnable, 0.0);
 }
 
-int TSoloTarget::Message2(MessageCode code, float value)
+int TSoloTarget::Message(MessageCode code, float value)
 {
 	switch (code)
 	{
@@ -58,7 +58,7 @@ void TSoloTarget::Collision(TBall* ball, vector2* nextPosition, vector2* directi
 {
 	if (DefaultCollision(ball, nextPosition, direction))
 	{
-		Message2(MessageCode::TSoloTargetDisable, 0.0);
+		Message(MessageCode::TSoloTargetDisable, 0.0);
 		Timer = timer::set(TimerTime, this, TimerExpired);
 		control::handler(63, this);
 	}
@@ -67,6 +67,6 @@ void TSoloTarget::Collision(TBall* ball, vector2* nextPosition, vector2* directi
 void TSoloTarget::TimerExpired(int timerId, void* caller)
 {
 	auto target = static_cast<TSoloTarget*>(caller);
-	target->Message2(MessageCode::TSoloTargetEnable, 0.0);
+	target->Message(MessageCode::TSoloTargetEnable, 0.0);
 	target->Timer = 0;
 }

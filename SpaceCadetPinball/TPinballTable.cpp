@@ -42,7 +42,7 @@
 int TPinballTable::score_multipliers[5] = {1, 2, 3, 5, 10};
 
 
-TPinballTable::TPinballTable(): TPinballComponent2(nullptr, -1, false)
+TPinballTable::TPinballTable(): TPinballComponent(nullptr, -1, false)
 {
 	int shortArrLength;
 
@@ -297,9 +297,9 @@ void TPinballTable::tilt(float time)
 
 		for (auto component : ComponentList)
 		{
-			component->Message2(MessageCode::SetTiltLock, time);
+			component->Message(MessageCode::SetTiltLock, time);
 		}
-		LightGroup->Message2(MessageCode::TLightTurnOffTimed, 0);
+		LightGroup->Message(MessageCode::TLightTurnOffTimed, 0);
 		TiltLockFlag = 1;
 		control::table_control_handler(1011);
 	}
@@ -314,7 +314,7 @@ void TPinballTable::port_draw()
 	}
 }
 
-int TPinballTable::Message2(MessageCode code, float value)
+int TPinballTable::Message(MessageCode code, float value)
 {
 	const char* rc_text;
 
@@ -323,41 +323,41 @@ int TPinballTable::Message2(MessageCode code, float value)
 	case MessageCode::LeftFlipperInputPressed:
 		if (!TiltLockFlag)
 		{
-			FlipperL->Message2(MessageCode::TFlipperExtend, value);
+			FlipperL->Message(MessageCode::TFlipperExtend, value);
 		}
 		break;
 	case MessageCode::LeftFlipperInputReleased:
 		if (!TiltLockFlag)
 		{
-			FlipperL->Message2(MessageCode::TFlipperRetract, value);
+			FlipperL->Message(MessageCode::TFlipperRetract, value);
 		}
 		break;
 	case MessageCode::RightFlipperInputPressed:
 		if (!TiltLockFlag)
 		{
-			FlipperR->Message2(MessageCode::TFlipperExtend, value);
+			FlipperR->Message(MessageCode::TFlipperExtend, value);
 		}
 		break;
 	case MessageCode::RightFlipperInputReleased:
 		if (!TiltLockFlag)
 		{
-			FlipperR->Message2(MessageCode::TFlipperRetract, value);
+			FlipperR->Message(MessageCode::TFlipperRetract, value);
 		}
 		break;
 	case MessageCode::PlungerInputPressed:
 	case MessageCode::PlungerInputReleased:
-		Plunger->Message2(code, value);
+		Plunger->Message(code, value);
 		break;
 	case MessageCode::Pause:
 	case MessageCode::Resume:
 	case MessageCode::LooseFocus:
 		for (auto component : ComponentList)
 		{
-			component->Message2(code, value);
+			component->Message(code, value);
 		}
 		break;
 	case MessageCode::ClearTiltLock:
-		LightGroup->Message2(MessageCode::TLightResetTimed, 0.0);
+		LightGroup->Message(MessageCode::TLightResetTimed, 0.0);
 		if (TiltLockFlag)
 		{
 			TiltLockFlag = 0;
@@ -367,16 +367,16 @@ int TPinballTable::Message2(MessageCode code, float value)
 		}
 		break;
 	case MessageCode::StartGamePlayer1:
-		LightGroup->Message2(MessageCode::TLightGroupReset, 0.0);
-		LightGroup->Message2(MessageCode::TLightResetAndTurnOff, 0.0);
-		Plunger->Message2(MessageCode::PlungerStartFeedTimer, 0.0);
+		LightGroup->Message(MessageCode::TLightGroupReset, 0.0);
+		LightGroup->Message(MessageCode::TLightResetAndTurnOff, 0.0);
+		Plunger->Message(MessageCode::PlungerStartFeedTimer, 0.0);
 		if (Demo && Demo->ActiveFlag)
 			rc_text = pb::get_rc_string(Msg::STRING131);
 		else
 			rc_text = pb::get_rc_string(Msg::STRING127);
 		pb::InfoTextBox->Display(rc_text, -1.0);
 		if (Demo)
-			Demo->Message2(MessageCode::NewGame, 0.0);
+			Demo->Message(MessageCode::NewGame, 0.0);
 		break;
 	case MessageCode::NewGame:
 		if (EndGameTimeoutTimer)
@@ -389,12 +389,12 @@ int TPinballTable::Message2(MessageCode code, float value)
 		{
 			timer::kill(LightShowTimer);
 			LightShowTimer = 0;
-			Message2(MessageCode::StartGamePlayer1, 0.0);
+			Message(MessageCode::StartGamePlayer1, 0.0);
 		}
 		else
 		{
 			CheatsUsed = 0;
-			Message2(MessageCode::Reset, 0.0);
+			Message(MessageCode::Reset, 0.0);
 			auto ball = BallList[0];
 			ball->Position.Y = 0.0;
 			ball->Position.X = 0.0;
@@ -446,7 +446,7 @@ int TPinballTable::Message2(MessageCode code, float value)
 			UnknownP71 = 0;
 			pb::InfoTextBox->Clear();
 			pb::MissTextBox->Clear();
-			LightGroup->Message2(MessageCode::TLightGroupLightShowAnimation, 0.2f);
+			LightGroup->Message(MessageCode::TLightGroupLightShowAnimation, 0.2f);
 			auto time = loader::play_sound(SoundIndex1, nullptr, "TPinballTable2");
 			if (time < 0)
 				time = 5.0f;
@@ -506,7 +506,7 @@ int TPinballTable::Message2(MessageCode code, float value)
 
 			for (auto component : ComponentList)
 			{
-				component->Message2(MessageCode::PlayerChanged, static_cast<float>(nextPlayer));
+				component->Message(MessageCode::PlayerChanged, static_cast<float>(nextPlayer));
 			}
 
 			const char* textboxText = nullptr;
@@ -557,7 +557,7 @@ int TPinballTable::Message2(MessageCode code, float value)
 	case MessageCode::Reset:
 		for (auto component : ComponentList)
 		{
-			component->Message2(MessageCode::Reset, 0);
+			component->Message(MessageCode::Reset, 0);
 		}
 		if (ReplayTimer)
 			timer::kill(ReplayTimer);
@@ -565,7 +565,7 @@ int TPinballTable::Message2(MessageCode code, float value)
 		if (LightShowTimer)
 		{
 			timer::kill(LightShowTimer);
-			LightGroup->Message2(MessageCode::TLightGroupReset, 0.0);
+			LightGroup->Message(MessageCode::TLightGroupReset, 0.0);
 		}
 		LightShowTimer = 0;
 		ScoreMultiplier = 0;
@@ -658,10 +658,10 @@ void TPinballTable::EndGame_timeout(int timerId, void* caller)
 
 	for (auto component : table->ComponentList)
 	{
-		component->Message2(MessageCode::GameOver, 0);
+		component->Message(MessageCode::GameOver, 0);
 	}
 	if (table->Demo)
-		table->Demo->Message2(MessageCode::GameOver, 0.0);
+		table->Demo->Message(MessageCode::GameOver, 0.0);
 	control::handler(67, pb::MissTextBox);
 	pb::InfoTextBox->Display(pb::get_rc_string(Msg::STRING125), -1.0);
 }
@@ -670,7 +670,7 @@ void TPinballTable::LightShow_timeout(int timerId, void* caller)
 {
 	auto table = static_cast<TPinballTable*>(caller);
 	table->LightShowTimer = 0;
-	table->Message2(MessageCode::StartGamePlayer1, 0.0);
+	table->Message(MessageCode::StartGamePlayer1, 0.0);
 }
 
 void TPinballTable::replay_timer_callback(int timerId, void* caller)
