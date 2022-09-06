@@ -108,7 +108,7 @@ TPinballComponent::~TPinballComponent()
 int TPinballComponent::Message(int code, float value)
 {
 	MessageField = code;
-	if (code == 1024)
+	if (code == ~MessageCode::Reset)
 		MessageField = 0;
 	return 0;
 }

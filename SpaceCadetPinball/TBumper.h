@@ -8,12 +8,12 @@ struct  TBumper_player_backup
 };
 
 class TBumper :
-	public TCollisionComponent
+	public TCollisionComponent2
 {
 public:
 	TBumper(TPinballTable* table, int groupIndex);
 	~TBumper() override = default;
-	int Message(int code, float value) override;
+	int Message2(MessageCode code, float value) override;
 	void Collision(TBall* ball, vector2* nextPosition, vector2* direction, float distance,
 		TEdgeSegment* edge) override;
 	void Fire();

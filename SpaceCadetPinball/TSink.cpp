@@ -9,7 +9,7 @@
 #include "TBall.h"
 #include "timer.h"
 
-TSink::TSink(TPinballTable* table, int groupIndex) : TCollisionComponent(table, groupIndex, true)
+TSink::TSink(TPinballTable* table, int groupIndex) : TCollisionComponent2(table, groupIndex, true)
 {
 	visualStruct visual{};
 
@@ -27,21 +27,21 @@ TSink::TSink(TPinballTable* table, int groupIndex) : TCollisionComponent(table, 
 	TimerTime = *loader::query_float_attribute(groupIndex, 0, 407);
 }
 
-int TSink::Message(int code, float value)
+int TSink::Message2(MessageCode code, float value)
 {
 	switch (code)
 	{
-	case 56:
+	case MessageCode::TSinkResetTimer:
 		if (value < 0.0f)
 			value = TimerTime;
 		timer::set(value, this, TimerExpired);
 		break;
-	case ~MessageCode::PlayerChanged:
+	case MessageCode::PlayerChanged:
 		timer::kill(TimerExpired);
 		PlayerMessagefieldBackup[PinballTable->CurrentPlayer] = MessageField;
 		MessageField = PlayerMessagefieldBackup[static_cast<int>(floor(value))];
 		break;
-	case ~MessageCode::Reset:
+	case MessageCode::Reset:
 		{
 			timer::kill(TimerExpired);
 			MessageField = 0;

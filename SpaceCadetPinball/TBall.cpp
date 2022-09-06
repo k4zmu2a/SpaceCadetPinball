@@ -11,7 +11,7 @@
 #include "TPinballTable.h"
 #include "TTableLayer.h"
 
-TBall::TBall(TPinballTable* table) : TPinballComponent(table, -1, false)
+TBall::TBall(TPinballTable* table) : TPinballComponent2(table, -1, false)
 {
 	visualStruct visual{};
 	char ballGroupName[10]{"ball"};
@@ -106,9 +106,9 @@ bool TBall::already_hit(TEdgeSegment* edge)
 	return false;
 }
 
-int TBall::Message(int code, float value)
+int TBall::Message2(MessageCode code, float value)
 {
-	if (code == 1024)
+	if (code == MessageCode::Reset)
 	{
 		render::ball_set(RenderSprite, nullptr, 0.0, 0, 0);
 		Position.X = 0.0;

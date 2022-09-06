@@ -10,7 +10,7 @@
 #include "timer.h"
 
 
-TTextBox::TTextBox(TPinballTable* table, int groupIndex) : TPinballComponent(table, groupIndex, true)
+TTextBox::TTextBox(TPinballTable* table, int groupIndex) : TPinballComponent2(table, groupIndex, true)
 {
 	OffsetX = 0;
 	OffsetY = 0;
@@ -18,8 +18,8 @@ TTextBox::TTextBox(TPinballTable* table, int groupIndex) : TPinballComponent(tab
 	Height = 0;
 	BgBmp = render::background_bitmap;
 	Font = score::msg_fontp;
-	Message1 = nullptr;
-	Message2 = nullptr;
+	CurrentMessage = nullptr;
+	PreviousMessage = nullptr;
 	Timer = 0;
 
 	if (groupIndex > 0)
@@ -42,16 +42,16 @@ TTextBox::~TTextBox()
 			timer::kill(Timer);
 		Timer = 0;
 	}
-	while (Message1)
+	while (CurrentMessage)
 	{
-		TTextBoxMessage* message = Message1;
+		TTextBoxMessage* message = CurrentMessage;
 		TTextBoxMessage* nextMessage = message->NextMessage;
 		delete message;
-		Message1 = nextMessage;
+		CurrentMessage = nextMessage;
 	}
 }
 
-int TTextBox::Message(int code, float value)
+int TTextBox::Message2(MessageCode code, float value)
 {
 	return 0;
 }
@@ -59,13 +59,13 @@ int TTextBox::Message(int code, float value)
 void TTextBox::TimerExpired(int timerId, void* caller)
 {
 	auto tb = static_cast<TTextBox*>(caller);
-	TTextBoxMessage* message = tb->Message1;
+	TTextBoxMessage* message = tb->CurrentMessage;
 	tb->Timer = 0;
 	if (message)
 	{
 		TTextBoxMessage* nextMessage = message->NextMessage;
 		delete message;
-		tb->Message1 = nextMessage;
+		tb->CurrentMessage = nextMessage;
 		tb->Draw();
 		control::handler(60, tb);
 	}
@@ -92,12 +92,12 @@ void TTextBox::Clear()
 			timer::kill(Timer);
 		Timer = 0;
 	}
-	while (Message1)
+	while (CurrentMessage)
 	{
-		TTextBoxMessage* message = Message1;
+		TTextBoxMessage* message = CurrentMessage;
 		TTextBoxMessage* nextMessage = message->NextMessage;
 		delete message;
-		Message1 = nextMessage;
+		CurrentMessage = nextMessage;
 	}
 }
 
@@ -106,10 +106,10 @@ void TTextBox::Display(const char* text, float time)
 	if (!text)
 		return;
 
-	if (Message1 && !strcmp(text, Message2->Text))
+	if (CurrentMessage && !strcmp(text, PreviousMessage->Text))
 	{
-		Message2->Refresh(time);
-		if (Message2 == Message1)
+		PreviousMessage->Refresh(time);
+		if (PreviousMessage == CurrentMessage)
 		{
 			if (Timer && Timer != -1)
 				timer::kill(Timer);
@@ -129,11 +129,11 @@ void TTextBox::Display(const char* text, float time)
 		{
 			if (message->Text)
 			{
-				if (Message1)
-					Message2->NextMessage = message;
+				if (CurrentMessage)
+					PreviousMessage->NextMessage = message;
 				else
-					Message1 = message;
-				Message2 = message;
+					CurrentMessage = message;
+				PreviousMessage = message;
 				if (Timer == 0)
 					Draw();
 			}
@@ -148,7 +148,7 @@ void TTextBox::Display(const char* text, float time)
 void TTextBox::DrawImGui()
 {
 	// Do nothing when using a font (the text will be rendered to VScreen in TTextBox::Draw)
-	if (Font || !Message1)
+	if (Font || !CurrentMessage)
 		return;
 
 	char windowName[64];
@@ -167,18 +167,18 @@ void TTextBox::DrawImGui()
 
 	rect = fullscrn::GetScreenRectFromPinballRect(rect);
 
-	ImGui::SetNextWindowPos(ImVec2(rect.x, rect.y));
-	ImGui::SetNextWindowSize(ImVec2(rect.w, rect.h));
+	ImGui::SetNextWindowPos(ImVec2(static_cast<float>(rect.x), static_cast<float>(rect.y)));
+	ImGui::SetNextWindowSize(ImVec2(static_cast<float>(rect.w), static_cast<float>(rect.h)));
 
 	// Use the pointer to generate a window unique name per text box
-	snprintf(windowName, sizeof(windowName), "TTextBox_%p", this);
+	snprintf(windowName, sizeof(windowName), "TTextBox_%p", static_cast<void*>(this));
 	if (ImGui::Begin(windowName, nullptr, window_flags))
 	{
 		ImGui::SetWindowFontScale(fullscrn::GetScreenToPinballRatio());
 
 		// ToDo: centered text in FT
 		ImGui::PushStyleColor(ImGuiCol_Text, pb::TextBoxColor);
-		ImGui::TextWrapped("%s", Message1->Text);
+		ImGui::TextWrapped("%s", CurrentMessage->Text);
 		ImGui::PopStyleColor();
 	}
 	ImGui::End();
@@ -201,26 +201,26 @@ void TTextBox::Draw()
 		gdrv::fill_bitmap(render::vscreen, Width, Height, OffsetX, OffsetY, 0);
 
 	bool display = false;
-	while (Message1)
+	while (CurrentMessage)
 	{
-		if (Message1->Time == -1.0f)
+		if (CurrentMessage->Time == -1.0f)
 		{
-			if (!Message1->NextMessage)
+			if (!CurrentMessage->NextMessage)
 			{
 				Timer = -1;
 				display = true;
 				break;
 			}
 		}
-		else if (Message1->TimeLeft() >= -2.0f)
+		else if (CurrentMessage->TimeLeft() >= -2.0f)
 		{
-			Timer = timer::set(std::max(Message1->TimeLeft(), 0.25f), this, TimerExpired);
+			Timer = timer::set(std::max(CurrentMessage->TimeLeft(), 0.25f), this, TimerExpired);
 			display = true;
 			break;
 		}
 
-		auto tmp = Message1;
-		Message1 = Message1->NextMessage;
+		auto tmp = CurrentMessage;
+		CurrentMessage = CurrentMessage->NextMessage;
 		delete tmp;
 	}
 
@@ -234,7 +234,7 @@ void TTextBox::Draw()
 
 		std::vector<LayoutResult> lines{};
 		auto textHeight = 0;
-		for (auto text = Message1->Text; ; textHeight += Font->Height)
+		for (auto text = CurrentMessage->Text; ; textHeight += Font->Height)
 		{
 			if (!text[0] || textHeight + Font->Height > Height)
 				break;

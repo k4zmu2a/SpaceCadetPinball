@@ -2,11 +2,11 @@
 #include "TCollisionComponent.h"
 
 class TKickback :
-	public TCollisionComponent
+	public TCollisionComponent2
 {
 public:
 	TKickback(TPinballTable* table, int groupIndex);
-	int Message(int code, float value) override;
+	int Message2(MessageCode code, float value) override;
 	void Collision(TBall* ball, vector2* nextPosition, vector2* direction, float distance,
 		TEdgeSegment* edge) override;
 

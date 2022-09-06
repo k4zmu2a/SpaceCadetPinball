@@ -11,7 +11,7 @@
 #include "TPinballTable.h"
 #include "TTableLayer.h"
 
-TKickout::TKickout(TPinballTable* table, int groupIndex, bool someFlag): TCollisionComponent(
+TKickout::TKickout(TPinballTable* table, int groupIndex, bool someFlag): TCollisionComponent2(
 	table, groupIndex, false)
 {
 	visualStruct visual{};
@@ -24,7 +24,7 @@ TKickout::TKickout(TPinballTable* table, int groupIndex, bool someFlag): TCollis
 	TimerTime2 = 0.05f;
 	MessageField = 0;
 	Timer = 0;
-	KickFlag1 = 0;
+	BallCaputeredFlag = 0;
 	FieldMult = *loader::query_float_attribute(groupIndex, 0, 305);
 	loader::query_visual(groupIndex, 0, &visual);
 	SoftHitSoundId = visual.SoftHitSoundId;
@@ -60,24 +60,24 @@ TKickout::TKickout(TPinballTable* table, int groupIndex, bool someFlag): TCollis
 	TTableLayer::edges_insert_circle(&circle, nullptr, &Field);
 }
 
-int TKickout::Message(int code, float value)
+int TKickout::Message2(MessageCode code, float value)
 {
 	switch (code)
 	{
-	case 55:
-		if (KickFlag1)
+	case MessageCode::TKickoutRestartTimer:
+		if (BallCaputeredFlag)
 		{
 			if (value < 0.0f)
 				value = TimerTime1;
 			Timer = timer::set(value, this, TimerExpired);
 		}
 		break;
-	case ~MessageCode::SetTiltLock:
+	case MessageCode::SetTiltLock:
 		if (NotSomeFlag)
 			ActiveFlag = 0;
 		break;
-	case ~MessageCode::Reset:
-		if (KickFlag1)
+	case MessageCode::Reset:
+		if (BallCaputeredFlag)
 		{
 			if (Timer)
 				timer::kill(Timer);
@@ -95,11 +95,11 @@ int TKickout::Message(int code, float value)
 
 void TKickout::Collision(TBall* ball, vector2* nextPosition, vector2* direction, float distance, TEdgeSegment* edge)
 {
-	if (!KickFlag1)
+	if (!BallCaputeredFlag)
 	{
 		Ball = ball;
 		Threshold = 1000000000.0;
-		KickFlag1 = 1;
+		BallCaputeredFlag = 1;
 		ball->CollisionComp = this;
 		ball->Position.X = Circle.Center.X;
 		ball->Position.Y = Circle.Center.Y;
@@ -107,7 +107,7 @@ void TKickout::Collision(TBall* ball, vector2* nextPosition, vector2* direction,
 		ball->Position.Z = CollisionBallSetZ;		
 		if (PinballTable->TiltLockFlag)
 		{
-			Message(55, 0.1f);
+			Message2(MessageCode::TKickoutRestartTimer, 0.1f);
 		}
 		else
 		{
@@ -121,7 +121,7 @@ int TKickout::FieldEffect(TBall* ball, vector2* dstVec)
 {
 	vector2 direction{};
 
-	if (KickFlag1)
+	if (BallCaputeredFlag)
 		return 0;
 	direction.X = Circle.Center.X - ball->Position.X;
 	direction.Y = Circle.Center.Y - ball->Position.Y;
@@ -136,9 +136,9 @@ int TKickout::FieldEffect(TBall* ball, vector2* dstVec)
 void TKickout::TimerExpired(int timerId, void* caller)
 {
 	auto kick = static_cast<TKickout*>(caller);
-	if (kick->KickFlag1)
+	if (kick->BallCaputeredFlag)
 	{
-		kick->KickFlag1 = 0;
+		kick->BallCaputeredFlag = 0;
 		kick->Timer = timer::set(kick->TimerTime2, kick, ResetTimerExpired);
 		if (kick->Ball)
 		{		

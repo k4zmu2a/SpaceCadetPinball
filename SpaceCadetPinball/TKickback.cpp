@@ -9,7 +9,7 @@
 #include "timer.h"
 #include "TPinballTable.h"
 
-TKickback::TKickback(TPinballTable* table, int groupIndex): TCollisionComponent(table, groupIndex, true)
+TKickback::TKickback(TPinballTable* table, int groupIndex): TCollisionComponent2(table, groupIndex, true)
 {
 	MessageField = 0;
 	Timer = 0;
@@ -19,9 +19,9 @@ TKickback::TKickback(TPinballTable* table, int groupIndex): TCollisionComponent(
 	Threshold = 1000000000.0f;
 }
 
-int TKickback::Message(int code, float value)
+int TKickback::Message2(MessageCode code, float value)
 {
-	if ((code == 1011 || code == 1024) && Timer)
+	if ((code == MessageCode::SetTiltLock || code == MessageCode::Reset) && Timer)
 	{
 		timer::kill(Timer);
 		if (ListBitmap)

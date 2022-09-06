@@ -19,9 +19,9 @@ TLightRollover::TLightRollover(TPinballTable* table, int groupIndex) : TRollover
 	FloatArr = *loader::query_float_attribute(groupIndex, 0, 407);
 }
 
-int TLightRollover::Message(int code, float value)
+int TLightRollover::Message2(MessageCode code, float value)
 {
-	if (code == 1024)
+	if (code == MessageCode::Reset)
 	{
 		ActiveFlag = 1;
 		RolloverFlag = 0;

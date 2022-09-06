@@ -8,7 +8,7 @@
 #include "timer.h"
 #include "TPinballTable.h"
 
-TBumper::TBumper(TPinballTable* table, int groupIndex) : TCollisionComponent(table, groupIndex, true)
+TBumper::TBumper(TPinballTable* table, int groupIndex) : TCollisionComponent2(table, groupIndex, true)
 {
 	visualStruct visual{};
 
@@ -21,11 +21,11 @@ TBumper::TBumper(TPinballTable* table, int groupIndex) : TCollisionComponent(tab
 	OriginalThreshold = Threshold;
 }
 
-int TBumper::Message(int code, float value)
+int TBumper::Message2(MessageCode code, float value)
 {
 	switch (code)
 	{
-	case 11:
+	case MessageCode::TBumperSetBmpIndex:
 		{
 			auto nextBmp = static_cast<int>(floor(value));
 			auto maxBmp = static_cast<int>(ListBitmap->size()) - 1;
@@ -45,24 +45,24 @@ int TBumper::Message(int code, float value)
 			}
 			break;
 		}
-	case 12:
+	case MessageCode::TBumperIncBmpIndex:
 		{
 			auto nextBmp = BmpIndex + 1;
 			auto maxBmp = static_cast<int>(ListBitmap->size()) - 1;
 			if (2 * nextBmp > maxBmp)
 				nextBmp = maxBmp / 2;
-			TBumper::Message(11, static_cast<float>(nextBmp));
+			TBumper::Message2(MessageCode::TBumperSetBmpIndex, static_cast<float>(nextBmp));
 			break;
 		}
-	case 13:
+	case MessageCode::TBumperDecBmpIndex:
 		{
 			auto nextBmp = BmpIndex - 1;
 			if (nextBmp < 0)
 				nextBmp = 0;
-			TBumper::Message(11, static_cast<float>(nextBmp));
+			TBumper::Message2(MessageCode::TBumperSetBmpIndex, static_cast<float>(nextBmp));
 			break;
 		}
-	case ~MessageCode::PlayerChanged:
+	case MessageCode::PlayerChanged:
 		{
 			auto playerPtr = &PlayerData[PinballTable->CurrentPlayer];
 			playerPtr->BmpIndex = BmpIndex;
@@ -71,10 +71,10 @@ int TBumper::Message(int code, float value)
 			playerPtr = &PlayerData[static_cast<int>(floor(value))];
 			BmpIndex = playerPtr->BmpIndex;
 			MessageField = playerPtr->MessageField;
-			TBumper::Message(11, static_cast<float>(BmpIndex));
+			TBumper::Message2(MessageCode::TBumperSetBmpIndex, static_cast<float>(BmpIndex));
 			break;
 		}
-	case ~MessageCode::Reset:
+	case MessageCode::Reset:
 		{
 			if (Timer)
 			{
@@ -83,12 +83,10 @@ int TBumper::Message(int code, float value)
 			}
 			BmpIndex = 0;
 			MessageField = 0;
-			auto playerPtr = PlayerData;
-			for (auto index = 0; index < PinballTable->PlayerCount; ++index)
+			for (auto& playerPtr : PlayerData)
 			{
-				playerPtr->BmpIndex = 0;
-				playerPtr->MessageField = 0;
-				++playerPtr;
+				playerPtr.BmpIndex = 0;
+				playerPtr.MessageField = 0;
 			}
 			TimerExpired(0, this);
 			break;

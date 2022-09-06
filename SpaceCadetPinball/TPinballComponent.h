@@ -13,7 +13,7 @@ enum class MessageCode
 	// Private codes <1000, different meaning for each component
 	TFlipperExtend = 1,
 	TFlipperRetract = 2,
-	
+
 	TLightTurnOff = 0,
 	TLightTurnOn = 1,
 	TLightGetLightOnFlag = 2,
@@ -65,6 +65,32 @@ enum class MessageCode
 	TLightGroupToggleSplitIndex = 45,
 	TLightGroupStartFlasher = 46,
 
+	TBlockerDisable = 51,
+	TBlockerEnable = 52,
+	TBlockerRestartTimeout = 59,
+
+	TBumperSetBmpIndex = 11,
+	TBumperIncBmpIndex = 12,
+	TBumperDecBmpIndex = 13,
+
+	TComponentGroupResetNotifyTimer = 48,
+
+	TGateDisable = 53,
+	TGateEnable = 54,
+
+	TKickoutRestartTimer = 55,
+
+	TPopupTargetDisable = 49,
+	TPopupTargetEnable = 50,
+
+	TSinkUnknown7 = 7,
+	TSinkResetTimer = 56,
+
+	TSoloTargetDisable = 49,
+	TSoloTargetEnable = 50,
+
+	TTimerResetTimer = 59,
+
 	// Public codes 1000+, apply to all components
 	LeftFlipperInputPressed = 1000,
 	LeftFlipperInputReleased = 1001,
@@ -76,7 +102,7 @@ enum class MessageCode
 	Resume = 1009,
 	LooseFocus = 1010,
 	SetTiltLock = 1011,
-	ResetTiltLock = 1012,
+	ClearTiltLock = 1012,
 	StartGamePlayer1 = 1013,
 	NewGame = 1014,
 	PlungerFeedBall = 1015,

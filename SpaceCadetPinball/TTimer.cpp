@@ -4,26 +4,30 @@
 #include "control.h"
 #include "timer.h"
 
-TTimer::TTimer(TPinballTable* table, int groupIndex) : TPinballComponent(table, groupIndex, true)
+TTimer::TTimer(TPinballTable* table, int groupIndex) : TPinballComponent2(table, groupIndex, true)
 {
 	Timer = 0;
 }
 
-int TTimer::Message(int code, float value)
+int TTimer::Message2(MessageCode code, float value)
 {
-	if (code == 59)
+	switch (code)
 	{
+	case MessageCode::TTimerResetTimer:
 		if (Timer)
 			timer::kill(Timer);
 		Timer = timer::set(value, this, TimerExpired);
-	}
-	else if (code == 1011 || code == 1022 || code == 1024)
-	{
+		break;
+	case MessageCode::SetTiltLock:
+	case MessageCode::GameOver:
+	case MessageCode::Reset:
 		if (Timer)
 		{
 			timer::kill(Timer);
 			Timer = 0;
 		}
+		break;
+	default: break;
 	}
 	return 0;
 }

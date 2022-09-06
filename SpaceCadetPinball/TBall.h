@@ -5,14 +5,14 @@
 class TCollisionComponent;
 class TEdgeSegment;
 
-class TBall : public TPinballComponent
+class TBall : public TPinballComponent2
 {
 public :
 	TBall(TPinballTable* table);
 	void Repaint();
 	void not_again(TEdgeSegment* edge);
 	bool already_hit(TEdgeSegment* edge);
-	int Message(int code, float value) override;
+	int Message2(MessageCode code, float value) override;
 	vector2 get_coordinates() override;
 	void Disable();
 

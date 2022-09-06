@@ -10,7 +10,7 @@
 #include "TBall.h"
 
 TDemo::TDemo(TPinballTable* table, int groupIndex)
-	: TCollisionComponent(table, groupIndex, false)
+	: TCollisionComponent2(table, groupIndex, false)
 {
 	visualStruct visual{};
 
@@ -56,23 +56,23 @@ TDemo::TDemo(TPinballTable* table, int groupIndex)
 	Edge3 = TEdgeSegment::install_wall(v9, this, &ActiveFlag, visual.CollisionGroup, table->CollisionCompOffset, 1404);
 }
 
-int TDemo::Message(int code, float value)
+int TDemo::Message2(MessageCode code, float value)
 {
 	switch (code)
 	{
-	case ~MessageCode::NewGame:
+	case MessageCode::NewGame:
 		if (RestartGameTimer)
 			timer::kill(RestartGameTimer);
 		RestartGameTimer = 0;
 		break;
-	case ~MessageCode::GameOver:
+	case MessageCode::GameOver:
 		if (RestartGameTimer)
 			timer::kill(RestartGameTimer);
 		RestartGameTimer = 0;
 		if (ActiveFlag != 0)
 			RestartGameTimer = timer::set(5.0, this, NewGameRestartTimer);
 		break;
-	case ~MessageCode::Reset:
+	case MessageCode::Reset:
 		if (FlipLeftTimer)
 			timer::kill(FlipLeftTimer);
 		FlipLeftTimer = 0;

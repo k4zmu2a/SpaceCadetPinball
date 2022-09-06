@@ -356,7 +356,7 @@ int TPinballTable::Message2(MessageCode code, float value)
 			component->Message2(code, value);
 		}
 		break;
-	case MessageCode::ResetTiltLock:
+	case MessageCode::ClearTiltLock:
 		LightGroup->Message(14, 0.0);
 		if (TiltLockFlag)
 		{
