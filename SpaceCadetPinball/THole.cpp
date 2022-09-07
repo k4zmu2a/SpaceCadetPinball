@@ -88,7 +88,7 @@ void THole::Collision(TBall* ball, vector2* nextPosition, vector2* direction, fl
 		if (!PinballTable->TiltLockFlag)
 		{
 			loader::play_sound(HardHitSoundId, ball, "THole1");
-			control::handler(57, this);
+			control::handler(MessageCode::ControlBallCaptured, this);
 		}
 	}
 }
@@ -116,7 +116,7 @@ int THole::FieldEffect(TBall* ball, vector2* vecDst)
 				ball->Direction.X = 0.0;
 				ball->Speed = 0.0;
 				loader::play_sound(SoftHitSoundId, ball, "THole2");
-				control::handler(58, this);
+				control::handler(MessageCode::ControlBallReleased, this);
 			}
 		}
 		result = 0;

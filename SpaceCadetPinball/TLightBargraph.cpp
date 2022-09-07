@@ -120,11 +120,11 @@ void TLightBargraph::BargraphTimerExpired(int timerId, void* caller)
 	if (bar->TimeIndex)
 	{
 		bar->Message(MessageCode::TLightGroupToggleSplitIndex, static_cast<float>(bar->TimeIndex - 1));
-		control::handler(60, bar);
+		control::handler(MessageCode::ControlTimerExpired, bar);
 	}
 	else
 	{
 		bar->Message(MessageCode::TLightResetAndTurnOff, 0.0);
-		control::handler(47, bar);
+		control::handler(MessageCode::TLightGroupCountdownEnded, bar);
 	}
 }

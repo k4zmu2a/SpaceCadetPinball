@@ -52,7 +52,7 @@ void TOneway::Collision(TBall* ball, vector2* nextPosition, vector2* direction, 
 		{
 			if (HardHitSoundId)
 				loader::play_sound(HardHitSoundId, ball, "TOneway1");
-			control::handler(63, this);
+			control::handler(MessageCode::ControlCollision, this);
 		}
 	}
 	else if (PinballTable->TiltLockFlag)

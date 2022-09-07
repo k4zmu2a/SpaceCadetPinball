@@ -41,7 +41,7 @@ int TBumper::Message(MessageCode code, float value)
 					loader::play_sound(SoundIndex3, this, "TBumper2");
 				BmpIndex = nextBmp;
 				Fire();
-				control::handler(11, this);
+				control::handler(MessageCode::TBumperSetBmpIndex, this);
 			}
 			break;
 		}
@@ -103,7 +103,7 @@ void TBumper::Collision(TBall* ball, vector2* nextPosition, vector2* direction, 
 	if (DefaultCollision(ball, nextPosition, direction))
 	{
 		Fire();
-		control::handler(63, this);
+		control::handler(MessageCode::ControlCollision, this);
 	}
 }
 

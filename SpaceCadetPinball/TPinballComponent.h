@@ -65,10 +65,7 @@ enum class MessageCode
 	TLightGroupFlashWhenOn = 44,
 	TLightGroupToggleSplitIndex = 45,
 	TLightGroupStartFlasher = 46,
-
-	TBlockerDisable = 51,
-	TBlockerEnable = 52,
-	TBlockerRestartTimeout = 59,
+	TLightGroupCountdownEnded = 47,
 
 	TBumperSetBmpIndex = 11,
 	TBumperIncBmpIndex = 12,
@@ -76,13 +73,17 @@ enum class MessageCode
 
 	TComponentGroupResetNotifyTimer = 48,
 
+	TPopupTargetDisable = 49,
+	TPopupTargetEnable = 50,
+
+	TBlockerDisable = 51,
+	TBlockerEnable = 52,
+	TBlockerRestartTimeout = 59,
+
 	TGateDisable = 53,
 	TGateEnable = 54,
 
 	TKickoutRestartTimer = 55,
-
-	TPopupTargetDisable = 49,
-	TPopupTargetEnable = 50,
 
 	TSinkUnknown7 = 7,
 	TSinkResetTimer = 56,
@@ -91,6 +92,17 @@ enum class MessageCode
 	TSoloTargetEnable = 50,
 
 	TTimerResetTimer = 59,
+
+	ControlBallCaptured = 57,
+	ControlBallReleased = 58,
+	ControlTimerExpired = 60,
+	ControlNotifyTimerExpired = 61,
+	ControlSpinnerLoopReset = 62,
+	ControlCollision = 63,
+	ControlEnableMultiplier = 64,
+	ControlDisableMultiplier = 65,
+	ControlMissionComplete = 66,
+	ControlMissionStarted = 67,
 
 	// Public codes 1000+, apply to all components
 	LeftFlipperInputPressed = 1000,

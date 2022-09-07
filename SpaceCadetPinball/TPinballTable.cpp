@@ -301,7 +301,7 @@ void TPinballTable::tilt(float time)
 		}
 		LightGroup->Message(MessageCode::TLightTurnOffTimed, 0);
 		TiltLockFlag = 1;
-		control::table_control_handler(1011);
+		control::table_control_handler(MessageCode::SetTiltLock);
 	}
 }
 
@@ -589,7 +589,7 @@ int TPinballTable::Message(MessageCode code, float value)
 	default: break;
 	}
 
-	control::table_control_handler(~code);
+	control::table_control_handler(code);
 	return 0;
 }
 
@@ -662,7 +662,7 @@ void TPinballTable::EndGame_timeout(int timerId, void* caller)
 	}
 	if (table->Demo)
 		table->Demo->Message(MessageCode::GameOver, 0.0);
-	control::handler(67, pb::MissTextBox);
+	control::handler(MessageCode::ControlMissionStarted, pb::MissTextBox);
 	pb::InfoTextBox->Display(pb::get_rc_string(Msg::STRING125), -1.0);
 }
 

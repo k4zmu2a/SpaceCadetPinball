@@ -20,6 +20,6 @@ void TTripwire::Collision(TBall* ball, vector2* nextPosition, vector2* direction
 	if (!PinballTable->TiltLockFlag)
 	{
 		loader::play_sound(SoftHitSoundId, ball, "TTripwire");
-		control::handler(63, this);
+		control::handler(MessageCode::ControlCollision, this);
 	}
 }

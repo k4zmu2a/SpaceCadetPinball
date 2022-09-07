@@ -104,11 +104,11 @@ void TFlagSpinner::NextFrame()
 
 	if (!PinballTable->TiltLockFlag)
 	{
-		control::handler(63, this);
+		control::handler(MessageCode::ControlCollision, this);
 		if (SoftHitSoundId)
 			loader::play_sound(SoftHitSoundId, this, "TFlagSpinner");
 		if (!BmpIndex)
-			control::handler(62, this);
+			control::handler(MessageCode::ControlSpinnerLoopReset, this);
 	}
 
 	auto bmp = ListBitmap->at(BmpIndex);

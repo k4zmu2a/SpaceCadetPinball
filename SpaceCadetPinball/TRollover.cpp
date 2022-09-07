@@ -55,7 +55,7 @@ void TRollover::Collision(TBall* ball, vector2* nextPosition, vector2* direction
 		else
 		{
 			loader::play_sound(SoftHitSoundId, ball, "TRollover");
-			control::handler(63, this);
+			control::handler(MessageCode::ControlCollision, this);
 		}
 		RolloverFlag = RolloverFlag == 0;
 		if (ListBitmap)

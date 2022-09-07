@@ -65,7 +65,7 @@ void TSink::Collision(TBall* ball, vector2* nextPosition, vector2* direction, fl
 	{
 		ball->Disable();
 		loader::play_sound(SoundIndex4, ball, "TSink1");
-		control::handler(63, this);
+		control::handler(MessageCode::ControlCollision, this);
 	}
 }
 

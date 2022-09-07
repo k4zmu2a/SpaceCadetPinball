@@ -60,7 +60,7 @@ void TSoloTarget::Collision(TBall* ball, vector2* nextPosition, vector2* directi
 	{
 		Message(MessageCode::TSoloTargetDisable, 0.0);
 		Timer = timer::set(TimerTime, this, TimerExpired);
-		control::handler(63, this);
+		control::handler(MessageCode::ControlCollision, this);
 	}
 }
 

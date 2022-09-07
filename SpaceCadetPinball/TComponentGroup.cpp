@@ -60,5 +60,5 @@ void TComponentGroup::NotifyTimerExpired(int timerId, void* caller)
 {
 	auto compGroup = static_cast<TComponentGroup*>(caller);
 	compGroup->Timer = 0;
-	control::handler(61, compGroup);
+	control::handler(MessageCode::ControlNotifyTimerExpired, compGroup);
 }

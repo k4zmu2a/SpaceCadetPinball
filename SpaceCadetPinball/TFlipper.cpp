@@ -70,7 +70,7 @@ int TFlipper::Message(MessageCode code, float value)
 	case MessageCode::GameOver:
 		if (code == MessageCode::TFlipperExtend)
 		{
-			control::handler(1, this);
+			control::handler(MessageCode::TFlipperExtend, this);
 			loader::play_sound(HardHitSoundId, this, "TFlipper1");
 		}
 		else if (code == MessageCode::TFlipperRetract)

@@ -15,7 +15,7 @@ TGate::TGate(TPinballTable* table, int groupIndex) : TCollisionComponent(table, 
 	SoundIndex3 = visual.SoundIndex3;
 	ActiveFlag = 1;
 	render::sprite_set_bitmap(RenderSprite, ListBitmap->at(0));
-	control::handler(1024, this);
+	control::handler(MessageCode::Reset, this);
 }
 
 int TGate::Message(MessageCode code, float value)
@@ -37,6 +37,6 @@ int TGate::Message(MessageCode code, float value)
 	default: break;
 	}
 
-	control::handler(~code, this);
+	control::handler(code, this);
 	return 0;
 }

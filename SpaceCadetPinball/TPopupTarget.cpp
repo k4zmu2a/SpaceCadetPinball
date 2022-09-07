@@ -70,7 +70,7 @@ void TPopupTarget::Collision(TBall* ball, vector2* nextPosition, vector2* direct
 		if (HardHitSoundId)
 			loader::play_sound(HardHitSoundId, this, "TPopupTarget1");
 		Message(MessageCode::TPopupTargetDisable, 0.0);
-		control::handler(63, this);
+		control::handler(MessageCode::ControlCollision, this);
 	}
 }
 

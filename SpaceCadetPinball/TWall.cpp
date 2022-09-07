@@ -33,7 +33,7 @@ void TWall::Collision(TBall* ball, vector2* nextPosition, vector2* direction, fl
 			render::sprite_set_bitmap(RenderSprite, BmpPtr);
 			Timer = timer::set(0.1f, this, TimerExpired);
 		}
-		control::handler(63, this);
+		control::handler(MessageCode::ControlCollision, this);
 	}
 }
 

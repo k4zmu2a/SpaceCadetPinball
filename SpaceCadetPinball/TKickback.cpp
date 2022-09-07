@@ -89,6 +89,6 @@ void TKickback::TimerExpired(int timerId, void* caller)
 				bmp->YPosition - kick->PinballTable->YOffset);
 		}
 		kick->Timer = 0;
-		control::handler(60, kick);
+		control::handler(MessageCode::ControlTimerExpired, kick);
 	}
 }

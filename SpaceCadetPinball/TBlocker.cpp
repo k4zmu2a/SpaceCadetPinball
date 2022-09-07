@@ -66,5 +66,5 @@ void TBlocker::TimerExpired(int timerId, void* caller)
 {
 	auto blocker = static_cast<TBlocker*>(caller);
 	blocker->Timer = 0;
-	control::handler(60, blocker);
+	control::handler(MessageCode::ControlTimerExpired, blocker);
 }

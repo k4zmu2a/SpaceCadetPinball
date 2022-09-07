@@ -38,11 +38,11 @@ void TDrain::Collision(TBall* ball, vector2* nextPosition, vector2* direction, f
 		PinballTable->BallInDrainFlag = 1;
 		Timer = timer::set(TimerTime, this, TimerCallback);
 	}
-	control::handler(63, this);
+	control::handler(MessageCode::ControlCollision, this);
 }
 
 void TDrain::TimerCallback(int timerId, void* caller)
 {
 	auto drain = static_cast<TDrain*>(caller);
-	control::handler(60, drain);
+	control::handler(MessageCode::ControlTimerExpired, drain);
 }

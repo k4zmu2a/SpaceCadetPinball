@@ -301,7 +301,7 @@ void TLight::TimerExpired(int timerId, void* caller)
 		light->Message(MessageCode::TLightResetAndTurnOff, 0.0);
 	}
 	if (light->Control)
-		control::handler(60, light);
+		control::handler(MessageCode::ControlTimerExpired, light);
 }
 
 

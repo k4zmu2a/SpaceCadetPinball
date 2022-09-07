@@ -168,7 +168,7 @@ int TPlunger::Message(MessageCode code, float value)
 		break;
 	}
 
-	control::handler(~code, this);
+	control::handler(code, this);
 	return 0;
 }
 

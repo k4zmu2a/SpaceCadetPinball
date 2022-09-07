@@ -351,7 +351,7 @@ int TLightGroup::Message(MessageCode code, float value)
 		}
 	case MessageCode::TLightGroupToggleSplitIndex:
 		{
-			control::handler(~code, this);
+			control::handler(code, this);
 			auto index = static_cast<int>(floor(value));
 			if (index >= 0 && index < count)
 			{
@@ -460,5 +460,5 @@ void TLightGroup::NotifyTimerExpired(int timerId, void* caller)
 {
 	auto group = static_cast<TLightGroup*>(caller);
 	group->NotifyTimer = 0;
-	control::handler(61, group);
+	control::handler(MessageCode::ControlNotifyTimerExpired, group);
 }

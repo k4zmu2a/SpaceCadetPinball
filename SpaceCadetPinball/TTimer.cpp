@@ -37,5 +37,5 @@ void TTimer::TimerExpired(int timerId, void* caller)
 {
 	auto timer = static_cast<TTimer*>(caller);
 	timer->Timer = 0;
-	control::handler(60, timer);
+	control::handler(MessageCode::ControlTimerExpired, timer);
 }
