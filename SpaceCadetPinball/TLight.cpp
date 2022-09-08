@@ -343,3 +343,8 @@ void TLight::UndoTmpOverride(int timerId, void* caller)
 	auto light = static_cast<TLight*>(caller);
 	light->Message(MessageCode::TLightFtResetOverride, 0.0f);
 }
+
+bool TLight::light_on() const
+{
+	return LightOnFlag || ToggledOnFlag || FlasherOnFlag;
+}

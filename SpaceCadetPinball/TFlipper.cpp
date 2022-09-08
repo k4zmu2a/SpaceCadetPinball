@@ -83,14 +83,14 @@ int TFlipper::Message(MessageCode code, float value)
 			code = MessageCode::TFlipperRetract;
 		}
 
-		MessageField = FlipperEdge->SetMotion(~code, value);
+		MessageField = FlipperEdge->SetMotion(code, value);
 		break;
 	case MessageCode::PlayerChanged:
 	case MessageCode::Reset:
 		if (MessageField)
 		{
 			MessageField = 0;
-			FlipperEdge->SetMotion(1024, value);
+			FlipperEdge->SetMotion(MessageCode::Reset, value);
 			UpdateSprite(0);
 		}
 		break;

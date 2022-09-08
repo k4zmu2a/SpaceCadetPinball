@@ -11,6 +11,7 @@ class TPinballTable;
 enum class MessageCode
 {
 	// Private codes <1000, different meaning for each component
+	TFlipperNull = 0,
 	TFlipperExtend = 1,
 	TFlipperRetract = 2,
 
@@ -127,14 +128,6 @@ enum class MessageCode
 	GameOver = 1022,
 	Reset = 1024,
 };
-
-// Temporary hacks for int -> enum class migration.
-template <typename T, typename X = typename std::underlying_type<T>::type>
-constexpr typename std::enable_if<std::is_enum<T>::value, X>::type operator~(T value)
-{
-	return static_cast<X>(value);
-}
-
 
 class TPinballComponent
 {

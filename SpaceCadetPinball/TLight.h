@@ -23,6 +23,7 @@ public:
 	void flasher_stop(int bmpIndex);
 	void flasher_start(bool bmpIndex);
 	void SetSpriteBmp(gdrv_bitmap8* bmp);
+	bool light_on() const;
 
 	static void TimerExpired(int timerId, void* caller);
 	static void flasher_callback(int timerId, void* caller);

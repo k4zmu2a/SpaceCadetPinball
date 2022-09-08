@@ -45,7 +45,7 @@ TFlipperEdge::TFlipperEdge(TCollisionComponent* collComp, char* activeFlag, unsi
 	maths::cross(vecDir1, vecDir2, crossProd);
 	if (crossProd.Z < 0.0f)
 		AngleMax = -AngleMax;
-	FlipperFlag = 0;
+	FlipperFlag = MessageCode::TFlipperNull;
 	AngleDst = 0.0;
 
 	// 3DPB and FT have different formats for flipper speed:
@@ -109,11 +109,11 @@ float TFlipperEdge::FindCollisionDistance(ray_type* ray)
 
 	if (ogRay->TimeNow > AngleStopTime)
 	{
-		FlipperFlag = 0;
+		FlipperFlag = MessageCode::TFlipperNull;
 	}
 	if (EdgeCollisionFlag == 0)
 	{
-		if (FlipperFlag == 0)
+		if (FlipperFlag == MessageCode::TFlipperNull)
 		{
 			CollisionFlag1 = 0;
 			CollisionFlag2 = 0;
@@ -205,7 +205,7 @@ float TFlipperEdge::FindCollisionDistance(ray_type* ray)
 			if (ballInside != 0)
 			{
 				vector2* linePtr;
-				if (FlipperFlag == 1 && ballInside != 5)
+				if (FlipperFlag == MessageCode::TFlipperExtend && ballInside != 5)
 				{
 					linePtr = &lineA.PerpendicularC;
 					srcRay.Direction.Y = lineA.PerpendicularC.Y;
@@ -213,7 +213,7 @@ float TFlipperEdge::FindCollisionDistance(ray_type* ray)
 				}
 				else
 				{
-					if (FlipperFlag != 2 || ballInside == 4)
+					if (FlipperFlag != MessageCode::TFlipperRetract || ballInside == 4)
 					{
 						CollisionFlag1 = 0;
 						CollisionFlag2 = 1;
@@ -276,7 +276,7 @@ float TFlipperEdge::FindCollisionDistance(ray_type* ray)
 				NextBallPosition.X -= srcRay.Direction.X * 1e-05f;
 				NextBallPosition.Y -= srcRay.Direction.Y * 1e-05f;
 				vector2* linePtr;
-				if (FlipperFlag == 2)
+				if (FlipperFlag == MessageCode::TFlipperRetract)
 				{
 					linePtr = &lineB.PerpendicularC;
 					CollisionFlag1 = AngleMax <= 0.0f;
@@ -305,7 +305,7 @@ float TFlipperEdge::FindCollisionDistance(ray_type* ray)
 void TFlipperEdge::EdgeCollision(TBall* ball, float distance)
 {
 	EdgeCollisionFlag = 1;
-	if (!FlipperFlag || !CollisionFlag2 || CollisionFlag1)
+	if (FlipperFlag == MessageCode::TFlipperNull || !CollisionFlag2 || CollisionFlag1)
 	{
 		float boost = 0.0;
 		if (CollisionFlag1)
@@ -414,7 +414,7 @@ void TFlipperEdge::set_control_points(float timeNow)
 float TFlipperEdge::flipper_angle(float timeNow)
 {
 	// When not moving, flipper is at destination angle.
-	if (!FlipperFlag)
+	if (FlipperFlag == MessageCode::TFlipperNull)
 		return AngleDst;
 
 	// How much time it takes to go from source to destination angle, in sec.
@@ -441,9 +441,9 @@ int TFlipperEdge::is_ball_inside(float x, float y)
 		(T1.Y - y) * (T1.Y - y) + (T1.X - x) * (T1.X - x) < CircleT1RadiusSq)
 	{
 		float flipperLR = AngleMax < 0.0f ? -1.0f : 1.0f;
-		if (FlipperFlag == 1)
+		if (FlipperFlag == MessageCode::TFlipperExtend)
 			testPoint = AngleMax < 0.0f ? B1 : B2;
-		else if (FlipperFlag == 2)
+		else if (FlipperFlag == MessageCode::TFlipperRetract)
 			testPoint = AngleMax < 0.0f ? A2 : A1;
 		else
 			testPoint = T1;
@@ -456,21 +456,21 @@ int TFlipperEdge::is_ball_inside(float x, float y)
 	return 0;
 }
 
-int TFlipperEdge::SetMotion(int code, float value)
+int TFlipperEdge::SetMotion(MessageCode code, float value)
 {
 	switch (code)
 	{
-	case 1:
+	case MessageCode::TFlipperExtend:
 		AngleSrc = flipper_angle(value);
 		AngleDst = AngleMax;
 		AngleAdvanceTime = ExtendTime;
 		break;
-	case 2:
+	case MessageCode::TFlipperRetract:
 		AngleSrc = flipper_angle(value);
 		AngleDst = 0.0f;
 		AngleAdvanceTime = RetractTime;
 		break;
-	case ~MessageCode::Reset:
+	case MessageCode::Reset:
 		AngleSrc = 0.0f;
 		AngleDst = 0.0f;
 		break;
@@ -478,10 +478,10 @@ int TFlipperEdge::SetMotion(int code, float value)
 	}
 
 	if (AngleSrc == AngleDst)
-		code = 0;
+		code = MessageCode::TFlipperNull;
 
 	InputTime = value;
 	FlipperFlag = code;
 	AngleStopTime = AngleAdvanceTime + InputTime;
-	return code;
+	return static_cast<int>(code);
 }

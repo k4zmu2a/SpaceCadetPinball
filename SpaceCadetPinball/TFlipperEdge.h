@@ -1,6 +1,7 @@
 #pragma once
 #include "maths.h"
 #include "TEdgeSegment.h"
+#include "TPinballComponent.h"
 
 class TPinballTable;
 
@@ -17,9 +18,9 @@ public:
 	void set_control_points(float timeNow);
 	float flipper_angle(float timeNow);
 	int is_ball_inside(float x, float y);
-	int SetMotion(int code, float value);
+	int SetMotion(MessageCode code, float value);
 
-	int FlipperFlag;
+	MessageCode FlipperFlag{};
 	float Elasticity;
 	float Smoothness;
 	vector2 RotOrigin{};

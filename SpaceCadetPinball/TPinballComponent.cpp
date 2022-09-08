@@ -107,7 +107,7 @@ TPinballComponent::~TPinballComponent()
 
 int TPinballComponent::Message(MessageCode code, float value)
 {
-	MessageField = ~code;
+	MessageField = static_cast<int>(code);
 	if (code == MessageCode::Reset)
 		MessageField = 0;
 	return 0;

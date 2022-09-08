@@ -71,8 +71,8 @@ public:
 	static bool table_unlimited_balls;
 	static Msg RankRcArray[9], MissionRcArray[17];
 	static int mission_select_scores[17];
-	static std::reference_wrapper<TSink*> wormhole_tag_array1[3];
-	static std::reference_wrapper<TLight*> wormhole_tag_array2[3], wormhole_tag_array3[3];
+	static std::reference_wrapper<TSink*> WormholeSinkArray[3];
+	static std::reference_wrapper<TLight*> WormholeLightArray1[3], WormholeLightArray2[3];
 
 	static void make_links(TPinballTable* table);
 	static void ClearLinks();
@@ -88,7 +88,6 @@ public:
 	static void table_bump_ball_sink_lock();
 	static void table_set_replay(float value);
 	static void cheat_bump_rank();
-	static bool light_on(component_tag<TLight>* tag);
 	static int SpecialAddScore(int score);
 	static int AddRankProgress(int rank);
 	static void AdvanceWormHoleDestination(int flag);

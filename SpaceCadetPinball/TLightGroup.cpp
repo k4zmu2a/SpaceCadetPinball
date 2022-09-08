@@ -305,7 +305,7 @@ int TLightGroup::Message(MessageCode code, float value)
 	case MessageCode::TLightGroupGetLightCount:
 		return count;
 	case MessageCode::TLightGroupGetMessage2:
-		return ~MessageField2;
+		return static_cast<int>(MessageField2);
 	case MessageCode::TLightGroupGetAnimationFlag:
 		return AnimationFlag;
 	case MessageCode::TLightGroupResetAndTurnOn:

@@ -826,17 +826,17 @@ int control::mission_select_scores[17] =
 	30000
 };
 
-std::reference_wrapper<TSink*> control::wormhole_tag_array1[3] =
+std::reference_wrapper<TSink*> control::WormholeSinkArray[3] =
 {
 	sink1, sink2, sink3
 };
 
-std::reference_wrapper<TLight*> control::wormhole_tag_array2[3] =
+std::reference_wrapper<TLight*> control::WormholeLightArray1[3] =
 {
 	lite5, lite6, lite7
 };
 
-std::reference_wrapper<TLight*> control::wormhole_tag_array3[3] =
+std::reference_wrapper<TLight*> control::WormholeLightArray2[3] =
 {
 	lite4, lite2, lite3
 };
@@ -1050,12 +1050,6 @@ void control::cheat_bump_rank()
 	}
 }
 
-bool control::light_on(component_tag<TLight>* tag)
-{
-	auto light = tag->Component;
-	return light->LightOnFlag || light->ToggledOnFlag || light->FlasherOnFlag;
-}
-
 int control::SpecialAddScore(int score)
 {
 	int prevFlag1 = TableG->ScoreSpecial3Flag;
@@ -1124,7 +1118,7 @@ void control::AdvanceWormHoleDestination(int flag)
 			}
 			bsink_arrow_lights->Message(MessageCode::TLightSetMessageField, static_cast<float>(val2));
 			bsink_arrow_lights->Message(MessageCode::TLightSetOnStateBmpIndex, static_cast<float>(3 - val1));
-			if (!light_on(&control_lite4_tag))
+			if (!lite4->light_on())
 			{
 				worm_hole_lights->Message(MessageCode::TLightResetAndTurnOn, 0.0);
 				bsink_arrow_lights->Message(MessageCode::TLightResetAndTurnOn, 0.0);
@@ -1221,7 +1215,7 @@ void control::DeploymentChuteToEscapeChuteOneWayControl(MessageCode code, TPinba
 			int score = TableG->AddScore(caller->get_scoring(count - 1));
 			snprintf(Buffer, sizeof Buffer, pb::get_rc_string(Msg::STRING122), score);
 			info_text_box->Display(Buffer, 2.0);
-			if (!light_on(&control_lite56_tag))
+			if (!lite56->light_on())
 			{
 				l_trek_lights->Message(MessageCode::TLightGroupReset, 0.0);
 				l_trek_lights->Message(MessageCode::TLightResetAndTurnOff, 0.0);
@@ -1278,16 +1272,16 @@ void control::LaunchRampControl(MessageCode code, TPinballComponent* caller)
 	if (code == MessageCode::ControlCollision)
 	{
 		int someFlag = 0;
-		if (light_on(&control_lite54_tag))
+		if (lite54->light_on())
 		{
 			someFlag = 1;
 			int addedScore = SpecialAddScore(TableG->ScoreSpecial1);
 			snprintf(Buffer, sizeof Buffer, pb::get_rc_string(Msg::STRING111), addedScore);
 			info_text_box->Display(Buffer, 2.0);
 		}
-		if (light_on(&control_lite55_tag))
+		if (lite55->light_on())
 			someFlag |= 2u;
-		if (light_on(&control_lite56_tag))
+		if (lite56->light_on())
 			someFlag |= 4u;
 		if (someFlag)
 		{
@@ -1332,7 +1326,7 @@ void control::ReentryLanesRolloverControl(MessageCode code, TPinballComponent* c
 {
 	if (code == MessageCode::ControlCollision)
 	{
-		if (!light_on(&control_lite56_tag) && l_trek_lights->Message(MessageCode::TLightGroupGetMessage2, 0.0))
+		if (!lite56->light_on() && l_trek_lights->Message(MessageCode::TLightGroupGetMessage2, 0.0))
 		{
 			l_trek_lights->Message(MessageCode::TLightGroupReset, 0.0);
 			l_trek_lights->Message(MessageCode::TLightResetAndTurnOff, 0.0);
@@ -1434,7 +1428,7 @@ void control::OutLaneRolloverControl(MessageCode code, TPinballComponent* caller
 {
 	if (code == MessageCode::ControlCollision)
 	{
-		if (light_on(&control_lite17_tag) || light_on(&control_lite18_tag))
+		if (lite17->light_on() || lite18->light_on())
 		{
 			table_add_extra_ball(2.0);
 			lite17->Message(MessageCode::TLightResetAndTurnOff, 0.0);
@@ -1446,13 +1440,13 @@ void control::OutLaneRolloverControl(MessageCode code, TPinballComponent* caller
 		}
 		if (roll4 == caller)
 		{
-			if (light_on(&control_lite30_tag))
+			if (lite30->light_on())
 			{
 				lite30->Message(MessageCode::TLightFlasherStart, 0.0);
 				lite196->Message(MessageCode::TLightFlasherStart, 0.0);
 			}
 		}
-		else if (light_on(&control_lite29_tag))
+		else if (lite29->light_on())
 		{
 			lite29->Message(MessageCode::TLightFlasherStart, 0.0);
 			lite195->Message(MessageCode::TLightFlasherStart, 0.0);
@@ -1486,7 +1480,7 @@ void control::ReturnLaneRolloverControl(MessageCode code, TPinballComponent* cal
 	{
 		if (roll6 == caller)
 		{
-			if (light_on(&control_lite27_tag))
+			if (lite27->light_on())
 			{
 				lite59->Message(MessageCode::TLightResetAndTurnOff, 0.0);
 				lite27->Message(MessageCode::TLightResetAndTurnOff, 0.0);
@@ -1497,7 +1491,7 @@ void control::ReturnLaneRolloverControl(MessageCode code, TPinballComponent* cal
 		}
 		else if (roll7 == caller)
 		{
-			if (light_on(&control_lite28_tag))
+			if (lite28->light_on())
 			{
 				lite59->Message(MessageCode::TLightResetAndTurnOff, 0.0);
 				lite28->Message(MessageCode::TLightResetAndTurnOff, 0.0);
@@ -1515,7 +1509,7 @@ void control::BonusLaneRolloverControl(MessageCode code, TPinballComponent* call
 
 	if (code == MessageCode::ControlCollision)
 	{
-		if (light_on(&control_lite16_tag))
+		if (lite16->light_on())
 		{
 			int addedScore = SpecialAddScore(TableG->ScoreSpecial2);
 			snprintf(Buffer, sizeof Buffer, pb::get_rc_string(Msg::STRING104), addedScore);
@@ -1700,10 +1694,10 @@ void control::WormHoleControl(MessageCode code, TPinballComponent* caller)
 				}
 
 				info_text_box->Display(pb::get_rc_string(Msg::STRING150), 2.0);
-				wormhole_tag_array2[sinkFlag].get()->Message(MessageCode::TLightFlasherStartTimedThenStayOff, sink->TimerTime);
-				wormhole_tag_array3[sinkFlag].get()->Message(MessageCode::TLightSetOnStateBmpIndex, static_cast<float>(2 - sinkFlag));
-				wormhole_tag_array3[sinkFlag].get()->Message(MessageCode::TLightFlasherStartTimedThenStayOff, sink->TimerTime);
-				wormhole_tag_array1[sinkFlag].get()->Message(MessageCode::TSinkResetTimer, sink->TimerTime);
+				WormholeLightArray1[sinkFlag].get()->Message(MessageCode::TLightFlasherStartTimedThenStayOff, sink->TimerTime);
+				WormholeLightArray2[sinkFlag].get()->Message(MessageCode::TLightSetOnStateBmpIndex, static_cast<float>(2 - sinkFlag));
+				WormholeLightArray2[sinkFlag].get()->Message(MessageCode::TLightFlasherStartTimedThenStayOff, sink->TimerTime);
+				WormholeSinkArray[sinkFlag].get()->Message(MessageCode::TSinkResetTimer, sink->TimerTime);
 				return;
 			}
 			TableG->AddScore(sink->get_scoring(2));
@@ -1715,10 +1709,10 @@ void control::WormHoleControl(MessageCode code, TPinballComponent* caller)
 			sinkFlag2 = sinkFlag;
 		}
 
-		wormhole_tag_array2[sinkFlag2].get()->Message(MessageCode::TLightFlasherStartTimedThenStayOff, sink->TimerTime);
-		wormhole_tag_array3[sinkFlag2].get()->Message(MessageCode::TLightSetOnStateBmpIndex, static_cast<float>(2 - sinkFlag2));
-		wormhole_tag_array3[sinkFlag2].get()->Message(MessageCode::TLightFlasherStartTimedThenStayOff, sink->TimerTime);
-		wormhole_tag_array1[sinkFlag2].get()->Message(MessageCode::TSinkResetTimer, sink->TimerTime);
+		WormholeLightArray1[sinkFlag2].get()->Message(MessageCode::TLightFlasherStartTimedThenStayOff, sink->TimerTime);
+		WormholeLightArray2[sinkFlag2].get()->Message(MessageCode::TLightSetOnStateBmpIndex, static_cast<float>(2 - sinkFlag2));
+		WormholeLightArray2[sinkFlag2].get()->Message(MessageCode::TLightFlasherStartTimedThenStayOff, sink->TimerTime);
+		WormholeSinkArray[sinkFlag2].get()->Message(MessageCode::TSinkResetTimer, sink->TimerTime);
 		info_text_box->Display(pb::get_rc_string(Msg::STRING150), 2.0);
 	}
 }
@@ -1767,13 +1761,13 @@ void control::BoosterTargetControl(MessageCode code, TPinballComponent* caller)
 			TableG->AddScore(caller->get_scoring(0));
 			return;
 		}
-		if (light_on(&control_lite61_tag))
+		if (lite61->light_on())
 		{
-			if (light_on(&control_lite60_tag))
+			if (lite60->light_on())
 			{
-				if (light_on(&control_lite59_tag))
+				if (lite59->light_on())
 				{
-					if (light_on(&control_lite58_tag))
+					if (lite58->light_on())
 					{
 						TableG->AddScore(caller->get_scoring(1));
 					}
@@ -1926,7 +1920,7 @@ void control::MissionSpotTargetControl(MessageCode code, TPinballComponent* call
 		lite->Message(MessageCode::TLightFlasherStartTimedThenStayOn, 2.0);
 
 		TSound* sound;
-		if (!light_on(&control_lite198_tag) || lite198->FlasherOnFlag)
+		if (!lite198->light_on() || lite198->FlasherOnFlag)
 		{
 			sound = soundwave52;
 		}
@@ -2015,7 +2009,7 @@ void control::WormHoleDestinationControl(MessageCode code, TPinballComponent* ca
 {
 	if (code == MessageCode::ControlCollision)
 	{
-		if (!light_on(&control_lite110_tag))
+		if (!lite110->light_on())
 		{
 			lite110->Message(MessageCode::TLightFlasherStartTimedThenStayOn, 3.0);
 			info_text_box->Display(pb::get_rc_string(Msg::STRING194), 2.0);
@@ -2046,7 +2040,7 @@ void control::FlagControl(MessageCode code, TPinballComponent* caller)
 	}
 	else if (code == MessageCode::ControlCollision)
 	{
-		int score = caller->get_scoring(light_on(&control_lite20_tag));
+		int score = caller->get_scoring(lite20->light_on());
 		TableG->AddScore(score);
 	}
 }
@@ -2095,7 +2089,7 @@ void control::SkillShotGate1Control(MessageCode code, TPinballComponent* caller)
 	if (code == MessageCode::ControlCollision)
 	{
 		lite200->Message(MessageCode::TLightTurnOnTimed, 5.0);
-		if (light_on(&control_lite67_tag))
+		if (lite67->light_on())
 		{
 			skill_shot_lights->Message(MessageCode::TLightGroupReset, 0.0);
 			skill_shot_lights->Message(MessageCode::TLightResetAndTurnOff, 0.0);
@@ -2112,7 +2106,7 @@ void control::SkillShotGate2Control(MessageCode code, TPinballComponent* caller)
 {
 	if (code == MessageCode::ControlCollision)
 	{
-		if (light_on(&control_lite67_tag))
+		if (lite67->light_on())
 		{
 			lite68->Message(MessageCode::TLightResetAndTurnOn, 0.0);
 			soundwave14_2->Play(lite68, "SkillShotGate2Control");
@@ -2124,7 +2118,7 @@ void control::SkillShotGate3Control(MessageCode code, TPinballComponent* caller)
 {
 	if (code == MessageCode::ControlCollision)
 	{
-		if (light_on(&control_lite67_tag))
+		if (lite67->light_on())
 		{
 			lite69->Message(MessageCode::TLightResetAndTurnOn, 0.0);
 			soundwave14_2->Play(lite69, "SkillShotGate3Control");
@@ -2136,7 +2130,7 @@ void control::SkillShotGate4Control(MessageCode code, TPinballComponent* caller)
 {
 	if (code == MessageCode::ControlCollision)
 	{
-		if (light_on(&control_lite67_tag))
+		if (lite67->light_on())
 		{
 			lite131->Message(MessageCode::TLightResetAndTurnOn, 0.0);
 			soundwave14_2->Play(lite131, "SkillShotGate4Control");
@@ -2148,7 +2142,7 @@ void control::SkillShotGate5Control(MessageCode code, TPinballComponent* caller)
 {
 	if (code == MessageCode::ControlCollision)
 	{
-		if (light_on(&control_lite67_tag))
+		if (lite67->light_on())
 		{
 			lite132->Message(MessageCode::TLightResetAndTurnOn, 0.0);
 			soundwave14_2->Play(lite132, "SkillShotGate5Control");
@@ -2160,7 +2154,7 @@ void control::SkillShotGate6Control(MessageCode code, TPinballComponent* caller)
 {
 	if (code == MessageCode::ControlCollision)
 	{
-		if (light_on(&control_lite67_tag))
+		if (lite67->light_on())
 		{
 			lite133->Message(MessageCode::TLightResetAndTurnOn, 0.0);
 			soundwave14_2->Play(lite133, "SkillShotGate6Control");
@@ -2389,16 +2383,16 @@ void control::HyperspaceKickOutControl(MessageCode code, TPinballComponent* call
 	}
 
 	int someFlag = 0;
-	if (light_on(&control_lite25_tag))
+	if (lite25->light_on())
 	{
 		someFlag = 1;
 		auto addedScore = SpecialAddScore(TableG->ScoreSpecial1);
 		snprintf(Buffer, sizeof Buffer, pb::get_rc_string(Msg::STRING111), addedScore);
 		info_text_box->Display(Buffer, 2.0);
 	}
-	if (light_on(&control_lite26_tag))
+	if (lite26->light_on())
 		someFlag |= 2u;
-	if (light_on(&control_lite130_tag))
+	if (lite130->light_on())
 	{
 		someFlag |= 4u;
 		lite130->Message(MessageCode::TLightResetAndTurnOff, 0.0);
@@ -2483,7 +2477,7 @@ void control::PlungerControl(MessageCode code, TPinballComponent* caller)
 		table_unlimited_balls = false;
 		if (!middle_circle->Message(MessageCode::TLightGroupGetOnCount, 0.0))
 			middle_circle->Message(MessageCode::TLightGroupOffsetAnimationForward, 0.0);
-		if (!light_on(&control_lite200_tag))
+		if (!lite200->light_on())
 		{
 			skill_shot_lights->Message(MessageCode::TLightResetAndTurnOff, 0.0);
 			lite67->Message(MessageCode::TLightResetAndTurnOn, 0.0);
@@ -2627,14 +2621,14 @@ void control::BallDrainControl(MessageCode code, TPinballComponent* caller)
 				lite199->Message(MessageCode::TLightResetAndTurnOff, 0.0);
 				midi::play_track(MidiTracks::Track1, false);
 			}
-			if (light_on(&control_lite200_tag))
+			if (lite200->light_on())
 			{
 				soundwave27->Play(nullptr, "BallDrainControl2");
 				lite200->Message(MessageCode::TLightResetAndTurnOn, 0.0);
 				info_text_box->Display(pb::get_rc_string(Msg::STRING197), -1.0);
 				soundwave59->Play(nullptr, "BallDrainControl3");
 			}
-			else if (light_on(&control_lite199_tag))
+			else if (lite199->light_on())
 			{
 				soundwave27->Play(nullptr, "BallDrainControl4");
 				lite199->Message(MessageCode::TLightResetAndTurnOff, 0.0);
@@ -2771,7 +2765,7 @@ void control::BallDrainControl(MessageCode code, TPinballComponent* caller)
 					lite198->MessageField = 0;
 				MissionControl(MessageCode::ControlMissionComplete, nullptr);
 				TableG->Message(MessageCode::ClearTiltLock, 0.0);
-				if (light_on(&control_lite58_tag))
+				if (lite58->light_on())
 					lite58->Message(MessageCode::TLightResetAndTurnOff, 0.0);
 				else
 					TableG->ScoreSpecial2 = 25000;
@@ -2891,9 +2885,9 @@ void control::BlackHoleThreatController(MessageCode code, TPinballComponent* cal
 		if (kickout3 == caller
 			&& bump5->BmpIndex)
 		{
-			if (light_on(&control_lite316_tag))
+			if (lite316->light_on())
 				lite316->Message(MessageCode::TLightResetAndTurnOff, 0.0);
-			if (light_on(&control_lite314_tag))
+			if (lite314->light_on())
 				lite314->Message(MessageCode::TLightResetAndTurnOff, 0.0);
 			lite198->MessageField = 1;
 			MissionControl(MessageCode::ControlMissionComplete, nullptr);
@@ -2920,9 +2914,9 @@ void control::BlackHoleThreatController(MessageCode code, TPinballComponent* cal
 		if (bump5->BmpIndex)
 		{
 			mission_text_box->Display(pb::get_rc_string(Msg::STRING224), -1.0);
-			if (light_on(&control_lite316_tag))
+			if (lite316->light_on())
 				lite316->Message(MessageCode::TLightResetAndTurnOff, 0.0);
-			if (!light_on(&control_lite314_tag))
+			if (!lite314->light_on())
 			{
 				lite314->Message(MessageCode::TLightFlasherStartTimed, 0.0);
 			}
@@ -2930,9 +2924,9 @@ void control::BlackHoleThreatController(MessageCode code, TPinballComponent* cal
 		else
 		{
 			mission_text_box->Display(pb::get_rc_string(Msg::STRING223), -1.0);
-			if (light_on(&control_lite314_tag))
+			if (lite314->light_on())
 				lite314->Message(MessageCode::TLightResetAndTurnOff, 0.0);
-			if (!light_on(&control_lite316_tag))
+			if (!lite316->light_on())
 			{
 				lite316->Message(MessageCode::TLightFlasherStartTimed, 0.0);
 			}
@@ -3767,7 +3761,7 @@ void control::RescueMissionController(MessageCode code, TPinballComponent* calle
 				MissionControl(MessageCode::ControlMissionStarted, caller);
 				return;
 			}
-			if (kickout2 != caller || !light_on(&control_lite20_tag))
+			if (kickout2 != caller || !lite20->light_on())
 				return;
 			lite56->MessageField = lite56->MessageField - 1;
 			if (lite56->MessageField)
@@ -3775,9 +3769,9 @@ void control::RescueMissionController(MessageCode code, TPinballComponent* calle
 				MissionControl(MessageCode::ControlMissionStarted, caller);
 				return;
 			}
-			if (light_on(&control_lite303_tag))
+			if (lite303->light_on())
 				lite303->Message(MessageCode::TLightResetAndTurnOff, 0.0);
-			if (light_on(&control_lite304_tag))
+			if (lite304->light_on())
 				lite304->Message(MessageCode::TLightResetAndTurnOff, 0.0);
 			lite198->MessageField = 1;
 			MissionControl(MessageCode::ControlMissionComplete, nullptr);
@@ -3797,12 +3791,12 @@ void control::RescueMissionController(MessageCode code, TPinballComponent* calle
 		lite56->MessageField = 1;
 		break;
 	case MessageCode::ControlMissionStarted:
-		if (light_on(&control_lite20_tag))
+		if (lite20->light_on())
 		{
 			mission_text_box->Display(pb::get_rc_string(Msg::STRING229), -1.0);
-			if (light_on(&control_lite303_tag))
+			if (lite303->light_on())
 				lite303->Message(MessageCode::TLightResetAndTurnOff, 0.0);
-			if (!light_on(&control_lite304_tag))
+			if (!lite304->light_on())
 			{
 				lite304->Message(MessageCode::TLightFlasherStartTimed, 0.0);
 			}
@@ -3810,9 +3804,9 @@ void control::RescueMissionController(MessageCode code, TPinballComponent* calle
 		else
 		{
 			mission_text_box->Display(pb::get_rc_string(Msg::STRING228), -1.0);
-			if (light_on(&control_lite304_tag))
+			if (lite304->light_on())
 				lite304->Message(MessageCode::TLightResetAndTurnOff, 0.0);
-			if (!light_on(&control_lite303_tag))
+			if (!lite303->light_on())
 			{
 				lite303->Message(MessageCode::TLightFlasherStartTimed, 0.0);
 			}
@@ -4053,17 +4047,17 @@ void control::SelectMissionController(MessageCode code, TPinballComponent* calle
 			if (!missionLevel)
 			{
 				if (ramp == caller
-					&& light_on(&control_lite56_tag)
+					&& lite56->light_on()
 					&& fuel_bargraph->Message(MessageCode::TLightGroupGetOnCount, 0.0))
 				{
 					lite56->Message(MessageCode::TLightResetAndTurnOff, 0.0);
 					lite198->Message(MessageCode::TLightResetAndTurnOn, 0.0);
 					outer_circle->Message(MessageCode::TLightGroupAnimationBackward, -1.0);
-					if (light_on(&control_lite317_tag))
+					if (lite317->light_on())
 						lite317->Message(MessageCode::TLightResetAndTurnOff, 0.0);
-					if (light_on(&control_lite318_tag))
+					if (lite318->light_on())
 						lite318->Message(MessageCode::TLightResetAndTurnOff, 0.0);
-					if (light_on(&control_lite319_tag))
+					if (lite319->light_on())
 						lite319->Message(MessageCode::TLightResetAndTurnOff, 0.0);
 					lite198->MessageField = lite56->MessageField;
 					auto scoreId = lite56->MessageField - 2;
@@ -4207,26 +4201,26 @@ void control::SelectMissionController(MessageCode code, TPinballComponent* calle
 
 	if (fuel_bargraph->Message(MessageCode::TLightGroupGetOnCount, 0.0))
 	{
-		if (light_on(&control_lite56_tag))
+		if (lite56->light_on() && lite56->MessageField >= 2)
 		{
 			auto missionText = pb::get_rc_string(MissionRcArray[lite56->MessageField - 2]);
 			snprintf(Buffer, sizeof Buffer, pb::get_rc_string(Msg::STRING207), missionText);
 			mission_text_box->Display(Buffer, -1.0);
-			if (light_on(&control_lite318_tag))
+			if (lite318->light_on())
 				lite318->Message(MessageCode::TLightResetAndTurnOff, 0.0);
-			if (light_on(&control_lite319_tag))
+			if (lite319->light_on())
 				lite319->Message(MessageCode::TLightResetAndTurnOff, 0.0);
-			if (!light_on(&control_lite317_tag))
+			if (!lite317->light_on())
 				lite317->Message(MessageCode::TLightFlasherStartTimed, 0.0);
 		}
 		else
 		{
 			mission_text_box->Display(pb::get_rc_string(Msg::STRING205), -1.0);
-			if (light_on(&control_lite317_tag))
+			if (lite317->light_on())
 				lite317->Message(MessageCode::TLightResetAndTurnOff, 0.0);
-			if (light_on(&control_lite318_tag))
+			if (lite318->light_on())
 				lite318->Message(MessageCode::TLightResetAndTurnOff, 0.0);
-			if (!light_on(&control_lite319_tag))
+			if (!lite319->light_on())
 			{
 				lite319->Message(MessageCode::TLightFlasherStartTimed, 0.0);
 			}
@@ -4235,11 +4229,11 @@ void control::SelectMissionController(MessageCode code, TPinballComponent* calle
 	else
 	{
 		mission_text_box->Display(pb::get_rc_string(Msg::STRING206), -1.0);
-		if (light_on(&control_lite317_tag))
+		if (lite317->light_on())
 			lite317->Message(MessageCode::TLightResetAndTurnOff, 0.0);
-		if (light_on(&control_lite319_tag))
+		if (lite319->light_on())
 			lite319->Message(MessageCode::TLightResetAndTurnOff, 0.0);
-		if (!light_on(&control_lite318_tag))
+		if (!lite318->light_on())
 		{
 			lite318->Message(MessageCode::TLightFlasherStartTimed, 0.0);
 		}
