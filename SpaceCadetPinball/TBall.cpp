@@ -52,7 +52,7 @@ TBall::TBall(TPinballTable* table) : TPinballComponent(table, -1, false)
 		auto zDepth = proj::z_distance(*visVec);
 		VisualZArray[index] = zDepth;
 	}
-	RenderSprite = render::create_sprite(VisualTypes::Ball, nullptr, nullptr, 0, 0, nullptr);
+	RenderSprite = new render_sprite(VisualTypes::Ball, nullptr, nullptr, 0, 0, nullptr);
 	PinballTable->CollisionCompOffset = Offset;
 	Position.Z = Offset;
 }
@@ -78,8 +78,7 @@ void TBall::Repaint()
 	}
 
 	auto bmp = ListBitmap->at(index);
-	render::ball_set(
-		RenderSprite,
+	RenderSprite->ball_set(
 		bmp,
 		zDepth,
 		pos2D.X - bmp->Width / 2,
@@ -110,7 +109,7 @@ int TBall::Message(MessageCode code, float value)
 {
 	if (code == MessageCode::Reset)
 	{
-		render::ball_set(RenderSprite, nullptr, 0.0, 0, 0);
+		RenderSprite->ball_set(nullptr, 0.0, 0, 0);
 		Position.X = 0.0;
 		CollisionComp = nullptr;
 		Position.Y = 0.0;
@@ -145,5 +144,5 @@ vector2 TBall::get_coordinates()
 void TBall::Disable()
 {
 	ActiveFlag = false;
-	render::sprite_set_bitmap(RenderSprite, nullptr);
+	RenderSprite->set_bitmap(nullptr);
 }

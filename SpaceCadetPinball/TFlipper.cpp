@@ -121,8 +121,7 @@ void TFlipper::UpdateSprite(float timeNow)
 	BmpIndex = newBmpIndex;
 	auto bmp = ListBitmap->at(BmpIndex);
 	auto zMap = ListZMap->at(BmpIndex);
-	render::sprite_set(
-		RenderSprite,
+	RenderSprite->set(
 		bmp,
 		zMap,
 		bmp->XPosition - PinballTable->XOffset,

@@ -42,7 +42,7 @@ TTextBox *pb::InfoTextBox, *pb::MissTextBox;
 
 int pb::init()
 {
-	float projMat[12], zMin = 0, zScaler = 0;
+	float projMat[12];
 
 	if (DatFileName.empty())
 		return 1;
@@ -75,12 +75,12 @@ int pb::init()
 		auto projCenterX = resInfo->TableWidth * 0.5f;
 		auto projCenterY = resInfo->TableHeight * 0.5f;
 		auto projD = cameraInfo[0];
-		proj::init(projMat, projD, projCenterX, projCenterY);
-		zMin = cameraInfo[1];
-		zScaler = cameraInfo[2];
+		auto zMin = cameraInfo[1];
+		auto zScaler = cameraInfo[2];
+		proj::init(projMat, projD, projCenterX, projCenterY, zMin, zScaler);
 	}
 
-	render::init(nullptr, zMin, zScaler, resInfo->TableWidth, resInfo->TableHeight);
+	render::init(nullptr, resInfo->TableWidth, resInfo->TableHeight);
 	gdrv::copy_bitmap(
 		render::vscreen,
 		backgroundBmp->Width,

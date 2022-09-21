@@ -23,10 +23,12 @@ TPinballComponent::TPinballComponent(TPinballTable* table, int groupIndex, bool 
 	Control = nullptr;
 	VisualPosNormX= -1.0f;
 	VisualPosNormY = -1.0f;
+	GroupIndex = groupIndex;
 	if (table)
 		table->ComponentList.push_back(this);
 	if (groupIndex >= 0)
 		GroupName = loader::query_name(groupIndex);
+
 	if (loadVisuals && groupIndex >= 0)
 	{
 		int visualCount = loader::query_visual_states(groupIndex);
@@ -37,15 +39,13 @@ TPinballComponent::TPinballComponent(TPinballTable* table, int groupIndex, bool 
 			{
 				if (!ListBitmap)
 					ListBitmap = new std::vector<gdrv_bitmap8*>();
-				if (ListBitmap)
-					ListBitmap->push_back(visual.Bitmap);
+				ListBitmap->push_back(visual.Bitmap);
 			}
 			if (visual.ZMap)
 			{
 				if (!ListZMap)
 					ListZMap = new std::vector<zmap_header_type*>();
-				if (ListZMap)
-					ListZMap->push_back(visual.ZMap);
+				ListZMap->push_back(visual.ZMap);
 			}
 		}
 
@@ -68,8 +68,8 @@ TPinballComponent::TPinballComponent(TPinballTable* table, int groupIndex, bool 
 				maths::enclosing_box(bmp1Rect, tmpRect, bmp1Rect);
 			}
 
-			RenderSprite = render::create_sprite(
-				visualCount > 0 ? VisualTypes::Sprite : VisualTypes::None,
+			RenderSprite = new render_sprite(
+				VisualTypes::Sprite,
 				rootBmp,
 				zMap,
 				rootBmp->XPosition - table->XOffset,
@@ -85,7 +85,6 @@ TPinballComponent::TPinballComponent(TPinballTable* table, int groupIndex, bool 
 			VisualPosNormY = posNorm.Y;
 		}
 	}
-	GroupIndex = groupIndex;
 }
 
 

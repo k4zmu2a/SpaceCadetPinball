@@ -113,8 +113,7 @@ void TBumper::TimerExpired(int timerId, void* caller)
 	auto bmp = bump->ListBitmap->at(bump->BmpIndex * 2);
 	auto zMap = bump->ListZMap->at(bump->BmpIndex * 2);
 	bump->Timer = 0;
-	render::sprite_set(
-		bump->RenderSprite,
+	bump->RenderSprite->set(
 		bmp,
 		zMap,
 		bmp->XPosition - bump->PinballTable->XOffset,
@@ -127,8 +126,7 @@ void TBumper::Fire()
 	int bmpIndex = 2 * BmpIndex + 1;
 	auto bmp = ListBitmap->at(bmpIndex);
 	auto zMap = ListZMap->at(bmpIndex);
-	render::sprite_set(
-		RenderSprite,
+	RenderSprite->set(
 		bmp,
 		zMap,
 		bmp->XPosition - PinballTable->XOffset,

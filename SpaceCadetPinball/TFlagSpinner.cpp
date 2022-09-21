@@ -62,8 +62,7 @@ int TFlagSpinner::Message(MessageCode code, float value)
 		BmpIndex = 0;
 		auto bmp = ListBitmap->at(0);
 		auto zMap = ListZMap->at(0);
-		render::sprite_set(
-			RenderSprite,
+		RenderSprite->set(
 			bmp,
 			zMap,
 			bmp->XPosition - PinballTable->XOffset,
@@ -113,8 +112,7 @@ void TFlagSpinner::NextFrame()
 
 	auto bmp = ListBitmap->at(BmpIndex);
 	auto zMap = ListZMap->at(BmpIndex);
-	render::sprite_set(
-		RenderSprite,
+	RenderSprite->set(
 		bmp,
 		zMap,
 		bmp->XPosition - PinballTable->XOffset,

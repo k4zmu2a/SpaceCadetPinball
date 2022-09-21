@@ -225,7 +225,8 @@ int TLight::Message(MessageCode code, float value)
 	case MessageCode::TLightFtTmpOverrideOn:
 	case MessageCode::TLightFtTmpOverrideOff:
 		// FT codes in negative to avoid overlap with 3DPB TLightGroup codes
-		render::sprite_set_bitmap(RenderSprite, BmpArr[code == MessageCode::TLightFtTmpOverrideOn]);
+		if (ListBitmap)
+			RenderSprite->set_bitmap(BmpArr[code == MessageCode::TLightFtTmpOverrideOn]);
 		if (UndoOverrideTimer)
 			timer::kill(UndoOverrideTimer);
 		UndoOverrideTimer = 0;
@@ -240,7 +241,8 @@ int TLight::Message(MessageCode code, float value)
 			timer::kill(UndoOverrideTimer);
 		UndoOverrideTimer = 0;
 		TemporaryOverrideFlag = false;
-		render::sprite_set_bitmap(RenderSprite, PreviousBitmap);
+		if (ListBitmap)
+			RenderSprite->set_bitmap(PreviousBitmap);
 		break;
 	default:
 		break;
@@ -267,10 +269,12 @@ void TLight::Reset()
 	TemporaryOverrideFlag = false;
 	TurnOffAfterFlashingFg = false;
 	PreviousBitmap = nullptr;
-	render::sprite_set_bitmap(RenderSprite, nullptr);
 	BmpArr[0] = nullptr;
 	if (ListBitmap)
+	{
 		BmpArr[1] = ListBitmap->at(0);
+		RenderSprite->set_bitmap(nullptr);
+	}
 	MessageField = 0;
 }
 
@@ -326,8 +330,8 @@ void TLight::flasher_start(bool bmpIndex)
 void TLight::SetSpriteBmp(gdrv_bitmap8* bmp)
 {
 	PreviousBitmap = bmp;
-	if (!TemporaryOverrideFlag)
-		render::sprite_set_bitmap(RenderSprite, bmp);
+	if (!TemporaryOverrideFlag && RenderSprite)
+		RenderSprite->set_bitmap(bmp);
 }
 
 void TLight::flasher_callback(int timerId, void* caller)

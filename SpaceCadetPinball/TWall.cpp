@@ -9,7 +9,7 @@
 TWall::TWall(TPinballTable* table, int groupIndex) : TCollisionComponent(table, groupIndex, true)
 {
 	if (RenderSprite)
-		render::sprite_set_bitmap(RenderSprite, nullptr);
+		RenderSprite->set_bitmap(nullptr);
 	if (ListBitmap)
 		BmpPtr = ListBitmap->at(0);
 }
@@ -30,7 +30,7 @@ void TWall::Collision(TBall* ball, vector2* nextPosition, vector2* direction, fl
 	{
 		if (BmpPtr)
 		{
-			render::sprite_set_bitmap(RenderSprite, BmpPtr);
+			RenderSprite->set_bitmap(BmpPtr);
 			Timer = timer::set(0.1f, this, TimerExpired);
 		}
 		control::handler(MessageCode::ControlCollision, this);
@@ -40,7 +40,7 @@ void TWall::Collision(TBall* ball, vector2* nextPosition, vector2* direction, fl
 void TWall::TimerExpired(int timerId, void* caller)
 {
 	auto wall = static_cast<TWall*>(caller);
-	render::sprite_set_bitmap(wall->RenderSprite, nullptr);
+	wall->RenderSprite->set_bitmap(nullptr);
 	wall->Timer = 0;
 	wall->MessageField = 0;
 }

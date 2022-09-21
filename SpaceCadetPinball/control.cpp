@@ -2081,6 +2081,7 @@ void control::GravityWellKickoutControl(MessageCode code, TPinballComponent* cal
 	case MessageCode::Reset:
 		kickout1->ActiveFlag = 0;
 		break;
+	default: break;
 	}
 }
 

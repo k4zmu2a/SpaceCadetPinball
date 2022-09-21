@@ -3,17 +3,10 @@
 
 mat4_row_major proj::matrix;
 float proj::d_, proj::centerx, proj::centery;
+float proj::zscaler, proj::zmin, proj::zmax;
 
-void proj::init(float* mat4x3, float d, float centerX, float centerY)
+void proj::init(float* mat4x3, float d, float centerX, float centerY, float zMin, float zScaler)
 {
-	/*for (auto colIndex = 0; colIndex < 4; ++colIndex)
-	{
-		// Todo: out of bounds read from mat4x3?
-		for (int rowIndex = colIndex, i = 4; i > 0; rowIndex += 4, --i)
-		{
-			((float*)&matrix)[rowIndex] = mat4x3[rowIndex];
-		}
-	}*/
 	memcpy(&matrix, mat4x3, sizeof(float) * 4 * 3);
 
 	matrix.Row3.X = 0.0;
@@ -24,6 +17,10 @@ void proj::init(float* mat4x3, float d, float centerX, float centerY)
 	d_ = d;
 	centerx = centerX;
 	centery = centerY;
+
+	zscaler = zScaler;
+	zmin = zMin;
+	zmax = static_cast<float>(0xffFFffFF) / zScaler + zMin;
 }
 
 vector3 proj::matrix_vector_multiply(const mat4_row_major& mat, const vector3& vec)
@@ -102,4 +99,18 @@ void proj::recenter(float centerX, float centerY)
 {
 	centerx = centerX;
 	centery = centerY;
+}
+
+uint16_t proj::NormalizeDepth(float depth)
+{
+	uint16_t result = 0;
+	if (depth >= zmin)
+	{
+		auto depthScaled = (depth - zmin) * zscaler;
+		if (depthScaled <= zmax)
+			result = static_cast<uint16_t>(depthScaled);
+		else
+			result = 0xffFF;
+	}
+	return result;
 }

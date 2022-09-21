@@ -20,7 +20,7 @@ TBlocker::TBlocker(TPinballTable* table, int groupIndex) : TCollisionComponent(t
 	Timer = 0;
 	MessageField = 0;
 	ActiveFlag = 0;
-	render::sprite_set_bitmap(RenderSprite, nullptr);
+	RenderSprite->set_bitmap(nullptr);
 }
 
 int TBlocker::Message(MessageCode code, float value)
@@ -38,14 +38,14 @@ int TBlocker::Message(MessageCode code, float value)
 		}
 		MessageField = 0;
 		ActiveFlag = 0;
-		render::sprite_set_bitmap(RenderSprite, nullptr);
+		RenderSprite->set_bitmap(nullptr);
 		if (code == MessageCode::TBlockerDisable)
 			loader::play_sound(SoundIndex3, this, "TBlocker1");
 		break;
 	case MessageCode::TBlockerEnable:
 		ActiveFlag = 1;
 		loader::play_sound(SoundIndex4, this, "TBlocker2");
-		render::sprite_set_bitmap(RenderSprite, ListBitmap->at(0));
+		RenderSprite->set_bitmap(ListBitmap->at(0));
 		if (Timer)
 			timer::kill(Timer);
 		Timer = timer::set(std::max(value, 0.0f), this, TimerExpired);

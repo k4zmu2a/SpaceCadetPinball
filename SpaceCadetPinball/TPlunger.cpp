@@ -133,8 +133,7 @@ int TPlunger::Message(MessageCode code, float value)
 			loader::play_sound(SoundIndexP2, this, "TPlunger3");
 			auto bmp = ListBitmap->at(0);
 			auto zMap = ListZMap->at(0);
-			render::sprite_set(
-				RenderSprite,
+			RenderSprite->set(
 				bmp,
 				zMap,
 				bmp->XPosition - PinballTable->XOffset,
@@ -156,8 +155,7 @@ int TPlunger::Message(MessageCode code, float value)
 		
 		auto bmp = ListBitmap->at(0);
 		auto zMap = ListZMap->at(0);
-		render::sprite_set(
-			RenderSprite,
+		RenderSprite->set(
 			bmp,
 			zMap,
 			bmp->XPosition - PinballTable->XOffset,
@@ -204,8 +202,7 @@ void TPlunger::PullbackTimer(int timerId, void* caller)
 		(plunger->Boost / plunger->MaxPullback)));
 	auto bmp = plunger->ListBitmap->at(index);
 	auto zMap = plunger->ListZMap->at(index);
-	render::sprite_set(
-		plunger->RenderSprite,
+	plunger->RenderSprite->set(
 		bmp,
 		zMap,
 		bmp->XPosition - plunger->PinballTable->XOffset,

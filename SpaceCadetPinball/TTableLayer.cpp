@@ -32,7 +32,7 @@ TTableLayer::TTableLayer(TPinballTable* table): TCollisionComponent(table, -1, f
 	rect.YPosition = 0;
 	rect.Width = bmp->Width;
 	rect.Height = bmp->Height;
-	render::create_sprite(VisualTypes::None, bmp, visual.ZMap, 0, 0, &rect);
+	new render_sprite(VisualTypes::Background, bmp, visual.ZMap, 0, 0, &rect);
 
 	PinballTable->SoundIndex1 = visual.SoundIndex4;
 	PinballTable->SoundIndex2 = visual.SoundIndex3;

@@ -25,7 +25,7 @@ int TKickback::Message(MessageCode code, float value)
 	{
 		timer::kill(Timer);
 		if (ListBitmap)
-			render::sprite_set_bitmap(RenderSprite, nullptr);
+			RenderSprite->set_bitmap(nullptr);
 		Timer = 0;
 		KickActiveFlag = 0;
 		Threshold = 1000000000.0;
@@ -67,8 +67,7 @@ void TKickback::TimerExpired(int timerId, void* caller)
 		{
 			auto bmp = kick->ListBitmap->at(1);
 			auto zMap = kick->ListZMap->at(1);
-			render::sprite_set(
-				kick->RenderSprite,
+			kick->RenderSprite->set(
 				bmp,
 				zMap,
 				bmp->XPosition - kick->PinballTable->XOffset,
@@ -81,8 +80,7 @@ void TKickback::TimerExpired(int timerId, void* caller)
 		{
 			auto bmp = kick->ListBitmap->at(0);
 			auto zMap = kick->ListZMap->at(0);
-			render::sprite_set(
-				kick->RenderSprite,
+			kick->RenderSprite->set(
 				bmp,
 				zMap,
 				bmp->XPosition - kick->PinballTable->XOffset,

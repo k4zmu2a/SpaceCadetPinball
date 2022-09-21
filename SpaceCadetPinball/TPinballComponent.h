@@ -2,7 +2,7 @@
 
 struct zmap_header_type;
 struct gdrv_bitmap8;
-struct render_sprite_type_struct;
+struct render_sprite;
 struct component_control;
 struct vector2;
 class TPinballTable;
@@ -145,7 +145,7 @@ public:
 	char* GroupName;
 	component_control* Control;
 	int GroupIndex;
-	render_sprite_type_struct* RenderSprite;
+	render_sprite* RenderSprite;
 	TPinballTable* PinballTable;
 	std::vector<gdrv_bitmap8*>* ListBitmap;
 	std::vector<zmap_header_type*>* ListZMap;
