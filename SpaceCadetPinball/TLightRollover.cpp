@@ -13,8 +13,7 @@ TLightRollover::TLightRollover(TPinballTable* table, int groupIndex) : TRollover
 {
 	RolloverFlag = 0;
 	Timer = 0;
-	if (ListBitmap != nullptr)
-		RenderSprite->set_bitmap(nullptr);
+	SpriteSet(-1);
 	build_walls(groupIndex);
 	FloatArr = *loader::query_float_attribute(groupIndex, 0, 407);
 }
@@ -28,8 +27,7 @@ int TLightRollover::Message(MessageCode code, float value)
 		if (Timer)
 			timer::kill(Timer);
 		Timer = 0;
-		if (ListBitmap)
-			RenderSprite->set_bitmap(nullptr);
+		SpriteSet(-1);
 	}
 	return 0;
 }
@@ -56,8 +54,7 @@ void TLightRollover::Collision(TBall* ball, vector2* nextPosition, vector2* dire
 			loader::play_sound(SoftHitSoundId, this, "TLightRollover");
 			control::handler(MessageCode::ControlCollision, this);
 			RolloverFlag = RolloverFlag == 0;
-			if (ListBitmap)
-				RenderSprite->set_bitmap(ListBitmap->at(0));
+			SpriteSet(0);
 		}
 	}
 }
@@ -65,6 +62,6 @@ void TLightRollover::Collision(TBall* ball, vector2* nextPosition, vector2* dire
 void TLightRollover::delay_expired(int timerId, void* caller)
 {
 	auto roll = static_cast<TLightRollover*>(caller);
-	roll->RenderSprite->set_bitmap(nullptr);
+	roll->SpriteSet(-1);
 	roll->Timer = 0;
 }

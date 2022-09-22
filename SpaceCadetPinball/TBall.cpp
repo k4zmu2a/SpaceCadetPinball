@@ -46,8 +46,7 @@ TBall::TBall(TPinballTable* table) : TPinballComponent(table, -1, false)
 	for (auto index = 0; index < visualCount; ++index)
 	{
 		loader::query_visual(groupIndex, index, &visual);
-		if (ListBitmap)
-			ListBitmap->push_back(visual.Bitmap);
+		ListBitmap->push_back(visual.Bitmap);
 		auto visVec = reinterpret_cast<vector3*>(loader::query_float_attribute(groupIndex, index, 501));
 		auto zDepth = proj::z_distance(*visVec);
 		VisualZArray[index] = zDepth;
@@ -69,20 +68,14 @@ void TBall::Repaint()
 
 	auto pos2D = proj::xform_to_2d(Position);
 	auto zDepth = proj::z_distance(Position);
-
-	auto zArrPtr = VisualZArray;
+	
 	auto index = 0u;
-	for (; index < ListBitmap->size() - 1; ++index, zArrPtr++)
+	for (; index < ListBitmap->size() - 1; ++index)
 	{
-		if (*zArrPtr <= zDepth) break;
+		if (VisualZArray[index] <= zDepth) break;
 	}
 
-	auto bmp = ListBitmap->at(index);
-	RenderSprite->ball_set(
-		bmp,
-		zDepth,
-		pos2D.X - bmp->Width / 2,
-		pos2D.Y - bmp->Height / 2);
+	SpriteSetBall(index, pos2D, zDepth);
 }
 
 void TBall::not_again(TEdgeSegment* edge)
@@ -109,7 +102,7 @@ int TBall::Message(MessageCode code, float value)
 {
 	if (code == MessageCode::Reset)
 	{
-		RenderSprite->ball_set(nullptr, 0.0, 0, 0);
+		SpriteSetBall(-1, { 0,0 }, 0.0f);
 		Position.X = 0.0;
 		CollisionComp = nullptr;
 		Position.Y = 0.0;
@@ -144,5 +137,5 @@ vector2 TBall::get_coordinates()
 void TBall::Disable()
 {
 	ActiveFlag = false;
-	RenderSprite->set_bitmap(nullptr);
+	SpriteSet(-1);
 }

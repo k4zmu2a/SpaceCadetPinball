@@ -60,13 +60,7 @@ int TFlagSpinner::Message(MessageCode code, float value)
 			Timer = 0;
 		}
 		BmpIndex = 0;
-		auto bmp = ListBitmap->at(0);
-		auto zMap = ListZMap->at(0);
-		RenderSprite->set(
-			bmp,
-			zMap,
-			bmp->XPosition - PinballTable->XOffset,
-			bmp->YPosition - PinballTable->YOffset);
+		SpriteSet(BmpIndex);
 	}
 	return 0;
 }
@@ -110,14 +104,7 @@ void TFlagSpinner::NextFrame()
 			control::handler(MessageCode::ControlSpinnerLoopReset, this);
 	}
 
-	auto bmp = ListBitmap->at(BmpIndex);
-	auto zMap = ListZMap->at(BmpIndex);
-	RenderSprite->set(
-		bmp,
-		zMap,
-		bmp->XPosition - PinballTable->XOffset,
-		bmp->YPosition - PinballTable->YOffset);
-
+	SpriteSet(BmpIndex);
 	Speed *= SpeedDecrement;
 	if (Speed >= MinSpeed)
 	{

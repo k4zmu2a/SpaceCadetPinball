@@ -1,5 +1,6 @@
 #pragma once
 
+struct vector2i;
 struct zmap_header_type;
 struct gdrv_bitmap8;
 struct render_sprite;
@@ -138,6 +139,8 @@ public:
 	virtual void port_draw();
 	int get_scoring(unsigned int index) const;
 	virtual vector2 get_coordinates();
+	void SpriteSet(int index) const;
+	void SpriteSetBall(int index, vector2i pos, float depth) const;
 
 	char UnusedBaseFlag;
 	char ActiveFlag;

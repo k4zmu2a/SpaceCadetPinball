@@ -14,7 +14,7 @@ TGate::TGate(TPinballTable* table, int groupIndex) : TCollisionComponent(table, 
 	SoundIndex4 = visual.SoundIndex4;
 	SoundIndex3 = visual.SoundIndex3;
 	ActiveFlag = 1;
-	RenderSprite->set_bitmap(ListBitmap->at(0));
+	SpriteSet(0);
 	control::handler(MessageCode::Reset, this);
 }
 
@@ -24,13 +24,13 @@ int TGate::Message(MessageCode code, float value)
 	{
 	case MessageCode::TGateDisable:
 		ActiveFlag = 0;
-		RenderSprite->set_bitmap(nullptr);
+		SpriteSet(-1);
 		loader::play_sound(SoundIndex3, this, "TGate1");
 		break;
 	case MessageCode::Reset:
 	case MessageCode::TGateEnable:
 		ActiveFlag = 1;
-		RenderSprite->set_bitmap(ListBitmap->at(0));
+		SpriteSet(0);
 		if (code == MessageCode::TGateEnable)
 			loader::play_sound(SoundIndex4, this, "TGate2");
 		break;

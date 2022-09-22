@@ -49,8 +49,8 @@ struct component_tag : component_tag_base
 
 struct component_control
 {
-	void (* ControlFunc)(MessageCode, TPinballComponent*);
-	unsigned int ScoreCount;
+	void (& ControlFunc)(MessageCode, TPinballComponent*);
+	const unsigned int ScoreCount;
 	const int* Scores;
 };
 

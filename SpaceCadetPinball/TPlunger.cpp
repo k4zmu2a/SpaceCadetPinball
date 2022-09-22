@@ -131,14 +131,7 @@ int TPlunger::Message(MessageCode code, float value)
 				timer::kill(PullbackTimer_);
 			PullbackTimer_ = 0;
 			loader::play_sound(SoundIndexP2, this, "TPlunger3");
-			auto bmp = ListBitmap->at(0);
-			auto zMap = ListZMap->at(0);
-			RenderSprite->set(
-				bmp,
-				zMap,
-				bmp->XPosition - PinballTable->XOffset,
-				bmp->YPosition - PinballTable->YOffset);
-
+			SpriteSet(0);
 			timer::set(PullbackDelay, this, ReleasedTimer);
 		}
 		break;
@@ -152,14 +145,8 @@ int TPlunger::Message(MessageCode code, float value)
 		timer::kill(BallFeedTimer);
 		timer::kill(PullbackTimer);
 		timer::kill(ReleasedTimer);
-		
-		auto bmp = ListBitmap->at(0);
-		auto zMap = ListZMap->at(0);
-		RenderSprite->set(
-			bmp,
-			zMap,
-			bmp->XPosition - PinballTable->XOffset,
-			bmp->YPosition - PinballTable->YOffset);
+
+		SpriteSet(0);
 		break;
 	}
 	default:
@@ -200,13 +187,7 @@ void TPlunger::PullbackTimer(int timerId, void* caller)
 	int index = static_cast<int>(floor(
 		static_cast<float>(plunger->ListBitmap->size() - 1) *
 		(plunger->Boost / plunger->MaxPullback)));
-	auto bmp = plunger->ListBitmap->at(index);
-	auto zMap = plunger->ListZMap->at(index);
-	plunger->RenderSprite->set(
-		bmp,
-		zMap,
-		bmp->XPosition - plunger->PinballTable->XOffset,
-		bmp->YPosition - plunger->PinballTable->YOffset);
+	plunger->SpriteSet(index);
 }
 
 void TPlunger::ReleasedTimer(int timerId, void* caller)

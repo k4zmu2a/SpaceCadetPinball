@@ -110,27 +110,14 @@ void TBumper::Collision(TBall* ball, vector2* nextPosition, vector2* direction, 
 void TBumper::TimerExpired(int timerId, void* caller)
 {
 	auto bump = static_cast<TBumper*>(caller);
-	auto bmp = bump->ListBitmap->at(bump->BmpIndex * 2);
-	auto zMap = bump->ListZMap->at(bump->BmpIndex * 2);
+	bump->SpriteSet(bump->BmpIndex * 2);
 	bump->Timer = 0;
-	bump->RenderSprite->set(
-		bmp,
-		zMap,
-		bmp->XPosition - bump->PinballTable->XOffset,
-		bmp->YPosition - bump->PinballTable->YOffset);
 	bump->Threshold = bump->OriginalThreshold;
 }
 
 void TBumper::Fire()
 {
-	int bmpIndex = 2 * BmpIndex + 1;
-	auto bmp = ListBitmap->at(bmpIndex);
-	auto zMap = ListZMap->at(bmpIndex);
-	RenderSprite->set(
-		bmp,
-		zMap,
-		bmp->XPosition - PinballTable->XOffset,
-		bmp->YPosition - PinballTable->YOffset);
+	SpriteSet(2 * BmpIndex + 1);
 	Timer = timer::set(TimerTime, this, TimerExpired);
 	Threshold = 1000000000.0;
 }

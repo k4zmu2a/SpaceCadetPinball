@@ -37,18 +37,7 @@ int TSoloTarget::Message(MessageCode code, float value)
 		return 0;
 	}
 
-	if (ListBitmap)
-	{
-		auto index = 1 - ActiveFlag;
-		auto bmp = ListBitmap->at(index);
-		auto zMap = ListZMap->at(index);
-		RenderSprite->set(
-			bmp,
-			zMap,
-			bmp->XPosition - PinballTable->XOffset,
-			bmp->YPosition - PinballTable->YOffset);
-	}
-
+	SpriteSet(1 - ActiveFlag);
 	return 0;
 }
 

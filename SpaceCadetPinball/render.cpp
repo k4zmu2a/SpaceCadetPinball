@@ -45,8 +45,8 @@ render_sprite::render_sprite(VisualTypes visualType, gdrv_bitmap8* bmp, zmap_hea
 		BoundingRect.YPosition = 0;
 	}
 
-	BmpRect.YPosition = yPosition;
 	BmpRect.XPosition = xPosition;
+	BmpRect.YPosition = yPosition;
 	if (bmp)
 	{
 		BmpRect.Width = bmp->Width;
@@ -58,6 +58,14 @@ render_sprite::render_sprite(VisualTypes visualType, gdrv_bitmap8* bmp, zmap_hea
 		BmpRect.Height = 0;
 	}
 	DirtyRectPrev = BmpRect;
+
+	if (!ZMap && VisualType != VisualTypes::Ball)
+	{
+		assertm(false, "Background zMap should not be used");
+		ZMap = render::background_zmap;
+		ZMapOffestY = xPosition - render::zmap_offsetX;
+		ZMapOffestX = yPosition - render::zmap_offsetY;
+	}
 
 	render::AddSprite(*this);
 }
@@ -83,11 +91,6 @@ void render_sprite::set(gdrv_bitmap8* bmp, zmap_header_type* zMap, int xPos, int
 		BmpRect.Width = bmp->Width;
 		BmpRect.Height = bmp->Height;
 	}
-}
-
-void render_sprite::set_bitmap(gdrv_bitmap8* bmp)
-{
-	set(bmp, ZMap, BmpRect.XPosition, BmpRect.YPosition);
 }
 
 void render_sprite::ball_set(gdrv_bitmap8* bmp, float depth, int xPos, int yPos)
@@ -200,13 +203,6 @@ void render::update()
 
 void render::AddSprite(render_sprite& sprite)
 {
-	if (!sprite.ZMap && sprite.VisualType != VisualTypes::Ball)
-	{
-		sprite.ZMap = background_zmap;
-		sprite.ZMapOffestY = sprite.BmpRect.XPosition - zmap_offsetX;
-		sprite.ZMapOffestX = sprite.BmpRect.YPosition - zmap_offsetY;
-	}
-
 	auto& list = sprite.VisualType == VisualTypes::Ball ? ball_list : sprite_list;
 	list.push_back(&sprite);
 }

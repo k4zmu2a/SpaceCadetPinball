@@ -20,7 +20,7 @@ int TPopupTarget::Message(MessageCode code, float value)
 	{
 	case MessageCode::TPopupTargetDisable:
 		ActiveFlag = 0;
-		RenderSprite->set_bitmap(nullptr);
+		SpriteSet(-1);
 		break;
 	case MessageCode::TPopupTargetEnable:
 		Timer = timer::set(TimerTime, this, TimerExpired);
@@ -79,7 +79,7 @@ void TPopupTarget::TimerExpired(int timerId, void* caller)
 	auto target = static_cast<TPopupTarget*>(caller);
 	target->Timer = 0;
 	target->ActiveFlag = 1;
-	target->RenderSprite->set_bitmap(target->ListBitmap->at(0));
+	target->SpriteSet(0);
 	if (timerId)
 	{
 		if (target->SoftHitSoundId)

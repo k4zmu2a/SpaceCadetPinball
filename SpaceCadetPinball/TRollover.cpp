@@ -19,8 +19,7 @@ TRollover::TRollover(TPinballTable* table, int groupIndex, bool createWall) : TC
 
 TRollover::TRollover(TPinballTable* table, int groupIndex) : TCollisionComponent(table, groupIndex, false)
 {
-	if (ListBitmap)
-		RenderSprite->set_bitmap(ListBitmap->at(0));
+	SpriteSet(0);
 	build_walls(groupIndex);
 }
 
@@ -31,8 +30,7 @@ int TRollover::Message(MessageCode code, float value)
 	{
 		ActiveFlag = 1;
 		RolloverFlag = 0;
-		if (ListBitmap)
-			RenderSprite->set_bitmap(ListBitmap->at(0));
+		SpriteSet(0);
 	}
 	return 0;
 }
@@ -44,7 +42,7 @@ void TRollover::Collision(TBall* ball, vector2* nextPosition, vector2* direction
 	ball->Position.Y = nextPosition->Y;
 	ball->RayMaxDistance -= distance;
 	ball->not_again(edge);
-	gdrv_bitmap8* bmp = nullptr;
+	
 	if (!PinballTable->TiltLockFlag)
 	{
 		if (RolloverFlag)
@@ -58,12 +56,7 @@ void TRollover::Collision(TBall* ball, vector2* nextPosition, vector2* direction
 			control::handler(MessageCode::ControlCollision, this);
 		}
 		RolloverFlag = RolloverFlag == 0;
-		if (ListBitmap)
-		{
-			if (!RolloverFlag)
-				bmp = ListBitmap->at(0);
-			RenderSprite->set_bitmap(bmp);
-		}
+		SpriteSet(RolloverFlag ? -1 : 0);
 	}
 }
 

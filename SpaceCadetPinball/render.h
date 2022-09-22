@@ -27,10 +27,9 @@ struct render_sprite
 	bool DirtyFlag{};
 
 	render_sprite(VisualTypes visualType, gdrv_bitmap8* bmp, zmap_header_type* zMap,
-		int xPosition, int yPosition, rectangle_type* boundingRect);
+	              int xPosition, int yPosition, rectangle_type* boundingRect);
 	~render_sprite();
 	void set(gdrv_bitmap8* bmp, zmap_header_type* zMap, int xPos, int yPos);
-	void set_bitmap(gdrv_bitmap8* bmp);
 	void ball_set(gdrv_bitmap8* bmp, float depth, int xPos, int yPos);
 };
 
@@ -39,6 +38,8 @@ class render
 {
 public:
 	static gdrv_bitmap8 *vscreen, *background_bitmap;
+	static zmap_header_type* background_zmap;
+	static int zmap_offsetX, zmap_offsetY;
 	static SDL_Rect DestinationRect;
 
 	static void init(gdrv_bitmap8* bmp, int width, int height);
@@ -54,10 +55,9 @@ public:
 	static void PresentVScreen();
 private:
 	static std::vector<render_sprite*> sprite_list, ball_list;
-	static zmap_header_type* background_zmap;
-	static int zmap_offsetX, zmap_offsetY, offset_x, offset_y;
+	static int offset_x, offset_y;
 	static rectangle_type vscreen_rect;
-	static gdrv_bitmap8 *ball_bitmap[20];
+	static gdrv_bitmap8* ball_bitmap[20];
 	static zmap_header_type* zscreen;
 
 	static void repaint(const render_sprite& sprite);

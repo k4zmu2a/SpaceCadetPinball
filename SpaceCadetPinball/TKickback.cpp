@@ -24,8 +24,7 @@ int TKickback::Message(MessageCode code, float value)
 	if ((code == MessageCode::SetTiltLock || code == MessageCode::Reset) && Timer)
 	{
 		timer::kill(Timer);
-		if (ListBitmap)
-			RenderSprite->set_bitmap(nullptr);
+		SpriteSet(-1);
 		Timer = 0;
 		KickActiveFlag = 0;
 		Threshold = 1000000000.0;
@@ -63,29 +62,11 @@ void TKickback::TimerExpired(int timerId, void* caller)
 		kick->Threshold = 0.0;
 		kick->Timer = timer::set(kick->TimerTime2, kick, TimerExpired);
 		loader::play_sound(kick->HardHitSoundId, kick, "TKickback");
-		if (kick->ListBitmap)
-		{
-			auto bmp = kick->ListBitmap->at(1);
-			auto zMap = kick->ListZMap->at(1);
-			kick->RenderSprite->set(
-				bmp,
-				zMap,
-				bmp->XPosition - kick->PinballTable->XOffset,
-				bmp->YPosition - kick->PinballTable->YOffset);
-		}
+		kick->SpriteSet(1);
 	}
 	else
 	{
-		if (kick->ListBitmap)
-		{
-			auto bmp = kick->ListBitmap->at(0);
-			auto zMap = kick->ListZMap->at(0);
-			kick->RenderSprite->set(
-				bmp,
-				zMap,
-				bmp->XPosition - kick->PinballTable->XOffset,
-				bmp->YPosition - kick->PinballTable->YOffset);
-		}
+		kick->SpriteSet(0);
 		kick->Timer = 0;
 		control::handler(MessageCode::ControlTimerExpired, kick);
 	}
