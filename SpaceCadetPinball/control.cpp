@@ -1349,7 +1349,10 @@ void control::ReentryLanesRolloverControl(MessageCode code, TPinballComponent* c
 		{
 			if (light->LightOnFlag)
 			{
-				light->Message(MessageCode::TLightResetAndTurnOff, 0.0);
+				if (!pb::FullTiltMode)
+				{
+					light->Message(MessageCode::TLightResetAndTurnOff, 0.0);
+				}
 			}
 			else
 			{
@@ -1401,7 +1404,10 @@ void control::LaunchLanesRolloverControl(MessageCode code, TPinballComponent* ca
 		{
 			if (light->LightOnFlag)
 			{
-				light->Message(MessageCode::TLightResetAndTurnOff, 0.0);
+				if (!pb::FullTiltMode)
+				{
+					light->Message(MessageCode::TLightResetAndTurnOff, 0.0);
+				}
 			}
 			else
 			{
