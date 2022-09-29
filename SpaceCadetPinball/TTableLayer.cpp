@@ -20,19 +20,20 @@ TTableLayer::TTableLayer(TPinballTable* table): TCollisionComponent(table, -1, f
 
 	auto groupIndex = loader::query_handle("table");
 	loader::query_visual(groupIndex, 0, &visual);
+	auto spriteData = visual.Bitmap;
 
 	/*Full tilt: proj center first value is offset by resolution*/
 	auto projCenter = loader::query_float_attribute(groupIndex, 0, 700 + fullscrn::GetResolution());
 	proj::recenter(projCenter[0], projCenter[1]);
-	render::set_background_zmap(visual.ZMap, 0, 0);
+	render::set_background_zmap(spriteData.ZMap, 0, 0);
 
-	auto bmp = visual.Bitmap;
-	VisBmp = visual.Bitmap;
+	auto bmp = spriteData.Bmp;
+	VisBmp = bmp;
 	rect.XPosition = 0;
 	rect.YPosition = 0;
 	rect.Width = bmp->Width;
 	rect.Height = bmp->Height;
-	new render_sprite(VisualTypes::Background, bmp, visual.ZMap, 0, 0, &rect);
+	new render_sprite(VisualTypes::Background, bmp, spriteData.ZMap, 0, 0, &rect);
 
 	PinballTable->SoundIndex1 = visual.SoundIndex4;
 	PinballTable->SoundIndex2 = visual.SoundIndex3;

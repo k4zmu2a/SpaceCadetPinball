@@ -1,5 +1,6 @@
 #pragma once
 
+struct SpriteData;
 struct vector2i;
 struct zmap_header_type;
 struct gdrv_bitmap8;
@@ -150,8 +151,7 @@ public:
 	int GroupIndex;
 	render_sprite* RenderSprite;
 	TPinballTable* PinballTable;
-	std::vector<gdrv_bitmap8*>* ListBitmap;
-	std::vector<zmap_header_type*>* ListZMap;
+	std::vector<SpriteData>* ListBitmap;
 private:
 	float VisualPosNormX;
 	float VisualPosNormY;

@@ -30,7 +30,7 @@ TBall::TBall(TPinballTable* table) : TPinballComponent(table, -1, false)
 	Position.X = 0.0;
 	Position.Y = 0.0;
 
-	ListBitmap = new std::vector<gdrv_bitmap8*>();
+	ListBitmap = new std::vector<SpriteData>();
 
 	/*Full tilt: ball is ballN, where N[0,2] resolution*/
 	auto groupIndex = loader::query_handle(ballGroupName);

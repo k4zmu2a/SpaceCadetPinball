@@ -75,8 +75,7 @@ void loader::default_vsi(visualStruct* visual)
 	visual->Elasticity = 0.60000002f;
 	visual->FloatArrCount = 0;
 	visual->SoftHitSoundId = 0;
-	visual->Bitmap = nullptr;
-	visual->ZMap = nullptr;
+	visual->Bitmap = { nullptr, nullptr };
 	visual->SoundIndex3 = 0;
 	visual->SoundIndex4 = 0;
 }
@@ -421,8 +420,9 @@ int loader::query_visual(int groupIndex, int groupIndexOffset, visualStruct* vis
 	if (stateId < 0)
 		return error(16, 18);
 
-	visual->Bitmap = loader_table->GetBitmap(stateId);
-	visual->ZMap = loader_table->GetZMap(stateId);
+	auto bmp = loader_table->GetBitmap(stateId);
+	auto zMap = loader_table->GetZMap(stateId);
+	visual->Bitmap = { bmp, zMap };
 
 	auto shortArr = reinterpret_cast<int16_t*>(loader_table->field(stateId, FieldTypes::ShortArray));
 	if (shortArr)

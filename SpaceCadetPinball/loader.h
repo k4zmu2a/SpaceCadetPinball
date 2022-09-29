@@ -1,10 +1,10 @@
 #pragma once
-#include "gdrv.h"
 #include "maths.h"
-#include "zdrv.h"
-#include "TPinballComponent.h"
 
 
+class TPinballComponent;
+struct zmap_header_type;
+struct gdrv_bitmap8;
 class DatFile;
 
 struct errorMsg
@@ -31,6 +31,11 @@ struct visualKickerStruct
 	int HardHitSoundId;
 };
 
+struct SpriteData
+{
+	gdrv_bitmap8* Bmp;
+	zmap_header_type* ZMap;
+};
 
 struct visualStruct
 {
@@ -43,8 +48,7 @@ struct visualStruct
 	int CollisionGroup;
 	int SoundIndex4;
 	int SoundIndex3;
-	gdrv_bitmap8* Bitmap;
-	zmap_header_type* ZMap;
+	SpriteData Bitmap;
 };
 
 #pragma pack(push)
