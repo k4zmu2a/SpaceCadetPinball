@@ -90,7 +90,7 @@ private:
 	static int mouse_down, last_mouse_x, last_mouse_y;
 	static bool no_time_loss, activated, bQuit, has_focus, DispGRhistory;
 	static gdrv_bitmap8* gfr_display;
-	static std::string FpsDetails;
+	static std::string FpsDetails, PrevSdlError;
 	static bool restart;
 	static bool ShowAboutDialog;
 	static bool ShowImGuiDemo;
@@ -100,6 +100,7 @@ private:
 	static struct optionsStruct& Options;
 	static DurationMs SpinThreshold;
 	static WelfordState SleepState;
+	static unsigned PrevSdlErrorCount;
 
 	static void RenderUi();
 	static void RenderFrameTimeDialog();

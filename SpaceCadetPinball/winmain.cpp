@@ -37,7 +37,8 @@ bool winmain::LaunchBallEnabled = true;
 bool winmain::HighScoresEnabled = true;
 bool winmain::DemoActive = false;
 int winmain::MainMenuHeight = 0;
-std::string winmain::FpsDetails;
+std::string winmain::FpsDetails, winmain::PrevSdlError;
+unsigned winmain::PrevSdlErrorCount = 0;
 double winmain::UpdateToFrameRatio;
 winmain::DurationMs winmain::TargetFrameTime;
 optionsStruct& winmain::Options = options::Options;
@@ -115,7 +116,7 @@ int winmain::WinMain(LPCSTR lpCmdLine)
 	// First step: just load the options
 	options::InitPrimary();
 
-	if(!Options.FontFileName.empty()) 
+	if (!Options.FontFileName.empty())
 	{
 		ImGuiSDL::Deinitialize();
 		io.Fonts->Clear();
@@ -253,7 +254,8 @@ int winmain::WinMain(LPCSTR lpCmdLine)
 				if (xMod != 0 || yMod != 0)
 				{
 					// Mouse warp does not work over remote desktop or in some VMs
-					x = abs(x - xMod); y = abs(y - yMod);
+					x = abs(x - xMod);
+					y = abs(y - yMod);
 					SDL_WarpMouseInWindow(window, x, y);
 				}
 
@@ -310,10 +312,28 @@ int winmain::WinMain(LPCSTR lpCmdLine)
 			}
 
 			auto sdlError = SDL_GetError();
-			if (sdlError[0])
+			if (sdlError[0] || !PrevSdlError.empty())
 			{
-				SDL_ClearError();
-				printf("SDL Error: %s\n", sdlError);
+				if (sdlError[0])
+					SDL_ClearError();
+
+				// Rate limit duplicate SDL error messages.
+				if (sdlError != PrevSdlError)
+				{
+					PrevSdlError = sdlError;
+					if (PrevSdlErrorCount > 0)
+					{
+						printf("SDL Error: ^ Previous Error Repeated %u Times\n", PrevSdlErrorCount + 1);
+						PrevSdlErrorCount = 0;
+					}
+
+					if (sdlError[0])
+						printf("SDL Error: %s\n", sdlError);
+				}
+				else
+				{
+					PrevSdlErrorCount++;
+				}
 			}
 
 			auto updateEnd = Clock::now();
@@ -334,11 +354,17 @@ int winmain::WinMain(LPCSTR lpCmdLine)
 			}
 
 			// Limit duration to 2 * target time
-			sleepRemainder = Clamp(DurationMs(frameEnd - updateEnd) - targetTimeDelta, -TargetFrameTime, TargetFrameTime);
+			sleepRemainder = Clamp(DurationMs(frameEnd - updateEnd) - targetTimeDelta, -TargetFrameTime,
+			                       TargetFrameTime);
 			frameDuration = std::min<DurationMs>(DurationMs(frameEnd - frameStart), 2 * TargetFrameTime);
 			frameStart = frameEnd;
 			UpdateToFrameCounter++;
 		}
+	}
+
+	if (PrevSdlErrorCount > 0)
+	{
+		printf("SDL Error: ^ Previous Error Repeated %u Times\n", PrevSdlErrorCount);
 	}
 
 	SDL_free(basePath);
@@ -481,7 +507,7 @@ void winmain::RenderUi()
 			if (ImGui::BeginMenu("Language"))
 			{
 				auto currentLanguage = translations::GetCurrentLanguage();
-				for (auto &item : translations::Languages)
+				for (auto& item : translations::Languages)
 				{
 					if (ImGui::MenuItem(item.DisplayName, nullptr, currentLanguage->Language == item.Language))
 					{
@@ -504,14 +530,15 @@ void winmain::RenderUi()
 					options::toggle(Menu1::SoundStereo);
 				}
 				ImGui::TextUnformatted("Sound Volume");
-				if (ImGui::SliderInt("##Sound Volume", &Options.SoundVolume, options::MinVolume, options::MaxVolume, "%d",
-					ImGuiSliderFlags_AlwaysClamp))
+				if (ImGui::SliderInt("##Sound Volume", &Options.SoundVolume, options::MinVolume, options::MaxVolume,
+				                     "%d",
+				                     ImGuiSliderFlags_AlwaysClamp))
 				{
 					Sound::SetVolume(Options.SoundVolume);
 				}
 				ImGui::TextUnformatted("Sound Channels");
 				if (ImGui::SliderInt("##Sound Channels", &Options.SoundChannels, options::MinSoundChannels,
-					options::MaxSoundChannels, "%d", ImGuiSliderFlags_AlwaysClamp))
+				                     options::MaxSoundChannels, "%d", ImGuiSliderFlags_AlwaysClamp))
 				{
 					Sound::SetChannels(Options.SoundChannels);
 				}
@@ -522,8 +549,9 @@ void winmain::RenderUi()
 					options::toggle(Menu1::Music);
 				}
 				ImGui::TextUnformatted("Music Volume");
-				if (ImGui::SliderInt("##Music Volume", &Options.MusicVolume, options::MinVolume, options::MaxVolume, "%d",
-					ImGuiSliderFlags_AlwaysClamp))
+				if (ImGui::SliderInt("##Music Volume", &Options.MusicVolume, options::MinVolume, options::MaxVolume,
+				                     "%d",
+				                     ImGuiSliderFlags_AlwaysClamp))
 				{
 					midi::SetVolume(Options.MusicVolume);
 				}
@@ -597,12 +625,16 @@ void winmain::RenderUi()
 				char buffer[20]{};
 				Msg resolutionStringId = Msg::Menu1_UseMaxResolution_640x480;
 
-				switch(fullscrn::GetMaxResolution()) {
-					case 0: resolutionStringId = Msg::Menu1_UseMaxResolution_640x480; break;
-					case 1: resolutionStringId = Msg::Menu1_UseMaxResolution_800x600; break;
-					case 2: resolutionStringId = Msg::Menu1_UseMaxResolution_1024x768; break;
+				switch (fullscrn::GetMaxResolution())
+				{
+				case 0: resolutionStringId = Msg::Menu1_UseMaxResolution_640x480;
+					break;
+				case 1: resolutionStringId = Msg::Menu1_UseMaxResolution_800x600;
+					break;
+				case 2: resolutionStringId = Msg::Menu1_UseMaxResolution_1024x768;
+					break;
 				}
-				
+
 				auto maxResText = pb::get_rc_string(resolutionStringId);
 				if (ImGui::MenuItem(maxResText, nullptr, Options.Resolution == -1))
 				{
@@ -713,7 +745,7 @@ void winmain::RenderUi()
 	options::RenderControlDialog();
 	if (DispGRhistory)
 		RenderFrameTimeDialog();
-	
+
 	// Print game texts on the sidebar
 	gdrv::grtext_draw_ttext_in_box();
 }
