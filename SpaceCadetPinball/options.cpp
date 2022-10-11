@@ -117,6 +117,7 @@ void options::InitPrimary()
 	Options.DebugOverlaySounds = get_int("Debug Overlay Sounds", true);
 	translations::SetCurrentLanguage(get_string("Language", translations::GetCurrentLanguage()->ShortName).c_str());
 	Options.FontFileName = get_string("FontFileName", "");
+	Options.DebugOverlayBallDepthGrid = get_int("Debug Overlay Ball Depth Grid", true);
 }
 
 void options::InitSecondary()
@@ -167,6 +168,7 @@ void options::uninit()
 	set_int("Debug Overlay Sounds", Options.DebugOverlaySounds);
 	set_string("Language", translations::GetCurrentLanguage()->ShortName);
 	set_string("FontFileName", Options.FontFileName.c_str());
+	set_int("Debug Overlay Ball Depth Grid", Options.DebugOverlayBallDepthGrid);
 }
 
 

@@ -1,6 +1,7 @@
 #include "pch.h"
 #include "DebugOverlay.h"
 
+#include "loader.h"
 #include "maths.h"
 #include "proj.h"
 #include "winmain.h"
@@ -117,6 +118,10 @@ void DebugOverlay::DrawOverlay()
 	// Draw positions associated with currently playing sound channels
 	if (options::Options.DebugOverlaySounds)
 		DrawSoundPositions();
+
+	// Draw ball depth cutoff steps that determine sprite size.
+	if (options::Options.DebugOverlayBallDepthGrid)
+		DrawBallDepthSteps();
 
 	// Restore render target
 	SDL_SetRenderTarget(winmain::Renderer, initialRenderTarget);
@@ -240,6 +245,29 @@ void DebugOverlay::DrawSoundPositions()
 		auto pos3D = edgeMan.DeNormalizeBox(posNorm.Position);
 		auto pos2D = proj::xform_to_2d(pos3D);
 		SDL_RenderDrawCircle(winmain::Renderer, pos2D.X, pos2D.Y, 7);
+	}
+}
+
+void DebugOverlay::DrawBallDepthSteps()
+{
+	auto& edgeMan = *TTableLayer::edge_manager;
+	SDL_SetRenderDrawColor(winmain::Renderer, 200, 100, 0, 255);
+
+	for (auto ball : pb::MainTable->BallList)
+	{
+		auto visualCount = loader::query_visual_states(ball->GroupIndex);
+		for (auto index = 0; index < visualCount; ++index)
+		{
+			auto depthPt = reinterpret_cast<vector3*>(loader::query_float_attribute(ball->GroupIndex, index, 501));
+			auto pt = proj::xform_to_2d(*depthPt);
+
+			// Snap X coordinate to edge box sides
+			auto x1 = proj::xform_to_2d(vector2{edgeMan.MinX, depthPt->Y}).X;
+			auto x2 = proj::xform_to_2d(vector2{edgeMan.MaxBoxX * edgeMan.AdvanceX + edgeMan.MinX, depthPt->Y}).X;
+			auto ff =  proj::xform_to_2d(vector2{ edgeMan.MaxBoxX * edgeMan.AdvanceX + edgeMan.MinX, depthPt->Y });
+			SDL_RenderDrawLine(winmain::Renderer, x1, pt.Y, x2, pt.Y);
+		}
+		break;
 	}
 }
 

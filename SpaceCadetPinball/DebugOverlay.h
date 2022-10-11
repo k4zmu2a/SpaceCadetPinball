@@ -21,4 +21,5 @@ private:
 	static void DrawBallInfo();
 	static void DrawAllSprites();
 	static void DrawSoundPositions();
+	static void DrawBallDepthSteps();
 };

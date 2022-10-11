@@ -54,6 +54,7 @@ TBall::TBall(TPinballTable* table) : TPinballComponent(table, -1, false)
 	RenderSprite = new render_sprite(VisualTypes::Ball, nullptr, nullptr, 0, 0, nullptr);
 	PinballTable->CollisionCompOffset = Offset;
 	Position.Z = Offset;
+	GroupIndex = groupIndex;
 }
 
 void TBall::Repaint()
