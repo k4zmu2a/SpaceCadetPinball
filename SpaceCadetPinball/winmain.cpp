@@ -109,7 +109,7 @@ int winmain::WinMain(LPCSTR lpCmdLine)
 	ImGuiIO& io = ImGui::GetIO();
 	ImIO = &io;
 
-	auto prefPath = SDL_GetPrefPath(nullptr, "SpaceCadetPinball");
+	auto prefPath = SDL_GetPrefPath("", "SpaceCadetPinball");
 	auto iniPath = std::string(prefPath) + "imgui_pb.ini";
 	io.IniFilename = iniPath.c_str();
 
