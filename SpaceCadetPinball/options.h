@@ -1,5 +1,9 @@
 #pragma once
 
+#include "pch.h"
+#include <string>
+#include <SDL_mixer.h>
+
 enum class Msg : int;
 
 enum class Menu1:int
