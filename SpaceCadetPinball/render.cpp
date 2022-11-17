@@ -132,6 +132,8 @@ void render::uninit()
 		delete sprite_list[0];
 	while (!ball_list.empty())
 		delete ball_list[0];
+	for (auto& ballBmp : ball_bitmap)
+		delete ballBmp;
 	DebugOverlay::UnInit();
 }
 

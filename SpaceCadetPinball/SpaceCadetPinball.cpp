@@ -5,25 +5,13 @@
 
 #include "winmain.h"
 
-int MainActual(LPCSTR lpCmdLine)
-{
-	// Todo: get rid of restart to change resolution.
-	int returnCode;
-	do
-	{
-		returnCode = winmain::WinMain(lpCmdLine);
-	}
-	while (winmain::RestartRequested());
-	return returnCode;
-}
-
 int main(int argc, char* argv[])
 {
 	std::string cmdLine;
 	for (int i = 1; i < argc; i++)
 		cmdLine += argv[i];
 
-	return MainActual(cmdLine.c_str());
+	return winmain::WinMain(cmdLine.c_str());
 }
 
 #if _WIN32
@@ -32,7 +20,7 @@ int main(int argc, char* argv[])
 // Windows subsystem main
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nShowCmd)
 {
-	return MainActual(lpCmdLine);
+	return winmain::WinMain(lpCmdLine);
 }
 
 // fopen to _wfopen adapter, for UTF-8 paths

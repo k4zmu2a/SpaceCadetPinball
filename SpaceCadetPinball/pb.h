@@ -64,7 +64,6 @@ public:
 	static void ballset(float dx, float dy);
 	static void frame(float dtMilliSec);
 	static void timed_frame(float timeNow, float timeDelta, bool drawBalls);
-	static void window_size(int* width, int* height);
 	static void pause_continue();
 	static void loose_focus();
 	static void InputUp(GameInput input);

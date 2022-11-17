@@ -43,8 +43,8 @@ void options::InitPrimary()
 	// Settings are loaded from disk on the first frame
 	if (!imContext->SettingsLoaded)
 	{
-		ImGui::NewFrame();
-		ImGui::EndFrame();
+		ImGui::LoadIniSettingsFromDisk(imContext->IO.IniFilename);
+		imContext->SettingsLoaded = true;
 	}
 
 	Options.Key = Options.KeyDft =

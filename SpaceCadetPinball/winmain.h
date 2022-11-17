@@ -83,7 +83,6 @@ public:
 	static void new_game();
 	static void pause(bool toggle = true);
 	static void Restart();
-	static bool RestartRequested() { return restart; }
 	static void UpdateFrameRate();
 private:
 	static int return_value, DispFrameRate;
@@ -105,4 +104,5 @@ private:
 	static void RenderUi();
 	static void RenderFrameTimeDialog();
 	static void HybridSleep(DurationMs seconds);
+	static void MainLoop();
 };

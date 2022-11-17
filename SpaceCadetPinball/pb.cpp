@@ -360,12 +360,6 @@ void pb::timed_frame(float timeNow, float timeDelta, bool drawBalls)
 	}
 }
 
-void pb::window_size(int* width, int* height)
-{
-	*width = fullscrn::resolution_array[fullscrn::GetResolution()].TableWidth;
-	*height = fullscrn::resolution_array[fullscrn::GetResolution()].TableHeight;
-}
-
 void pb::pause_continue()
 {
 	winmain::single_step ^= true;

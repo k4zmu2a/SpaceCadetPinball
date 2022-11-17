@@ -47,9 +47,6 @@ WelfordState winmain::SleepState{};
 
 int winmain::WinMain(LPCSTR lpCmdLine)
 {
-	restart = false;
-	bQuit = false;
-
 	std::set_new_handler(memalloc_failure);
 
 	// SDL init
@@ -101,117 +98,150 @@ int winmain::WinMain(LPCSTR lpCmdLine)
 	SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
 	SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, "nearest");
 
-	// ImGui init
-	IMGUI_CHECKVERSION();
-	ImGui::CreateContext();
-	ImGuiSDL::Initialize(renderer, 0, 0);
-	ImGui::StyleColorsDark();
-	ImGuiIO& io = ImGui::GetIO();
-	ImIO = &io;
-
 	auto prefPath = SDL_GetPrefPath("", "SpaceCadetPinball");
-	auto iniPath = std::string(prefPath) + "imgui_pb.ini";
-	io.IniFilename = iniPath.c_str();
-
-	// First step: just load the options
-	options::InitPrimary();
-
-	if (!Options.FontFileName.empty())
-	{
-		ImGuiSDL::Deinitialize();
-		io.Fonts->Clear();
-		ImVector<ImWchar> ranges;
-		translations::GetGlyphRange(&ranges);
-		ImFontConfig fontConfig{};
-
-		// ToDo: further tweak font options, maybe try imgui_freetype
-		fontConfig.OversampleV = 2;
-		fontConfig.OversampleH = 4;
-
-		// ToDo: improve font file test, checking if file exists is not enough
-		auto fileName = Options.FontFileName.c_str();
-		auto fileHandle = fopenu(fileName, "rb");
-		if (fileHandle)
-		{
-			fclose(fileHandle);
-
-			// ToDo: Bind font size to UI scale
-			if (!io.Fonts->AddFontFromFileTTF(fileName, 13.f, &fontConfig, ranges.Data))
-				io.Fonts->AddFontDefault();
-		}
-		else
-			io.Fonts->AddFontDefault();
-
-		io.Fonts->Build();
-		ImGuiSDL::Initialize(renderer, 0, 0);
-	}
-
-	// ImGui_ImplSDL2_Init is private, we are not actually using ImGui OpenGl backend
-	ImGui_ImplSDL2_InitForOpenGL(window, nullptr);
-	io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard | ImGuiConfigFlags_NavEnableGamepad;
-
-	// Data search order: WD, executable path, user pref path, platform specific paths.
 	auto basePath = SDL_GetBasePath();
-	std::vector<const char*> searchPaths
+	do
 	{
+		restart = false;
+
+		// ImGui init
+		IMGUI_CHECKVERSION();
+		ImGui::CreateContext();
+		ImGuiIO& io = ImGui::GetIO();
+		ImIO = &io;
+		auto iniPath = std::string(prefPath) + "imgui_pb.ini";
+		io.IniFilename = iniPath.c_str();
+
+		// First option initialization step: just load settings from .ini. Needs ImGui context.
+		options::InitPrimary();
+
+		if (!Options.FontFileName.empty())
 		{
-			"",
-			basePath,
-			prefPath
-		}
-	};
-	searchPaths.insert(searchPaths.end(), std::begin(PlatformDataPaths), std::end(PlatformDataPaths));
-	pb::SelectDatFile(searchPaths);
+			ImVector<ImWchar> ranges;
+			translations::GetGlyphRange(&ranges);
+			ImFontConfig fontConfig{};
 
-	// Second step: run updates depending on FullTiltMode
-	options::InitSecondary();
+			// ToDo: further tweak font options, maybe try imgui_freetype
+			fontConfig.OversampleV = 2;
+			fontConfig.OversampleH = 4;
 
-	if (!Sound::Init(Options.SoundChannels, Options.Sounds, Options.SoundVolume))
-		Options.Sounds = false;
-
-	if (!pb::quickFlag && !midi::music_init(Options.MusicVolume))
-		Options.Music = false;
-
-	if (pb::init())
-	{
-		std::string message = "The .dat file is missing.\n"
-			"Make sure that the game data is present in any of the following locations:\n";
-		for (auto path : searchPaths)
-		{
-			if (path)
+			// ToDo: improve font file test, checking if file exists is not enough
+			auto fontLoaded = false;
+			auto fileName = Options.FontFileName.c_str();
+			auto fileHandle = fopenu(fileName, "rb");
+			if (fileHandle)
 			{
-				message = message + (path[0] ? path : "working directory") + "\n";
+				fclose(fileHandle);
+
+				// ToDo: Bind font size to UI scale
+				if (io.Fonts->AddFontFromFileTTF(fileName, 13.f, &fontConfig, ranges.Data))
+					fontLoaded = true;
 			}
+
+			if (!fontLoaded)
+				printf("Failed to load font: %s, using embedded font.\n", fileName);
+			io.Fonts->Build();
 		}
-		SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, "Could not load game data",
-		                         message.c_str(), window);
-		return 1;
+		ImGuiSDL::Initialize(renderer, 0, 0);
+		ImGui::StyleColorsDark();
+
+		// ImGui_ImplSDL2_Init is private, we are not actually using ImGui OpenGl backend
+		ImGui_ImplSDL2_InitForOpenGL(window, nullptr);
+		io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard | ImGuiConfigFlags_NavEnableGamepad;
+
+		// Data search order: WD, executable path, user pref path, platform specific paths.
+		std::vector<const char*> searchPaths
+		{
+			{
+				"",
+				basePath,
+				prefPath
+			}
+		};
+		searchPaths.insert(searchPaths.end(), std::begin(PlatformDataPaths), std::end(PlatformDataPaths));
+		pb::SelectDatFile(searchPaths);
+
+		// Second step: run updates that depend on .DAT file selection
+		options::InitSecondary();
+
+		if (!Sound::Init(Options.SoundChannels, Options.Sounds, Options.SoundVolume))
+			Options.Sounds = false;
+
+		if (!pb::quickFlag && !midi::music_init(Options.MusicVolume))
+			Options.Music = false;
+
+		if (pb::init())
+		{
+			std::string message = "The .dat file is missing.\n"
+				"Make sure that the game data is present in any of the following locations:\n";
+			for (auto path : searchPaths)
+			{
+				if (path)
+				{
+					message = message + (path[0] ? path : "working directory") + "\n";
+				}
+			}
+			SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, "Could not load game data",
+			                         message.c_str(), window);
+			return 1;
+		}
+
+		fullscrn::init();
+
+		pb::reset_table();
+		pb::firsttime_setup();
+
+		if (strstr(lpCmdLine, "-fullscreen"))
+		{
+			Options.FullScreen = true;
+		}
+
+		if (!Options.FullScreen)
+		{
+			auto resInfo = &fullscrn::resolution_array[fullscrn::GetResolution()];
+			SDL_SetWindowSize(MainWindow, resInfo->TableWidth, resInfo->TableHeight);
+		}
+		SDL_ShowWindow(window);
+		fullscrn::set_screen_mode(Options.FullScreen);
+
+		if (strstr(lpCmdLine, "-demo"))
+			pb::toggle_demo();
+		else
+			pb::replay_level(false);
+
+		MainLoop();
+
+		options::uninit();
+		midi::music_shutdown();
+		pb::uninit();
+		Sound::Close();
+
+		ImGuiSDL::Deinitialize();
+		ImGui_ImplSDL2_Shutdown();
+		ImGui::DestroyContext();
 	}
+	while (restart);
 
-	fullscrn::init();
+	SDL_free(basePath);
+	SDL_free(prefPath);
+	delete gfr_display;
+	gfr_display = nullptr;
+	SDL_DestroyRenderer(renderer);
+	SDL_DestroyWindow(window);
+	SDL_Quit();
 
-	pb::reset_table();
-	pb::firsttime_setup();
+	return return_value;
+}
 
-	if (strstr(lpCmdLine, "-fullscreen"))
-	{
-		Options.FullScreen = true;
-	}
-
-	SDL_ShowWindow(window);
-	fullscrn::set_screen_mode(Options.FullScreen);
-
-	if (strstr(lpCmdLine, "-demo"))
-		pb::toggle_demo();
-	else
-		pb::replay_level(false);
-
+void winmain::MainLoop()
+{
+	bQuit = false;
 	unsigned updateCounter = 0, frameCounter = 0;
-
 	auto frameStart = Clock::now();
 	double UpdateToFrameCounter = 0;
 	DurationMs sleepRemainder(0), frameDuration(TargetFrameTime);
 	auto prevTime = frameStart;
+
 	while (true)
 	{
 		if (DispFrameRate)
@@ -223,7 +253,7 @@ int winmain::WinMain(LPCSTR lpCmdLine)
 				auto elapsedSec = DurationMs(curTime - prevTime).count() * 0.001;
 				snprintf(buf, sizeof buf, "Updates/sec = %02.02f Frames/sec = %02.02f ",
 				         updateCounter / elapsedSec, frameCounter / elapsedSec);
-				SDL_SetWindowTitle(window, buf);
+				SDL_SetWindowTitle(MainWindow, buf);
 				FpsDetails = buf;
 				frameCounter = updateCounter = 0;
 				prevTime = curTime;
@@ -239,7 +269,7 @@ int winmain::WinMain(LPCSTR lpCmdLine)
 			{
 				int x, y, w, h;
 				SDL_GetMouseState(&x, &y);
-				SDL_GetWindowSize(window, &w, &h);
+				SDL_GetWindowSize(MainWindow, &w, &h);
 				float dx = static_cast<float>(last_mouse_x - x) / static_cast<float>(w);
 				float dy = static_cast<float>(y - last_mouse_y) / static_cast<float>(h);
 				pb::ballset(dx, dy);
@@ -256,7 +286,7 @@ int winmain::WinMain(LPCSTR lpCmdLine)
 					// Mouse warp does not work over remote desktop or in some VMs
 					x = abs(x - xMod);
 					y = abs(y - yMod);
-					SDL_WarpMouseInWindow(window, x, y);
+					SDL_WarpMouseInWindow(MainWindow, x, y);
 				}
 
 				last_mouse_x = x;
@@ -297,16 +327,16 @@ int winmain::WinMain(LPCSTR lpCmdLine)
 				ImGui::NewFrame();
 				RenderUi();
 
-				SDL_RenderClear(renderer);
+				SDL_RenderClear(Renderer);
 				// Alternative clear hack, clear might fail on some systems
 				// Todo: remove original clear, if save for all platforms
-				SDL_RenderFillRect(renderer, nullptr);
+				SDL_RenderFillRect(Renderer, nullptr);
 				render::PresentVScreen();
 
 				ImGui::Render();
 				ImGuiSDL::Render(ImGui::GetDrawData());
 
-				SDL_RenderPresent(renderer);
+				SDL_RenderPresent(Renderer);
 				frameCounter++;
 				UpdateToFrameCounter -= UpdateToFrameRatio;
 			}
@@ -366,23 +396,6 @@ int winmain::WinMain(LPCSTR lpCmdLine)
 	{
 		printf("SDL Error: ^ Previous Error Repeated %u Times\n", PrevSdlErrorCount);
 	}
-
-	SDL_free(basePath);
-	SDL_free(prefPath);
-	delete gfr_display;
-	gfr_display = nullptr;
-	options::uninit();
-	midi::music_shutdown();
-	pb::uninit();
-	Sound::Close();
-	ImGuiSDL::Deinitialize();
-	ImGui_ImplSDL2_Shutdown();
-	SDL_DestroyRenderer(renderer);
-	SDL_DestroyWindow(window);
-	ImGui::DestroyContext();
-	SDL_Quit();
-
-	return return_value;
 }
 
 void winmain::RenderUi()
@@ -512,7 +525,7 @@ void winmain::RenderUi()
 					if (ImGui::MenuItem(item.DisplayName, nullptr, currentLanguage->Language == item.Language))
 					{
 						translations::SetCurrentLanguage(item.ShortName);
-						winmain::Restart();
+						Restart();
 					}
 				}
 				ImGui::EndMenu();
@@ -623,7 +636,7 @@ void winmain::RenderUi()
 			if (ImGui::BeginMenu(pb::get_rc_string(Msg::Menu1_Table_Resolution)))
 			{
 				char buffer[20]{};
-				Msg resolutionStringId = Msg::Menu1_UseMaxResolution_640x480;
+				auto resolutionStringId = Msg::Menu1_UseMaxResolution_640x480;
 
 				switch (fullscrn::GetMaxResolution())
 				{
