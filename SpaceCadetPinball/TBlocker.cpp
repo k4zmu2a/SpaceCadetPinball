@@ -48,7 +48,9 @@ int TBlocker::Message(MessageCode code, float value)
 		SpriteSet(0);
 		if (Timer)
 			timer::kill(Timer);
-		Timer = timer::set(std::max(value, 0.0f), this, TimerExpired);
+		Timer = 0;
+		if (value >= 0)
+			Timer = timer::set(value, this, TimerExpired);
 		break;
 	case MessageCode::TBlockerRestartTimeout:
 		if (Timer)

@@ -393,6 +393,8 @@ int TPinballTable::Message(MessageCode code, float value)
 		}
 		else
 		{
+			// Some of the control cheats persist across games.
+			// Was this loose anti-cheat by design?
 			CheatsUsed = 0;
 			Message(MessageCode::Reset, 0.0);
 			auto ball = BallList[0];

@@ -68,7 +68,7 @@ public:
 	static component_info score_components[88];
 	static component_tag_base* simple_components[145];
 	static int waiting_deployment_flag;
-	static bool table_unlimited_balls;
+	static bool table_unlimited_balls, easyMode;
 	static Msg RankRcArray[9], MissionRcArray[17];
 	static int mission_select_scores[17];
 	static std::reference_wrapper<TSink*> WormholeSinkArray[3];

@@ -771,7 +771,7 @@ component_tag_base* control::simple_components[145]
 };
 
 int control::waiting_deployment_flag;
-bool control::table_unlimited_balls = false;
+bool control::table_unlimited_balls = false, control::easyMode = false;
 int control::extraball_light_flag;
 Msg control::RankRcArray[9] =
 {
@@ -903,7 +903,7 @@ void control::pbctrl_bdoor_controller(char key)
 {
 	// Buffer large enough for longest cheat + null
 	static char cheatBuffer[11 + 1]{};
-	static char* bufferEnd = &cheatBuffer[11];
+	static const char* bufferEnd = &cheatBuffer[11];
 	static const char* quotes[8]
 	{
 		"Hey, is that a screen saver?",
@@ -948,6 +948,18 @@ void control::pbctrl_bdoor_controller(char key)
 		for (auto quote : quotes)
 			mission_text_box->Display(quote, time += 3);
 		return;
+	}
+	else if (strcmp(bufferEnd - 9, "easy mode") == 0)
+	{
+		easyMode ^= true;
+		if (easyMode) 
+		{
+			DrainBallBlockerControl(MessageCode::TBlockerEnable, block1);
+			gate1->Message(MessageCode::TGateDisable, 0.0);
+			gate2->Message(MessageCode::TGateDisable, 0.0);
+		}
+		else
+			DrainBallBlockerControl(MessageCode::ControlTimerExpired, block1);
 	}
 	else
 	{
@@ -1165,13 +1177,13 @@ void control::BumperControl(MessageCode code, TPinballComponent* caller)
 
 void control::LeftKickerControl(MessageCode code, TPinballComponent* caller)
 {
-	if (code == MessageCode::ControlTimerExpired)
+	if (code == MessageCode::ControlTimerExpired && !easyMode)
 		gate1->Message(MessageCode::TGateEnable, 0.0);
 }
 
 void control::RightKickerControl(MessageCode code, TPinballComponent* caller)
 {
-	if (code == MessageCode::ControlTimerExpired)
+	if (code == MessageCode::ControlTimerExpired && !easyMode)
 		gate2->Message(MessageCode::TGateEnable, 0.0);
 }
 
@@ -1235,33 +1247,35 @@ void control::DeploymentChuteToTableOneWayControl(MessageCode code, TPinballComp
 
 void control::DrainBallBlockerControl(MessageCode code, TPinballComponent* caller)
 {
-	MessageCode lightMessage;
-	float blockerDuration;
-
 	auto block = static_cast<TBlocker*>(caller);
-	if (code == MessageCode::TBlockerEnable)
+	switch (code)
 	{
-		block->MessageField = 1;
-		blockerDuration = static_cast<float>(block->InitialDuration);
-		block->Message(MessageCode::TBlockerEnable, blockerDuration);
-		lightMessage = MessageCode::TLightTurnOnTimed;
-	}
-	else
-	{
-		if (code != MessageCode::ControlTimerExpired)
-			return;
-		if (block->MessageField != 1)
+	case MessageCode::TBlockerEnable:
 		{
-			block->MessageField = 0;
-			block->Message(MessageCode::TBlockerDisable, 0.0);
-			return;
+			block->MessageField = 1;
+			auto blockerDuration = !easyMode ? static_cast<float>(block->InitialDuration) : -1;
+			block->Message(MessageCode::TBlockerEnable, blockerDuration);
+			lite1->Message(MessageCode::TLightTurnOnTimed, blockerDuration);
+			break;
 		}
-		block->MessageField = 2;
-		blockerDuration = static_cast<float>(block->ExtendedDuration);
-		block->Message(MessageCode::TBlockerRestartTimeout, blockerDuration);
-		lightMessage = MessageCode::TLightFlasherStartTimed;
+	case MessageCode::ControlTimerExpired:
+		{
+			if (block->MessageField == 1)
+			{
+				block->MessageField = 2;
+				auto blockerDuration = static_cast<float>(block->ExtendedDuration);
+				block->Message(MessageCode::TBlockerRestartTimeout, blockerDuration);
+				lite1->Message(MessageCode::TLightFlasherStartTimed, blockerDuration);
+				break;
+			}
+			else
+			{
+				block->MessageField = 0;
+				block->Message(MessageCode::TBlockerDisable, 0.0);
+				break;
+			}
+		}
 	}
-	lite1->Message(lightMessage, blockerDuration);
 }
 
 void control::LaunchRampControl(MessageCode code, TPinballComponent* caller)
@@ -2478,6 +2492,8 @@ void control::PlungerControl(MessageCode code, TPinballComponent* caller)
 	if (code == MessageCode::PlungerFeedBall)
 	{
 		MissionControl(MessageCode::ControlMissionStarted, nullptr);
+		if (easyMode && !block1->ActiveFlag)
+			DrainBallBlockerControl(MessageCode::TBlockerEnable, block1);
 	}
 	else if (code == MessageCode::PlungerStartFeedTimer)
 	{

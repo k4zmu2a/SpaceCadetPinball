@@ -732,6 +732,8 @@ void winmain::RenderUi()
 					pb::PushCheat("rmax");
 				if (pb::FullTiltMode && ImGui::MenuItem("quote"))
 					pb::PushCheat("quote");
+				if (ImGui::MenuItem("easy mode", nullptr, control::easyMode))
+					pb::PushCheat("easy mode");
 
 				ImGui::EndMenu();
 			}
