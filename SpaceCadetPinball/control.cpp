@@ -1275,6 +1275,7 @@ void control::DrainBallBlockerControl(MessageCode code, TPinballComponent* calle
 				break;
 			}
 		}
+	default: break;
 	}
 }
 
