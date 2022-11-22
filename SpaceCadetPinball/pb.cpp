@@ -145,14 +145,13 @@ void pb::SelectDatFile(const std::vector<const char*>& dataSearchPaths)
 	}
 	for (auto path : dataSearchPaths)
 	{
-		if (!DatFileName.empty() || !path)
+		if (!path)
 			continue;
 
 		BasePath = path;
 		for (const auto& datFileName : datFileNames)
 		{
 			auto fileName = datFileName;
-			auto found = false;
 			for (int i = 0; i < 2; i++)
 			{
 				if (i == 1)
@@ -164,19 +163,15 @@ void pb::SelectDatFile(const std::vector<const char*>& dataSearchPaths)
 				if (datFile)
 				{
 					fclose(datFile);
-					DatFileName = datFileName;
+					DatFileName = fileName;
 					if (datFileName == "CADET.DAT")
 						FullTiltMode = true;
 					if (datFileName == "DEMO.DAT")
 						FullTiltDemoMode = FullTiltMode = true;
 					printf("Loading game from: %s\n", datFilePath.c_str());
-					found = true;
-					break;
+					return;
 				}
 			}
-
-			if (found)
-				break;
 		}
 	}
 }
