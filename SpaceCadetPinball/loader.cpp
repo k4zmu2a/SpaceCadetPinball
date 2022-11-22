@@ -142,27 +142,34 @@ int loader::get_sound_id(int groupIndex)
 			                                                            FieldTypes::ShortValue));
 			if (value && *value == 202)
 			{
+				// File name is in lower case, while game data is usually in upper case.
 				std::string fileName = loader_table->field(soundGroupId, FieldTypes::String);
-
-				// File name is in lower case, while game data is in upper case.				
-				std::transform(fileName.begin(), fileName.end(), fileName.begin(),
-				               [](unsigned char c) { return std::toupper(c); });
 				if (pb::FullTiltMode)
 				{
 					// FT sounds are in SOUND subfolder
 					fileName.insert(0, 1, PathSeparator);
-					fileName.insert(0, "SOUND");
+					fileName.insert(0, "sound");
 				}
 
+				std::string filePath;
 				float duration = -1;
-				auto filePath = pb::make_path_name(fileName);
-				auto file = fopenu(filePath.c_str(), "rb");
-				if (file)
+				for (int i = 0; i < 2; i++)
 				{
-					fread(&wavHeader, 1, sizeof wavHeader, file);
-					fclose(file);
-					auto sampleCount = wavHeader.data_size / (wavHeader.channels * (wavHeader.bits_per_sample / 8.0));
-					duration = static_cast<float>(sampleCount / wavHeader.sample_rate);
+					if (i == 1)
+						std::transform(fileName.begin(), fileName.end(), fileName.begin(),
+						               [](unsigned char c) { return std::toupper(c); });
+
+					filePath = pb::make_path_name(fileName);
+					auto file = fopenu(filePath.c_str(), "rb");
+					if (file)
+					{
+						fread(&wavHeader, 1, sizeof wavHeader, file);
+						fclose(file);
+						auto sampleCount = wavHeader.data_size / (wavHeader.channels * (wavHeader.bits_per_sample /
+							8.0));
+						duration = static_cast<float>(sampleCount / wavHeader.sample_rate);
+						break;
+					}
 				}
 
 				sound_list[soundIndex].Duration = duration;
