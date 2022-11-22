@@ -140,15 +140,26 @@ void pb::SelectDatFile(const std::vector<const char*>& dataSearchPaths)
 
 	// Default game data test order: CADET.DAT, PINBALL.DAT, DEMO.DAT
 	if (options::Options.Prefer3DPBGameData)
+	{
 		std::swap(datFileNames[0], datFileNames[1]);
+	}
 	for (auto path : dataSearchPaths)
 	{
-		if (DatFileName.empty() && path)
+		if (!DatFileName.empty() || !path)
+			continue;
+
+		BasePath = path;
+		for (const auto& datFileName : datFileNames)
 		{
-			BasePath = path;
-			for (auto datFileName : datFileNames)
+			auto fileName = datFileName;
+			auto found = false;
+			for (int i = 0; i < 2; i++)
 			{
-				auto datFilePath = make_path_name(datFileName);
+				if (i == 1)
+					std::transform(fileName.begin(), fileName.end(), fileName.begin(),
+					               [](unsigned char c) { return std::tolower(c); });
+
+				auto datFilePath = make_path_name(fileName);
 				auto datFile = fopenu(datFilePath.c_str(), "r");
 				if (datFile)
 				{
@@ -158,11 +169,14 @@ void pb::SelectDatFile(const std::vector<const char*>& dataSearchPaths)
 						FullTiltMode = true;
 					if (datFileName == "DEMO.DAT")
 						FullTiltDemoMode = FullTiltMode = true;
-
 					printf("Loading game from: %s\n", datFilePath.c_str());
+					found = true;
 					break;
 				}
 			}
+
+			if (found)
+				break;
 		}
 	}
 }

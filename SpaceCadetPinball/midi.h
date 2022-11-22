@@ -110,6 +110,7 @@ private:
 
 	static void StopPlayback();
 	static Mix_Music* load_track(std::string fileName);
+	static Mix_Music* load_track_sub(std::string fileName, bool isMidi);
 	static Mix_Music* TrackToMidi(MidiTracks track);
 	static std::vector<uint8_t>* MdsToMidi(std::string file);
 };

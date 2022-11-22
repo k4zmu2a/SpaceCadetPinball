@@ -107,7 +107,6 @@ void midi::SetVolume(int volume)
 
 Mix_Music* midi::load_track(std::string fileName)
 {
-	Mix_Music* audio = nullptr;
 	if (pb::FullTiltMode)
 	{
 		// FT sounds are in SOUND subfolder
@@ -115,29 +114,47 @@ Mix_Music* midi::load_track(std::string fileName)
 		fileName.insert(0, "SOUND");
 	}
 
+	auto audio = load_track_sub(fileName, true);
+	if (!audio)
+		audio = load_track_sub(fileName, false);
+
+	if (!audio)
+		return nullptr;
+
+	LoadedTracks.push_back(audio);
+	return audio;
+}
+
+Mix_Music* midi::load_track_sub(std::string fileName, bool isMidi)
+{
 	// FT has music in two formats, depending on game version: MIDI in 16bit, MIDS in 32bit.
 	// 3DPB music is MIDI only.
-	auto basePath = pb::make_path_name(fileName);
-	for (int i = 0; i <= 1 && !audio; i++)
+	Mix_Music* audio = nullptr;
+	fileName += isMidi ? ".MID" : ".MDS";
+	for (int i = 0; i < 2; i++)
 	{
-		if (i == 0)
+		if (i == 1)
+			std::transform(fileName.begin(), fileName.end(), fileName.begin(),
+			               [](unsigned char c) { return std::tolower(c); });
+		if (isMidi)
 		{
-			auto filePath = basePath + ".MID";
+			auto filePath = pb::make_path_name(fileName);
 			auto fileHandle = fopenu(filePath.c_str(), "rb");
 			if (fileHandle)
 			{
 				fclose(fileHandle);
 				auto rw = SDL_RWFromFile(filePath.c_str(), "rb");
 				audio = Mix_LoadMUS_RW(rw, 1);
+				break;
 			}
 		}
 		else
 		{
-			auto midi = MdsToMidi(basePath + ".MDS");
+			auto midi = MdsToMidi(pb::make_path_name(fileName));
 			if (midi)
 			{
 				// Dump converted MIDI file
-				/*auto filePath = basePath + ".midi";
+				/*auto filePath = fileName + ".midi";
 				FILE* fileHandle = fopenu(filePath.c_str(), "wb");
 				fwrite(midi->data(), 1, midi->size(), fileHandle);
 				fclose(fileHandle);*/
@@ -145,14 +162,11 @@ Mix_Music* midi::load_track(std::string fileName)
 				auto rw = SDL_RWFromMem(midi->data(), static_cast<int>(midi->size()));
 				audio = Mix_LoadMUS_RW(rw, 1); // This call seems to leak memory no matter what.
 				delete midi;
+				break;
 			}
 		}
 	}
 
-	if (!audio)
-		return nullptr;
-
-	LoadedTracks.push_back(audio);
 	return audio;
 }
 
