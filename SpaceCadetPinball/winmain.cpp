@@ -52,6 +52,7 @@ int winmain::WinMain(LPCSTR lpCmdLine)
 	std::set_new_handler(memalloc_failure);
 
 	printf("Game version: %s\n", Version);
+	printf("Command line: %s\n", lpCmdLine);
 	printf("Compiled with: SDL %d.%d.%d;", SDL_MAJOR_VERSION, SDL_MINOR_VERSION, SDL_PATCHLEVEL);
 	printf(" SDL_mixer %d.%d.%d;", SDL_MIXER_MAJOR_VERSION, SDL_MIXER_MINOR_VERSION, SDL_MIXER_PATCHLEVEL);
 	printf(" ImGui %s\n", IMGUI_VERSION);
@@ -107,6 +108,25 @@ int winmain::WinMain(LPCSTR lpCmdLine)
 
 	auto prefPath = SDL_GetPrefPath("", "SpaceCadetPinball");
 	auto basePath = SDL_GetBasePath();
+
+	// SDL mixer init
+	bool mixOpened = false, noAudio = strstr(lpCmdLine, "-noaudio") != nullptr;
+	if (!noAudio)
+	{
+		if ((Mix_Init(MIX_INIT_MID_Proxy) & MIX_INIT_MID_Proxy) == 0)
+		{
+			printf("Could not initialize SDL MIDI, music might not work.\nSDL Error: %s\n", SDL_GetError());
+			SDL_ClearError();
+		}
+		if (Mix_OpenAudio(MIX_DEFAULT_FREQUENCY, MIX_DEFAULT_FORMAT, 2, 1024) != 0)
+		{
+			printf("Could not open audio device, continuing without audio.\nSDL Error: %s\n", SDL_GetError());
+			SDL_ClearError();
+		}
+		else
+			mixOpened = true;
+	}
+
 	do
 	{
 		restart = false;
@@ -171,10 +191,11 @@ int winmain::WinMain(LPCSTR lpCmdLine)
 		// Second step: run updates that depend on .DAT file selection
 		options::InitSecondary();
 
-		if (!Sound::Init(Options.SoundChannels, Options.Sounds, Options.SoundVolume))
+		Sound::Init(mixOpened, Options.SoundChannels, Options.Sounds, Options.SoundVolume);
+		if (!mixOpened)
 			Options.Sounds = false;
 
-		if (!pb::quickFlag && !midi::music_init(Options.MusicVolume))
+		if (!midi::music_init(mixOpened, Options.MusicVolume))
 			Options.Music = false;
 
 		if (pb::init())
@@ -219,14 +240,21 @@ int winmain::WinMain(LPCSTR lpCmdLine)
 
 		options::uninit();
 		midi::music_shutdown();
-		pb::uninit();
 		Sound::Close();
+		pb::uninit();
 
 		ImGuiSDL::Deinitialize();
 		ImGui_ImplSDL2_Shutdown();
 		ImGui::DestroyContext();
 	}
 	while (restart);
+
+	if (!noAudio)
+	{
+		if (mixOpened)
+			Mix_CloseAudio();
+		Mix_Quit();
+	}
 
 	SDL_free(basePath);
 	SDL_free(prefPath);

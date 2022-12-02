@@ -94,7 +94,7 @@ enum class MidiTracks
 class midi
 {
 public:
-	static int music_init(int volume);
+	static int music_init(bool mixOpen, int volume);
 	static void music_shutdown();
 	static void music_play();
 	static void music_stop();
@@ -106,7 +106,7 @@ private:
 	static Mix_Music* track1, * track2, * track3;
 	static MidiTracks active_track, NextTrack;
 	static int Volume;
-	static bool IsPlaying;
+	static bool IsPlaying, MixOpen;
 
 	static void StopPlayback();
 	static Mix_Music* load_track(std::string fileName);

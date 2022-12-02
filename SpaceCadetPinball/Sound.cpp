@@ -7,44 +7,44 @@ int Sound::num_channels;
 bool Sound::enabled_flag = false;
 std::vector<ChannelInfo> Sound::Channels{};
 int Sound::Volume = MIX_MAX_VOLUME;
+bool Sound::MixOpen = false;
 
-bool Sound::Init(int channels, bool enableFlag, int volume)
+void Sound::Init(bool mixOpen, int channels, bool enableFlag, int volume)
 {
+	MixOpen = mixOpen;
 	Volume = volume;
-	Mix_Init(MIX_INIT_MID_Proxy);
-	auto result = Mix_OpenAudio(MIX_DEFAULT_FREQUENCY, MIX_DEFAULT_FORMAT, 2, 1024);
 	SetChannels(channels);
 	Enable(enableFlag);
-	return !result;
 }
 
 void Sound::Enable(bool enableFlag)
 {
 	enabled_flag = enableFlag;
-	if (!enableFlag)
+	if (MixOpen && !enableFlag)
 		Mix_HaltChannel(-1);
 }
 
 void Sound::Activate()
 {
-	Mix_Resume(-1);
+	if (MixOpen)
+		Mix_Resume(-1);
 }
 
 void Sound::Deactivate()
 {
-	Mix_Pause(-1);
+	if (MixOpen)
+		Mix_Pause(-1);
 }
 
 void Sound::Close()
 {
+	Enable(false);
 	Channels.clear();
-	Mix_CloseAudio();
-	Mix_Quit();
 }
 
 void Sound::PlaySound(Mix_Chunk* wavePtr, int time, TPinballComponent* soundSource, const char* info)
 {
-	if (wavePtr && enabled_flag)
+	if (MixOpen && wavePtr && enabled_flag)
 	{
 		if (Mix_Playing(-1) == num_channels)
 		{
@@ -117,6 +117,9 @@ void Sound::PlaySound(Mix_Chunk* wavePtr, int time, TPinballComponent* soundSour
 
 Mix_Chunk* Sound::LoadWaveFile(const std::string& lpName)
 {
+	if (!MixOpen)
+		return nullptr;
+
 	auto wavFile = fopenu(lpName.c_str(), "r");
 	if (!wavFile)
 		return nullptr;
@@ -127,7 +130,7 @@ Mix_Chunk* Sound::LoadWaveFile(const std::string& lpName)
 
 void Sound::FreeSound(Mix_Chunk* wave)
 {
-	if (wave)
+	if (MixOpen && wave)
 		Mix_FreeChunk(wave);
 }
 
@@ -138,12 +141,14 @@ void Sound::SetChannels(int channels)
 
 	num_channels = channels;
 	Channels.resize(num_channels);
-	Mix_AllocateChannels(num_channels);
+	if (MixOpen)
+		Mix_AllocateChannels(num_channels);
 	SetVolume(Volume);
 }
 
 void Sound::SetVolume(int volume)
 {
 	Volume = volume;
-	Mix_Volume(-1, volume);
+	if (MixOpen)
+		Mix_Volume(-1, volume);
 }

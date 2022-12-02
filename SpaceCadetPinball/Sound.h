@@ -13,7 +13,7 @@ class Sound
 public:
 	static std::vector<ChannelInfo> Channels;
 
-	static bool Init(int channels, bool enableFlag, int volume);
+	static void Init(bool mixOpen, int channels, bool enableFlag, int volume);
 	static void Enable(bool enableFlag);
 	static void Activate();
 	static void Deactivate();
@@ -27,4 +27,5 @@ private:
 	static int num_channels;
 	static bool enabled_flag;
 	static int Volume;
+	static bool MixOpen;
 };

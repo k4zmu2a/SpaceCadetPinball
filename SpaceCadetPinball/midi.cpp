@@ -9,7 +9,7 @@ std::vector<Mix_Music*> midi::LoadedTracks{};
 Mix_Music* midi::track1, * midi::track2, * midi::track3;
 MidiTracks midi::active_track, midi::NextTrack;
 int midi::Volume = MIX_MAX_VOLUME;
-bool midi::IsPlaying = false;
+bool midi::IsPlaying = false, midi::MixOpen = false;
 
 constexpr uint32_t FOURCC(uint8_t a, uint8_t b, uint8_t c, uint8_t d)
 {
@@ -55,13 +55,15 @@ void midi::StopPlayback()
 {
 	if (active_track != MidiTracks::None)
 	{
-		Mix_HaltMusic();
+		if (MixOpen)
+			Mix_HaltMusic();
 		active_track = MidiTracks::None;
 	}
 }
 
-int midi::music_init(int volume)
+int midi::music_init(bool mixOpen, int volume)
 {
+	MixOpen = mixOpen;
 	SetVolume(volume);
 	active_track = MidiTracks::None;
 	NextTrack = MidiTracks::None;
@@ -102,11 +104,15 @@ void midi::music_shutdown()
 void midi::SetVolume(int volume)
 {
 	Volume = volume;
-	Mix_VolumeMusic(volume);
+	if (MixOpen)
+		Mix_VolumeMusic(volume);
 }
 
 Mix_Music* midi::load_track(std::string fileName)
 {
+	if (!MixOpen || pb::quickFlag)
+		return nullptr;
+
 	if (pb::FullTiltMode)
 	{
 		// FT sounds are in SOUND subfolder
@@ -184,7 +190,7 @@ bool midi::play_track(MidiTracks track, bool replay)
 		return false;
 	}
 
-	if (Mix_PlayMusic(midi, -1))
+	if (MixOpen && Mix_PlayMusic(midi, -1))
 	{
 		active_track = MidiTracks::None;
 		return false;
