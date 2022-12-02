@@ -78,6 +78,7 @@ public:
 	static LPCSTR get_rc_string(Msg uID);
 	static int get_rc_int(Msg uID, int* dst);
 	static std::string make_path_name(const std::string& fileName);
+	static void ShowMessageBox(Uint32 flags, LPCSTR title, LPCSTR message);
 private:
 	static bool demo_mode;
 

@@ -11,6 +11,8 @@
 #include "translations.h"
 #include "font_selection.h"
 
+constexpr const char* winmain::Version;
+
 SDL_Window* winmain::MainWindow = nullptr;
 SDL_Renderer* winmain::Renderer = nullptr;
 ImGuiIO* winmain::ImIO = nullptr;
@@ -49,12 +51,17 @@ int winmain::WinMain(LPCSTR lpCmdLine)
 {
 	std::set_new_handler(memalloc_failure);
 
+	printf("Game version: %s\n", Version);
+	printf("Compiled with: SDL %d.%d.%d;", SDL_MAJOR_VERSION, SDL_MINOR_VERSION, SDL_PATCHLEVEL);
+	printf(" SDL_mixer %d.%d.%d;", SDL_MIXER_MAJOR_VERSION, SDL_MIXER_MINOR_VERSION, SDL_MIXER_PATCHLEVEL);
+	printf(" ImGui %s\n", IMGUI_VERSION);
+
 	// SDL init
 	SDL_SetMainReady();
 	if (SDL_Init(SDL_INIT_TIMER | SDL_INIT_AUDIO | SDL_INIT_VIDEO |
 		SDL_INIT_EVENTS | SDL_INIT_JOYSTICK | SDL_INIT_GAMECONTROLLER) < 0)
 	{
-		SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, "Could not initialize SDL2", SDL_GetError(), nullptr);
+		pb::ShowMessageBox(SDL_MESSAGEBOX_ERROR, "Could not initialize SDL2", SDL_GetError());
 		return 1;
 	}
 
@@ -71,7 +78,7 @@ int winmain::WinMain(LPCSTR lpCmdLine)
 	MainWindow = window;
 	if (!window)
 	{
-		SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, "Could not create window", SDL_GetError(), nullptr);
+		pb::ShowMessageBox(SDL_MESSAGEBOX_ERROR, "Could not create window", SDL_GetError());
 		return 1;
 	}
 
@@ -89,7 +96,7 @@ int winmain::WinMain(LPCSTR lpCmdLine)
 	}
 	if (!renderer)
 	{
-		SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, "Could not create renderer", SDL_GetError(), window);
+		pb::ShowMessageBox(SDL_MESSAGEBOX_ERROR, "Could not create renderer", SDL_GetError());
 		return 1;
 	}
 	SDL_RendererInfo rendererInfo{};
@@ -181,8 +188,7 @@ int winmain::WinMain(LPCSTR lpCmdLine)
 					message = message + (path[0] ? path : "working directory") + "\n";
 				}
 			}
-			SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, "Could not load game data",
-			                         message.c_str(), window);
+			pb::ShowMessageBox(SDL_MESSAGEBOX_ERROR, "Could not load game data", message.c_str());
 			return 1;
 		}
 
@@ -1036,7 +1042,7 @@ void winmain::memalloc_failure()
 	Sound::Close();
 	const char* caption = pb::get_rc_string(Msg::STRING270);
 	const char* text = pb::get_rc_string(Msg::STRING279);
-	SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, caption, text, MainWindow);
+	pb::ShowMessageBox(SDL_MESSAGEBOX_ERROR, caption, text);
 	std::exit(1);
 }
 
@@ -1056,7 +1062,7 @@ void winmain::a_dialog()
 		ImGui::Separator();
 
 		ImGui::TextUnformatted("Decompiled -> Ported to SDL");
-		ImGui::TextUnformatted("Version 2.0.1");
+		ImGui::Text("Version %s", Version);
 		if (ImGui::SmallButton("Project home: https://github.com/k4zmu2a/SpaceCadetPinball"))
 		{
 #if SDL_VERSION_ATLEAST(2, 0, 14)

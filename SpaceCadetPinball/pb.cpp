@@ -678,3 +678,9 @@ std::string pb::make_path_name(const std::string& fileName)
 {
 	return BasePath + fileName;
 }
+
+void pb::ShowMessageBox(Uint32 flags, LPCSTR title, LPCSTR message)
+{
+	fprintf(flags == SDL_MESSAGEBOX_ERROR ? stderr : stdout, "BL error: %s\n%s\n", title, message);
+	SDL_ShowSimpleMessageBox(flags, title, message, winmain::MainWindow);
+}

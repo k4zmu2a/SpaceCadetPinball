@@ -65,6 +65,7 @@ class winmain
 	using TimePoint = std::chrono::time_point<Clock>;
 
 public:
+	static constexpr const char* Version = "2.1.0 DEV";
 	static bool single_step;
 	static SDL_Window* MainWindow;
 	static SDL_Renderer* Renderer;
