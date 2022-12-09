@@ -145,7 +145,7 @@ void high_score::RenderHighScoreDialog()
 		}
 	}
 
-	bool unused_open = true;
+	bool unused_open = true, textBoxSubmit = false;
 	if (ImGui::BeginPopupModal(pb::get_rc_string(Msg::HIGHSCORES_Caption), &unused_open, ImGuiWindowFlags_AlwaysAutoResize))
 	{
 		if (ImGui::BeginTable("table1", 3, ImGuiTableFlags_Borders))
@@ -171,7 +171,19 @@ void high_score::RenderHighScoreDialog()
 					offset = -1;
 					score = DlgData.Entry.Score;
 					ImGui::PushItemWidth(200);
-					ImGui::InputText("", DlgData.Entry.Name, IM_ARRAYSIZE(DlgData.Entry.Name));
+
+					static bool doubleFocus = false;
+					if (ImGui::IsWindowAppearing() || doubleFocus)
+					{
+						// Hack - set focus only works on the second time.
+						ImGui::SetKeyboardFocusHere(0);
+						doubleFocus ^= true;
+					}
+					if (ImGui::InputText("", DlgData.Entry.Name, IM_ARRAYSIZE(DlgData.Entry.Name),
+						ImGuiInputTextFlags_EnterReturnsTrue | ImGuiInputTextFlags_AutoSelectAll))
+					{
+						textBoxSubmit = true;
+					}
 				}
 				else
 				{
@@ -185,7 +197,7 @@ void high_score::RenderHighScoreDialog()
 			ImGui::EndTable();
 		}
 
-		if (ImGui::Button(pb::get_rc_string(Msg::HIGHSCORES_Ok)))
+		if (ImGui::Button(pb::get_rc_string(Msg::HIGHSCORES_Ok)) || textBoxSubmit)
 		{
 			if (dlg_enter_name)
 			{

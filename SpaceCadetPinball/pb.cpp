@@ -562,7 +562,7 @@ void pb::end_game()
 			if (position >= 0)
 			{
 				high_score_struct entry{ {0}, scores[i] };
-				const char* playerName = "Player";
+				const char* playerName;
 
 				switch(scoreIndex[i])
 				{
