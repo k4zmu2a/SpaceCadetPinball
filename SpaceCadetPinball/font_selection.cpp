@@ -33,7 +33,7 @@ void font_selection::RenderDialog()
 	{
 		ImGui::Text("Font file to use: ");
 		ImGui::SameLine();
-		ImGui::InputText("", DialogInputBuffer, IM_ARRAYSIZE(DialogInputBuffer));
+		ImGui::InputText("##Font", DialogInputBuffer, IM_ARRAYSIZE(DialogInputBuffer));
 
 		if (ImGui::Button(pb::get_rc_string(Msg::HIGHSCORES_Ok)))
 		{

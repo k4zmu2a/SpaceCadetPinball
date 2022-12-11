@@ -607,11 +607,11 @@ namespace ImGuiSDL
 		{
 			auto commandList = drawData->CmdLists[n];
 			auto vertexBuffer = commandList->VtxBuffer;
-			auto indexBuffer = commandList->IdxBuffer.Data;
 
 			for (int cmd_i = 0; cmd_i < commandList->CmdBuffer.Size; cmd_i++)
 			{
 				const ImDrawCmd* drawCommand = &commandList->CmdBuffer[cmd_i];
+				auto indexBuffer = commandList->IdxBuffer.Data + drawCommand->IdxOffset;
 
 				const Device::ClipRect clipRect = {
 					static_cast<int>(drawCommand->ClipRect.x),
@@ -693,8 +693,6 @@ namespace ImGuiSDL
 						}
 					}
 				}
-
-				indexBuffer += drawCommand->ElemCount;
 			}
 		}
 

@@ -171,9 +171,8 @@ int winmain::WinMain(LPCSTR lpCmdLine)
 		}
 		ImGuiSDL::Initialize(renderer, 0, 0);
 		ImGui::StyleColorsDark();
-
-		// ImGui_ImplSDL2_Init is private, we are not actually using ImGui OpenGl backend
-		ImGui_ImplSDL2_InitForOpenGL(window, nullptr);
+		
+		ImGui_ImplSDL2_InitForSDLRenderer(window, Renderer);
 		io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard | ImGuiConfigFlags_NavEnableGamepad;
 
 		// Data search order: WD, executable path, user pref path, platform specific paths.
@@ -457,7 +456,7 @@ void winmain::RenderUi()
 		ImGui::PopStyleVar();
 
 		// This window can not loose nav focus for some reason, clear it manually.
-		if (ImGui::IsNavInputDown(ImGuiNavInput_Cancel))
+		if (ImGui::IsKeyDown(ImGuiKey_Escape) || ImGui::IsKeyDown(ImGuiKey_GamepadFaceRight))
 			ImGui::FocusWindow(nullptr);
 	}
 
