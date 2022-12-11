@@ -55,7 +55,7 @@ int winmain::WinMain(LPCSTR lpCmdLine)
 	printf("Command line: %s\n", lpCmdLine);
 	printf("Compiled with: SDL %d.%d.%d;", SDL_MAJOR_VERSION, SDL_MINOR_VERSION, SDL_PATCHLEVEL);
 	printf(" SDL_mixer %d.%d.%d;", SDL_MIXER_MAJOR_VERSION, SDL_MIXER_MINOR_VERSION, SDL_MIXER_PATCHLEVEL);
-	printf(" ImGui %s\n", IMGUI_VERSION);
+	printf(" ImGui %s %s\n", IMGUI_VERSION, ImGuiRender);
 
 	// SDL init
 	SDL_SetMainReady();
@@ -169,7 +169,7 @@ int winmain::WinMain(LPCSTR lpCmdLine)
 				printf("Failed to load font: %s, using embedded font.\n", fileName);
 			io.Fonts->Build();
 		}
-		ImGuiSDL::Initialize(renderer, 0, 0);
+		ImGui_Render_Init(renderer);
 		ImGui::StyleColorsDark();
 		
 		ImGui_ImplSDL2_InitForSDLRenderer(window, Renderer);
@@ -242,7 +242,7 @@ int winmain::WinMain(LPCSTR lpCmdLine)
 		Sound::Close();
 		pb::uninit();
 
-		ImGuiSDL::Deinitialize();
+		ImGui_Render_Shutdown();
 		ImGui_ImplSDL2_Shutdown();
 		ImGui::DestroyContext();
 	}
@@ -357,6 +357,7 @@ void winmain::MainLoop()
 			if (UpdateToFrameCounter >= UpdateToFrameRatio)
 			{
 				ImGui_ImplSDL2_NewFrame();
+				ImGui_Render_NewFrame();
 				ImGui::NewFrame();
 				RenderUi();
 
@@ -367,7 +368,7 @@ void winmain::MainLoop()
 				render::PresentVScreen();
 
 				ImGui::Render();
-				ImGuiSDL::Render(ImGui::GetDrawData());
+				ImGui_Render_RenderDrawData(ImGui::GetDrawData());
 
 				SDL_RenderPresent(Renderer);
 				frameCounter++;

@@ -169,6 +169,8 @@ set(SOURCE_FILES
         SpaceCadetPinball/imgui_demo.cpp
         SpaceCadetPinball/imgui_impl_sdl.cpp
         SpaceCadetPinball/imgui_impl_sdl.h
+        SpaceCadetPinball/imgui_impl_sdlrenderer.h
+        SpaceCadetPinball/imgui_impl_sdlrenderer.cpp
         SpaceCadetPinball/imstb_textedit.h
         SpaceCadetPinball/imstb_rectpack.h
         SpaceCadetPinball/imstb_truetype.h
@@ -193,6 +195,7 @@ set_source_files_properties(
         SpaceCadetPinball/imgui_tables.cpp
         SpaceCadetPinball/imgui_demo.cpp
         SpaceCadetPinball/imgui_impl_sdl.cpp
+        SpaceCadetPinball/imgui_impl_sdlrenderer.cpp
         PROPERTIES SKIP_PRECOMPILE_HEADERS 1
 )
 
