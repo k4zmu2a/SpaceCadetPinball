@@ -31,7 +31,9 @@ bool winmain::no_time_loss = false;
 
 bool winmain::restart = false;
 
-gdrv_bitmap8* winmain::gfr_display = nullptr;
+std::vector<float> winmain::gfrDisplay {};
+unsigned winmain::gfrOffset = 0;
+float winmain::gfrWindow = 5.0f;
 bool winmain::ShowAboutDialog = false;
 bool winmain::ShowImGuiDemo = false;
 bool winmain::ShowSpriteViewer = false;
@@ -257,8 +259,6 @@ int winmain::WinMain(LPCSTR lpCmdLine)
 
 	SDL_free(basePath);
 	SDL_free(prefPath);
-	delete gfr_display;
-	gfr_display = nullptr;
 	SDL_DestroyRenderer(renderer);
 	SDL_DestroyWindow(window);
 	SDL_Quit();
@@ -331,24 +331,14 @@ void winmain::MainLoop()
 				pb::frame(dt);
 				if (DispGRhistory)
 				{
-					auto width = 300;
-					auto height = 64, halfHeight = height / 2;
-					if (!gfr_display)
+					auto targetSize = static_cast<unsigned>(static_cast<float>(Options.UpdatesPerSecond) * gfrWindow);
+					if (gfrDisplay.size() != targetSize)
 					{
-						gfr_display = new gdrv_bitmap8(width, height, false);
-						gfr_display->CreateTexture("nearest", SDL_TEXTUREACCESS_STREAMING);
+						gfrDisplay.resize(targetSize, static_cast<float>(TargetFrameTime.count()));
+						gfrOffset = 0;
 					}
-
-					gdrv::ScrollBitmapHorizontal(gfr_display, -1);
-					gdrv::fill_bitmap(gfr_display, 1, halfHeight, width - 1, 0, ColorRgba::Black()); // Background
-					// Target	
-					gdrv::fill_bitmap(gfr_display, 1, halfHeight, width - 1, halfHeight, ColorRgba::White());
-
-					auto target = static_cast<float>(TargetFrameTime.count());
-					auto scale = halfHeight / target;
-					auto diffHeight = std::min(static_cast<int>(std::round(std::abs(target - dt) * scale)), halfHeight);
-					auto yOffset = dt < target ? halfHeight : halfHeight - diffHeight;
-					gdrv::fill_bitmap(gfr_display, 1, diffHeight, width - 1, yOffset, ColorRgba::Red()); // Target diff
+					gfrDisplay[gfrOffset] = dt;
+					gfrOffset = (gfrOffset + 1) % gfrDisplay.size();
 				}
 				updateCounter++;
 			}
@@ -1149,21 +1139,38 @@ void winmain::UpdateFrameRate()
 
 void winmain::RenderFrameTimeDialog()
 {
-	if (!gfr_display)
-		return;
-
 	ImGui::PushStyleVar(ImGuiStyleVar_WindowMinSize, ImVec2{300, 70});
 	if (ImGui::Begin("Frame Times", &DispGRhistory, ImGuiWindowFlags_NoScrollbar))
 	{
 		auto target = static_cast<float>(TargetFrameTime.count());
-		auto scale = 1 / (gfr_display->Height / 2 / target);
+		auto yMax = target * 2;
 
 		auto spin = Options.HybridSleep ? static_cast<float>(SpinThreshold.count()) : 0;
-		ImGui::Text("Target frame time:%03.04fms, 1px:%03.04fms, SpinThreshold:%03.04fms",
-		            target, scale, spin);
-		gfr_display->BlitToTexture();
-		auto region = ImGui::GetContentRegionAvail();
-		ImGui::Image(gfr_display->Texture, region);
+		ImGui::Text("YMin:0ms, Target frame time:%03.04fms, YMax:%03.04fms, SpinThreshold:%03.04fms",
+		            target, yMax, spin);
+
+		static bool scrollPlot = true;
+		ImGui::Checkbox("Scroll Plot", &scrollPlot);
+		
+		ImGui::SameLine();
+		ImGui::SliderFloat("Window Size", &gfrWindow, 0.1f, 15, "%.3fsec", ImGuiSliderFlags_AlwaysClamp);
+
+		{
+			float average = 0.0f, dev = 0.0f;
+			for (auto n : gfrDisplay) 
+			{
+				average += n;
+				dev += std::abs(target - n);
+			}
+			average /= static_cast<float>(gfrDisplay.size());
+			dev /= static_cast<float>(gfrDisplay.size());
+			char overlay[64];
+			sprintf(overlay, "avg %.3fms, dev %.3fms", average, dev);
+
+			auto region = ImGui::GetContentRegionAvail();
+			ImGui::PlotLines("Lines", gfrDisplay.data(), gfrDisplay.size(),
+				scrollPlot ? gfrOffset : 0, overlay, 0, yMax, region);
+		}
 	}
 	ImGui::End();
 	ImGui::PopStyleVar();

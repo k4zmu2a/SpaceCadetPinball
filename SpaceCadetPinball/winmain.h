@@ -89,7 +89,7 @@ private:
 	static int return_value, DispFrameRate;
 	static int mouse_down, last_mouse_x, last_mouse_y;
 	static bool no_time_loss, activated, bQuit, has_focus, DispGRhistory;
-	static gdrv_bitmap8* gfr_display;
+	static std::vector<float> gfrDisplay;
 	static std::string FpsDetails, PrevSdlError;
 	static bool restart;
 	static bool ShowAboutDialog;
@@ -101,6 +101,8 @@ private:
 	static DurationMs SpinThreshold;
 	static WelfordState SleepState;
 	static unsigned PrevSdlErrorCount;
+	static unsigned gfrOffset;
+	static float gfrWindow;
 
 	static void RenderUi();
 	static void RenderFrameTimeDialog();
