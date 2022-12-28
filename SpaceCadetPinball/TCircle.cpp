@@ -29,7 +29,16 @@ void TCircle::EdgeCollision(TBall* ball, float distance)
 	CollisionComponent->Collision(ball, &nextPosition, &direction, distance, this);
 }
 
-void TCircle::place_in_grid()
+void TCircle::place_in_grid(RectF* aabb)
 {
+	if(aabb)
+	{
+		const auto radius = sqrt(Circle.RadiusSq);
+		aabb->Merge({
+			Circle.Center.X + radius, Circle.Center.Y + radius,
+			Circle.Center.X - radius, Circle.Center.Y - radius
+		});
+	}
+
 	TTableLayer::edges_insert_circle(&Circle, this, nullptr);
 }

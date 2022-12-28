@@ -14,7 +14,7 @@ public:
 	void port_draw() override;
 	float FindCollisionDistance(ray_type* ray) override;
 	void EdgeCollision(TBall* ball, float distance) override;
-	void place_in_grid() override;
+	void place_in_grid(RectF* aabb) override;
 	void set_control_points(float timeNow);
 	float flipper_angle(float timeNow);
 	int is_ball_inside(float x, float y);

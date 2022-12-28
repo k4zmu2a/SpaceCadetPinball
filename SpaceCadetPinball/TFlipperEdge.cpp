@@ -12,7 +12,7 @@ TFlipperEdge::TFlipperEdge(TCollisionComponent* collComp, char* activeFlag, unsi
                            vector3* origin, vector3* vecT1, vector3* vecT2, float extendTime, float retractTime,
                            float collMult, float elasticity, float smoothness): TEdgeSegment(collComp, activeFlag, collisionGroup)
 {
-	vector3 crossProd{}, vecDir1{}, vecDir2{};
+	vector3 crossProd{}, vecOriginT1{}, vecOriginT2{};
 
 	Elasticity = elasticity;
 	Smoothness = smoothness;
@@ -31,20 +31,21 @@ TFlipperEdge::TFlipperEdge(TCollisionComponent* collComp, char* activeFlag, unsi
 	CircleT1RadiusMSq = CircleT1Radius * 1.01f * (CircleT1Radius * 1.01f);
 	CircleT1RadiusSq = CircleT1Radius * CircleT1Radius;
 
-	vecDir1.X = vecT1->X - origin->X;
-	vecDir1.Y = vecT1->Y - origin->Y;
-	vecDir1.Z = 0.0;
-	maths::normalize_2d(vecDir1);
+	vecOriginT1.X = vecT1->X - origin->X;
+	vecOriginT1.Y = vecT1->Y - origin->Y;
+	vecOriginT1.Z = 0.0;
+	maths::normalize_2d(vecOriginT1);
 
-	vecDir2.X = vecT2->X - origin->X;
-	vecDir2.Y = vecT2->Y - origin->Y;
-	vecDir2.Z = 0.0;
-	maths::normalize_2d(vecDir2);
+	vecOriginT2.X = vecT2->X - origin->X;
+	vecOriginT2.Y = vecT2->Y - origin->Y;
+	vecOriginT2.Z = 0.0;
+	maths::normalize_2d(vecOriginT2);
 
-	AngleMax = acos(maths::DotProduct(vecDir1, vecDir2));
-	maths::cross(vecDir1, vecDir2, crossProd);
+	AngleMax = acos(maths::DotProduct(vecOriginT1, vecOriginT2));
+	maths::cross(vecOriginT1, vecOriginT2, crossProd);
 	if (crossProd.Z < 0.0f)
 		AngleMax = -AngleMax;
+
 	FlipperFlag = MessageCode::TFlipperNull;
 	AngleDst = 0.0;
 
@@ -60,19 +61,17 @@ TFlipperEdge::TFlipperEdge(TCollisionComponent* collComp, char* activeFlag, unsi
 	ExtendTime = extendTime;
 	RetractTime = retractTime;
 
-	auto dirX1 = vecDir1.X;
-	auto dirY1 = -vecDir1.Y;
-	A2Src.X = dirY1 * CirclebaseRadius + origin->X;
-	A2Src.Y = dirX1 * CirclebaseRadius + origin->Y;
-	A1Src.X = dirY1 * CircleT1Radius + vecT1->X;
-	A1Src.Y = dirX1 * CircleT1Radius + vecT1->Y;
+	const vector2 perpOriginT1Cc = { -vecOriginT1.Y , vecOriginT1.X };
+	A2Src.X = perpOriginT1Cc.X * CirclebaseRadius + origin->X;
+	A2Src.Y = perpOriginT1Cc.Y * CirclebaseRadius + origin->Y;
+	A1Src.X = perpOriginT1Cc.X * CircleT1Radius + vecT1->X;
+	A1Src.Y = perpOriginT1Cc.Y * CircleT1Radius + vecT1->Y;
 
-	dirX1 = -dirX1;
-	dirY1 = -dirY1;
-	B1Src.X = dirY1 * CirclebaseRadius + origin->X;
-	B1Src.Y = dirX1 * CirclebaseRadius + origin->Y;
-	B2Src.X = dirY1 * CircleT1Radius + vecT1->X;
-	B2Src.Y = dirX1 * CircleT1Radius + vecT1->Y;
+	const vector2 perpOriginT1C = { vecOriginT1.Y , -vecOriginT1.X };
+	B1Src.X = perpOriginT1C.X * CirclebaseRadius + origin->X;
+	B1Src.Y = perpOriginT1C.Y * CirclebaseRadius + origin->Y;
+	B2Src.X = perpOriginT1C.X * CircleT1Radius + vecT1->X;
+	B2Src.Y = perpOriginT1C.Y * CircleT1Radius + vecT1->Y;
 
 	if (AngleMax < 0.0f)
 	{
@@ -89,7 +88,6 @@ TFlipperEdge::TFlipperEdge(TCollisionComponent* collComp, char* activeFlag, unsi
 	auto distance = maths::Distance(*vecT1, *vecT2);
 	CollisionTimeAdvance = minMoveTime / (distance / CircleT1Radius + distance / CircleT1Radius);
 
-	TFlipperEdge::place_in_grid();
 	EdgeCollisionFlag = 0;
 	InputTime = 0.0;
 	CollisionFlag1 = 0;
@@ -349,46 +347,19 @@ void TFlipperEdge::EdgeCollision(TBall* ball, float distance)
 	maths::basic_collision(ball, &NextBallPosition, &CollisionDirection, elasticity, Smoothness, 1000000000.0, 0.0);
 }
 
-void TFlipperEdge::place_in_grid()
+void TFlipperEdge::place_in_grid(RectF* aabb)
 {
-	float x0 = RotOrigin.X - CirclebaseRadius;
-	float y0 = RotOrigin.Y - CirclebaseRadius;
-	float x1 = RotOrigin.X + CirclebaseRadius;
-	float y1 = RotOrigin.Y + CirclebaseRadius;
+	auto xMax = std::max(std::max(T2Src.X + CircleT1Radius, T1Src.X + CircleT1Radius), RotOrigin.X + CirclebaseRadius);
+	auto yMax = std::max(std::max(T2Src.Y + CircleT1Radius, T1Src.Y + CircleT1Radius), RotOrigin.Y + CirclebaseRadius);
+	auto xMin = std::min(std::min(T2Src.X - CircleT1Radius, T1Src.X - CircleT1Radius), RotOrigin.X - CirclebaseRadius);
+	auto yMin = std::min(std::min(T2Src.Y - CircleT1Radius, T1Src.Y - CircleT1Radius), RotOrigin.Y - CirclebaseRadius);
 
-	float v2 = T1Src.X - CircleT1Radius;
-	if (v2 < x0)
-		x0 = v2;
+	if (aabb)
+	{
+		aabb->Merge({xMax, yMax, xMin, yMin});
+	}
 
-	float v3 = T1Src.Y - CircleT1Radius;
-	if (v3 < y0)
-		y0 = v3;
-
-	float v4 = T1Src.X + CircleT1Radius;
-	if (v4 > x1)
-		x1 = v4;
-
-	float v5 = T1Src.Y + CircleT1Radius;
-	if (v5 > y1)
-		y1 = v5;
-
-	float v6 = T2Src.X - CircleT1Radius;
-	if (v6 < x0)
-		x0 = v6;
-
-	float v7 = T2Src.Y - CircleT1Radius;
-	if (v7 < y0)
-		y0 = v7;
-
-	float v8 = T2Src.X + CircleT1Radius;
-	if (v8 > x1)
-		x1 = v8;
-
-	float v9 = T2Src.Y + CircleT1Radius;
-	if (v9 > y1)
-		y1 = v9;
-
-	TTableLayer::edges_insert_square(y0, x0, y1, x1, this, nullptr);
+	TTableLayer::edges_insert_square(yMin, xMin, yMax, xMax, this, nullptr);
 }
 
 void TFlipperEdge::set_control_points(float timeNow)

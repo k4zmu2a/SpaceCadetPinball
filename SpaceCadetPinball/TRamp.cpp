@@ -33,7 +33,7 @@ TRamp::TRamp(TPinballTable* table, int groupIndex) : TCollisionComponent(table, 
 	auto wall0Pts = reinterpret_cast<wall_point_type*>(wall0Arr + 2);
 	Line1 = new TLine(this, &ActiveFlag, wall0CollisionGroup, wall0Pts->Pt1, wall0Pts->Pt0);
 	Line1->WallValue = nullptr;
-	Line1->place_in_grid();
+	Line1->place_in_grid(&AABB);
 	EdgeList.push_back(Line1);
 
 	auto wall1Arr = loader::query_float_attribute(groupIndex, 0, 1301);
@@ -49,7 +49,7 @@ TRamp::TRamp(TPinballTable* table, int groupIndex) : TCollisionComponent(table, 
 
 	Line2 = new TLine(this, &ActiveFlag, CollisionGroup, wall1Start, wall1End);
 	Line2->WallValue = nullptr;
-	Line2->place_in_grid();
+	Line2->place_in_grid(&AABB);
 	EdgeList.push_back(Line2);
 
 	auto wall2Arr = loader::query_float_attribute(groupIndex, 0, 1302);
@@ -65,7 +65,7 @@ TRamp::TRamp(TPinballTable* table, int groupIndex) : TCollisionComponent(table, 
 
 	Line3 = new TLine(this, &ActiveFlag, CollisionGroup, wall2Start, wall2End);
 	Line3->WallValue = nullptr;
-	Line3->place_in_grid();
+	Line3->place_in_grid(&AABB);
 	EdgeList.push_back(Line3);
 
 
@@ -105,7 +105,7 @@ TRamp::TRamp(TPinballTable* table, int groupIndex) : TCollisionComponent(table, 
 			{
 				auto line = new TLine(this, &ActiveFlag, collisionGroup, point1, point2);
 				line->WallValue = &plane;
-				line->place_in_grid();
+				line->place_in_grid(&AABB);
 				EdgeList.push_back(line);
 			}
 		}

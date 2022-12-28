@@ -51,8 +51,16 @@ void TLine::EdgeCollision(TBall* ball, float distance)
 		this);
 }
 
-void TLine::place_in_grid()
+void TLine::place_in_grid(RectF* aabb)
 {
+	if (aabb)
+	{
+		aabb->Merge({
+			std::max(X0, X1), std::max(Y0, Y1),
+			std::min(X0, X1), std::min(Y0, Y1)
+		});
+	}
+
 	auto edgeMan = TTableLayer::edge_manager;
 	auto xBox0 = edgeMan->box_x(X0);
 	auto yBox0 = edgeMan->box_y(Y0);

@@ -88,6 +88,8 @@ struct ramp_plane_type
 struct RectF
 {
 	float XMax, YMax, XMin, YMin;
+
+	void Merge(RectF aabb);
 };
 
 enum class FlipperIntersect

@@ -32,7 +32,8 @@ TPinballTable* pb::MainTable = nullptr;
 DatFile* pb::record_table = nullptr;
 int pb::time_ticks = 0;
 GameModes pb::game_mode = GameModes::GameOver;
-float pb::time_now = 0, pb::time_next = 0, pb::ball_speed_limit, pb::time_ticks_remainder = 0;
+float pb::time_now = 0, pb::time_next = 0, pb::time_ticks_remainder = 0;
+float pb::ball_speed_limit, pb::ball_min_smth, pb::ball_inv_smth, pb::ball_collision_dist;
 bool pb::FullTiltMode = false, pb::FullTiltDemoMode = false, pb::cheat_mode = false, pb::demo_mode = false;
 std::string pb::DatFileName, pb::BasePath;
 ImU32 pb::TextBoxColor;
@@ -102,7 +103,11 @@ int pb::init()
 	MainTable = new TPinballTable();
 
 	high_score::read();
-	ball_speed_limit = MainTable->BallList.at(0)->Offset * 200.0f;
+	auto ball = MainTable->BallList.at(0);
+	ball_speed_limit = ball->Offset * 200.0f;
+	ball_min_smth = ball->Offset * 0.5f;
+	ball_inv_smth = 1.0f / ball_min_smth;
+	ball_collision_dist = (ball->Offset + ball_min_smth) * 2.0f;
 
 	int red = 255, green = 255, blue = 255;
 	auto fontColor = get_rc_string(Msg::TextBoxColor);

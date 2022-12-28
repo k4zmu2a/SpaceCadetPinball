@@ -39,6 +39,7 @@ TFlipper::TFlipper(TPinballTable* table, int groupIndex) : TCollisionComponent(t
 		collMult,
 		Elasticity,
 		Smoothness);
+	flipperEdge->place_in_grid(&AABB);
 
 	FlipperEdge = flipperEdge;
 	BmpIndex = 0;

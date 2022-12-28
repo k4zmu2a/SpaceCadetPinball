@@ -93,6 +93,7 @@ struct optionsStruct
 	bool DebugOverlaySprites;
 	bool DebugOverlaySounds;
 	bool DebugOverlayBallDepthGrid;
+	bool DebugOverlayAabb;
 	std::string FontFileName;
 };
 

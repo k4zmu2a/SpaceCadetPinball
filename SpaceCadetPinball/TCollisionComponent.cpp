@@ -13,6 +13,7 @@ TCollisionComponent::TCollisionComponent(TPinballTable* table, int groupIndex, b
 	visualStruct visual{};
 
 	ActiveFlag = 1;
+	AABB = { -10000, -10000, 10000, 10000 };
 	if (GroupName != nullptr)
 		UnusedBaseFlag = 1;
 	if (groupIndex <= 0)

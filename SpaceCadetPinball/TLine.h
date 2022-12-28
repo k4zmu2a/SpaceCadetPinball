@@ -13,5 +13,5 @@ public:
 	void Offset(float offset);
 	float FindCollisionDistance(ray_type* ray) override;
 	void EdgeCollision(TBall* ball, float distance) override;
-	void place_in_grid() override;
+	void place_in_grid(RectF* aabb) override;
 };

@@ -732,6 +732,8 @@ void winmain::RenderUi()
 					Options.DebugOverlaySprites ^= true;
 				if (ImGui::MenuItem("All Edges", nullptr, Options.DebugOverlayAllEdges))
 					Options.DebugOverlayAllEdges ^= true;
+				if (ImGui::MenuItem("Component AABB", nullptr, Options.DebugOverlayAabb))
+					Options.DebugOverlayAabb ^= true;
 				if (ImGui::MenuItem("Ball Position", nullptr, Options.DebugOverlayBallPosition))
 					Options.DebugOverlayBallPosition ^= true;
 				if (ImGui::MenuItem("Ball Box Edges", nullptr, Options.DebugOverlayBallEdges))

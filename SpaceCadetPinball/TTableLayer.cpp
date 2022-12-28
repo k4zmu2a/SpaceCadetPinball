@@ -91,7 +91,7 @@ TTableLayer::TTableLayer(TPinballTable* table): TCollisionComponent(table, -1, f
 		                      edgePoints[i + 1].Y,
 		                      edgePoints[i].X,
 		                      edgePoints[i].Y);
-		line->place_in_grid();
+		line->place_in_grid(&AABB);
 		EdgeList.push_back(line);
 	}
 

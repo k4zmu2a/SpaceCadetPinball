@@ -39,7 +39,7 @@ TKickout::TKickout(TPinballTable* table, int groupIndex, bool someFlag): TCollis
 	                           reinterpret_cast<vector3*>(visual.FloatArr), Circle.RadiusSq);
 	if (tCircle)
 	{
-		tCircle->place_in_grid();
+		tCircle->place_in_grid(&AABB);
 		EdgeList.push_back(tCircle);
 	}
 

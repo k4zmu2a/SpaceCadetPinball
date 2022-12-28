@@ -123,6 +123,10 @@ void DebugOverlay::DrawOverlay()
 	if (options::Options.DebugOverlayBallDepthGrid)
 		DrawBallDepthSteps();
 
+	// Draw AABB of collision components
+	if (options::Options.DebugOverlayAabb)
+		DrawComponentAabb();
+
 	// Restore render target
 	SDL_SetRenderTarget(winmain::Renderer, initialRenderTarget);
 	SDL_SetRenderDrawColor(winmain::Renderer,
@@ -268,6 +272,23 @@ void DebugOverlay::DrawBallDepthSteps()
 			SDL_RenderDrawLine(winmain::Renderer, x1, pt.Y, x2, pt.Y);
 		}
 		break;
+	}
+}
+
+void DebugOverlay::DrawComponentAabb()
+{
+	SDL_SetRenderDrawColor(winmain::Renderer, 0, 50, 200, 255);
+	for (auto cmp : pb::MainTable->ComponentList)
+	{
+		auto collCmp = dynamic_cast<TCollisionComponent*>(cmp);
+		if (collCmp)
+		{
+			const auto& aabb = collCmp->AABB;
+			auto pt1 = proj::xform_to_2d(vector2{ aabb.XMax, aabb.YMax });
+			auto pt2 = proj::xform_to_2d(vector2{ aabb.XMin, aabb.YMin });
+			SDL_Rect rect{ pt2.X,pt2.Y, pt1.X - pt2.X , pt1.Y - pt2.Y };
+			SDL_RenderDrawRect(winmain::Renderer, &rect);
+		}
 	}
 }
 

@@ -42,7 +42,8 @@ class pb
 {
 public:
 	static int time_ticks;
-	static float ball_speed_limit, time_now, time_next, time_ticks_remainder;
+	static float time_now, time_next, time_ticks_remainder;
+	static float ball_speed_limit, ball_min_smth, ball_inv_smth, ball_collision_dist;
 	static GameModes game_mode;
 	static bool cheat_mode;
 	static DatFile* record_table;

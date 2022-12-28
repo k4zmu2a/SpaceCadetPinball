@@ -1,4 +1,5 @@
 #pragma once
+#include "maths.h"
 #include "TPinballComponent.h"
 
 struct vector2;
@@ -15,6 +16,7 @@ public:
 	float Threshold;
 	int SoftHitSoundId;
 	int HardHitSoundId;
+	RectF AABB;
 
 	TCollisionComponent(TPinballTable* table, int groupIndex, bool createWall);
 	~TCollisionComponent() override;

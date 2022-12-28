@@ -35,7 +35,7 @@ THole::THole(TPinballTable* table, int groupIndex) : TCollisionComponent(table, 
 	                           Circle.RadiusSq);
 	if (tCircle)
 	{
-		tCircle->place_in_grid();
+		tCircle->place_in_grid(&AABB);
 		EdgeList.push_back(tCircle);
 	}
 

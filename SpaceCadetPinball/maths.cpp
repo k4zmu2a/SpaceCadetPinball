@@ -5,6 +5,14 @@
 #include "TFlipperEdge.h"
 
 
+void RectF::Merge(RectF aabb)
+{
+	XMax = std::max(XMax, aabb.XMax);
+	YMax = std::max(YMax, aabb.YMax);
+	XMin = std::min(XMin, aabb.XMin);
+	YMin = std::min(YMin, aabb.YMin);
+}
+
 // Performs AABB merge, creating rect that is just large enough to contain both source rects.
 void maths::enclosing_box(const rectangle_type& rect1, const rectangle_type& rect2, rectangle_type& dstRect)
 {

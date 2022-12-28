@@ -3,6 +3,7 @@
 class TBall;
 class TCollisionComponent;
 struct ray_type;
+struct RectF;
 
 enum class wall_type : int
 {
@@ -24,7 +25,7 @@ public:
 
 	virtual void EdgeCollision(TBall* ball, float distance) = 0;
 	virtual void port_draw();
-	virtual void place_in_grid() = 0;
+	virtual void place_in_grid(RectF* aabb) = 0;
 	virtual float FindCollisionDistance(ray_type* ray) = 0;
 
 	static TEdgeSegment* install_wall(float* floatArr, TCollisionComponent* collComp, char* activeFlagPtr,

@@ -118,6 +118,7 @@ void options::InitPrimary()
 	translations::SetCurrentLanguage(get_string("Language", translations::GetCurrentLanguage()->ShortName).c_str());
 	Options.FontFileName = get_string("FontFileName", "");
 	Options.DebugOverlayBallDepthGrid = get_int("Debug Overlay Ball Depth Grid", true);
+	Options.DebugOverlayAabb = get_int("Debug Overlay AABB", true);
 }
 
 void options::InitSecondary()
@@ -169,6 +170,7 @@ void options::uninit()
 	set_string("Language", translations::GetCurrentLanguage()->ShortName);
 	set_string("FontFileName", Options.FontFileName.c_str());
 	set_int("Debug Overlay Ball Depth Grid", Options.DebugOverlayBallDepthGrid);
+	set_int("Debug Overlay AABB", Options.DebugOverlayAabb);
 }
 
 

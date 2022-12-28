@@ -24,7 +24,7 @@ TFlagSpinner::TFlagSpinner(TPinballTable* table, int groupIndex) : TCollisionCom
 	auto line = new TLine(this, &ActiveFlag, visual.CollisionGroup, start, end);
 	if (line)
 	{
-		line->place_in_grid();
+		line->place_in_grid(&AABB);
 		EdgeList.push_back(line);
 	}
 
@@ -32,7 +32,7 @@ TFlagSpinner::TFlagSpinner(TPinballTable* table, int groupIndex) : TCollisionCom
 	PrevCollider = line;
 	if (line)
 	{
-		line->place_in_grid();
+		line->place_in_grid(&AABB);
 		EdgeList.push_back(line);
 	}
 

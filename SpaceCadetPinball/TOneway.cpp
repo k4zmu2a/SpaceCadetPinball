@@ -25,7 +25,7 @@ TOneway::TOneway(TPinballTable* table, int groupIndex) : TCollisionComponent(tab
 		if (line)
 		{
 			line->Offset(table->CollisionCompOffset);
-			line->place_in_grid();
+			line->place_in_grid(&AABB);
 			EdgeList.push_back(line);
 		}
 
@@ -34,7 +34,7 @@ TOneway::TOneway(TPinballTable* table, int groupIndex) : TCollisionComponent(tab
 		if (line)
 		{
 			line->Offset(-table->CollisionCompOffset * 0.8f);
-			Line->place_in_grid();
+			Line->place_in_grid(&AABB);
 			EdgeList.push_back(Line);
 		}
 	}
