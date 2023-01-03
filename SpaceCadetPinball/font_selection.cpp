@@ -20,7 +20,7 @@ void font_selection::RenderDialog()
 {
 	if (ShowDialogFlag == true)
 	{
-		strncpy(DialogInputBuffer, options::Options.FontFileName.c_str(), sizeof(DialogInputBuffer));
+		strncpy(DialogInputBuffer, options::Options.FontFileName.V.c_str(), sizeof(DialogInputBuffer));
 		ShowDialogFlag = false;
 		if (!ImGui::IsPopupOpen(popupName))
 		{
@@ -37,7 +37,7 @@ void font_selection::RenderDialog()
 
 		if (ImGui::Button(pb::get_rc_string(Msg::HIGHSCORES_Ok)))
 		{
-			options::Options.FontFileName = DialogInputBuffer;
+			options::Options.FontFileName.V = DialogInputBuffer;
 			ImGui::CloseCurrentPopup();
 			winmain::Restart();
 		}

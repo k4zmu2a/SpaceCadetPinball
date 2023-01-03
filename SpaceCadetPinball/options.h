@@ -62,47 +62,11 @@ struct ControlsStruct
 	GameInput BottomTableBump[3];
 };
 
-struct optionsStruct
-{
-	ControlsStruct Key;
-	ControlsStruct KeyDft;
-	bool Sounds;
-	bool Music;
-	bool FullScreen;
-	int Players;
-	int Resolution;
-	bool UniformScaling;
-	bool LinearFiltering;
-	int FramesPerSecond;
-	int UpdatesPerSecond;
-	bool ShowMenu;
-	bool UncappedUpdatesPerSecond;
-	int SoundChannels;
-	bool HybridSleep;
-	bool Prefer3DPBGameData;
-	bool IntegerScaling;
-	int SoundVolume;
-	int MusicVolume;
-	bool SoundStereo;
-	bool DebugOverlay;
-	bool DebugOverlayGrid;
-	bool DebugOverlayAllEdges;
-	bool DebugOverlayBallPosition;
-	bool DebugOverlayBallEdges;
-	bool DebugOverlayCollisionMask;
-	bool DebugOverlaySprites;
-	bool DebugOverlaySounds;
-	bool DebugOverlayBallDepthGrid;
-	bool DebugOverlayAabb;
-	std::string FontFileName;
-};
-
 struct ControlRef
 {
 	Msg NameStringId;
 	GameInput (&Option)[3];
 };
-
 
 class options
 {
@@ -113,18 +77,19 @@ public:
 	// Original uses 8 sound channels
 	static constexpr int MaxSoundChannels = 32, MinSoundChannels = 1, DefSoundChannels = 8;
 	static constexpr int MaxVolume = MIX_MAX_VOLUME, MinVolume = 0, DefVolume = MaxVolume;
-	static optionsStruct Options;
+	static struct optionsStruct Options;
+	static std::vector<struct OptionBase*> AllOptions;
 
 	static void InitPrimary();
 	static void InitSecondary();
 	static void uninit();
+	static const std::string& GetSetting(const std::string& key, const std::string& defaultValue);
+	static void SetSetting(const std::string& key, const std::string& value);
 	static int get_int(LPCSTR lpValueName, int defaultValue);
 	static void set_int(LPCSTR lpValueName, int data);
-	static std::string get_string(LPCSTR lpValueName, LPCSTR defaultValue);
-	static void set_string(LPCSTR lpValueName, LPCSTR value);
 	static float get_float(LPCSTR lpValueName, float defaultValue);
 	static void set_float(LPCSTR lpValueName, float data);
-	static void GetInput(const std::string& rowName, GameInput (&defaultValues)[3]);
+	static void GetInput(const std::string& rowName, GameInput (&values)[3]);
 	static void SetInput(const std::string& rowName, GameInput (&values)[3]);
 	static void toggle(Menu1 uIDCheckItem);
 	static void InputDown(GameInput input);
@@ -137,10 +102,119 @@ private:
 	static bool ShowDialog;
 	static const ControlRef Controls[6];
 	static GameInput* ControlWaitingForInput;
+	static const ControlsStruct KeyDft;
 
 	static void MyUserData_ReadLine(ImGuiContext* ctx, ImGuiSettingsHandler* handler, void* entry, const char* line);
 	static void* MyUserData_ReadOpen(ImGuiContext* ctx, ImGuiSettingsHandler* handler, const char* name);
 	static void MyUserData_WriteAll(ImGuiContext* ctx, ImGuiSettingsHandler* handler, ImGuiTextBuffer* buf);
-	static const std::string& GetSetting(const std::string& key, const std::string& value);
-	static void SetSetting(const std::string& key, const std::string& value);
+};
+
+
+struct OptionBase
+{
+	LPCSTR Name;
+
+	OptionBase(LPCSTR name);
+	virtual ~OptionBase();
+	virtual void Load() = 0;
+	virtual void Save() const = 0;
+	virtual void Reset() = 0;
+};
+
+template <typename T>
+struct OptionBaseT : OptionBase
+{
+	const T DefaultValue;
+	T V;
+
+	OptionBaseT(LPCSTR name, T defaultValue) : OptionBase(name), DefaultValue(std::move(defaultValue)), V()
+	{
+	}
+
+	void Reset() override { V = DefaultValue; }
+	operator T&() { return V; }
+
+	OptionBaseT& operator=(const T& v)
+	{
+		V = v;
+		return *this;
+	}
+};
+
+struct IntOption : OptionBaseT<int>
+{
+	IntOption(LPCSTR name, int defaultValue) : OptionBaseT(name, defaultValue)
+	{
+	}
+
+	void Load() override { V = options::get_int(Name, DefaultValue); }
+	void Save() const override { options::set_int(Name, V); }
+	using OptionBaseT::operator=;
+};
+
+struct StringOption : OptionBaseT<std::string>
+{
+	StringOption(LPCSTR name, std::string defaultValue) : OptionBaseT(name, std::move(defaultValue))
+	{
+	}
+
+	void Load() override { V = options::GetSetting(Name, DefaultValue); }
+	void Save() const override { options::SetSetting(Name, V); }
+};
+
+struct FloatOption : OptionBaseT<float>
+{
+	FloatOption(LPCSTR name, float defaultValue) : OptionBaseT(name, defaultValue)
+	{
+	}
+
+	void Load() override { V = options::get_float(Name, DefaultValue); }
+	void Save() const override { options::set_float(Name, V); }
+};
+
+struct BoolOption : OptionBaseT<bool>
+{
+	BoolOption(LPCSTR name, bool defaultValue) : OptionBaseT(name, defaultValue)
+	{
+	}
+
+	void Load() override { V = options::get_int(Name, DefaultValue); }
+	void Save() const override { options::set_int(Name, V); }
+	using OptionBaseT::operator=;
+};
+
+struct optionsStruct
+{
+	ControlsStruct Key;
+	BoolOption Sounds;
+	BoolOption Music;
+	BoolOption FullScreen;
+	IntOption Players;
+	IntOption Resolution;
+	FloatOption UIScale;
+	BoolOption UniformScaling;
+	BoolOption LinearFiltering;
+	IntOption FramesPerSecond;
+	IntOption UpdatesPerSecond;
+	BoolOption ShowMenu;
+	BoolOption UncappedUpdatesPerSecond;
+	IntOption SoundChannels;
+	BoolOption HybridSleep;
+	BoolOption Prefer3DPBGameData;
+	BoolOption IntegerScaling;
+	IntOption SoundVolume;
+	IntOption MusicVolume;
+	BoolOption SoundStereo;
+	BoolOption DebugOverlay;
+	BoolOption DebugOverlayGrid;
+	BoolOption DebugOverlayAllEdges;
+	BoolOption DebugOverlayBallPosition;
+	BoolOption DebugOverlayBallEdges;
+	BoolOption DebugOverlayCollisionMask;
+	BoolOption DebugOverlaySprites;
+	BoolOption DebugOverlaySounds;
+	BoolOption DebugOverlayBallDepthGrid;
+	BoolOption DebugOverlayAabb;
+	StringOption FontFileName;
+	StringOption Language;
 };

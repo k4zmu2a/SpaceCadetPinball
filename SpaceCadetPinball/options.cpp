@@ -13,11 +13,12 @@ constexpr int options::MaxUps, options::MaxFps, options::MinUps, options::MinFps
 constexpr int options::MaxSoundChannels, options::MinSoundChannels, options::DefSoundChannels;
 constexpr int options::MaxVolume, options::MinVolume, options::DefVolume;
 
-optionsStruct options::Options{};
 std::map<std::string, std::string> options::settings{};
 ControlsStruct options::RebindControls{};
 bool options::ShowDialog = false;
 GameInput* options::ControlWaitingForInput = nullptr;
+std::vector<OptionBase*> options::AllOptions{};
+
 const ControlRef options::Controls[6]
 {
 	{Msg::KEYMAPPER_FlipperL, RebindControls.LeftFlipper},
@@ -27,7 +28,75 @@ const ControlRef options::Controls[6]
 	{Msg::KEYMAPPER_BumpBottom, RebindControls.BottomTableBump},
 	{Msg::KEYMAPPER_Plunger, RebindControls.Plunger},
 };
+const ControlsStruct options::KeyDft =
+{
+	{
+		{InputTypes::Keyboard, SDLK_z},
+		{InputTypes::Mouse, SDL_BUTTON_LEFT},
+		{InputTypes::GameController, SDL_CONTROLLER_BUTTON_LEFTSHOULDER},
+	},
+	{
+		{InputTypes::Keyboard, SDLK_SLASH},
+		{InputTypes::Mouse, SDL_BUTTON_RIGHT},
+		{InputTypes::GameController, SDL_CONTROLLER_BUTTON_RIGHTSHOULDER},
+	},
+	{
+		{InputTypes::Keyboard, SDLK_SPACE},
+		{InputTypes::Mouse, SDL_BUTTON_MIDDLE},
+		{InputTypes::GameController, SDL_CONTROLLER_BUTTON_A},
+	},
+	{
+		{InputTypes::Keyboard, SDLK_x},
+		{InputTypes::Mouse, SDL_BUTTON_X1},
+		{InputTypes::GameController, SDL_CONTROLLER_BUTTON_DPAD_LEFT},
+	},
+	{
+		{InputTypes::Keyboard, SDLK_PERIOD},
+		{InputTypes::Mouse, SDL_BUTTON_X2},
+		{InputTypes::GameController, SDL_CONTROLLER_BUTTON_DPAD_RIGHT},
+	},
+	{
+		{InputTypes::Keyboard, SDLK_UP},
+		{InputTypes::Mouse, SDL_BUTTON_X2 + 1},
+		{InputTypes::GameController, SDL_CONTROLLER_BUTTON_DPAD_UP},
+	},
+};
 
+optionsStruct options::Options
+{
+	KeyDft,
+	{"Sounds", true},
+	{"Music", false },
+	{"FullScreen", false },
+	{"Players", 1 },
+	{"Screen Resolution", -1 },
+	{"UI Scale", 1.0f},
+	{"Uniform scaling", true},
+	{"Linear Filtering", true },
+	{"Frames Per Second", DefFps },
+	{"Updates Per Second", DefUps },
+	{"ShowMenu", true },
+	{"Uncapped Updates Per Second", false },
+	{"Sound Channels", DefSoundChannels },
+	{"HybridSleep", false },
+	{"Prefer 3DPB Game Data", false },
+	{"Integer Scaling", false },
+	{"Sound Volume", DefVolume },
+	{"Music Volume", DefVolume },
+	{"Stereo Sound Effects", false },
+	{"Debug Overlay", false },
+	{"Debug Overlay Grid", true },
+	{"Debug Overlay All Edges", true },
+	{"Debug Overlay Ball Position", true },
+	{"Debug Overlay Ball Edges", true },
+	{"Debug Overlay Collision Mask", true },
+	{"Debug Overlay Sprites", true },
+	{"Debug Overlay Sounds", true },
+	{"Debug Overlay Ball Depth Grid", true },
+	{"Debug Overlay AABB", true },
+	{"FontFileName", "" },
+	{"Language",  translations::GetCurrentLanguage()->ShortName },
+};
 
 void options::InitPrimary()
 {
@@ -47,39 +116,6 @@ void options::InitPrimary()
 		imContext->SettingsLoaded = true;
 	}
 
-	Options.Key = Options.KeyDft =
-	{
-		{
-			{InputTypes::Keyboard, SDLK_z},
-			{InputTypes::Mouse, SDL_BUTTON_LEFT},
-			{InputTypes::GameController, SDL_CONTROLLER_BUTTON_LEFTSHOULDER},
-		},
-		{
-			{InputTypes::Keyboard, SDLK_SLASH},
-			{InputTypes::Mouse, SDL_BUTTON_RIGHT},
-			{InputTypes::GameController, SDL_CONTROLLER_BUTTON_RIGHTSHOULDER},
-		},
-		{
-			{InputTypes::Keyboard, SDLK_SPACE},
-			{InputTypes::Mouse, SDL_BUTTON_MIDDLE},
-			{InputTypes::GameController, SDL_CONTROLLER_BUTTON_A},
-		},
-		{
-			{InputTypes::Keyboard, SDLK_x},
-			{InputTypes::Mouse, SDL_BUTTON_X1},
-			{InputTypes::GameController, SDL_CONTROLLER_BUTTON_DPAD_LEFT},
-		},
-		{
-			{InputTypes::Keyboard, SDLK_PERIOD},
-			{InputTypes::Mouse, SDL_BUTTON_X2},
-			{InputTypes::GameController, SDL_CONTROLLER_BUTTON_DPAD_RIGHT},
-		},
-		{
-			{InputTypes::Keyboard, SDLK_UP},
-			{InputTypes::Mouse, SDL_BUTTON_X2 + 1},
-			{InputTypes::GameController, SDL_CONTROLLER_BUTTON_DPAD_UP},
-		},
-	};
 	GetInput("Left Flipper key", Options.Key.LeftFlipper);
 	GetInput("Right Flipper key", Options.Key.RightFlipper);
 	GetInput("Plunger key", Options.Key.Plunger);
@@ -87,38 +123,19 @@ void options::InitPrimary()
 	GetInput("Right Table Bump key", Options.Key.RightTableBump);
 	GetInput("Bottom Table Bump key", Options.Key.BottomTableBump);
 
-	Options.Sounds = get_int("Sounds", true);
-	Options.Music = get_int("Music", false);
-	Options.FullScreen = get_int("FullScreen", false);
-	Options.Players = get_int("Players", 1);
-	Options.UniformScaling = get_int("Uniform scaling", true);
-	ImGui::GetIO().FontGlobalScale = get_float("UI Scale", 1.0f);
-	Options.Resolution = get_int("Screen Resolution", -1);
-	Options.LinearFiltering = get_int("Linear Filtering", true);
-	Options.FramesPerSecond = Clamp(get_int("Frames Per Second", DefFps), MinFps, MaxFps);
-	Options.UpdatesPerSecond = Clamp(get_int("Updates Per Second", DefUps), MinUps, MaxUps);
-	Options.UpdatesPerSecond = std::max(Options.UpdatesPerSecond, Options.FramesPerSecond);
-	Options.ShowMenu = get_int("ShowMenu", true);
-	Options.UncappedUpdatesPerSecond = get_int("Uncapped Updates Per Second", false);
-	Options.SoundChannels = Clamp(get_int("Sound Channels", DefSoundChannels), MinSoundChannels, MaxSoundChannels);
-	Options.HybridSleep = get_int("HybridSleep", false);
-	Options.Prefer3DPBGameData = get_int("Prefer 3DPB Game Data", false);
-	Options.IntegerScaling = get_int("Integer Scaling", false);
-	Options.SoundStereo = get_int("Stereo Sound Effects", false);
-	Options.SoundVolume = Clamp(get_int("Sound Volume", DefVolume), MinVolume, MaxVolume);
-	Options.MusicVolume = Clamp(get_int("Music Volume", DefVolume), MinVolume, MaxVolume);
-	Options.DebugOverlay = get_int("Debug Overlay", false);
-	Options.DebugOverlayGrid = get_int("Debug Overlay Grid", true);
-	Options.DebugOverlayAllEdges = get_int("Debug Overlay All Edges", true);
-	Options.DebugOverlayBallPosition = get_int("Debug Overlay Ball Position", true);
-	Options.DebugOverlayBallEdges = get_int("Debug Overlay Ball Edges", true);
-	Options.DebugOverlayCollisionMask = get_int("Debug Overlay Collision Mask", true);
-	Options.DebugOverlaySprites = get_int("Debug Overlay Sprites", true);
-	Options.DebugOverlaySounds = get_int("Debug Overlay Sounds", true);
-	translations::SetCurrentLanguage(get_string("Language", translations::GetCurrentLanguage()->ShortName).c_str());
-	Options.FontFileName = get_string("FontFileName", "");
-	Options.DebugOverlayBallDepthGrid = get_int("Debug Overlay Ball Depth Grid", true);
-	Options.DebugOverlayAabb = get_int("Debug Overlay AABB", true);
+	for(const auto opt : AllOptions)
+	{
+		opt->Load();
+	}
+
+	winmain::ImIO->FontGlobalScale = Options.UIScale;
+	Options.FramesPerSecond = Clamp(Options.FramesPerSecond.V, MinFps, MaxFps);
+	Options.UpdatesPerSecond = Clamp(Options.UpdatesPerSecond.V, MinUps, MaxUps);
+	Options.UpdatesPerSecond = std::max(Options.UpdatesPerSecond.V, Options.FramesPerSecond.V);
+	Options.SoundChannels = Clamp(Options.SoundChannels.V, MinSoundChannels, MaxSoundChannels);
+	Options.SoundVolume = Clamp(Options.SoundVolume.V, MinVolume, MaxVolume);
+	Options.MusicVolume = Clamp(Options.MusicVolume.V, MinVolume, MaxVolume);
+	translations::SetCurrentLanguage(Options.Language.V.c_str());
 }
 
 void options::InitSecondary()
@@ -140,37 +157,10 @@ void options::uninit()
 	SetInput("Right Table Bump key", Options.Key.RightTableBump);
 	SetInput("Bottom Table Bump key", Options.Key.BottomTableBump);
 
-	set_int("Sounds", Options.Sounds);
-	set_int("Music", Options.Music);
-	set_int("FullScreen", Options.FullScreen);
-	set_int("Players", Options.Players);
-	set_int("Screen Resolution", Options.Resolution);
-	set_int("Uniform scaling", Options.UniformScaling);
-	set_float("UI Scale", ImGui::GetIO().FontGlobalScale);
-	set_int("Linear Filtering", Options.LinearFiltering);
-	set_int("Frames Per Second", Options.FramesPerSecond);
-	set_int("Updates Per Second", Options.UpdatesPerSecond);
-	set_int("ShowMenu", Options.ShowMenu);
-	set_int("Uncapped Updates Per Second", Options.UncappedUpdatesPerSecond);
-	set_int("Sound Channels", Options.SoundChannels);
-	set_int("HybridSleep", Options.HybridSleep);
-	set_int("Prefer 3DPB Game Data", Options.Prefer3DPBGameData);
-	set_int("Integer Scaling", Options.IntegerScaling);
-	set_int("Stereo Sound Effects", Options.SoundStereo);
-	set_int("Sound Volume", Options.SoundVolume);
-	set_int("Music Volume", Options.MusicVolume);
-	set_int("Debug Overlay", Options.DebugOverlay);
-	set_int("Debug Overlay Grid", Options.DebugOverlayGrid);
-	set_int("Debug Overlay All Edges", Options.DebugOverlayAllEdges);
-	set_int("Debug Overlay Ball Position", Options.DebugOverlayBallPosition);
-	set_int("Debug Overlay Ball Edges", Options.DebugOverlayBallEdges);
-	set_int("Debug Overlay Collision Mask", Options.DebugOverlayCollisionMask);
-	set_int("Debug Overlay Sprites", Options.DebugOverlaySprites);
-	set_int("Debug Overlay Sounds", Options.DebugOverlaySounds);
-	set_string("Language", translations::GetCurrentLanguage()->ShortName);
-	set_string("FontFileName", Options.FontFileName.c_str());
-	set_int("Debug Overlay Ball Depth Grid", Options.DebugOverlayBallDepthGrid);
-	set_int("Debug Overlay AABB", Options.DebugOverlayAabb);
+	for (const auto opt : AllOptions)
+	{
+		opt->Save();
+	}
 }
 
 
@@ -185,16 +175,6 @@ void options::set_int(LPCSTR lpValueName, int data)
 	SetSetting(lpValueName, std::to_string(data));
 }
 
-std::string options::get_string(LPCSTR lpValueName, LPCSTR defaultValue)
-{
-	return GetSetting(lpValueName, defaultValue);
-}
-
-void options::set_string(LPCSTR lpValueName, LPCSTR value)
-{
-	SetSetting(lpValueName, value);
-}
-
 float options::get_float(LPCSTR lpValueName, float defaultValue)
 {
 	auto value = GetSetting(lpValueName, std::to_string(defaultValue));
@@ -206,7 +186,7 @@ void options::set_float(LPCSTR lpValueName, float data)
 	SetSetting(lpValueName, std::to_string(data));
 }
 
-void options::GetInput(const std::string& rowName, GameInput (&defaultValues)[3])
+void options::GetInput(const std::string& rowName, GameInput (&values)[3])
 {
 	for (auto i = 0u; i <= 2; i++)
 	{
@@ -214,7 +194,7 @@ void options::GetInput(const std::string& rowName, GameInput (&defaultValues)[3]
 		auto inputType = static_cast<InputTypes>(get_int((name + " type").c_str(), -1));
 		auto input = get_int((name + " input").c_str(), -1);
 		if (inputType <= InputTypes::GameController && input != -1)
-			defaultValues[i] = {inputType, input};
+			values[i] = {inputType, input};
 	}
 }
 
@@ -248,7 +228,7 @@ void options::toggle(Menu1 uIDCheckItem)
 			midi::music_play();
 		return;
 	case Menu1::Show_Menu:
-		Options.ShowMenu = Options.ShowMenu == 0;
+		Options.ShowMenu ^= true;
 		fullscrn::window_size_changed();
 		return;
 	case Menu1::Full_Screen:
@@ -442,7 +422,7 @@ void options::RenderControlDialog()
 		ImGui::SameLine();
 		if (ImGui::Button(pb::get_rc_string(Msg::KEYMAPPER_Default)))
 		{
-			RebindControls = Options.KeyDft;
+			RebindControls = KeyDft;
 			ControlWaitingForInput = nullptr;
 		}
 	}
@@ -482,15 +462,15 @@ void options::MyUserData_WriteAll(ImGuiContext* ctx, ImGuiSettingsHandler* handl
 	buf->append("\n");
 }
 
-const std::string& options::GetSetting(const std::string& key, const std::string& value)
+const std::string& options::GetSetting(const std::string& key, const std::string& defaultValue)
 {
 	auto setting = settings.find(key);
 	if (setting == settings.end())
 	{
-		settings[key] = value;
+		settings[key] = defaultValue;
 		if (ImGui::GetCurrentContext())
 			ImGui::MarkIniSettingsDirty();
-		return value;
+		return defaultValue;
 	}
 	return setting->second;
 }
@@ -500,4 +480,17 @@ void options::SetSetting(const std::string& key, const std::string& value)
 	settings[key] = value;
 	if (ImGui::GetCurrentContext())
 		ImGui::MarkIniSettingsDirty();
+}
+
+OptionBase::OptionBase(LPCSTR name): Name(name)
+{
+	options::AllOptions.push_back(this);
+}
+
+OptionBase::~OptionBase()
+{
+	auto& vec = options::AllOptions;
+	auto position = std::find(vec.begin(), vec.end(), this);
+	if (position != vec.end())
+		vec.erase(position);
 }

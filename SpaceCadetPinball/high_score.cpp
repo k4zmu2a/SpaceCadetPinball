@@ -24,7 +24,7 @@ int high_score::read()
 
 		snprintf(Buffer, sizeof Buffer, "%d", position);
 		strcat(Buffer, ".Name");
-		auto name = options::get_string(Buffer, "");
+		auto name = options::GetSetting(Buffer, "");
 		strncpy(tablePtr.Name, name.c_str(), sizeof tablePtr.Name);
 
 		snprintf(Buffer, sizeof Buffer, "%d", position);
@@ -54,7 +54,7 @@ int high_score::write()
 
 		snprintf(Buffer, sizeof Buffer, "%d", position);
 		strcat(Buffer, ".Name");
-		options::set_string(Buffer, tablePtr.Name);
+		options::SetSetting(Buffer, tablePtr.Name);
 
 		snprintf(Buffer, sizeof Buffer, "%d", position);
 		strcat(Buffer, ".Score");

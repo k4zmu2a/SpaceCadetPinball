@@ -144,7 +144,7 @@ int winmain::WinMain(LPCSTR lpCmdLine)
 		// First option initialization step: just load settings from .ini. Needs ImGui context.
 		options::InitPrimary();
 
-		if (!Options.FontFileName.empty())
+		if (!Options.FontFileName.V.empty())
 		{
 			ImVector<ImWchar> ranges;
 			translations::GetGlyphRange(&ranges);
@@ -156,7 +156,7 @@ int winmain::WinMain(LPCSTR lpCmdLine)
 
 			// ToDo: improve font file test, checking if file exists is not enough
 			auto fontLoaded = false;
-			auto fileName = Options.FontFileName.c_str();
+			auto fileName = Options.FontFileName.V.c_str();
 			auto fileHandle = fopenu(fileName, "rb");
 			if (fileHandle)
 			{
@@ -548,8 +548,11 @@ void winmain::RenderUi()
 				{
 					if (ImGui::MenuItem(item.DisplayName, nullptr, currentLanguage->Language == item.Language))
 					{
-						translations::SetCurrentLanguage(item.ShortName);
-						Restart();
+						if (currentLanguage->Language != item.Language)
+						{
+							translations::SetCurrentLanguage(item.ShortName);
+							Restart();
+						}
 					}
 				}
 				ImGui::EndMenu();
@@ -567,14 +570,14 @@ void winmain::RenderUi()
 					options::toggle(Menu1::SoundStereo);
 				}
 				ImGui::TextUnformatted("Sound Volume");
-				if (ImGui::SliderInt("##Sound Volume", &Options.SoundVolume, options::MinVolume, options::MaxVolume,
+				if (ImGui::SliderInt("##Sound Volume", &Options.SoundVolume.V, options::MinVolume, options::MaxVolume,
 				                     "%d",
 				                     ImGuiSliderFlags_AlwaysClamp))
 				{
 					Sound::SetVolume(Options.SoundVolume);
 				}
 				ImGui::TextUnformatted("Sound Channels");
-				if (ImGui::SliderInt("##Sound Channels", &Options.SoundChannels, options::MinSoundChannels,
+				if (ImGui::SliderInt("##Sound Channels", &Options.SoundChannels.V, options::MinSoundChannels,
 				                     options::MaxSoundChannels, "%d", ImGuiSliderFlags_AlwaysClamp))
 				{
 					Sound::SetChannels(Options.SoundChannels);
@@ -586,7 +589,7 @@ void winmain::RenderUi()
 					options::toggle(Menu1::Music);
 				}
 				ImGui::TextUnformatted("Music Volume");
-				if (ImGui::SliderInt("##Music Volume", &Options.MusicVolume, options::MinVolume, options::MaxVolume,
+				if (ImGui::SliderInt("##Music Volume", &Options.MusicVolume.V, options::MinVolume, options::MaxVolume,
 				                     "%d",
 				                     ImGuiSliderFlags_AlwaysClamp))
 				{
@@ -613,8 +616,11 @@ void winmain::RenderUi()
 				{
 					options::toggle(Menu1::WindowIntegerScale);
 				}
-				ImGui::DragFloat("UI Scale", &ImIO->FontGlobalScale, 0.005f, 0.8f, 5,
-				                 "%.2f", ImGuiSliderFlags_AlwaysClamp);
+				if(ImGui::DragFloat("UI Scale", &Options.UIScale.V, 0.005f, 0.8f, 5,
+				                 "%.2f", ImGuiSliderFlags_AlwaysClamp))
+				{
+					ImIO->FontGlobalScale = Options.UIScale;
+				}
 				ImGui::Separator();
 
 				char buffer[80]{};
@@ -625,17 +631,17 @@ void winmain::RenderUi()
 					Options.UpdatesPerSecond = options::DefUps;
 					Options.FramesPerSecond = options::DefFps;
 				}
-				if (ImGui::SliderInt("UPS", &Options.UpdatesPerSecond, options::MinUps, options::MaxUps, "%d",
+				if (ImGui::SliderInt("UPS", &Options.UpdatesPerSecond.V, options::MinUps, options::MaxUps, "%d",
 				                     ImGuiSliderFlags_AlwaysClamp))
 				{
 					changed = true;
-					Options.FramesPerSecond = std::min(Options.UpdatesPerSecond, Options.FramesPerSecond);
+					Options.FramesPerSecond = std::min(Options.UpdatesPerSecond.V, Options.FramesPerSecond.V);
 				}
-				if (ImGui::SliderInt("FPS", &Options.FramesPerSecond, options::MinFps, options::MaxFps, "%d",
+				if (ImGui::SliderInt("FPS", &Options.FramesPerSecond.V, options::MinFps, options::MaxFps, "%d",
 				                     ImGuiSliderFlags_AlwaysClamp))
 				{
 					changed = true;
-					Options.UpdatesPerSecond = std::max(Options.UpdatesPerSecond, Options.FramesPerSecond);
+					Options.UpdatesPerSecond = std::max(Options.UpdatesPerSecond.V, Options.FramesPerSecond.V);
 				}
 				snprintf(buffer, sizeof buffer - 1, "Uncapped UPS (FPS ratio %02.02f)", UpdateToFrameRatio);
 				if (ImGui::MenuItem(buffer, nullptr, Options.UncappedUpdatesPerSecond))
@@ -1134,7 +1140,7 @@ void winmain::Restart()
 void winmain::UpdateFrameRate()
 {
 	// UPS >= FPS
-	auto fps = Options.FramesPerSecond, ups = Options.UpdatesPerSecond;
+	auto fps = Options.FramesPerSecond.V, ups = Options.UpdatesPerSecond.V;
 	UpdateToFrameRatio = static_cast<double>(ups) / fps;
 	TargetFrameTime = DurationMs(1000.0 / ups);
 }
