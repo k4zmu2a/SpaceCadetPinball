@@ -82,6 +82,4 @@ public:
 	static void ShowMessageBox(Uint32 flags, LPCSTR title, LPCSTR message);
 private:
 	static bool demo_mode;
-
-	static bool AnyBindingMatchesInput(GameInput (&options)[3], GameInput key);
 };

@@ -423,30 +423,32 @@ void pb::InputUp(GameInput input)
 {
 	if (game_mode != GameModes::InGame || winmain::single_step || demo_mode)
 		return;
-
-	if (AnyBindingMatchesInput(options::Options.Key.LeftFlipper, input))
+	
+	const auto bindings = options::MapGameInput(input);
+	for (const auto binding : bindings)
 	{
-		MainTable->Message(MessageCode::LeftFlipperInputReleased, time_now);
-	}
-	if (AnyBindingMatchesInput(options::Options.Key.RightFlipper, input))
-	{
-		MainTable->Message(MessageCode::RightFlipperInputReleased, time_now);
-	}
-	if (AnyBindingMatchesInput(options::Options.Key.Plunger, input))
-	{
-		MainTable->Message(MessageCode::PlungerInputReleased, time_now);
-	}
-	if (AnyBindingMatchesInput(options::Options.Key.LeftTableBump, input))
-	{
-		nudge::un_nudge_right(0, nullptr);
-	}
-	if (AnyBindingMatchesInput(options::Options.Key.RightTableBump, input))
-	{
-		nudge::un_nudge_left(0, nullptr);
-	}
-	if (AnyBindingMatchesInput(options::Options.Key.BottomTableBump, input))
-	{
-		nudge::un_nudge_up(0, nullptr);
+		switch (binding)
+		{
+		case GameBindings::LeftFlipper:
+			MainTable->Message(MessageCode::LeftFlipperInputReleased, time_now);
+			break;
+		case GameBindings::RightFlipper:
+			MainTable->Message(MessageCode::RightFlipperInputReleased, time_now);
+			break;
+		case GameBindings::Plunger:
+			MainTable->Message(MessageCode::PlungerInputReleased, time_now);
+			break;
+		case GameBindings::LeftTableBump:
+			nudge::un_nudge_right(0, nullptr);
+			break;
+		case GameBindings::RightTableBump:
+			nudge::un_nudge_left(0, nullptr);
+			break;
+		case GameBindings::BottomTableBump:
+			nudge::un_nudge_up(0, nullptr);
+			break;
+		default: break;
+		}
 	}
 }
 
@@ -459,33 +461,35 @@ void pb::InputDown(GameInput input)
 	if (input.Type == InputTypes::Keyboard)
 		control::pbctrl_bdoor_controller(static_cast<char>(input.Value));
 
-	if (AnyBindingMatchesInput(options::Options.Key.LeftFlipper, input))
+	const auto bindings = options::MapGameInput(input);
+	for (const auto binding : bindings)
 	{
-		MainTable->Message(MessageCode::LeftFlipperInputPressed, time_now);
-	}
-	if (AnyBindingMatchesInput(options::Options.Key.RightFlipper, input))
-	{
-		MainTable->Message(MessageCode::RightFlipperInputPressed, time_now);
-	}
-	if (AnyBindingMatchesInput(options::Options.Key.Plunger, input))
-	{
-		MainTable->Message(MessageCode::PlungerInputPressed, time_now);
-	}
-	if (AnyBindingMatchesInput(options::Options.Key.LeftTableBump, input))
-	{
-		if (!MainTable->TiltLockFlag)
-			nudge::nudge_right();
-	}
-	if (AnyBindingMatchesInput(options::Options.Key.RightTableBump, input))
-	{
-		if (!MainTable->TiltLockFlag)
-			nudge::nudge_left();
-	}
-	if (AnyBindingMatchesInput(options::Options.Key.BottomTableBump, input))
-	{
-		if (!MainTable->TiltLockFlag)
-			nudge::nudge_up();
-	}
+		switch (binding)
+			{
+			case GameBindings::LeftFlipper:
+				MainTable->Message(MessageCode::LeftFlipperInputPressed, time_now);
+				break;
+			case GameBindings::RightFlipper:
+				MainTable->Message(MessageCode::RightFlipperInputPressed, time_now);
+				break;
+			case GameBindings::Plunger:
+				MainTable->Message(MessageCode::PlungerInputPressed, time_now);
+				break;
+			case GameBindings::LeftTableBump:
+				if (!MainTable->TiltLockFlag)
+					nudge::nudge_right();
+				break;
+			case GameBindings::RightTableBump:
+				if (!MainTable->TiltLockFlag)
+					nudge::nudge_left();
+				break;
+			case GameBindings::BottomTableBump:
+				if (!MainTable->TiltLockFlag)
+					nudge::nudge_up();
+				break;
+			default: break;
+			}
+		}
 
 	if (cheat_mode && input.Type == InputTypes::Keyboard)
 	{
@@ -658,14 +662,6 @@ void pb::PushCheat(const std::string& cheat)
 {
 	for (auto ch : cheat)
 		control::pbctrl_bdoor_controller(ch);
-}
-
-bool pb::AnyBindingMatchesInput(GameInput (&options)[3], GameInput key)
-{
-	for (auto& option : options)
-		if (key == option)
-			return true;
-	return false;
 }
 
 LPCSTR pb::get_rc_string(Msg uID)

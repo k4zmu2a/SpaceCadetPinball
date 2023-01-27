@@ -33,12 +33,12 @@ enum class Menu1:int
 	Prefer3DPBGameData = 700,
 };
 
-enum class InputTypes: unsigned
+enum class InputTypes
 {
 	None = 0,
-	Keyboard = 1,
-	Mouse = 2,
-	GameController = 3,
+	Keyboard,
+	Mouse,
+	GameController,
 };
 
 struct GameInput
@@ -50,23 +50,31 @@ struct GameInput
 	{
 		return Type == other.Type && Value == other.Value;
 	}
+
+	std::string GetInputDescription() const;
 };
 
-struct ControlsStruct
+enum class GameBindings
 {
-	GameInput LeftFlipper[3];
-	GameInput RightFlipper[3];
-	GameInput Plunger[3];
-	GameInput LeftTableBump[3];
-	GameInput RightTableBump[3];
-	GameInput BottomTableBump[3];
+	Min = 0,
+	LeftFlipper = 0,
+	RightFlipper,
+	Plunger,
+	LeftTableBump,
+	RightTableBump,
+	BottomTableBump,
+	Max
 };
 
-struct ControlRef
+inline GameBindings& operator++(GameBindings& value, int)
 {
-	Msg NameStringId;
-	GameInput (&Option)[3];
-};
+	return value = static_cast<GameBindings>(static_cast<int>(value) + 1);
+}
+
+constexpr int operator~(const GameBindings& value)
+{
+	return static_cast<int>(value);
+}
 
 class options
 {
@@ -95,14 +103,12 @@ public:
 	static void InputDown(GameInput input);
 	static void ShowControlDialog();
 	static void RenderControlDialog();
-	static bool WaitingForInput() { return ControlWaitingForInput != nullptr; }
+	static bool WaitingForInput() { return ControlWaitingForInput; }
+	static std::vector<GameBindings> MapGameInput(GameInput key);
 private:
-	static std::map<std::string, std::string> settings;
-	static ControlsStruct RebindControls;
+	static std::unordered_map<std::string, std::string> settings;
 	static bool ShowDialog;
-	static const ControlRef Controls[6];
 	static GameInput* ControlWaitingForInput;
-	static const ControlsStruct KeyDft;
 
 	static void MyUserData_ReadLine(ImGuiContext* ctx, ImGuiSettingsHandler* handler, void* entry, const char* line);
 	static void* MyUserData_ReadOpen(ImGuiContext* ctx, ImGuiSettingsHandler* handler, const char* name);
@@ -183,9 +189,53 @@ struct BoolOption : OptionBaseT<bool>
 	using OptionBaseT::operator=;
 };
 
+struct ControlOption : OptionBase
+{
+	GameInput Defaults[3];
+	GameInput Inputs[3];
+
+	ControlOption(LPCSTR name, GameInput defaultKeyboard, GameInput defaultMouse, GameInput defaultController) :
+		OptionBase(name),
+		Defaults{defaultKeyboard, defaultMouse, defaultController},
+		Inputs{
+			{InputTypes::Keyboard, -1},
+			{InputTypes::Mouse, -1},
+			{InputTypes::GameController, -1}
+		}
+	{
+	}
+
+	void Load() override
+	{
+		for (auto i = 0u; i <= 2; i++)
+		{
+			auto name = std::string{ Name } + " " + std::to_string(i);
+			Inputs[i].Type = static_cast<InputTypes>(options::get_int((name + " type").c_str(),
+				static_cast<int>(Defaults[i].Type)));
+			Inputs[i].Value = options::get_int((name + " input").c_str(), Defaults[i].Value);
+		}
+	}
+
+	void Save() const override
+	{
+		for (auto i = 0u; i <= 2; i++)
+		{
+			auto name = std::string{ Name } + " " + std::to_string(i);
+			options::set_int((name + " type").c_str(), static_cast<int>(Inputs[i].Type));
+			options::set_int((name + " input").c_str(), Inputs[i].Value);
+		}
+	}
+
+
+	void Reset() override
+	{
+		std::copy(std::begin(Defaults), std::end(Defaults), std::begin(Inputs));
+	}
+};
+
 struct optionsStruct
 {
-	ControlsStruct Key;
+	ControlOption Key[~GameBindings::Max];
 	BoolOption Sounds;
 	BoolOption Music;
 	BoolOption FullScreen;
