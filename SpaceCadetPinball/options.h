@@ -191,11 +191,14 @@ struct BoolOption : OptionBaseT<bool>
 
 struct ControlOption : OptionBase
 {
+	const Msg Description;
 	GameInput Defaults[3];
 	GameInput Inputs[3];
 
-	ControlOption(LPCSTR name, GameInput defaultKeyboard, GameInput defaultMouse, GameInput defaultController) :
+	ControlOption(LPCSTR name, Msg description, GameInput defaultKeyboard, GameInput defaultMouse,
+	              GameInput defaultController) :
 		OptionBase(name),
+		Description(description),
 		Defaults{defaultKeyboard, defaultMouse, defaultController},
 		Inputs{
 			{InputTypes::Keyboard, -1},

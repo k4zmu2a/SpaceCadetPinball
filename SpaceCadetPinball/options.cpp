@@ -23,36 +23,42 @@ optionsStruct options::Options
 	{
 		{
 			"Left Flipper key",
+			Msg::KEYMAPPER_FlipperL,
 			{InputTypes::Keyboard, SDLK_z},
 			{InputTypes::Mouse, SDL_BUTTON_LEFT},
 			{InputTypes::GameController, SDL_CONTROLLER_BUTTON_LEFTSHOULDER}
 		},
 		{
 			"Right Flipper key",
+			Msg::KEYMAPPER_FlipperR,
 			{InputTypes::Keyboard, SDLK_SLASH},
 			{InputTypes::Mouse,SDL_BUTTON_RIGHT},
 			{InputTypes::GameController, SDL_CONTROLLER_BUTTON_RIGHTSHOULDER}
 		},
 		{
 			"Plunger key",
+			Msg::KEYMAPPER_Plunger,
 			{InputTypes::Keyboard, SDLK_SPACE},
 			{InputTypes::Mouse,SDL_BUTTON_MIDDLE},
 			{InputTypes::GameController, SDL_CONTROLLER_BUTTON_A}
 		},
 		{
 			"Left Table Bump key",
+			Msg::KEYMAPPER_BumpLeft,
 			{InputTypes::Keyboard, SDLK_x},
 			{InputTypes::Mouse,SDL_BUTTON_X1},
 			{InputTypes::GameController, SDL_CONTROLLER_BUTTON_DPAD_LEFT}
 		},
 		{
 			"Right Table Bump key",
+			Msg::KEYMAPPER_BumpRight,
 			{InputTypes::Keyboard, SDLK_PERIOD},
 			{InputTypes::Mouse,SDL_BUTTON_X2},
 			{InputTypes::GameController, SDL_CONTROLLER_BUTTON_DPAD_RIGHT}
 		},
 		{
 			"Bottom Table Bump key",
+			Msg::KEYMAPPER_BumpBottom,
 			{InputTypes::Keyboard, SDLK_UP},
 			{InputTypes::Mouse,SDL_BUTTON_X2 + 1},
 			{InputTypes::GameController, SDL_CONTROLLER_BUTTON_DPAD_UP}
@@ -62,33 +68,33 @@ optionsStruct options::Options
 	{"Music", false},
 	{"FullScreen", false},
 	{"Players", 1},
-	{"Screen Resolution", -1 },
+	{"Screen Resolution", -1},
 	{"UI Scale", 1.0f},
 	{"Uniform scaling", true},
-	{"Linear Filtering", true },
-	{"Frames Per Second", DefFps },
-	{"Updates Per Second", DefUps },
-	{"ShowMenu", true },
-	{"Uncapped Updates Per Second", false },
-	{"Sound Channels", DefSoundChannels },
-	{"HybridSleep", false },
-	{"Prefer 3DPB Game Data", false },
-	{"Integer Scaling", false },
-	{"Sound Volume", DefVolume },
-	{"Music Volume", DefVolume },
-	{"Stereo Sound Effects", false },
-	{"Debug Overlay", false },
-	{"Debug Overlay Grid", true },
-	{"Debug Overlay All Edges", true },
-	{"Debug Overlay Ball Position", true },
-	{"Debug Overlay Ball Edges", true },
-	{"Debug Overlay Collision Mask", true },
-	{"Debug Overlay Sprites", true },
-	{"Debug Overlay Sounds", true },
-	{"Debug Overlay Ball Depth Grid", true },
-	{"Debug Overlay AABB", true },
-	{"FontFileName", "" },
-	{"Language",  translations::GetCurrentLanguage()->ShortName },
+	{"Linear Filtering", true},
+	{"Frames Per Second", DefFps},
+	{"Updates Per Second", DefUps},
+	{"ShowMenu", true},
+	{"Uncapped Updates Per Second", false},
+	{"Sound Channels", DefSoundChannels},
+	{"HybridSleep", false},
+	{"Prefer 3DPB Game Data", false},
+	{"Integer Scaling", false},
+	{"Sound Volume", DefVolume},
+	{"Music Volume", DefVolume},
+	{"Stereo Sound Effects", false},
+	{"Debug Overlay", false},
+	{"Debug Overlay Grid", true},
+	{"Debug Overlay All Edges", true},
+	{"Debug Overlay Ball Position", true},
+	{"Debug Overlay Ball Edges", true},
+	{"Debug Overlay Collision Mask", true},
+	{"Debug Overlay Sprites", true},
+	{"Debug Overlay Sounds", true},
+	{"Debug Overlay Ball Depth Grid", true},
+	{"Debug Overlay AABB", true},
+	{"FontFileName", ""},
+	{"Language", translations::GetCurrentLanguage()->ShortName},
 };
 
 void options::InitPrimary()
@@ -109,7 +115,7 @@ void options::InitPrimary()
 		imContext->SettingsLoaded = true;
 	}
 
-	for(const auto opt : AllOptions)
+	for (const auto opt : AllOptions)
 	{
 		opt->Load();
 	}
@@ -290,7 +296,7 @@ void options::ShowControlDialog()
 		ControlWaitingForInput = nullptr;
 		ShowDialog = true;
 		// Save previous controls in KVP storage.
-		for(const auto& control: Options.Key)
+		for (const auto& control : Options.Key)
 		{
 			control.Save();
 		}
@@ -299,16 +305,6 @@ void options::ShowControlDialog()
 
 void options::RenderControlDialog()
 {
-	static const Msg controlDescriptions[6]
-	{
-		Msg::KEYMAPPER_FlipperL,
-		Msg::KEYMAPPER_FlipperR,
-		Msg::KEYMAPPER_BumpLeft,
-		Msg::KEYMAPPER_BumpRight,
-		Msg::KEYMAPPER_BumpBottom,
-		Msg::KEYMAPPER_Plunger,
-	};
-
 	if (!ShowDialog)
 		return;
 
@@ -325,7 +321,9 @@ void options::RenderControlDialog()
 		ImGui::TextUnformatted(pb::get_rc_string(Msg::KEYMAPPER_Groupbox1));
 
 		ImGui::PushStyleVar(ImGuiStyleVar_CellPadding, ImVec2{5, 10});
-		if (ImGui::BeginTable("Controls", 4, ImGuiTableFlags_NoSavedSettings | ImGuiTableFlags_Borders| ImGuiTableFlags_SizingStretchSame))
+		if (ImGui::BeginTable("Controls", 4,
+		                      ImGuiTableFlags_NoSavedSettings | ImGuiTableFlags_Borders |
+		                      ImGuiTableFlags_SizingStretchSame))
 		{
 			ImGui::TableSetupColumn("Control");
 			ImGui::TableSetupColumn("Binding 1");
@@ -334,13 +332,11 @@ void options::RenderControlDialog()
 			ImGui::TableHeadersRow();
 
 			int rowHash = 0;
-			for (auto inputId = GameBindings::Min; inputId < GameBindings::Max; inputId++)
+			for (auto& option : Options.Key)
 			{
-				auto& option = Options.Key[~inputId];
-
 				ImGui::TableNextColumn();
 				ImGui::PushStyleColor(ImGuiCol_Button, ImVec4{0.5, 0, 0, 1});
-				if (ImGui::Button(pb::get_rc_string(controlDescriptions[~inputId])))
+				if (ImGui::Button(pb::get_rc_string(option.Description), ImVec2(-1, 0)))
 				{
 					for (auto& input : option.Inputs)
 						input = {};
@@ -352,7 +348,7 @@ void options::RenderControlDialog()
 					ImGui::TableNextColumn();
 					if (ControlWaitingForInput == &input)
 					{
-						if(ImGui::Button("Press the key", ImVec2(-1, 0)))
+						if (ImGui::Button("Press the key", ImVec2(-1, 0)))
 						{
 							ControlWaitingForInput = &input;
 						}

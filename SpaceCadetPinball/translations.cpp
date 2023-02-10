@@ -5469,7 +5469,7 @@ const TextArray translations::Translations =
 			{ Lang::Danish, "Bump nedefra" },
 			{ Lang::German, "Tischstoß unten" },
 			{ Lang::Greek, "Χτύπημα από κάτω" },
-			{ Lang::English, "BottomTable Bump" },
+			{ Lang::English, "Bottom Table Bump" },
 			{ Lang::Spanish, "Golpear de frente" },
 			{ Lang::Finnish, "Alareunan tönäisy" },
 			{ Lang::French, "Bourrage en bas" },
