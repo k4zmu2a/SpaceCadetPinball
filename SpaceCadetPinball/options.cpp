@@ -63,6 +63,55 @@ optionsStruct options::Options
 			{InputTypes::Mouse,SDL_BUTTON_X2 + 1},
 			{InputTypes::GameController, SDL_CONTROLLER_BUTTON_DPAD_UP}
 		},
+		{
+			"New Game",
+			Msg::Menu1_New_Game,
+			{InputTypes::Keyboard, SDLK_F2},
+			{InputTypes::None,-1},
+			{InputTypes::None, -1}
+		},
+		{
+			"Toggle Pause",
+			Msg::Menu1_Pause_Resume_Game,
+			{InputTypes::Keyboard, SDLK_F3},
+			{InputTypes::None,-1},
+			{InputTypes::GameController, SDL_CONTROLLER_BUTTON_START}
+		},
+		{
+			"Toggle FullScreen",
+			Msg::Menu1_Full_Screen,
+			{InputTypes::Keyboard, SDLK_F4},
+			{InputTypes::None,-1},
+			{InputTypes::None, -1}
+		},
+		{
+			"Toggle Sounds",
+			Msg::Menu1_Sounds,
+			{InputTypes::Keyboard, SDLK_F5},
+			{InputTypes::None,-1},
+			{InputTypes::None, -1}
+		},
+		{
+			"Toggle Music",
+			Msg::Menu1_Music,
+			{InputTypes::Keyboard, SDLK_F6},
+			{InputTypes::None,-1},
+			{InputTypes::None, -1}
+		},
+		{
+			"Show Control Dialog",
+			Msg::Menu1_Player_Controls,
+			{InputTypes::Keyboard, SDLK_F8},
+			{InputTypes::None,-1},
+			{InputTypes::None, -1}
+		},
+		{
+			"Toggle Menu Display",
+			Msg::Menu1_ToggleShowMenu,
+			{InputTypes::Keyboard, SDLK_F9},
+			{InputTypes::None,-1},
+			{InputTypes::None, -1}
+		},
 	},
 	{"Sounds", true},
 	{"Music", false},
@@ -276,14 +325,6 @@ void options::InputDown(GameInput input)
 {
 	if (ControlWaitingForInput)
 	{
-		// Skip function keys, just in case.
-		if (input.Type == InputTypes::Keyboard && input.Value >= SDLK_F1 && input.Value <= SDLK_F12)
-			return;
-
-		// Start is reserved for pause
-		if (input.Type == InputTypes::GameController && input.Value == SDL_CONTROLLER_BUTTON_START)
-			return;
-
 		*ControlWaitingForInput = input;
 		ControlWaitingForInput = nullptr;
 	}
@@ -311,13 +352,14 @@ void options::RenderControlDialog()
 	ImGui::PushStyleVar(ImGuiStyleVar_WindowMinSize, ImVec2{550, 550});
 	if (ImGui::Begin(pb::get_rc_string(Msg::KEYMAPPER_Caption), &ShowDialog))
 	{
-		ImGui::TextUnformatted(pb::get_rc_string(Msg::KEYMAPPER_Groupbox2));
-		ImGui::Separator();
+		if (ImGui::TreeNode(pb::get_rc_string(Msg::KEYMAPPER_Groupbox2)))
+		{
+			ImGui::TextWrapped("%s", pb::get_rc_string(Msg::KEYMAPPER_Help1));
+			ImGui::TextWrapped("%s", pb::get_rc_string(Msg::KEYMAPPER_Help2));
+			ImGui::TreePop();
+		}
 
-		ImGui::TextWrapped("%s", pb::get_rc_string(Msg::KEYMAPPER_Help1));
-		ImGui::TextWrapped("%s", pb::get_rc_string(Msg::KEYMAPPER_Help2));
 		ImGui::Spacing();
-
 		ImGui::TextUnformatted(pb::get_rc_string(Msg::KEYMAPPER_Groupbox1));
 
 		ImGui::PushStyleVar(ImGuiStyleVar_CellPadding, ImVec2{5, 10});
@@ -355,7 +397,7 @@ void options::RenderControlDialog()
 					}
 					else
 					{
-						auto inputDescription = input.GetInputDescription();
+						auto inputDescription = input.GetFullInputDescription();
 						if (ImGui::Button((inputDescription + "##" + std::to_string(rowHash++)).c_str(),
 						                  ImVec2(-1, 0)))
 						{
@@ -447,7 +489,30 @@ void options::MyUserData_WriteAll(ImGuiContext* ctx, ImGuiSettingsHandler* handl
 	buf->append("\n");
 }
 
-std::string GameInput::GetInputDescription() const
+std::string GameInput::GetFullInputDescription() const
+{
+	std::string prefix;
+	switch (Type)
+	{
+	case InputTypes::Keyboard:
+		prefix = "Keyboard\n";
+		break;
+	case InputTypes::Mouse:
+		prefix = "Mouse\n";
+		break;
+	case InputTypes::GameController:
+		prefix = "Controller\n";
+		break;
+	case InputTypes::None:
+	default:
+		prefix = "Unused";
+		break;
+	}
+
+	return prefix + GetShortInputDescription();
+}
+
+std::string GameInput::GetShortInputDescription() const
 {
 	static LPCSTR mouseButtons[]
 	{
@@ -488,26 +553,23 @@ std::string GameInput::GetInputDescription() const
 	switch (Type)
 	{
 	case InputTypes::Keyboard:
-		keyName = "Keyboard\n";
-		keyName += SDL_GetKeyName(Value);
+		keyName = SDL_GetKeyName(Value);
 		break;
 	case InputTypes::Mouse:
-		keyName = "Mouse\n";
 		if (Value >= SDL_BUTTON_LEFT && Value <= SDL_BUTTON_X2)
-			keyName += mouseButtons[Value];
+			keyName = mouseButtons[Value];
 		else
-			keyName += std::to_string(Value);
+			keyName = std::to_string(Value);
 		break;
 	case InputTypes::GameController:
-		keyName = "Controller\n";
 		if (Value >= SDL_CONTROLLER_BUTTON_A && Value <= SDL_CONTROLLER_BUTTON_TOUCHPAD)
-			keyName += controllerButtons[Value];
+			keyName = controllerButtons[Value];
 		else
-			keyName += std::to_string(Value);
+			keyName = std::to_string(Value);
 		break;
 	case InputTypes::None:
 	default:
-		keyName = "Unused";
+		break;
 	}
 
 	return keyName;
@@ -544,4 +606,18 @@ OptionBase::~OptionBase()
 	auto position = std::find(vec.begin(), vec.end(), this);
 	if (position != vec.end())
 		vec.erase(position);
+}
+
+std::string ControlOption::GetShortcutDescription() const
+{
+	std::string result;
+	for (const auto& input : Inputs)
+	{
+		if (input.Type != InputTypes::None)
+		{
+			result = input.GetShortInputDescription();
+			break;
+		}
+	}
+	return result;
 }

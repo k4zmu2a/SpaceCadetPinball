@@ -455,13 +455,18 @@ void pb::InputUp(GameInput input)
 void pb::InputDown(GameInput input)
 {
 	options::InputDown(input);
+	const auto bindings = options::MapGameInput(input);
+	for (const auto binding : bindings)
+	{
+		winmain::HandleGameBinding(binding);
+	}
+
 	if (game_mode != GameModes::InGame || winmain::single_step || demo_mode)
 		return;
 
 	if (input.Type == InputTypes::Keyboard)
 		control::pbctrl_bdoor_controller(static_cast<char>(input.Value));
 
-	const auto bindings = options::MapGameInput(input);
 	for (const auto binding : bindings)
 	{
 		switch (binding)

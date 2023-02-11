@@ -6289,4 +6289,10 @@ const TextArray translations::Translations =
 			{ Lang::TraditionalChinese, "使用最大解析度 (1024 x 768)" },
 		},
 	},
+	{
+		Msg::Menu1_ToggleShowMenu,
+		{
+			{ Lang::English, "Show Menu"},
+		}
+	}
 };

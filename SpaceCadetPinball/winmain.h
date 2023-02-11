@@ -1,6 +1,8 @@
 #pragma once
 #include "gdrv.h"
 
+enum class GameBindings;
+
 struct SdlTickClock
 {
 	using duration = std::chrono::milliseconds;
@@ -85,6 +87,7 @@ public:
 	static void pause(bool toggle = true);
 	static void Restart();
 	static void UpdateFrameRate();
+	static void HandleGameBinding(GameBindings binding);
 private:
 	static int return_value, DispFrameRate;
 	static int mouse_down, last_mouse_x, last_mouse_y;
@@ -108,4 +111,5 @@ private:
 	static void RenderFrameTimeDialog();
 	static void HybridSleep(DurationMs seconds);
 	static void MainLoop();
+	static void ImGuiMenuItemWShortcut(GameBindings binding, bool selected = false);
 };

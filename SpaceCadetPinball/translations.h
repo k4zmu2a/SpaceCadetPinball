@@ -218,6 +218,7 @@ enum class Msg : int
 	Menu1_Select_Players,
 	Menu1_Table_Resolution,
 	Menu1_Help,
+	Menu1_ToggleShowMenu,
 
 	Menu1_UseMaxResolution_640x480,
 	Menu1_UseMaxResolution_800x600,

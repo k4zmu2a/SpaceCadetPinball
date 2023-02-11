@@ -469,19 +469,13 @@ void winmain::RenderUi()
 
 		if (ImGui::BeginMenu(pb::get_rc_string(Msg::Menu1_Game)))
 		{
-			if (ImGui::MenuItem(pb::get_rc_string(Msg::Menu1_New_Game), "F2"))
-			{
-				new_game();
-			}
+			ImGuiMenuItemWShortcut(GameBindings::NewGame);
 			if (ImGui::MenuItem(pb::get_rc_string(Msg::Menu1_Launch_Ball), nullptr, false, LaunchBallEnabled))
 			{
 				end_pause();
 				pb::launch_ball();
 			}
-			if (ImGui::MenuItem(pb::get_rc_string(Msg::Menu1_Pause_Resume_Game), "F3"))
-			{
-				pause();
-			}
+			ImGuiMenuItemWShortcut(GameBindings::TogglePause);
 			ImGui::Separator();
 
 			if (ImGui::MenuItem(pb::get_rc_string(Msg::Menu1_High_Scores), nullptr, false, HighScoresEnabled))
@@ -504,14 +498,8 @@ void winmain::RenderUi()
 
 		if (ImGui::BeginMenu(pb::get_rc_string(Msg::Menu1_Options)))
 		{
-			if (ImGui::MenuItem("Show Menu", "F9", Options.ShowMenu))
-			{
-				options::toggle(Menu1::Show_Menu);
-			}
-			if (ImGui::MenuItem(pb::get_rc_string(Msg::Menu1_Full_Screen), "F4", Options.FullScreen))
-			{
-				options::toggle(Menu1::Full_Screen);
-			}
+			ImGuiMenuItemWShortcut(GameBindings::ToggleMenuDisplay, Options.ShowMenu);
+			ImGuiMenuItemWShortcut(GameBindings::ToggleFullScreen, Options.FullScreen);
 			if (ImGui::BeginMenu(pb::get_rc_string(Msg::Menu1_Select_Players)))
 			{
 				if (ImGui::MenuItem(pb::get_rc_string(Msg::Menu1_1Player), nullptr, Options.Players == 1))
@@ -536,11 +524,7 @@ void winmain::RenderUi()
 				}
 				ImGui::EndMenu();
 			}
-			if (ImGui::MenuItem(pb::get_rc_string(Msg::Menu1_Player_Controls), "F8"))
-			{
-				pause(false);
-				options::ShowControlDialog();
-			}
+			ImGuiMenuItemWShortcut(GameBindings::ShowControlDialog);
 			if (ImGui::BeginMenu("Language"))
 			{
 				auto currentLanguage = translations::GetCurrentLanguage();
@@ -561,10 +545,7 @@ void winmain::RenderUi()
 
 			if (ImGui::BeginMenu("Audio"))
 			{
-				if (ImGui::MenuItem("Sound", "F5", Options.Sounds))
-				{
-					options::toggle(Menu1::Sounds);
-				}
+				ImGuiMenuItemWShortcut(GameBindings::ToggleSounds, Options.Sounds);
 				if (ImGui::MenuItem("Stereo Sound Effects", nullptr, Options.SoundStereo))
 				{
 					options::toggle(Menu1::SoundStereo);
@@ -584,10 +565,7 @@ void winmain::RenderUi()
 				}
 				ImGui::Separator();
 
-				if (ImGui::MenuItem(pb::get_rc_string(Msg::Menu1_Music), "F6", Options.Music))
-				{
-					options::toggle(Menu1::Music);
-				}
+				ImGuiMenuItemWShortcut(GameBindings::ToggleMusic, Options.Music);
 				ImGui::TextUnformatted("Music Volume");
 				if (ImGui::SliderInt("##Music Volume", &Options.MusicVolume.V, options::MinVolume, options::MaxVolume,
 				                     "%d",
@@ -852,28 +830,6 @@ int winmain::event_handler(const SDL_Event* event)
 				options::toggle(Menu1::Full_Screen);
 			SDL_MinimizeWindow(MainWindow);
 			break;
-		case SDLK_F2:
-			new_game();
-			break;
-		case SDLK_F3:
-			pause();
-			break;
-		case SDLK_F4:
-			options::toggle(Menu1::Full_Screen);
-			break;
-		case SDLK_F5:
-			options::toggle(Menu1::Sounds);
-			break;
-		case SDLK_F6:
-			options::toggle(Menu1::Music);
-			break;
-		case SDLK_F8:
-			pause(false);
-			options::ShowControlDialog();
-			break;
-		case SDLK_F9:
-			options::toggle(Menu1::Show_Menu);
-			break;
 		default:
 			break;
 		}
@@ -1014,9 +970,6 @@ int winmain::event_handler(const SDL_Event* event)
 		pb::InputDown({InputTypes::GameController, event->cbutton.button});
 		switch (event->cbutton.button)
 		{
-		case SDL_CONTROLLER_BUTTON_START:
-			pause();
-			break;
 		case SDL_CONTROLLER_BUTTON_BACK:
 			if (single_step)
 			{
@@ -1145,6 +1098,37 @@ void winmain::UpdateFrameRate()
 	TargetFrameTime = DurationMs(1000.0 / ups);
 }
 
+void winmain::HandleGameBinding(GameBindings binding)
+{
+	switch (binding)
+	{
+	case GameBindings::TogglePause:
+		pause();
+		break;
+	case GameBindings::NewGame:
+		new_game();
+		break;
+	case GameBindings::ToggleFullScreen:
+		options::toggle(Menu1::Full_Screen);
+		break;
+	case GameBindings::ToggleSounds:
+		options::toggle(Menu1::Sounds);
+		break;
+	case GameBindings::ToggleMusic:
+		options::toggle(Menu1::Music);
+		break;
+	case GameBindings::ShowControlDialog:
+		pause(false);
+		options::ShowControlDialog();
+		break;
+	case GameBindings::ToggleMenuDisplay:
+		options::toggle(Menu1::Show_Menu);
+		break;
+	default:
+		break;
+	}
+}
+
 void winmain::RenderFrameTimeDialog()
 {
 	ImGui::PushStyleVar(ImGuiStyleVar_WindowMinSize, ImVec2{300, 70});
@@ -1207,4 +1191,13 @@ void winmain::HybridSleep(DurationMs sleepTarget)
 
 	// spin lock
 	for (auto start = Clock::now(); DurationMs(Clock::now() - start) < sleepTarget;);
+}
+
+void winmain::ImGuiMenuItemWShortcut(GameBindings binding, bool selected)
+{
+	const auto& keyDef = Options.Key[~binding];
+	if (ImGui::MenuItem(pb::get_rc_string(keyDef.Description), keyDef.GetShortcutDescription().c_str(), selected))
+	{
+		HandleGameBinding(binding);
+	}
 }

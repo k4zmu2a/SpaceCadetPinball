@@ -51,7 +51,9 @@ struct GameInput
 		return Type == other.Type && Value == other.Value;
 	}
 
-	std::string GetInputDescription() const;
+	std::string GetFullInputDescription() const;
+
+	std::string GetShortInputDescription() const;
 };
 
 enum class GameBindings
@@ -63,6 +65,13 @@ enum class GameBindings
 	LeftTableBump,
 	RightTableBump,
 	BottomTableBump,
+	NewGame,
+	TogglePause,
+	ToggleFullScreen,
+	ToggleSounds,
+	ToggleMusic,
+	ShowControlDialog,
+	ToggleMenuDisplay,
 	Max
 };
 
@@ -234,6 +243,8 @@ struct ControlOption : OptionBase
 	{
 		std::copy(std::begin(Defaults), std::end(Defaults), std::begin(Inputs));
 	}
+
+	std::string GetShortcutDescription() const;
 };
 
 struct optionsStruct
