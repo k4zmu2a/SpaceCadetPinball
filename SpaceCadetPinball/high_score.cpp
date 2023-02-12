@@ -172,12 +172,9 @@ void high_score::RenderHighScoreDialog()
 					score = DlgData.Entry.Score;
 					ImGui::PushItemWidth(200);
 
-					static bool doubleFocus = false;
-					if (ImGui::IsWindowAppearing() || doubleFocus)
+					if (ImGui::IsWindowAppearing())
 					{
-						// Hack - set focus only works on the second time.
 						ImGui::SetKeyboardFocusHere(0);
-						doubleFocus ^= true;
 					}
 					if (ImGui::InputText("", DlgData.Entry.Name, IM_ARRAYSIZE(DlgData.Entry.Name),
 						ImGuiInputTextFlags_EnterReturnsTrue | ImGuiInputTextFlags_AutoSelectAll))
@@ -197,7 +194,7 @@ void high_score::RenderHighScoreDialog()
 			ImGui::EndTable();
 		}
 
-		if (ImGui::Button(pb::get_rc_string(Msg::HIGHSCORES_Ok)) || textBoxSubmit)
+		if (ImGui::Button(pb::get_rc_string(Msg::GenericOk)) || textBoxSubmit)
 		{
 			if (dlg_enter_name)
 			{
@@ -207,7 +204,7 @@ void high_score::RenderHighScoreDialog()
 		}
 
 		ImGui::SameLine();
-		if (ImGui::Button(pb::get_rc_string(Msg::HIGHSCORES_Cancel)))
+		if (ImGui::Button(pb::get_rc_string(Msg::GenericCancel)))
 			ImGui::CloseCurrentPopup();
 
 		ImGui::SameLine();
@@ -216,14 +213,14 @@ void high_score::RenderHighScoreDialog()
 		if (ImGui::BeginPopupModal("Confirm", nullptr, ImGuiWindowFlags_MenuBar))
 		{
 			ImGui::TextUnformatted(pb::get_rc_string(Msg::STRING141));
-			if (ImGui::Button(pb::get_rc_string(Msg::HIGHSCORES_Ok), ImVec2(120, 0)))
+			if (ImGui::Button(pb::get_rc_string(Msg::GenericOk), ImVec2(120, 0)))
 			{
 				clear_table();
 				ImGui::CloseCurrentPopup();
 			}
 			ImGui::SetItemDefaultFocus();
 			ImGui::SameLine();
-			if (ImGui::Button(pb::get_rc_string(Msg::HIGHSCORES_Cancel), ImVec2(120, 0)))
+			if (ImGui::Button(pb::get_rc_string(Msg::GenericCancel), ImVec2(120, 0)))
 			{
 				ImGui::CloseCurrentPopup();
 			}

@@ -20,7 +20,7 @@ ImGuiIO* winmain::ImIO = nullptr;
 int winmain::return_value = 0;
 bool winmain::bQuit = false;
 bool winmain::activated = false;
-int winmain::DispFrameRate = 0;
+bool winmain::DispFrameRate = false;
 bool winmain::DispGRhistory = false;
 bool winmain::single_step = false;
 bool winmain::has_focus = true;
@@ -31,12 +31,13 @@ bool winmain::no_time_loss = false;
 
 bool winmain::restart = false;
 
-std::vector<float> winmain::gfrDisplay {};
+std::vector<float> winmain::gfrDisplay{};
 unsigned winmain::gfrOffset = 0;
 float winmain::gfrWindow = 5.0f;
 bool winmain::ShowAboutDialog = false;
 bool winmain::ShowImGuiDemo = false;
 bool winmain::ShowSpriteViewer = false;
+bool winmain::ShowExitPopup = false;
 bool winmain::LaunchBallEnabled = true;
 bool winmain::HighScoresEnabled = true;
 bool winmain::DemoActive = false;
@@ -173,7 +174,7 @@ int winmain::WinMain(LPCSTR lpCmdLine)
 		}
 		ImGui_Render_Init(renderer);
 		ImGui::StyleColorsDark();
-		
+
 		ImGui_ImplSDL2_InitForSDLRenderer(window, Renderer);
 		io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard | ImGuiConfigFlags_NavEnableGamepad;
 
@@ -488,11 +489,7 @@ void winmain::RenderUi()
 				end_pause();
 				pb::toggle_demo();
 			}
-			if (ImGui::MenuItem(pb::get_rc_string(Msg::Menu1_Exit)))
-			{
-				SDL_Event event{SDL_QUIT};
-				SDL_PushEvent(&event);
-			}
+			ImGuiMenuItemWShortcut(GameBindings::Exit);
 			ImGui::EndMenu();
 		}
 
@@ -594,8 +591,8 @@ void winmain::RenderUi()
 				{
 					options::toggle(Menu1::WindowIntegerScale);
 				}
-				if(ImGui::DragFloat("UI Scale", &Options.UIScale.V, 0.005f, 0.8f, 5,
-				                 "%.2f", ImGuiSliderFlags_AlwaysClamp))
+				if (ImGui::DragFloat("UI Scale", &Options.UIScale.V, 0.005f, 0.8f, 5,
+				                     "%.2f", ImGuiSliderFlags_AlwaysClamp))
 				{
 					ImIO->FontGlobalScale = Options.UIScale;
 				}
@@ -771,6 +768,38 @@ void winmain::RenderUi()
 	if (DispGRhistory)
 		RenderFrameTimeDialog();
 
+	const auto exitText = translations::GetTranslation(Msg::Menu1_Exit);
+	if (ShowExitPopup)
+	{
+		ShowExitPopup = false;
+		pause(false);
+		ImGui::OpenPopup(exitText);
+	}
+	if (ImGui::BeginPopupModal(exitText, nullptr, ImGuiWindowFlags_AlwaysAutoResize))
+	{
+		ImGui::Text("Exit the game?");
+		ImGui::Separator();
+
+		if (ImGui::Button(pb::get_rc_string(Msg::GenericOk), ImVec2(120, 0)))
+		{
+			SDL_Event event{SDL_QUIT};
+			SDL_PushEvent(&event);
+			ImGui::CloseCurrentPopup();
+		}
+		ImGui::SameLine();
+		if (ImGui::IsWindowAppearing())
+		{
+			ImGui::SetKeyboardFocusHere(0);
+		}
+		if (ImGui::Button(pb::get_rc_string(Msg::GenericCancel), ImVec2(120, 0)))
+		{
+			end_pause();
+			ImGui::CloseCurrentPopup();
+		}
+		ImGui::SetItemDefaultFocus();
+		ImGui::EndPopup();
+	}
+
 	// Print game texts on the sidebar
 	gdrv::grtext_draw_ttext_in_box();
 }
@@ -821,19 +850,10 @@ int winmain::event_handler(const SDL_Event* event)
 		pb::InputUp({InputTypes::Keyboard, event->key.keysym.sym});
 		break;
 	case SDL_KEYDOWN:
-		if (!event->key.repeat)
-			pb::InputDown({InputTypes::Keyboard, event->key.keysym.sym});
-		switch (event->key.keysym.sym)
-		{
-		case SDLK_ESCAPE:
-			if (Options.FullScreen)
-				options::toggle(Menu1::Full_Screen);
-			SDL_MinimizeWindow(MainWindow);
+		if (event->key.repeat)
 			break;
-		default:
-			break;
-		}
 
+		pb::InputDown({InputTypes::Keyboard, event->key.keysym.sym});
 		if (!pb::cheat_mode)
 			break;
 
@@ -863,7 +883,7 @@ int winmain::event_handler(const SDL_Event* event)
 			break;
 		case SDLK_y:
 			SDL_SetWindowTitle(MainWindow, "Pinball");
-			DispFrameRate = DispFrameRate == 0;
+			DispFrameRate ^= true;
 			break;
 		case SDLK_F1:
 			pb::frame(10);
@@ -968,17 +988,6 @@ int winmain::event_handler(const SDL_Event* event)
 		break;
 	case SDL_CONTROLLERBUTTONDOWN:
 		pb::InputDown({InputTypes::GameController, event->cbutton.button});
-		switch (event->cbutton.button)
-		{
-		case SDL_CONTROLLER_BUTTON_BACK:
-			if (single_step)
-			{
-				SDL_Event event{SDL_QUIT};
-				SDL_PushEvent(&event);
-			}
-			break;
-		default: ;
-		}
 		break;
 	case SDL_CONTROLLERBUTTONUP:
 		pb::InputUp({InputTypes::GameController, event->cbutton.button});
@@ -1124,6 +1133,11 @@ void winmain::HandleGameBinding(GameBindings binding)
 	case GameBindings::ToggleMenuDisplay:
 		options::toggle(Menu1::Show_Menu);
 		break;
+	case GameBindings::Exit:
+		{
+			ShowExitPopup = true;
+			break;
+		}
 	default:
 		break;
 	}
@@ -1143,13 +1157,13 @@ void winmain::RenderFrameTimeDialog()
 
 		static bool scrollPlot = true;
 		ImGui::Checkbox("Scroll Plot", &scrollPlot);
-		
+
 		ImGui::SameLine();
 		ImGui::SliderFloat("Window Size", &gfrWindow, 0.1f, 15, "%.3fsec", ImGuiSliderFlags_AlwaysClamp);
 
 		{
 			float average = 0.0f, dev = 0.0f;
-			for (auto n : gfrDisplay) 
+			for (auto n : gfrDisplay)
 			{
 				average += n;
 				dev += std::abs(target - n);
@@ -1161,7 +1175,7 @@ void winmain::RenderFrameTimeDialog()
 
 			auto region = ImGui::GetContentRegionAvail();
 			ImGui::PlotLines("Lines", gfrDisplay.data(), gfrDisplay.size(),
-				scrollPlot ? gfrOffset : 0, overlay, 0, yMax, region);
+			                 scrollPlot ? gfrOffset : 0, overlay, 0, yMax, region);
 		}
 	}
 	ImGui::End();

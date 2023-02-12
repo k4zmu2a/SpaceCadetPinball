@@ -67,50 +67,57 @@ optionsStruct options::Options
 			"New Game",
 			Msg::Menu1_New_Game,
 			{InputTypes::Keyboard, SDLK_F2},
-			{InputTypes::None,-1},
+			{InputTypes::None, -1},
 			{InputTypes::None, -1}
 		},
 		{
 			"Toggle Pause",
 			Msg::Menu1_Pause_Resume_Game,
 			{InputTypes::Keyboard, SDLK_F3},
-			{InputTypes::None,-1},
+			{InputTypes::None, -1},
 			{InputTypes::GameController, SDL_CONTROLLER_BUTTON_START}
 		},
 		{
 			"Toggle FullScreen",
 			Msg::Menu1_Full_Screen,
 			{InputTypes::Keyboard, SDLK_F4},
-			{InputTypes::None,-1},
+			{InputTypes::None, -1},
 			{InputTypes::None, -1}
 		},
 		{
 			"Toggle Sounds",
 			Msg::Menu1_Sounds,
 			{InputTypes::Keyboard, SDLK_F5},
-			{InputTypes::None,-1},
+			{InputTypes::None, -1},
 			{InputTypes::None, -1}
 		},
 		{
 			"Toggle Music",
 			Msg::Menu1_Music,
 			{InputTypes::Keyboard, SDLK_F6},
-			{InputTypes::None,-1},
+			{InputTypes::None, -1},
 			{InputTypes::None, -1}
 		},
 		{
 			"Show Control Dialog",
 			Msg::Menu1_Player_Controls,
 			{InputTypes::Keyboard, SDLK_F8},
-			{InputTypes::None,-1},
+			{InputTypes::None, -1},
 			{InputTypes::None, -1}
 		},
 		{
 			"Toggle Menu Display",
 			Msg::Menu1_ToggleShowMenu,
 			{InputTypes::Keyboard, SDLK_F9},
-			{InputTypes::None,-1},
+			{InputTypes::None, -1},
 			{InputTypes::None, -1}
+		},
+		{
+			"Exit",
+			Msg::Menu1_Exit,
+			{InputTypes::Keyboard, SDLK_ESCAPE},
+			{InputTypes::None, -1},
+			{InputTypes::GameController, SDL_CONTROLLER_BUTTON_BACK}
 		},
 	},
 	{"Sounds", true},
@@ -411,13 +418,13 @@ void options::RenderControlDialog()
 		ImGui::PopStyleVar();
 		ImGui::Spacing();
 
-		if (ImGui::Button(pb::get_rc_string(Msg::KEYMAPPER_Ok)))
+		if (ImGui::Button(pb::get_rc_string(Msg::GenericOk)))
 		{
 			ShowDialog = false;
 		}
 
 		ImGui::SameLine();
-		if (ImGui::Button(pb::get_rc_string(Msg::KEYMAPPER_Cancel)))
+		if (ImGui::Button(pb::get_rc_string(Msg::GenericCancel)))
 		{
 			for (auto& control : Options.Key)
 			{

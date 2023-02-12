@@ -35,7 +35,7 @@ void font_selection::RenderDialog()
 		ImGui::SameLine();
 		ImGui::InputText("##Font", DialogInputBuffer, IM_ARRAYSIZE(DialogInputBuffer));
 
-		if (ImGui::Button(pb::get_rc_string(Msg::HIGHSCORES_Ok)))
+		if (ImGui::Button(pb::get_rc_string(Msg::GenericOk)))
 		{
 			options::Options.FontFileName.V = DialogInputBuffer;
 			ImGui::CloseCurrentPopup();
@@ -43,7 +43,7 @@ void font_selection::RenderDialog()
 		}
 
 		ImGui::SameLine();
-		if (ImGui::Button(pb::get_rc_string(Msg::HIGHSCORES_Cancel)))
+		if (ImGui::Button(pb::get_rc_string(Msg::GenericCancel)))
 			ImGui::CloseCurrentPopup();
 
 		ImGui::EndPopup();

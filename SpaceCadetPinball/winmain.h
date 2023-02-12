@@ -43,7 +43,6 @@ struct WelfordState
 
 	WelfordState() : mean(0.005), M2(0), count(1)
 	{
-
 	}
 
 	void Advance(double newValue)
@@ -89,15 +88,16 @@ public:
 	static void UpdateFrameRate();
 	static void HandleGameBinding(GameBindings binding);
 private:
-	static int return_value, DispFrameRate;
+	static int return_value;
 	static int mouse_down, last_mouse_x, last_mouse_y;
-	static bool no_time_loss, activated, bQuit, has_focus, DispGRhistory;
+	static bool no_time_loss, activated, bQuit, has_focus, DispGRhistory, DispFrameRate;
 	static std::vector<float> gfrDisplay;
 	static std::string FpsDetails, PrevSdlError;
 	static bool restart;
 	static bool ShowAboutDialog;
 	static bool ShowImGuiDemo;
 	static bool ShowSpriteViewer;
+	static bool ShowExitPopup;
 	static double UpdateToFrameRatio;
 	static DurationMs TargetFrameTime;
 	static struct optionsStruct& Options;

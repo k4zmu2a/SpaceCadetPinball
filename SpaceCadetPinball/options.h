@@ -72,6 +72,7 @@ enum class GameBindings
 	ToggleMusic,
 	ShowControlDialog,
 	ToggleMenuDisplay,
+	Exit,
 	Max
 };
 
