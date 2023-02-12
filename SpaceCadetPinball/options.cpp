@@ -569,7 +569,7 @@ std::string GameInput::GetShortInputDescription() const
 			keyName = std::to_string(Value);
 		break;
 	case InputTypes::GameController:
-		if (Value >= SDL_CONTROLLER_BUTTON_A && Value <= SDL_CONTROLLER_BUTTON_TOUCHPAD)
+		if (Value >= SDL_CONTROLLER_BUTTON_A && Value < SDL_CONTROLLER_BUTTON_MAX)
 			keyName = controllerButtons[Value];
 		else
 			keyName = std::to_string(Value);
