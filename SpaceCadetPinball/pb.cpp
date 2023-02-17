@@ -454,7 +454,12 @@ void pb::InputUp(GameInput input)
 
 void pb::InputDown(GameInput input)
 {
-	options::InputDown(input);
+	if (options::WaitingForInput()) 
+	{
+		options::InputDown(input);
+		return;
+	}
+
 	const auto bindings = options::MapGameInput(input);
 	for (const auto binding : bindings)
 	{

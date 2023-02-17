@@ -46,6 +46,14 @@ struct GameInput
 	InputTypes Type;
 	int Value;
 
+	GameInput() : GameInput(InputTypes::None, -1)
+	{
+	}
+
+	GameInput(InputTypes type, int value) : Type(type), Value(value)
+	{
+	}
+
 	bool operator==(const GameInput& other) const
 	{
 		return Type == other.Type && Value == other.Value;
@@ -115,6 +123,7 @@ public:
 	static void RenderControlDialog();
 	static bool WaitingForInput() { return ControlWaitingForInput; }
 	static std::vector<GameBindings> MapGameInput(GameInput key);
+	static void ResetAllOptions();
 private:
 	static std::unordered_map<std::string, std::string> settings;
 	static bool ShowDialog;
@@ -123,6 +132,7 @@ private:
 	static void MyUserData_ReadLine(ImGuiContext* ctx, ImGuiSettingsHandler* handler, void* entry, const char* line);
 	static void* MyUserData_ReadOpen(ImGuiContext* ctx, ImGuiSettingsHandler* handler, const char* name);
 	static void MyUserData_WriteAll(ImGuiContext* ctx, ImGuiSettingsHandler* handler, ImGuiTextBuffer* buf);
+	static void PostProcessOptions();
 };
 
 
@@ -210,11 +220,7 @@ struct ControlOption : OptionBase
 		OptionBase(name),
 		Description(description),
 		Defaults{defaultKeyboard, defaultMouse, defaultController},
-		Inputs{
-			{InputTypes::Keyboard, -1},
-			{InputTypes::Mouse, -1},
-			{InputTypes::GameController, -1}
-		}
+		Inputs{defaultKeyboard, defaultMouse, defaultController}
 	{
 	}
 

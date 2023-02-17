@@ -130,6 +130,7 @@ int winmain::WinMain(LPCSTR lpCmdLine)
 			mixOpened = true;
 	}
 
+	auto resetAllOptions = strstr(lpCmdLine, "-reset") != nullptr;
 	do
 	{
 		restart = false;
@@ -144,6 +145,11 @@ int winmain::WinMain(LPCSTR lpCmdLine)
 
 		// First option initialization step: just load settings from .ini. Needs ImGui context.
 		options::InitPrimary();
+		if (resetAllOptions)
+		{
+			resetAllOptions = false;
+			options::ResetAllOptions();
+		}
 
 		if (!Options.FontFileName.V.empty())
 		{
@@ -678,6 +684,12 @@ void winmain::RenderUi()
 				}
 				ImGui::EndMenu();
 			}
+			ImGui::Separator();
+			if (ImGui::MenuItem("Reset All Options"))
+			{
+				options::ResetAllOptions();
+				Restart();
+			}
 			ImGui::EndMenu();
 		}
 
@@ -806,7 +818,18 @@ void winmain::RenderUi()
 
 int winmain::event_handler(const SDL_Event* event)
 {
-	ImGui_ImplSDL2_ProcessEvent(event);
+	auto inputDown = false;
+	switch (event->type)
+	{
+	case SDL_KEYDOWN:
+	case SDL_MOUSEBUTTONDOWN:
+	case SDL_CONTROLLERBUTTONDOWN:
+		inputDown = true;
+		break;
+	default: break;
+	}
+	if (!options::WaitingForInput() || !inputDown)
+		ImGui_ImplSDL2_ProcessEvent(event);
 
 	if (ImIO->WantCaptureMouse && !options::WaitingForInput())
 	{

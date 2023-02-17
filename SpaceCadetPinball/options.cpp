@@ -67,56 +67,56 @@ optionsStruct options::Options
 			"New Game",
 			Msg::Menu1_New_Game,
 			{InputTypes::Keyboard, SDLK_F2},
-			{InputTypes::None, -1},
-			{InputTypes::None, -1}
+			{},
+			{}
 		},
 		{
 			"Toggle Pause",
 			Msg::Menu1_Pause_Resume_Game,
 			{InputTypes::Keyboard, SDLK_F3},
-			{InputTypes::None, -1},
+			{},
 			{InputTypes::GameController, SDL_CONTROLLER_BUTTON_START}
 		},
 		{
 			"Toggle FullScreen",
 			Msg::Menu1_Full_Screen,
 			{InputTypes::Keyboard, SDLK_F4},
-			{InputTypes::None, -1},
-			{InputTypes::None, -1}
+			{},
+			{}
 		},
 		{
 			"Toggle Sounds",
 			Msg::Menu1_Sounds,
 			{InputTypes::Keyboard, SDLK_F5},
-			{InputTypes::None, -1},
-			{InputTypes::None, -1}
+			{},
+			{}
 		},
 		{
 			"Toggle Music",
 			Msg::Menu1_Music,
 			{InputTypes::Keyboard, SDLK_F6},
-			{InputTypes::None, -1},
-			{InputTypes::None, -1}
+			{},
+			{}
 		},
 		{
 			"Show Control Dialog",
 			Msg::Menu1_Player_Controls,
 			{InputTypes::Keyboard, SDLK_F8},
-			{InputTypes::None, -1},
-			{InputTypes::None, -1}
+			{},
+			{}
 		},
 		{
 			"Toggle Menu Display",
 			Msg::Menu1_ToggleShowMenu,
 			{InputTypes::Keyboard, SDLK_F9},
-			{InputTypes::None, -1},
-			{InputTypes::None, -1}
+			{},
+			{}
 		},
 		{
 			"Exit",
 			Msg::Menu1_Exit,
 			{InputTypes::Keyboard, SDLK_ESCAPE},
-			{InputTypes::None, -1},
+			{},
 			{InputTypes::GameController, SDL_CONTROLLER_BUTTON_BACK}
 		},
 	},
@@ -172,24 +172,12 @@ void options::InitPrimary()
 	}
 
 	for (const auto opt : AllOptions)
-	{
 		opt->Load();
-	}
-
-	winmain::ImIO->FontGlobalScale = Options.UIScale;
-	Options.FramesPerSecond = Clamp(Options.FramesPerSecond.V, MinFps, MaxFps);
-	Options.UpdatesPerSecond = Clamp(Options.UpdatesPerSecond.V, MinUps, MaxUps);
-	Options.UpdatesPerSecond = std::max(Options.UpdatesPerSecond.V, Options.FramesPerSecond.V);
-	Options.SoundChannels = Clamp(Options.SoundChannels.V, MinSoundChannels, MaxSoundChannels);
-	Options.SoundVolume = Clamp(Options.SoundVolume.V, MinVolume, MaxVolume);
-	Options.MusicVolume = Clamp(Options.MusicVolume.V, MinVolume, MaxVolume);
-	translations::SetCurrentLanguage(Options.Language.V.c_str());
+	PostProcessOptions();
 }
 
 void options::InitSecondary()
 {
-	winmain::UpdateFrameRate();
-
 	auto maxRes = fullscrn::GetMaxResolution();
 	if (Options.Resolution >= 0 && Options.Resolution > maxRes)
 		Options.Resolution = maxRes;
@@ -467,6 +455,13 @@ std::vector<GameBindings> options::MapGameInput(GameInput key)
 	return result;
 }
 
+void options::ResetAllOptions()
+{
+	for (const auto opt : AllOptions)
+		opt->Reset();
+	PostProcessOptions();
+}
+
 void options::MyUserData_ReadLine(ImGuiContext* ctx, ImGuiSettingsHandler* handler, void* entry, const char* line)
 {
 	auto& keyValueStore = *static_cast<std::unordered_map<std::string, std::string>*>(entry);
@@ -496,6 +491,19 @@ void options::MyUserData_WriteAll(ImGuiContext* ctx, ImGuiSettingsHandler* handl
 	buf->append("\n");
 }
 
+void options::PostProcessOptions()
+{
+	winmain::ImIO->FontGlobalScale = Options.UIScale;
+	Options.FramesPerSecond = Clamp(Options.FramesPerSecond.V, MinFps, MaxFps);
+	Options.UpdatesPerSecond = Clamp(Options.UpdatesPerSecond.V, MinUps, MaxUps);
+	Options.UpdatesPerSecond = std::max(Options.UpdatesPerSecond.V, Options.FramesPerSecond.V);
+	Options.SoundChannels = Clamp(Options.SoundChannels.V, MinSoundChannels, MaxSoundChannels);
+	Options.SoundVolume = Clamp(Options.SoundVolume.V, MinVolume, MaxVolume);
+	Options.MusicVolume = Clamp(Options.MusicVolume.V, MinVolume, MaxVolume);
+	translations::SetCurrentLanguage(Options.Language.V.c_str());
+	winmain::UpdateFrameRate();
+}
+
 std::string GameInput::GetFullInputDescription() const
 {
 	std::string prefix;
@@ -512,8 +520,7 @@ std::string GameInput::GetFullInputDescription() const
 		break;
 	case InputTypes::None:
 	default:
-		prefix = "Unused";
-		break;
+		return "Unused";
 	}
 
 	return prefix + GetShortInputDescription();
@@ -566,13 +573,13 @@ std::string GameInput::GetShortInputDescription() const
 		if (Value >= SDL_BUTTON_LEFT && Value <= SDL_BUTTON_X2)
 			keyName = mouseButtons[Value];
 		else
-			keyName = std::to_string(Value);
+			keyName = "MButton" + std::to_string(Value);
 		break;
 	case InputTypes::GameController:
 		if (Value >= SDL_CONTROLLER_BUTTON_A && Value < std::min(static_cast<int>(SDL_CONTROLLER_BUTTON_MAX), 21))
 			keyName = controllerButtons[Value];
 		else
-			keyName = std::to_string(Value);
+			keyName = "CButton" + std::to_string(Value);
 		break;
 	case InputTypes::None:
 	default:
