@@ -344,10 +344,11 @@ void DebugOverlay::DrawEdge(TEdgeSegment* edge)
 	auto flip = dynamic_cast<TFlipperEdge*>(edge);
 	if (flip)
 	{
-		flip->set_control_points(pb::time_now);
+		if (flip->ControlPointDirtyFlag)
+			flip->set_control_points(flip->CurrentAngle);
 
-		DrawLineType(flip->lineA);
-		DrawLineType(flip->lineB);
+		DrawLineType(flip->LineA);
+		DrawLineType(flip->LineB);
 		DrawCicleType(flip->circlebase);
 		DrawCicleType(flip->circleT1);
 	}

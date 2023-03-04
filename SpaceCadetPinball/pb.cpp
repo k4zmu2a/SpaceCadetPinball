@@ -324,13 +324,45 @@ void pb::timed_frame(float timeNow, float timeDelta, bool drawBalls)
 
 	for (auto ball : MainTable->BallList)
 	{
+		if (!ball->ActiveFlag || ball->HasGroupFlag || ball->CollisionComp || ball->Speed >= 0.8f)
+		{
+			if (ball->SomeCounter1 > 0)
+			{
+				vector2 dxy{ball->Position.X - ball->PrevPosition.X, ball->Position.Y - ball->PrevPosition.Y};
+				auto offsetX2 = ball->Offset * 2.0f;
+				if (offsetX2 * offsetX2 < maths::magnitudeSq(dxy))
+					ball->SomeCounter1 = 0;
+			}
+			ball->time_ticks1 = ball->time_ticks2 = time_ticks;
+		}
+		else if (time_ticks - ball->time_ticks2 > 500)
+		{
+			vector2 dxy{ball->Position.X - ball->PrevPosition.X, ball->Position.Y - ball->PrevPosition.Y};
+			auto offsetD2 = ball->Offset / 2.0f;
+			ball->PrevPosition = ball->Position;
+			if (offsetD2 * offsetD2 < maths::magnitudeSq(dxy))
+				ball->SomeCounter1 = 0;
+			else
+				ball->SomeCounter1++;
+			control::BallThrowOrDisable(*ball, time_ticks - ball->time_ticks1);
+		}
+	}
+
+	int distanceCoefArray[20]{-1};
+	float distanceArray[20]{}, distanceArrayX[20]{}, distanceArrayY[20]{};
+	int minDistanceCoef = -1;
+	for (auto index = 0u; index < MainTable->BallList.size(); index++)
+	{
+		auto ball = MainTable->BallList[index];
 		if (ball->ActiveFlag != 0)
 		{
-			auto collComp = ball->CollisionComp;
-			if (collComp)
+			ball->TimeDelta = timeDelta;
+			if (ball->TimeDelta > 0.01f && ball->Speed < 0.8f)
+				ball->TimeDelta = 0.01f;
+			ball->AsEdgeCollisionFlag = false;
+			if (ball->CollisionComp)
 			{
-				ball->TimeDelta = timeDelta;
-				collComp->FieldEffect(ball, &vec1);
+				ball->CollisionComp->FieldEffect(ball, &vec1);
 			}
 			else
 			{
@@ -345,23 +377,107 @@ void pb::timed_frame(float timeNow, float timeDelta, bool drawBalls)
 					ball->Direction.Y = ball->Speed * ball->Direction.Y;
 					maths::vector_add(ball->Direction, vec2);
 					ball->Speed = maths::normalize_2d(ball->Direction);
-				}
+					if (ball->Speed > ball_speed_limit)
+						ball->Speed = ball_speed_limit;
 
-				auto timeDelta2 = timeDelta;
-				auto timeNow2 = timeNow;
-				for (auto index = 10; timeDelta2 > 0.000001f && index; --index)
-				{
-					auto time = collide(timeNow2, timeDelta2, ball);
-					timeDelta2 -= time;
-					timeNow2 += time;
+					distanceArray[index] = ball->Speed * ball->TimeDelta;
+					auto distanceCoef = static_cast<int>(std::ceil(distanceArray[index] * ball_inv_smth)) - 1;
+					distanceCoefArray[index] = distanceCoef;
+					if (distanceCoef >= 0)
+					{
+						distanceArrayX[index] = ball->Direction.X * ball_min_smth;
+						distanceArrayY[index] = ball->Direction.Y * ball_min_smth;
+						if (distanceCoef > minDistanceCoef)
+							minDistanceCoef = distanceCoef;
+					}
 				}
 			}
 		}
 	}
 
-	for (auto flipper : MainTable->FlipperList)
+	float deltaAngle[4]{};
+	for (auto index = 0u; index < MainTable->FlipperList.size(); index++)
 	{
-		flipper->UpdateSprite(timeNow);
+		auto distanceCoef = MainTable->FlipperList[index]->GetFlipperAngleDistance(timeDelta, &deltaAngle[index]) - 1;
+		distanceArrayY[index] = static_cast<float>(distanceCoef);
+		if (distanceCoef > minDistanceCoef)
+			minDistanceCoef = distanceCoef;
+	}
+
+	ray_type ray{};
+	ray.MinDistance = 0.002f;
+	for (auto index4 = 0; index4 <= minDistanceCoef; index4++)
+	{
+		for (auto index5 = 0u; index5 < MainTable->BallList.size(); index5++)
+		{
+			auto ball = MainTable->BallList[index5];
+			if (!ball->AsEdgeCollisionFlag && index4 <= distanceCoefArray[index5])
+			{
+				float distanceSum = 0.0f;
+				ray.CollisionMask = ball->CollisionMask;
+				ball->TimeNow = timeNow;
+				if (ball_min_smth > 0.0f)
+				{
+					while (true)
+					{
+						ray.Origin = ball->Position;
+						ray.Direction = ball->Direction;
+						if (index4 >= distanceCoefArray[index5])
+						{
+							ray.MaxDistance = distanceArray[index5] - distanceCoefArray[index5] * ball_min_smth;
+						}
+						else
+						{
+							ray.MaxDistance = ball_min_smth;
+						}
+						ray.TimeNow = ball->TimeNow;
+
+						TEdgeSegment* edge = nullptr;
+						auto distance = TTableLayer::edge_manager->FindCollisionDistance(&ray, ball, &edge);
+						if (distance > 0.0f)
+						{
+							// Todo: ball to ball collision
+							//distance = ball_to_ball_collision();
+						}
+						if (ball->EdgeCollisionResetFlag)
+						{
+							ball->EdgeCollisionResetFlag = false;
+						}
+						else
+						{
+							ball->EdgeCollisionCount = 0;
+							ball->EdgeCollisionResetFlag = true;
+						}
+						if (distance >= 1e9f)
+						{
+							ball->Position.X += ray.MaxDistance * ray.Direction.X;
+							ball->Position.Y += ray.MaxDistance * ray.Direction.Y;
+							break;
+						}
+
+						edge->EdgeCollision(ball, distance);
+						if (distance > 0.0f && !ball->AsEdgeCollisionFlag)
+						{
+							distanceSum += distance;
+							if (distanceSum < ball_min_smth)
+								continue;
+						}
+						break;
+					}
+				}
+			}
+		}
+
+		for (auto index = 0u; index < MainTable->FlipperList.size(); index++)
+		{
+			if (distanceArrayY[index] >= index4)
+				MainTable->FlipperList[index]->FlipperCollision(deltaAngle[index]);
+		}
+	}
+
+	for (const auto flipper : MainTable->FlipperList)
+	{
+		flipper->UpdateSprite();
 	}
 
 	if (drawBalls)
@@ -423,7 +539,7 @@ void pb::InputUp(GameInput input)
 {
 	if (game_mode != GameModes::InGame || winmain::single_step || demo_mode)
 		return;
-	
+
 	const auto bindings = options::MapGameInput(input);
 	for (const auto binding : bindings)
 	{
@@ -454,7 +570,7 @@ void pb::InputUp(GameInput input)
 
 void pb::InputDown(GameInput input)
 {
-	if (options::WaitingForInput()) 
+	if (options::WaitingForInput())
 	{
 		options::InputDown(input);
 		return;
@@ -475,31 +591,31 @@ void pb::InputDown(GameInput input)
 	for (const auto binding : bindings)
 	{
 		switch (binding)
-			{
-			case GameBindings::LeftFlipper:
-				MainTable->Message(MessageCode::LeftFlipperInputPressed, time_now);
-				break;
-			case GameBindings::RightFlipper:
-				MainTable->Message(MessageCode::RightFlipperInputPressed, time_now);
-				break;
-			case GameBindings::Plunger:
-				MainTable->Message(MessageCode::PlungerInputPressed, time_now);
-				break;
-			case GameBindings::LeftTableBump:
-				if (!MainTable->TiltLockFlag)
-					nudge::nudge_right();
-				break;
-			case GameBindings::RightTableBump:
-				if (!MainTable->TiltLockFlag)
-					nudge::nudge_left();
-				break;
-			case GameBindings::BottomTableBump:
-				if (!MainTable->TiltLockFlag)
-					nudge::nudge_up();
-				break;
-			default: break;
-			}
+		{
+		case GameBindings::LeftFlipper:
+			MainTable->Message(MessageCode::LeftFlipperInputPressed, time_now);
+			break;
+		case GameBindings::RightFlipper:
+			MainTable->Message(MessageCode::RightFlipperInputPressed, time_now);
+			break;
+		case GameBindings::Plunger:
+			MainTable->Message(MessageCode::PlungerInputPressed, time_now);
+			break;
+		case GameBindings::LeftTableBump:
+			if (!MainTable->TiltLockFlag)
+				nudge::nudge_right();
+			break;
+		case GameBindings::RightTableBump:
+			if (!MainTable->TiltLockFlag)
+				nudge::nudge_left();
+			break;
+		case GameBindings::BottomTableBump:
+			if (!MainTable->TiltLockFlag)
+				nudge::nudge_up();
+			break;
+		default: break;
 		}
+	}
 
 	if (cheat_mode && input.Type == InputTypes::Keyboard)
 	{
@@ -510,12 +626,12 @@ void pb::InputDown(GameInput input)
 				MainTable->MultiballCount++;
 			break;
 		case 'h':
-		{
-			high_score_struct entry{ {0}, 1000000000 };
-			strncpy(entry.Name, get_rc_string(Msg::STRING127), sizeof entry.Name - 1);
-			high_score::show_and_set_high_score_dialog({ entry, 1 });
-			break;
-		}
+			{
+				high_score_struct entry{{0}, 1000000000};
+				strncpy(entry.Name, get_rc_string(Msg::STRING127), sizeof entry.Name - 1);
+				high_score::show_and_set_high_score_dialog({entry, 1});
+				break;
+			}
 		case 'r':
 			control::cheat_bump_rank();
 			break;
@@ -580,20 +696,24 @@ void pb::end_game()
 			int position = high_score::get_score_position(scores[i]);
 			if (position >= 0)
 			{
-				high_score_struct entry{ {0}, scores[i] };
+				high_score_struct entry{{0}, scores[i]};
 				const char* playerName;
 
-				switch(scoreIndex[i])
+				switch (scoreIndex[i])
 				{
-					default:
-					case 0: playerName = get_rc_string(Msg::STRING127); break;
-					case 1: playerName = get_rc_string(Msg::STRING128); break;
-					case 2: playerName = get_rc_string(Msg::STRING129); break;
-					case 3: playerName = get_rc_string(Msg::STRING130); break;
+				default:
+				case 0: playerName = get_rc_string(Msg::STRING127);
+					break;
+				case 1: playerName = get_rc_string(Msg::STRING128);
+					break;
+				case 2: playerName = get_rc_string(Msg::STRING129);
+					break;
+				case 3: playerName = get_rc_string(Msg::STRING130);
+					break;
 				}
 
 				strncpy(entry.Name, playerName, sizeof entry.Name - 1);
-				high_score::show_and_set_high_score_dialog({ entry, -1 });
+				high_score::show_and_set_high_score_dialog({entry, -1});
 			}
 		}
 	}

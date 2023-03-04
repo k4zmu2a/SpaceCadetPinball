@@ -29,6 +29,7 @@ TBall::TBall(TPinballTable* table) : TPinballComponent(table, -1, false)
 	Direction.X = 0.0;
 	Position.X = 0.0;
 	Position.Y = 0.0;
+	HasGroupFlag = false;
 
 	ListBitmap = new std::vector<SpriteData>();
 
@@ -81,11 +82,19 @@ void TBall::Repaint()
 
 void TBall::not_again(TEdgeSegment* edge)
 {
-	if (EdgeCollisionCount < 5)
+	if (EdgeCollisionCount < 16)
 	{
 		Collisions[EdgeCollisionCount] = edge;
 		++EdgeCollisionCount;
 	}
+	else
+	{
+		for (int i = 0; i < 8; i++)
+			Collisions[i] = Collisions[i + 8];
+		Collisions[8] = edge;
+		EdgeCollisionCount = 9;
+	}
+	EdgeCollisionResetFlag = true;
 }
 
 bool TBall::already_hit(TEdgeSegment* edge)
@@ -119,15 +128,15 @@ int TBall::Message(MessageCode code, float value)
 	return 0;
 }
 
-void TBall::throw_ball(TBall* ball, vector3* direction, float angleMult, float speedMult1, float speedMult2)
+void TBall::throw_ball(vector3* direction, float angleMult, float speedMult1, float speedMult2)
 {
-	ball->CollisionComp = nullptr;
-	ball->Direction = *direction;
+	CollisionComp = nullptr;
+	Direction = *direction;
 	float rnd = RandFloat();
 	float angle = (1.0f - (rnd + rnd)) * angleMult;
-	maths::RotateVector(ball->Direction, angle);
+	maths::RotateVector(Direction, angle);
 	rnd = RandFloat();
-	ball->Speed = (1.0f - (rnd + rnd)) * (speedMult1 * speedMult2) + speedMult1;
+	Speed = (1.0f - (rnd + rnd)) * (speedMult1 * speedMult2) + speedMult1;
 }
 
 vector2 TBall::get_coordinates()
@@ -138,5 +147,6 @@ vector2 TBall::get_coordinates()
 void TBall::Disable()
 {
 	ActiveFlag = false;
+	AsEdgeCollisionFlag = true;
 	SpriteSet(-1);
 }

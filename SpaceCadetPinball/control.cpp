@@ -3,6 +3,7 @@
 
 #include "midi.h"
 #include "pb.h"
+#include "TBall.h"
 #include "TBlocker.h"
 #include "TBumper.h"
 #include "TComponentGroup.h"
@@ -1060,6 +1061,36 @@ void control::cheat_bump_rank()
 		mission_text_box->Display(Buffer, 8.0);
 		soundwave10->Play(nullptr, "cheat_bump_rank");
 	}
+}
+
+void control::BallThrowOrDisable(TBall& ball, int dt)
+{
+	if (!CheckBallInControlBounds(ball, *flip1) &&
+		!CheckBallInControlBounds(ball, *flip2) &&
+		!CheckBallInControlBounds(ball, *plunger))
+	{
+		if (ball.SomeCounter1 <= 20)
+		{
+			vector3 throwDir{0.0f, -1.0f, 0.0f};
+			ball.throw_ball(&throwDir, 90.0f, 1.0f, 0.0f);
+		}
+		else
+		{
+			ball.Disable();
+			TableG->MultiballCount--;
+			plunger->Message(MessageCode::PlungerRelaunchBall, 0);
+		}
+	}
+}
+
+bool control::CheckBallInControlBounds(const TBall& ball, const TCollisionComponent& cmp)
+{
+	auto offset = TableG->CollisionCompOffset / 2.0f;
+	return ball.ActiveFlag &&
+		ball.Position.X >= cmp.AABB.XMin - offset &&
+		ball.Position.X <= cmp.AABB.XMax + offset &&
+		ball.Position.Y >= cmp.AABB.YMin - offset &&
+		ball.Position.Y <= cmp.AABB.YMax + offset;
 }
 
 int control::SpecialAddScore(int score)

@@ -80,6 +80,7 @@ void THole::Collision(TBall* ball, vector2* nextPosition, vector2* direction, fl
 		ball->Position.X = Circle.Center.X;
 		ball->Position.Y = Circle.Center.Y;
 		ball->Direction.Z = 0.0;
+		ball->AsEdgeCollisionFlag = true;
 
 		// Ramp hole has no delay in FT.
 		auto captureTime = pb::FullTiltMode ? 0 : 0.5f;
@@ -90,6 +91,10 @@ void THole::Collision(TBall* ball, vector2* nextPosition, vector2* direction, fl
 			loader::play_sound(HardHitSoundId, ball, "THole1");
 			control::handler(MessageCode::ControlBallCaptured, this);
 		}
+	}
+	else
+	{
+		DefaultCollision(ball, nextPosition, direction);
 	}
 }
 

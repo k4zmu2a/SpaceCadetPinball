@@ -88,7 +88,8 @@ void TSink::TimerExpired(int timerId, void* caller)
 	{
 		auto ball = table->AddBall(sink->BallPosition.X, sink->BallPosition.Y);
 		assertm(ball, "Failure to create ball in sink");
-		TBall::throw_ball(ball, &sink->BallThrowDirection, sink->ThrowAngleMult, sink->ThrowSpeedMult1,
+		ball->AsEdgeCollisionFlag = true;
+		ball->throw_ball(&sink->BallThrowDirection, sink->ThrowAngleMult, sink->ThrowSpeedMult1,
 			sink->ThrowSpeedMult2);
 		if (sink->SoundIndex3)
 			loader::play_sound(sink->SoundIndex3, ball, "TSink2");

@@ -13,7 +13,9 @@ public:
 	void port_draw() override;
 	void Collision(TBall* ball, vector2* nextPosition, vector2* direction, float distance,
 		TEdgeSegment* edge) override;
-	void UpdateSprite(float timeNow);
+	void UpdateSprite();
+	int GetFlipperAngleDistance(float dt, float* dst) const;
+	void FlipperCollision(float deltaAngle);
 	
 	int BmpIndex;
 	TFlipperEdge* FlipperEdge;

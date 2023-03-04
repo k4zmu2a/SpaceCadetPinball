@@ -104,7 +104,8 @@ void TKickout::Collision(TBall* ball, vector2* nextPosition, vector2* direction,
 		ball->Position.X = Circle.Center.X;
 		ball->Position.Y = Circle.Center.Y;
 		OriginalBallZ = ball->Position.Z;
-		ball->Position.Z = CollisionBallSetZ;		
+		ball->Position.Z = CollisionBallSetZ;
+		ball->AsEdgeCollisionFlag = true;
 		if (PinballTable->TiltLockFlag)
 		{
 			Message(MessageCode::TKickoutRestartTimer, 0.1f);
@@ -114,6 +115,13 @@ void TKickout::Collision(TBall* ball, vector2* nextPosition, vector2* direction,
 			loader::play_sound(SoftHitSoundId, ball, "TKickout1");
 			control::handler(MessageCode::ControlCollision, this);
 		}
+	}
+	else
+	{
+		ball->Position.X = nextPosition->X;
+		ball->Position.Y = nextPosition->Y;
+		ball->RayMaxDistance -= distance;
+		ball->not_again(edge);
 	}
 }
 
@@ -144,7 +152,7 @@ void TKickout::TimerExpired(int timerId, void* caller)
 		{		
 			loader::play_sound(kick->HardHitSoundId, kick->Ball, "TKickout2");
 			kick->Ball->Position.Z = kick->OriginalBallZ;
-			TBall::throw_ball(kick->Ball, &kick->BallThrowDirection, kick->ThrowAngleMult, kick->ThrowSpeedMult1,
+			kick->Ball->throw_ball(&kick->BallThrowDirection, kick->ThrowAngleMult, kick->ThrowSpeedMult1,
 			                  kick->ThrowSpeedMult2);
 			kick->ActiveFlag = 0;
 			kick->Ball = nullptr;

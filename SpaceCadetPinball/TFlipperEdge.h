@@ -9,16 +9,15 @@ class TFlipperEdge : public TEdgeSegment
 {
 public:
 	TFlipperEdge(TCollisionComponent* collComp, char* activeFlag, unsigned int collisionGroup, TPinballTable* table,
-	             vector3* origin, vector3* vecT1, vector3* vecT2, float extendTime, float retractTime, float collMult,
+	             vector3* origin, vector3* vecT1, vector3* vecT2, float extendSpeed, float retractSpeed, float collMult,
 	             float elasticity, float smoothness);
 	void port_draw() override;
 	float FindCollisionDistance(ray_type* ray) override;
 	void EdgeCollision(TBall* ball, float distance) override;
 	void place_in_grid(RectF* aabb) override;
-	void set_control_points(float timeNow);
-	float flipper_angle(float timeNow);
-	int is_ball_inside(float x, float y);
-	int SetMotion(MessageCode code, float value);
+	void set_control_points(float angle);
+	float flipper_angle_delta(float timeDelta);
+	int SetMotion(MessageCode code);
 
 	MessageCode FlipperFlag{};
 	float Elasticity;
@@ -31,10 +30,9 @@ public:
 	float CirclebaseRadiusMSq;
 	float CircleT1RadiusMSq;
 	float AngleMax;
-	float AngleSrc{};
+	float AngleRemainder{};
 	float AngleDst;
-	int CollisionFlag1;
-	int CollisionFlag2{};
+	float CurrentAngle{};
 	vector2 CollisionLinePerp{};
 	vector2 A1Src{};
 	vector2 A2Src{};
@@ -43,17 +41,16 @@ public:
 	float CollisionMult;
 	vector2 T1Src{};
 	vector2 T2Src{};
-	float DistanceDivSq;
-	float CollisionTimeAdvance;
+	float DistanceDiv, DistanceDivSq;
 	vector2 CollisionDirection{};
-	int EdgeCollisionFlag;
-	float InputTime;
-	float AngleStopTime;
-	float AngleAdvanceTime;
-	float ExtendTime;
-	float RetractTime;
+	float ExtendSpeed;
+	float RetractSpeed;
+	float MoveSpeed;
 	vector2 NextBallPosition{};
 	vector2 A1, A2, B1, B2, T1;
-	line_type lineA, lineB;
+	line_type LineA, LineB;
 	circle_type circlebase, circleT1;
+	float InvT1Radius;
+	float YMin, YMax, XMin, XMax;
+	bool ControlPointDirtyFlag{};
 };

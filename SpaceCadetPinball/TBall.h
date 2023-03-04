@@ -15,11 +15,10 @@ public :
 	int Message(MessageCode code, float value) override;
 	vector2 get_coordinates() override;
 	void Disable();
-
-	static void throw_ball(TBall* ball, vector3* direction, float angleMult, float speedMult1,
-	                       float speedMult2);
+	void throw_ball(vector3* direction, float angleMult, float speedMult1, float speedMult2);
 
 	vector3 Position{};
+	vector3 PrevPosition{};
 	vector3 Direction{};
 	float Speed;
 	float RayMaxDistance;
@@ -28,10 +27,15 @@ public :
 	vector2 RampFieldForce{};
 	TCollisionComponent* CollisionComp;
 	int CollisionMask;
-	TEdgeSegment* Collisions[5]{};
+	TEdgeSegment* Collisions[16]{};
 	int EdgeCollisionCount;
+	bool EdgeCollisionResetFlag{};
 	vector3 CollisionOffset{};
 	int CollisionFlag;
 	float Offset;
+	bool HasGroupFlag;
+	int SomeCounter1 = 0;
+	int time_ticks1{}, time_ticks2{};
 	float VisualZArray[50]{};
+	bool AsEdgeCollisionFlag{};
 };

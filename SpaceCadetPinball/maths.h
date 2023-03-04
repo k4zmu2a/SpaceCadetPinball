@@ -114,6 +114,7 @@ public:
 	static void cross(const vector3& vec1, const vector3& vec2, vector3& dstVec);
 	static float cross(const vector2& vec1, const vector2& vec2);
 	static float magnitude(const vector3& vec);
+	static float magnitudeSq(const vector2& vec);
 	static void vector_add(vector2& vec1Dst, const vector2& vec2);
 	static vector2 vector_sub(const vector2& vec1, const vector2& vec2);
 	static vector3 vector_sub(const vector3& vec1, const vector3& vec2);

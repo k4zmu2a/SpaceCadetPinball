@@ -6,6 +6,7 @@
 #include "loader.h"
 #include "pb.h"
 #include "render.h"
+#include "TBall.h"
 #include "TFlipperEdge.h"
 #include "timer.h"
 #include "TPinballTable.h"
@@ -84,15 +85,17 @@ int TFlipper::Message(MessageCode code, float value)
 			code = MessageCode::TFlipperRetract;
 		}
 
-		MessageField = FlipperEdge->SetMotion(code, value);
+		MessageField = FlipperEdge->SetMotion(code);
 		break;
 	case MessageCode::PlayerChanged:
 	case MessageCode::Reset:
 		if (MessageField)
 		{
+			FlipperEdge->CurrentAngle = 0;
+			FlipperEdge->set_control_points(0);
 			MessageField = 0;
-			FlipperEdge->SetMotion(MessageCode::Reset, value);
-			UpdateSprite(0);
+			FlipperEdge->SetMotion(MessageCode::Reset);
+			UpdateSprite();
 		}
 		break;
 	default: break;
@@ -110,15 +113,99 @@ void TFlipper::Collision(TBall* ball, vector2* nextPosition, vector2* direction,
 {
 }
 
-void TFlipper::UpdateSprite(float timeNow)
+void TFlipper::UpdateSprite()
 {
 	int bmpCountSub1 = ListBitmap->size() - 1;
 
-	auto newBmpIndex = static_cast<int>(floor(FlipperEdge->flipper_angle(timeNow) / FlipperEdge->AngleMax * bmpCountSub1 + 0.5f));
+	auto newBmpIndex = static_cast<int>(floor(FlipperEdge->CurrentAngle / FlipperEdge->AngleMax * bmpCountSub1 + 0.5f));
 	newBmpIndex = Clamp(newBmpIndex, 0, bmpCountSub1);
 	if (BmpIndex == newBmpIndex)
 		return;
 
 	BmpIndex = newBmpIndex;
 	SpriteSet(BmpIndex);
+}
+
+int TFlipper::GetFlipperAngleDistance(float dt, float* dst) const
+{
+	if (!MessageField)
+		return 0;
+
+	auto deltaAngle = FlipperEdge->flipper_angle_delta(dt);
+	auto distance = std::fabs(std::ceil(FlipperEdge->DistanceDiv * deltaAngle * FlipperEdge->InvT1Radius));
+	if (distance > 3.0f)
+		distance = 3.0f;
+	if (distance >= 2.0f)
+	{
+		*dst = deltaAngle / distance;
+		return static_cast<int>(distance);
+	}
+
+	*dst = deltaAngle;
+	return 1;
+}
+
+void TFlipper::FlipperCollision(float deltaAngle)
+{
+	if (!MessageField)
+		return;
+
+	ray_type ray{}, rayDst{};
+	ray.MinDistance = 0.002f;
+	auto deltaAngleNeg = -deltaAngle;
+	bool collisionFlag = false;
+	for (auto ball : pb::MainTable->BallList)
+	{
+		if ((FlipperEdge->CollisionGroup & ball->CollisionMask) != 0 &&
+			FlipperEdge->YMax >= ball->Position.Y && FlipperEdge->YMin <= ball->Position.Y &&
+			FlipperEdge->XMax >= ball->Position.X && FlipperEdge->XMin <= ball->Position.X)
+		{
+			if (FlipperEdge->ControlPointDirtyFlag)
+				FlipperEdge->set_control_points(FlipperEdge->CurrentAngle);
+			ray.CollisionMask = ball->CollisionMask;
+			ray.Origin = ball->Position;
+
+			float sin, cos;
+			auto ballPosRot = ray.Origin;
+			maths::SinCos(deltaAngleNeg, sin, cos);
+			maths::RotatePt(ballPosRot, sin, cos, FlipperEdge->RotOrigin);
+			ray.Direction.X = ballPosRot.X - ray.Origin.X;
+			ray.Direction.Y = ballPosRot.Y - ray.Origin.Y;
+			ray.MaxDistance = maths::normalize_2d(ray.Direction);
+			auto distance = maths::distance_to_flipper(FlipperEdge, ray, rayDst);
+			if (distance < 1e9f)
+			{
+				FlipperEdge->NextBallPosition = ball->Position;
+				FlipperEdge->CollisionDirection = rayDst.Direction;
+				FlipperEdge->EdgeCollision(ball, distance);
+				collisionFlag = true;
+			}
+		}
+	}
+
+	if (collisionFlag)
+	{
+		auto angleAdvance = deltaAngle / (std::fabs(FlipperEdge->MoveSpeed) * 5.0f);
+		FlipperEdge->CurrentAngle -= angleAdvance;
+		FlipperEdge->AngleRemainder += std::fabs(angleAdvance);
+		if (FlipperEdge->AngleRemainder <= 0.0001f)
+		{
+			FlipperEdge->CurrentAngle = FlipperEdge->AngleDst;
+			FlipperEdge->FlipperFlag = MessageCode::TFlipperNull;
+			MessageField = 0;
+		}
+		FlipperEdge->ControlPointDirtyFlag = true;
+	}
+	else
+	{
+		FlipperEdge->CurrentAngle += deltaAngle;
+		FlipperEdge->AngleRemainder -= std::fabs(deltaAngle);
+		if (FlipperEdge->AngleRemainder <= 0.0001f)
+		{
+			FlipperEdge->CurrentAngle = FlipperEdge->AngleDst;
+			FlipperEdge->FlipperFlag = MessageCode::TFlipperNull;
+			MessageField = 0;
+		}
+		FlipperEdge->ControlPointDirtyFlag = true;
+	}
 }

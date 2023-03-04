@@ -1,5 +1,7 @@
 #pragma once
 
+class TCollisionComponent;
+class TBall;
 enum class MessageCode;
 class TSink;
 class TLight;
@@ -87,6 +89,8 @@ public:
 	static void table_set_multiball(float time);
 	static void table_bump_ball_sink_lock();
 	static void table_set_replay(float value);
+	static void BallThrowOrDisable(TBall& ball, int dt);
+	static bool CheckBallInControlBounds(const TBall& ball, const TCollisionComponent& cmp);
 	static void cheat_bump_rank();
 	static int SpecialAddScore(int score);
 	static int AddRankProgress(int rank);

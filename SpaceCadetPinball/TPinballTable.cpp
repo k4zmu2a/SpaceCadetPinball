@@ -631,6 +631,9 @@ TBall* TPinballTable::AddBall(float x, float y)
 
 	ball->Position.X = x;
 	ball->Position.Y = y;
+	ball->PrevPosition = ball->Position;
+	ball->SomeCounter1 = 0;
+	ball->time_ticks1 = ball->time_ticks2 = pb::time_ticks;
 
 	return ball;
 }

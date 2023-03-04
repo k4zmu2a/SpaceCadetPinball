@@ -217,6 +217,11 @@ float maths::magnitude(const vector3& vec)
 	return result;
 }
 
+float maths::magnitudeSq(const vector2& vec)
+{
+	return vec.X * vec.X + vec.Y * vec.Y;
+}
+
 void maths::vector_add(vector2& vec1Dst, const vector2& vec2)
 {
 	vec1Dst.X += vec2.X;
@@ -312,7 +317,7 @@ float maths::distance_to_flipper(TFlipperEdge* flipper, const ray_type& ray1, ra
 {
 	auto distance = 1000000000.0f;
 	auto distanceType = FlipperIntersect::none;
-	auto newDistance = ray_intersect_line(ray1, flipper->lineA);
+	auto newDistance = ray_intersect_line(ray1, flipper->LineA);
 	if (newDistance < distance)
 	{
 		distance = newDistance;
@@ -330,7 +335,7 @@ float maths::distance_to_flipper(TFlipperEdge* flipper, const ray_type& ray1, ra
 		distance = newDistance;
 		distanceType = FlipperIntersect::circleT1;
 	}
-	newDistance = ray_intersect_line(ray1, flipper->lineB);
+	newDistance = ray_intersect_line(ray1, flipper->LineB);
 	if (newDistance < distance)
 	{
 		distance = newDistance;
@@ -340,12 +345,12 @@ float maths::distance_to_flipper(TFlipperEdge* flipper, const ray_type& ray1, ra
 	switch (distanceType)
 	{
 	case FlipperIntersect::lineA:
-		ray2.Direction = flipper->lineA.PerpendicularC;
-		ray2.Origin = flipper->lineA.RayIntersect;
+		ray2.Direction = flipper->LineA.PerpendicularC;
+		ray2.Origin = flipper->LineA.RayIntersect;
 		break;
 	case FlipperIntersect::lineB:
-		ray2.Direction = flipper->lineB.PerpendicularC;
-		ray2.Origin = flipper->lineB.RayIntersect;
+		ray2.Direction = flipper->LineB.PerpendicularC;
+		ray2.Origin = flipper->LineB.RayIntersect;
 		break;
 	case FlipperIntersect::circlebase:
 	case FlipperIntersect::circleT1:
