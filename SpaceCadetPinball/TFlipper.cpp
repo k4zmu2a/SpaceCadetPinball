@@ -126,19 +126,19 @@ void TFlipper::UpdateSprite()
 	SpriteSet(BmpIndex);
 }
 
-int TFlipper::GetFlipperAngleDistance(float dt, float* dst) const
+int TFlipper::GetFlipperStepAngle(float dt, float* dst) const
 {
 	if (!MessageField)
 		return 0;
 
 	auto deltaAngle = FlipperEdge->flipper_angle_delta(dt);
-	auto distance = std::fabs(std::ceil(FlipperEdge->DistanceDiv * deltaAngle * FlipperEdge->InvT1Radius));
-	if (distance > 3.0f)
-		distance = 3.0f;
-	if (distance >= 2.0f)
+	auto step = std::fabs(std::ceil(FlipperEdge->DistanceDiv * deltaAngle * FlipperEdge->InvT1Radius));
+	if (step > 3.0f)
+		step = 3.0f;
+	if (step >= 2.0f)
 	{
-		*dst = deltaAngle / distance;
-		return static_cast<int>(distance);
+		*dst = deltaAngle / step;
+		return static_cast<int>(step);
 	}
 
 	*dst = deltaAngle;
@@ -152,7 +152,6 @@ void TFlipper::FlipperCollision(float deltaAngle)
 
 	ray_type ray{}, rayDst{};
 	ray.MinDistance = 0.002f;
-	auto deltaAngleNeg = -deltaAngle;
 	bool collisionFlag = false;
 	for (auto ball : pb::MainTable->BallList)
 	{
@@ -167,7 +166,7 @@ void TFlipper::FlipperCollision(float deltaAngle)
 
 			float sin, cos;
 			auto ballPosRot = ray.Origin;
-			maths::SinCos(deltaAngleNeg, sin, cos);
+			maths::SinCos(-deltaAngle, sin, cos);
 			maths::RotatePt(ballPosRot, sin, cos, FlipperEdge->RotOrigin);
 			ray.Direction.X = ballPosRot.X - ray.Origin.X;
 			ray.Direction.Y = ballPosRot.Y - ray.Origin.Y;
@@ -188,24 +187,18 @@ void TFlipper::FlipperCollision(float deltaAngle)
 		auto angleAdvance = deltaAngle / (std::fabs(FlipperEdge->MoveSpeed) * 5.0f);
 		FlipperEdge->CurrentAngle -= angleAdvance;
 		FlipperEdge->AngleRemainder += std::fabs(angleAdvance);
-		if (FlipperEdge->AngleRemainder <= 0.0001f)
-		{
-			FlipperEdge->CurrentAngle = FlipperEdge->AngleDst;
-			FlipperEdge->FlipperFlag = MessageCode::TFlipperNull;
-			MessageField = 0;
-		}
-		FlipperEdge->ControlPointDirtyFlag = true;
 	}
 	else
 	{
 		FlipperEdge->CurrentAngle += deltaAngle;
 		FlipperEdge->AngleRemainder -= std::fabs(deltaAngle);
-		if (FlipperEdge->AngleRemainder <= 0.0001f)
-		{
-			FlipperEdge->CurrentAngle = FlipperEdge->AngleDst;
-			FlipperEdge->FlipperFlag = MessageCode::TFlipperNull;
-			MessageField = 0;
-		}
-		FlipperEdge->ControlPointDirtyFlag = true;
 	}
+
+	if (FlipperEdge->AngleRemainder <= 0.0001f)
+	{
+		FlipperEdge->CurrentAngle = FlipperEdge->AngleDst;
+		FlipperEdge->FlipperFlag = MessageCode::TFlipperNull;
+		MessageField = 0;
+	}
+	FlipperEdge->ControlPointDirtyFlag = true;
 }

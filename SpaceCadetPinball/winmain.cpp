@@ -786,6 +786,7 @@ void winmain::RenderUi()
 		ShowExitPopup = false;
 		pause(false);
 		ImGui::OpenPopup(exitText);
+		ImGui::SetNextWindowPos(ImGui::GetMainViewport()->GetCenter(), ImGuiCond_Always, ImVec2(0.5f, 0.5f));
 	}
 	if (ImGui::BeginPopupModal(exitText, nullptr, ImGuiWindowFlags_AlwaysAutoResize))
 	{

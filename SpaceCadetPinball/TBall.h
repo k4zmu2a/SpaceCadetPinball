@@ -32,10 +32,10 @@ public :
 	bool EdgeCollisionResetFlag{};
 	vector3 CollisionOffset{};
 	int CollisionFlag;
-	float Offset;
+	float Radius;
 	bool HasGroupFlag;
-	int SomeCounter1 = 0;
-	int time_ticks1{}, time_ticks2{};
+	int StuckCounter = 0;
+	int LastActiveTime{};
 	float VisualZArray[50]{};
 	bool AsEdgeCollisionFlag{};
 };

@@ -222,6 +222,11 @@ float maths::magnitudeSq(const vector2& vec)
 	return vec.X * vec.X + vec.Y * vec.Y;
 }
 
+int maths::magnitudeSq(const vector2i& vec)
+{
+	return vec.X * vec.X + vec.Y * vec.Y;
+}
+
 void maths::vector_add(vector2& vec1Dst, const vector2& vec2)
 {
 	vec1Dst.X += vec2.X;

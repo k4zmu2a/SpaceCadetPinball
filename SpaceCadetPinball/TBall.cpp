@@ -41,7 +41,7 @@ TBall::TBall(TPinballTable* table) : TPinballComponent(table, -1, false)
 		groupIndex = loader::query_handle(ballGroupName);
 	}
 
-	Offset = *loader::query_float_attribute(groupIndex, 0, 500);
+	Radius = *loader::query_float_attribute(groupIndex, 0, 500);
 
 	auto visualCount = loader::query_visual_states(groupIndex);
 	for (auto index = 0; index < visualCount; ++index)
@@ -53,8 +53,8 @@ TBall::TBall(TPinballTable* table) : TPinballComponent(table, -1, false)
 		VisualZArray[index] = zDepth;
 	}
 	RenderSprite = new render_sprite(VisualTypes::Ball, nullptr, nullptr, 0, 0, nullptr);
-	PinballTable->CollisionCompOffset = Offset;
-	Position.Z = Offset;
+	PinballTable->CollisionCompOffset = Radius;
+	Position.Z = Radius;
 	GroupIndex = groupIndex;
 }
 
@@ -65,7 +65,7 @@ void TBall::Repaint()
 		Position.Z =
 			CollisionOffset.X * Position.X +
 			CollisionOffset.Y * Position.Y +
-			Offset + CollisionOffset.Z;
+			Radius + CollisionOffset.Z;
 	}
 
 	auto pos2D = proj::xform_to_2d(Position);
@@ -120,7 +120,7 @@ int TBall::Message(MessageCode code, float value)
 		CollisionFlag = 0;
 		CollisionMask = 1;
 		Direction.Y = 0.0;
-		Position.Z = Offset;
+		Position.Z = Radius;
 		Direction.X = 0.0;
 		Speed = 0.0;
 		RayMaxDistance = 0.0;

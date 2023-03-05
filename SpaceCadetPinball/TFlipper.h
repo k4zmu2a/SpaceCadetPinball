@@ -14,7 +14,7 @@ public:
 	void Collision(TBall* ball, vector2* nextPosition, vector2* direction, float distance,
 		TEdgeSegment* edge) override;
 	void UpdateSprite();
-	int GetFlipperAngleDistance(float dt, float* dst) const;
+	int GetFlipperStepAngle(float dt, float* dst) const;
 	void FlipperCollision(float deltaAngle);
 	
 	int BmpIndex;

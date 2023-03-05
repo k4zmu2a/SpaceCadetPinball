@@ -133,23 +133,24 @@ void TFlipperEdge::EdgeCollision(TBall* ball, float distance)
 		return;
 	}
 
-	auto someProduct = (NextBallPosition.Y - T1.Y) * (RotOrigin.X - T1.X) -
-		(NextBallPosition.X - T1.X) * (RotOrigin.Y - T1.Y);
+	vector2 t1NextPos{NextBallPosition.X - T1.X, NextBallPosition.Y - T1.Y},
+	        t1RotOrigin{RotOrigin.X - T1.X, RotOrigin.Y - T1.Y};
+	auto crossProduct = maths::cross(t1RotOrigin, t1NextPos);
 
-	bool someFlag = false;
-	if (someProduct <= 0)
+	bool frontCollision = false;
+	if (crossProduct <= 0)
 	{
 		if (AngleMax > 0)
-			someFlag = true;
+			frontCollision = true;
 	}
 	else if (AngleMax <= 0)
 	{
-		someFlag = true;
+		frontCollision = true;
 	}
 
 	if (FlipperFlag == MessageCode::TFlipperRetract)
 	{
-		someFlag ^= true;
+		frontCollision ^= true;
 		CollisionLinePerp = LineB.PerpendicularC;
 	}
 	else
@@ -160,7 +161,7 @@ void TFlipperEdge::EdgeCollision(TBall* ball, float distance)
 	auto dx = NextBallPosition.X - RotOrigin.X;
 	auto dy = NextBallPosition.Y - RotOrigin.Y;
 	auto distanceSq = dy * dy + dx * dx;
-	if (someFlag)
+	if (frontCollision)
 	{
 		float boost = 0;
 		if (circlebase.RadiusSq * 1.01f < distanceSq)
@@ -204,7 +205,7 @@ void TFlipperEdge::place_in_grid(RectF* aabb)
 
 	TTableLayer::edges_insert_square(yMin, xMin, yMax, xMax, this, nullptr);
 
-	auto offset = 1.0f / InvT1Radius + pb::ball_min_smth;
+	auto offset = 1.0f / InvT1Radius + pb::BallHalfRadius;
 	XMin = xMin - offset;
 	YMin = yMin - offset;
 	XMax = xMax + offset;

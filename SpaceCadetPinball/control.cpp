@@ -1063,13 +1063,13 @@ void control::cheat_bump_rank()
 	}
 }
 
-void control::BallThrowOrDisable(TBall& ball, int dt)
+void control::UnstuckBall(TBall& ball, int dt)
 {
 	if (!CheckBallInControlBounds(ball, *flip1) &&
 		!CheckBallInControlBounds(ball, *flip2) &&
 		!CheckBallInControlBounds(ball, *plunger))
 	{
-		if (ball.SomeCounter1 <= 20)
+		if (ball.StuckCounter <= 20)
 		{
 			vector3 throwDir{0.0f, -1.0f, 0.0f};
 			ball.throw_ball(&throwDir, 90.0f, 1.0f, 0.0f);

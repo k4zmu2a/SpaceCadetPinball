@@ -43,7 +43,7 @@ class pb
 public:
 	static int time_ticks;
 	static float time_now, time_next, time_ticks_remainder;
-	static float ball_speed_limit, ball_min_smth, ball_inv_smth, ball_collision_dist;
+	static float BallMaxSpeed, BallHalfRadius, ball_collision_dist;
 	static GameModes game_mode;
 	static bool cheat_mode;
 	static DatFile* record_table;
@@ -74,7 +74,6 @@ public:
 	static void high_scores();
 	static void tilt_no_more();
 	static bool chk_highscore();
-	static float collide(float timeNow, float timeDelta, TBall* ball);
 	static void PushCheat(const std::string& cheat);
 	static LPCSTR get_rc_string(Msg uID);
 	static int get_rc_int(Msg uID, int* dst);

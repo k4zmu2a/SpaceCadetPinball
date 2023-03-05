@@ -144,7 +144,7 @@ void TRamp::Collision(TBall* ball, vector2* nextPosition, vector2* direction, fl
 		ball->RampFieldForce.X = plane->FieldForce.X;
 		ball->RampFieldForce.Y = plane->FieldForce.Y;
 		ball->Position.Z = ball->Position.X * ball->CollisionOffset.X + ball->Position.Y * ball->CollisionOffset.Y +
-			ball->Offset + ball->CollisionOffset.Z;
+			ball->Radius + ball->CollisionOffset.Z;
 		ball->CollisionMask = CollisionGroup;
 		return;
 	}
@@ -164,13 +164,13 @@ void TRamp::Collision(TBall* ball, vector2* nextPosition, vector2* direction, fl
 		{
 			ball->CollisionMask = Wall1CollisionGroup;
 			if (BallZOffsetFlag)
-				ball->Position.Z = ball->Offset + Wall1BallOffset;
+				ball->Position.Z = ball->Radius + Wall1BallOffset;
 		}
 		else
 		{
 			ball->CollisionMask = Wall2CollisionGroup;
 			if (BallZOffsetFlag)
-				ball->Position.Z = ball->Offset + Wall2BallOffset;
+				ball->Position.Z = ball->Radius + Wall2BallOffset;
 		}
 	}
 }

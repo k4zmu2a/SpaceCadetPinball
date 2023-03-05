@@ -33,7 +33,7 @@ DatFile* pb::record_table = nullptr;
 int pb::time_ticks = 0;
 GameModes pb::game_mode = GameModes::GameOver;
 float pb::time_now = 0, pb::time_next = 0, pb::time_ticks_remainder = 0;
-float pb::ball_speed_limit, pb::ball_min_smth, pb::ball_inv_smth, pb::ball_collision_dist;
+float pb::BallMaxSpeed, pb::BallHalfRadius, pb::ball_collision_dist;
 bool pb::FullTiltMode = false, pb::FullTiltDemoMode = false, pb::cheat_mode = false, pb::demo_mode = false;
 std::string pb::DatFileName, pb::BasePath;
 ImU32 pb::TextBoxColor;
@@ -104,10 +104,9 @@ int pb::init()
 
 	high_score::read();
 	auto ball = MainTable->BallList.at(0);
-	ball_speed_limit = ball->Offset * 200.0f;
-	ball_min_smth = ball->Offset * 0.5f;
-	ball_inv_smth = 1.0f / ball_min_smth;
-	ball_collision_dist = (ball->Offset + ball_min_smth) * 2.0f;
+	BallMaxSpeed = ball->Radius * 200.0f;
+	BallHalfRadius = ball->Radius * 0.5f;
+	ball_collision_dist = (ball->Radius + BallHalfRadius) * 2.0f;
 
 	int red = 255, green = 255, blue = 255;
 	auto fontColor = get_rc_string(Msg::TextBoxColor);
@@ -272,6 +271,7 @@ void pb::ballset(float dx, float dy)
 			ball->Direction.X = dx * sensitivity;
 			ball->Direction.Y = dy * sensitivity;
 			ball->Speed = maths::normalize_2d(ball->Direction);
+			ball->LastActiveTime = time_ticks;
 		}
 	}
 }
@@ -320,158 +320,141 @@ void pb::frame(float dtMilliSec)
 
 void pb::timed_frame(float timeNow, float timeDelta, bool drawBalls)
 {
-	vector2 vec1{}, vec2{};
-
 	for (auto ball : MainTable->BallList)
 	{
 		if (!ball->ActiveFlag || ball->HasGroupFlag || ball->CollisionComp || ball->Speed >= 0.8f)
 		{
-			if (ball->SomeCounter1 > 0)
+			if (ball->StuckCounter > 0)
 			{
-				vector2 dxy{ball->Position.X - ball->PrevPosition.X, ball->Position.Y - ball->PrevPosition.Y};
-				auto offsetX2 = ball->Offset * 2.0f;
-				if (offsetX2 * offsetX2 < maths::magnitudeSq(dxy))
-					ball->SomeCounter1 = 0;
+				vector2 dist{ball->Position.X - ball->PrevPosition.X, ball->Position.Y - ball->PrevPosition.Y};
+				auto radiusX2 = ball->Radius * 2.0f;
+				if (radiusX2 * radiusX2 < maths::magnitudeSq(dist))
+					ball->StuckCounter = 0;
 			}
-			ball->time_ticks1 = ball->time_ticks2 = time_ticks;
+			ball->LastActiveTime = time_ticks;
 		}
-		else if (time_ticks - ball->time_ticks2 > 500)
+		else if (time_ticks - ball->LastActiveTime > 500)
 		{
-			vector2 dxy{ball->Position.X - ball->PrevPosition.X, ball->Position.Y - ball->PrevPosition.Y};
-			auto offsetD2 = ball->Offset / 2.0f;
+			vector2 dist{ball->Position.X - ball->PrevPosition.X, ball->Position.Y - ball->PrevPosition.Y};
+			auto radiusD2 = ball->Radius / 2.0f;
 			ball->PrevPosition = ball->Position;
-			if (offsetD2 * offsetD2 < maths::magnitudeSq(dxy))
-				ball->SomeCounter1 = 0;
+			if (radiusD2 * radiusD2 < maths::magnitudeSq(dist))
+				ball->StuckCounter = 0;
 			else
-				ball->SomeCounter1++;
-			control::BallThrowOrDisable(*ball, time_ticks - ball->time_ticks1);
+				ball->StuckCounter++;
+			control::UnstuckBall(*ball, time_ticks - ball->LastActiveTime);
 		}
 	}
 
-	int distanceCoefArray[20]{-1};
-	float distanceArray[20]{}, distanceArrayX[20]{}, distanceArrayY[20]{};
-	int minDistanceCoef = -1;
+	int ballSteps[20]{-1};
+	float ballStepsDistance[20]{};
+	int maxStep = -1;
 	for (auto index = 0u; index < MainTable->BallList.size(); index++)
 	{
 		auto ball = MainTable->BallList[index];
 		if (ball->ActiveFlag != 0)
 		{
+			vector2 vecDst{};
 			ball->TimeDelta = timeDelta;
 			if (ball->TimeDelta > 0.01f && ball->Speed < 0.8f)
 				ball->TimeDelta = 0.01f;
 			ball->AsEdgeCollisionFlag = false;
 			if (ball->CollisionComp)
 			{
-				ball->CollisionComp->FieldEffect(ball, &vec1);
+				ball->CollisionComp->FieldEffect(ball, &vecDst);
 			}
 			else
 			{
-				if (MainTable->ActiveFlag)
-				{
-					vec2.X = 0.0;
-					vec2.Y = 0.0;
-					TTableLayer::edge_manager->FieldEffects(ball, &vec2);
-					vec2.X = vec2.X * timeDelta;
-					vec2.Y = vec2.Y * timeDelta;
-					ball->Direction.X = ball->Speed * ball->Direction.X;
-					ball->Direction.Y = ball->Speed * ball->Direction.Y;
-					maths::vector_add(ball->Direction, vec2);
-					ball->Speed = maths::normalize_2d(ball->Direction);
-					if (ball->Speed > ball_speed_limit)
-						ball->Speed = ball_speed_limit;
+				TTableLayer::edge_manager->FieldEffects(ball, &vecDst);
+				vecDst.X *= timeDelta;
+				vecDst.Y *= timeDelta;
+				ball->Direction.X *= ball->Speed;
+				ball->Direction.Y *= ball->Speed;
+				maths::vector_add(ball->Direction, vecDst);
+				ball->Speed = maths::normalize_2d(ball->Direction);
+				if (ball->Speed > BallMaxSpeed)
+					ball->Speed = BallMaxSpeed;
 
-					distanceArray[index] = ball->Speed * ball->TimeDelta;
-					auto distanceCoef = static_cast<int>(std::ceil(distanceArray[index] * ball_inv_smth)) - 1;
-					distanceCoefArray[index] = distanceCoef;
-					if (distanceCoef >= 0)
-					{
-						distanceArrayX[index] = ball->Direction.X * ball_min_smth;
-						distanceArrayY[index] = ball->Direction.Y * ball_min_smth;
-						if (distanceCoef > minDistanceCoef)
-							minDistanceCoef = distanceCoef;
-					}
-				}
+				ballStepsDistance[index] = ball->Speed * ball->TimeDelta;
+				auto ballStep = static_cast<int>(std::ceil(ballStepsDistance[index] / BallHalfRadius)) - 1;
+				ballSteps[index] = ballStep;
+				if (ballStep > maxStep)
+					maxStep = ballStep;
 			}
 		}
 	}
 
 	float deltaAngle[4]{};
+	int flipperSteps[4]{};
 	for (auto index = 0u; index < MainTable->FlipperList.size(); index++)
 	{
-		auto distanceCoef = MainTable->FlipperList[index]->GetFlipperAngleDistance(timeDelta, &deltaAngle[index]) - 1;
-		distanceArrayY[index] = static_cast<float>(distanceCoef);
-		if (distanceCoef > minDistanceCoef)
-			minDistanceCoef = distanceCoef;
+		auto flipStep = MainTable->FlipperList[index]->GetFlipperStepAngle(timeDelta, &deltaAngle[index]) - 1;
+		flipperSteps[index] = flipStep;
+		if (flipStep > maxStep)
+			maxStep = flipStep;
 	}
 
 	ray_type ray{};
 	ray.MinDistance = 0.002f;
-	for (auto index4 = 0; index4 <= minDistanceCoef; index4++)
+	for (auto step = 0; step <= maxStep; step++)
 	{
-		for (auto index5 = 0u; index5 < MainTable->BallList.size(); index5++)
+		for (auto ballIndex = 0u; ballIndex < MainTable->BallList.size(); ballIndex++)
 		{
-			auto ball = MainTable->BallList[index5];
-			if (!ball->AsEdgeCollisionFlag && index4 <= distanceCoefArray[index5])
+			auto ball = MainTable->BallList[ballIndex];
+			if (!ball->AsEdgeCollisionFlag && step <= ballSteps[ballIndex])
 			{
-				float distanceSum = 0.0f;
 				ray.CollisionMask = ball->CollisionMask;
 				ball->TimeNow = timeNow;
-				if (ball_min_smth > 0.0f)
+
+				for (auto distanceSum = 0.0f; distanceSum < BallHalfRadius;)
 				{
-					while (true)
+					ray.Origin = ball->Position;
+					ray.Direction = ball->Direction;
+					if (step >= ballSteps[ballIndex])
 					{
-						ray.Origin = ball->Position;
-						ray.Direction = ball->Direction;
-						if (index4 >= distanceCoefArray[index5])
-						{
-							ray.MaxDistance = distanceArray[index5] - distanceCoefArray[index5] * ball_min_smth;
-						}
-						else
-						{
-							ray.MaxDistance = ball_min_smth;
-						}
-						ray.TimeNow = ball->TimeNow;
+						ray.MaxDistance = ballStepsDistance[ballIndex] - ballSteps[ballIndex] * BallHalfRadius;
+					}
+					else
+					{
+						ray.MaxDistance = BallHalfRadius;
+					}
+					ray.TimeNow = ball->TimeNow;
 
-						TEdgeSegment* edge = nullptr;
-						auto distance = TTableLayer::edge_manager->FindCollisionDistance(&ray, ball, &edge);
-						if (distance > 0.0f)
-						{
-							// Todo: ball to ball collision
-							//distance = ball_to_ball_collision();
-						}
-						if (ball->EdgeCollisionResetFlag)
-						{
-							ball->EdgeCollisionResetFlag = false;
-						}
-						else
-						{
-							ball->EdgeCollisionCount = 0;
-							ball->EdgeCollisionResetFlag = true;
-						}
-						if (distance >= 1e9f)
-						{
-							ball->Position.X += ray.MaxDistance * ray.Direction.X;
-							ball->Position.Y += ray.MaxDistance * ray.Direction.Y;
-							break;
-						}
-
-						edge->EdgeCollision(ball, distance);
-						if (distance > 0.0f && !ball->AsEdgeCollisionFlag)
-						{
-							distanceSum += distance;
-							if (distanceSum < ball_min_smth)
-								continue;
-						}
+					TEdgeSegment* edge = nullptr;
+					auto distance = TTableLayer::edge_manager->FindCollisionDistance(&ray, ball, &edge);
+					if (distance > 0.0f)
+					{
+						// Todo: ball to ball collision
+						//distance = ball_to_ball_collision();
+					}
+					if (ball->EdgeCollisionResetFlag)
+					{
+						ball->EdgeCollisionResetFlag = false;
+					}
+					else
+					{
+						ball->EdgeCollisionCount = 0;
+						ball->EdgeCollisionResetFlag = true;
+					}
+					if (distance >= 1e9f)
+					{
+						ball->Position.X += ray.MaxDistance * ray.Direction.X;
+						ball->Position.Y += ray.MaxDistance * ray.Direction.Y;
 						break;
 					}
+
+					edge->EdgeCollision(ball, distance);
+					if (distance <= 0.0f || ball->AsEdgeCollisionFlag)
+						break;
+					distanceSum += distance;
 				}
 			}
 		}
 
-		for (auto index = 0u; index < MainTable->FlipperList.size(); index++)
+		for (auto flipIndex = 0u; flipIndex < MainTable->FlipperList.size(); flipIndex++)
 		{
-			if (distanceArrayY[index] >= index4)
-				MainTable->FlipperList[index]->FlipperCollision(deltaAngle[index]);
+			if (flipperSteps[flipIndex] >= step)
+				MainTable->FlipperList[flipIndex]->FlipperCollision(deltaAngle[flipIndex]);
 		}
 	}
 
@@ -742,50 +725,6 @@ bool pb::chk_highscore()
 			return true;
 	}
 	return false;
-}
-
-float pb::collide(float timeNow, float timeDelta, TBall* ball)
-{
-	ray_type ray{};
-	vector2 positionMod{};
-
-	if (ball->ActiveFlag && !ball->CollisionComp)
-	{
-		if (ball_speed_limit < ball->Speed)
-			ball->Speed = ball_speed_limit;
-
-		auto maxDistance = timeDelta * ball->Speed;
-		ball->TimeDelta = timeDelta;
-		ball->RayMaxDistance = maxDistance;
-		ball->TimeNow = timeNow;
-
-		ray.Origin = ball->Position;
-		ray.Direction = ball->Direction;
-		ray.MaxDistance = maxDistance;
-		ray.CollisionMask = ball->CollisionMask;
-		ray.TimeNow = timeNow;
-		ray.TimeDelta = timeDelta;
-		ray.MinDistance = 0.0020000001f;
-
-		TEdgeSegment* edge = nullptr;
-		auto distance = TTableLayer::edge_manager->FindCollisionDistance(&ray, ball, &edge);
-		ball->EdgeCollisionCount = 0;
-		if (distance >= 1000000000.0f)
-		{
-			maxDistance = timeDelta * ball->Speed;
-			ball->RayMaxDistance = maxDistance;
-			positionMod.X = maxDistance * ball->Direction.X;
-			positionMod.Y = maxDistance * ball->Direction.Y;
-			maths::vector_add(ball->Position, positionMod);
-		}
-		else
-		{
-			edge->EdgeCollision(ball, distance);
-			if (ball->Speed > 0.000000001f)
-				return fabs(distance / ball->Speed);
-		}
-	}
-	return timeDelta;
 }
 
 void pb::PushCheat(const std::string& cheat)

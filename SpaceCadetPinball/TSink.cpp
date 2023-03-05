@@ -7,6 +7,7 @@
 #include "render.h"
 #include "TPinballTable.h"
 #include "TBall.h"
+#include "TDrain.h"
 #include "timer.h"
 
 TSink::TSink(TPinballTable* table, int groupIndex) : TCollisionComponent(table, groupIndex, true)
@@ -59,7 +60,7 @@ void TSink::Collision(TBall* ball, vector2* nextPosition, vector2* direction, fl
 {
 	if (PinballTable->TiltLockFlag)
 	{
-		maths::basic_collision(ball, nextPosition, direction, Elasticity, Smoothness, 1000000000.0, 0.0);
+		PinballTable->Drain->Collision(ball, nextPosition, direction, distance, edge);
 	}
 	else
 	{

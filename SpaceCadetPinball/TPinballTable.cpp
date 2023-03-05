@@ -611,7 +611,7 @@ TBall* TPinballTable::AddBall(float x, float y)
 	if (ball != nullptr)
 	{
 		ball->ActiveFlag = 1;
-		ball->Position.Z = ball->Offset;
+		ball->Position.Z = ball->Radius;
 		ball->Direction = {};
 		ball->Speed = 0;
 		ball->TimeDelta = 0;
@@ -632,8 +632,8 @@ TBall* TPinballTable::AddBall(float x, float y)
 	ball->Position.X = x;
 	ball->Position.Y = y;
 	ball->PrevPosition = ball->Position;
-	ball->SomeCounter1 = 0;
-	ball->time_ticks1 = ball->time_ticks2 = pb::time_ticks;
+	ball->StuckCounter = 0;
+	ball->LastActiveTime = pb::time_ticks;
 
 	return ball;
 }
