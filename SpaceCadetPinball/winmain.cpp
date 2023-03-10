@@ -1131,7 +1131,7 @@ void winmain::UpdateFrameRate()
 	TargetFrameTime = DurationMs(1000.0 / ups);
 }
 
-void winmain::HandleGameBinding(GameBindings binding)
+void winmain::HandleGameBinding(GameBindings binding, bool shortcut)
 {
 	switch (binding)
 	{
@@ -1158,10 +1158,14 @@ void winmain::HandleGameBinding(GameBindings binding)
 		options::toggle(Menu1::Show_Menu);
 		break;
 	case GameBindings::Exit:
+		if (!shortcut)
 		{
-			ShowExitPopup = true;
-			break;
+			SDL_Event event{SDL_QUIT};
+			SDL_PushEvent(&event);
 		}
+		else
+			ShowExitPopup = true;
+		break;
 	default:
 		break;
 	}
@@ -1236,6 +1240,6 @@ void winmain::ImGuiMenuItemWShortcut(GameBindings binding, bool selected)
 	const auto& keyDef = Options.Key[~binding];
 	if (ImGui::MenuItem(pb::get_rc_string(keyDef.Description), keyDef.GetShortcutDescription().c_str(), selected))
 	{
-		HandleGameBinding(binding);
+		HandleGameBinding(binding, false);
 	}
 }

@@ -86,7 +86,7 @@ public:
 	static void pause(bool toggle = true);
 	static void Restart();
 	static void UpdateFrameRate();
-	static void HandleGameBinding(GameBindings binding);
+	static void HandleGameBinding(GameBindings binding, bool shortcut);
 private:
 	static int return_value;
 	static int mouse_down, last_mouse_x, last_mouse_y;

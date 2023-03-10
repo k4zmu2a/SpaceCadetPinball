@@ -562,7 +562,7 @@ void pb::InputDown(GameInput input)
 	const auto bindings = options::MapGameInput(input);
 	for (const auto binding : bindings)
 	{
-		winmain::HandleGameBinding(binding);
+		winmain::HandleGameBinding(binding, true);
 	}
 
 	if (game_mode != GameModes::InGame || winmain::single_step || demo_mode)
