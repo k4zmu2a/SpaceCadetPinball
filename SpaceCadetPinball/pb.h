@@ -1,6 +1,8 @@
 #pragma once
 #include "high_score.h"
 
+class TEdgeSegment;
+struct ray_type;
 struct GameInput;
 class TPinballTable;
 class DatFile;
@@ -43,7 +45,7 @@ class pb
 public:
 	static int time_ticks;
 	static float time_now, time_next, time_ticks_remainder;
-	static float BallMaxSpeed, BallHalfRadius, ball_collision_dist;
+	static float BallMaxSpeed, BallHalfRadius, BallToBallCollisionDistance;
 	static GameModes game_mode;
 	static bool cheat_mode;
 	static DatFile* record_table;
@@ -81,4 +83,5 @@ public:
 	static void ShowMessageBox(Uint32 flags, LPCSTR title, LPCSTR message);
 private:
 	static bool demo_mode;
+	static float BallToBallCollision(const ray_type& ray, const TBall& ball, TEdgeSegment** edge, float collisionDistance);
 };

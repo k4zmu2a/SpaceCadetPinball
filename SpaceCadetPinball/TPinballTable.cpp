@@ -625,7 +625,7 @@ TBall* TPinballTable::AddBall(float x, float y)
 	{
 		if (BallList.size() >= 20)
 			return nullptr;
-		ball = new TBall(this);
+		ball = new TBall(this, -1);
 		BallList.push_back(ball);
 	}
 
@@ -653,6 +653,16 @@ int TPinballTable::BallCountInRect(const RectF& rect)
 		}
 	}
 	return count;
+}
+
+int TPinballTable::BallCountInRect(const vector2& pos, float margin)
+{
+	RectF rect{};
+	rect.XMin = pos.X - margin;
+	rect.XMax = pos.X + margin;
+	rect.YMin = pos.Y - margin;
+	rect.YMax = pos.Y + margin;
+	return BallCountInRect(rect);
 }
 
 void TPinballTable::EndGame_timeout(int timerId, void* caller)

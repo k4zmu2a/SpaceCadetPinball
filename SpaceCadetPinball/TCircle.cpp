@@ -12,9 +12,9 @@ TCircle::TCircle(TCollisionComponent* collComp, char* activeFlag, unsigned colli
 	Circle.Center = *center;
 }
 
-float TCircle::FindCollisionDistance(ray_type* ray)
+float TCircle::FindCollisionDistance(const ray_type& ray)
 {
-	return maths::ray_intersect_circle(*ray, Circle);
+	return maths::ray_intersect_circle(ray, Circle);
 }
 
 void TCircle::EdgeCollision(TBall* ball, float distance)

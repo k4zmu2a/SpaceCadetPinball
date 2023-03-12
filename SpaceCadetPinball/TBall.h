@@ -1,14 +1,12 @@
 #pragma once
 #include "maths.h"
-#include "TPinballComponent.h"
+#include "TCollisionComponent.h"
+#include "TEdgeSegment.h"
 
-class TCollisionComponent;
-class TEdgeSegment;
-
-class TBall : public TPinballComponent
+class TBall : public TCollisionComponent, public TEdgeSegment
 {
 public :
-	TBall(TPinballTable* table);
+	TBall(TPinballTable* table, int groupIndex);
 	void Repaint();
 	void not_again(TEdgeSegment* edge);
 	bool already_hit(TEdgeSegment* edge);
@@ -16,6 +14,9 @@ public :
 	vector2 get_coordinates() override;
 	void Disable();
 	void throw_ball(vector3* direction, float angleMult, float speedMult1, float speedMult2);
+	void place_in_grid(RectF* aabb) override {}
+	void EdgeCollision(TBall* ball, float distance) override;
+	float FindCollisionDistance(const ray_type& ray) override;
 
 	vector3 Position{};
 	vector3 PrevPosition{};

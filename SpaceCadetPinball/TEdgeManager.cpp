@@ -76,7 +76,7 @@ int TEdgeManager::TestGridBox(int x, int y, float* distPtr, TEdgeSegment** edgeD
 		for (auto it = edgeBox->EdgeList.rbegin(); it != edgeBox->EdgeList.rend(); ++it)
 		{
 			auto edge = *it;
-			if (!edge->ProcessedFlag && *edge->ActiveFlag && (edge->CollisionGroup & ray->CollisionMask))
+			if (!edge->ProcessedFlag && *edge->ActiveFlagPtr && (edge->CollisionGroup & ray->CollisionMask))
 			{
 				if (!ball->already_hit(edge))
 				{
@@ -84,7 +84,7 @@ int TEdgeManager::TestGridBox(int x, int y, float* distPtr, TEdgeSegment** edgeD
 					*edgePtr = edge;
 					++edgePtr;
 					edge->ProcessedFlag = 1;
-					auto dist = edge->FindCollisionDistance(ray);
+					auto dist = edge->FindCollisionDistance(*ray);
 					if (dist < *distPtr)
 					{
 						*distPtr = dist;

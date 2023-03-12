@@ -33,7 +33,7 @@ DatFile* pb::record_table = nullptr;
 int pb::time_ticks = 0;
 GameModes pb::game_mode = GameModes::GameOver;
 float pb::time_now = 0, pb::time_next = 0, pb::time_ticks_remainder = 0;
-float pb::BallMaxSpeed, pb::BallHalfRadius, pb::ball_collision_dist;
+float pb::BallMaxSpeed, pb::BallHalfRadius, pb::BallToBallCollisionDistance;
 bool pb::FullTiltMode = false, pb::FullTiltDemoMode = false, pb::cheat_mode = false, pb::demo_mode = false;
 std::string pb::DatFileName, pb::BasePath;
 ImU32 pb::TextBoxColor;
@@ -106,7 +106,7 @@ int pb::init()
 	auto ball = MainTable->BallList.at(0);
 	BallMaxSpeed = ball->Radius * 200.0f;
 	BallHalfRadius = ball->Radius * 0.5f;
-	ball_collision_dist = (ball->Radius + BallHalfRadius) * 2.0f;
+	BallToBallCollisionDistance = (ball->Radius + BallHalfRadius) * 2.0f;
 
 	int red = 255, green = 255, blue = 255;
 	auto fontColor = get_rc_string(Msg::TextBoxColor);
@@ -424,8 +424,7 @@ void pb::timed_frame(float timeNow, float timeDelta, bool drawBalls)
 					auto distance = TTableLayer::edge_manager->FindCollisionDistance(&ray, ball, &edge);
 					if (distance > 0.0f)
 					{
-						// Todo: ball to ball collision
-						//distance = ball_to_ball_collision();
+						distance = BallToBallCollision(ray, *ball, &edge, distance);
 					}
 					if (ball->EdgeCollisionResetFlag)
 					{
@@ -605,9 +604,13 @@ void pb::InputDown(GameInput input)
 		switch (input.Value)
 		{
 		case 'b':
-			if (MainTable->AddBall(6.0f, 7.0f))
-				MainTable->MultiballCount++;
-			break;
+			{
+				vector2 pos{6.0f, 7.0f};
+				if (!MainTable->BallCountInRect(pos, MainTable->CollisionCompOffset * 1.2f) && MainTable->AddBall(
+					pos.X, pos.Y))
+					MainTable->MultiballCount++;
+				break;
+			}
 		case 'h':
 			{
 				high_score_struct entry{{0}, 1000000000};
@@ -753,4 +756,28 @@ void pb::ShowMessageBox(Uint32 flags, LPCSTR title, LPCSTR message)
 {
 	fprintf(flags == SDL_MESSAGEBOX_ERROR ? stderr : stdout, "BL error: %s\n%s\n", title, message);
 	SDL_ShowSimpleMessageBox(flags, title, message, winmain::MainWindow);
+}
+
+float pb::BallToBallCollision(const ray_type& ray, const TBall& ball, TEdgeSegment** edge, float collisionDistance)
+{
+	for (auto curBall : MainTable->BallList)
+	{
+		if (curBall->ActiveFlagPtr && curBall != &ball && (curBall->CollisionMask & ball.CollisionMask) != 0 &&
+			std::abs(curBall->Position.X - ball.Position.X) < BallToBallCollisionDistance &&
+			std::abs(curBall->Position.Y - ball.Position.Y) < BallToBallCollisionDistance)
+		{
+			auto distance = curBall->FindCollisionDistance(ray);
+			if (distance < 1e9f)
+			{
+				distance = std::max(0.0f, distance - 0.002f);
+				if (collisionDistance > distance)
+				{
+					collisionDistance = distance;
+					*edge = curBall;
+				}
+			}
+		}
+	}
+
+	return collisionDistance;
 }

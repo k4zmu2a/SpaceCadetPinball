@@ -36,9 +36,9 @@ void TLine::Offset(float offset)
 	maths::line_init(Line, X0, Y0, X1, Y1);
 }
 
-float TLine::FindCollisionDistance(ray_type* ray)
+float TLine::FindCollisionDistance(const ray_type& ray)
 {
-	return maths::ray_intersect_line(*ray, Line);
+	return maths::ray_intersect_line(ray, Line);
 }
 
 void TLine::EdgeCollision(TBall* ball, float distance)

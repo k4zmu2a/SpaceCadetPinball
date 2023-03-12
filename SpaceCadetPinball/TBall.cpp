@@ -11,7 +11,8 @@
 #include "TPinballTable.h"
 #include "TTableLayer.h"
 
-TBall::TBall(TPinballTable* table) : TPinballComponent(table, -1, false)
+TBall::TBall(TPinballTable* table, int groupIndex) : TCollisionComponent(table, groupIndex, false),
+                                                     TEdgeSegment(this, &ActiveFlag, 0)
 {
 	visualStruct visual{};
 	char ballGroupName[10]{"ball"};
@@ -22,19 +23,29 @@ TBall::TBall(TPinballTable* table) : TPinballComponent(table, -1, false)
 	CollisionComp = nullptr;
 	EdgeCollisionCount = 0;
 	TimeDelta = 0.0;
-	CollisionMask = 1;
 	CollisionFlag = 0;
 	Speed = 0.0;
 	Direction.Y = 0.0;
 	Direction.X = 0.0;
-	Position.X = 0.0;
-	Position.Y = 0.0;
-	HasGroupFlag = false;
-
 	ListBitmap = new std::vector<SpriteData>();
 
+	if (groupIndex == -1)
+	{
+		HasGroupFlag = false;
+		Position = {0, 0, 0};
+		CollisionMask = 1;
+	}
+	else
+	{
+		HasGroupFlag = true;
+		loader::query_visual(groupIndex, 0, &visual);
+		CollisionMask = visual.CollisionGroup;
+		auto floatArr = loader::query_float_attribute(groupIndex, 0, 408);
+		Position = {floatArr[0], floatArr[1], floatArr[3]};
+	}
+
 	/*Full tilt: ball is ballN, where N[0,2] resolution*/
-	auto groupIndex = loader::query_handle(ballGroupName);
+	groupIndex = loader::query_handle(ballGroupName);
 	if (groupIndex < 0)
 	{
 		ballGroupName[4] = '0' + fullscrn::GetResolution();
@@ -70,7 +81,7 @@ void TBall::Repaint()
 
 	auto pos2D = proj::xform_to_2d(Position);
 	auto zDepth = proj::z_distance(Position);
-	
+
 	auto index = 0u;
 	for (; index < ListBitmap->size() - 1; ++index)
 	{
@@ -112,7 +123,7 @@ int TBall::Message(MessageCode code, float value)
 {
 	if (code == MessageCode::Reset)
 	{
-		SpriteSetBall(-1, { 0,0 }, 0.0f);
+		SpriteSetBall(-1, {0, 0}, 0.0f);
 		Position.X = 0.0;
 		CollisionComp = nullptr;
 		Position.Y = 0.0;
@@ -137,6 +148,47 @@ void TBall::throw_ball(vector3* direction, float angleMult, float speedMult1, fl
 	maths::RotateVector(Direction, angle);
 	rnd = RandFloat();
 	Speed = (1.0f - (rnd + rnd)) * (speedMult1 * speedMult2) + speedMult1;
+}
+
+void TBall::EdgeCollision(TBall* ball, float distance)
+{
+	ball->AsEdgeCollisionFlag = true;
+	vector2 nextPos{
+		        ball->Position.X + ball->Direction.X * distance,
+		        ball->Position.Y + ball->Direction.Y * distance
+	        },
+	        collDir{nextPos.X - Position.X, nextPos.Y - Position.Y};
+	maths::normalize_2d(collDir);
+	vector2 invCollDir{ -collDir.X, -collDir.Y };
+
+	ball->Position.X = nextPos.X;
+	ball->Position.Y = nextPos.Y;
+	ball->Direction.X *= ball->Speed;
+	ball->Direction.Y *= ball->Speed;
+	Direction.X *= Speed;
+	Direction.Y *= Speed;
+
+	auto coef = -maths::DotProduct(ball->Direction, collDir);
+	vector2 v44{collDir.X * coef, collDir.Y * coef};
+	vector2 v13{ball->Direction.X + v44.X, ball->Direction.Y + v44.Y};
+	
+	coef = -maths::DotProduct(Direction, invCollDir);
+	vector2 v11{invCollDir.X * coef, invCollDir.Y * coef};
+	vector2 v10{Direction.X + v11.X, Direction.Y + v11.Y};
+
+	ball->Direction.X = -v11.X + v13.X;
+	ball->Direction.Y = -v11.Y + v13.Y;
+	ball->Speed = maths::normalize_2d(ball->Direction);
+	Direction.X = -v44.X + v10.X;
+	Direction.Y = -v44.Y + v10.Y;
+	Speed = maths::normalize_2d(Direction);
+}
+
+float TBall::FindCollisionDistance(const ray_type& ray)
+{
+	// Original inherits TCircle and aliases position.
+	const circle_type ballCircle{{Position.X, Position.Y}, Radius * Radius * 4.0f};
+	return maths::ray_intersect_circle(ray, ballCircle);
 }
 
 vector2 TBall::get_coordinates()

@@ -37,6 +37,7 @@ public:
 	int Message(MessageCode code, float value) override;
 	TBall* AddBall(float x, float y);
 	int BallCountInRect(const RectF& rect);
+	int BallCountInRect(const vector2& pos, float margin);
 
 	static void EndGame_timeout(int timerId, void* caller);
 	static void LightShow_timeout(int timerId, void* caller);

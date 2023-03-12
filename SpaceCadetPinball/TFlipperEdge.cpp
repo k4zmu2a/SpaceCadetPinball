@@ -104,12 +104,12 @@ void TFlipperEdge::port_draw()
 	set_control_points(CurrentAngle);
 }
 
-float TFlipperEdge::FindCollisionDistance(ray_type* ray)
+float TFlipperEdge::FindCollisionDistance(const ray_type& ray)
 {
 	ray_type dstRay{};
 	if (ControlPointDirtyFlag)
 		set_control_points(CurrentAngle);
-	auto distance = maths::distance_to_flipper(this, *ray, dstRay);
+	auto distance = maths::distance_to_flipper(this, ray, dstRay);
 	if (distance >= 1e9f)
 		return 1e9f;
 

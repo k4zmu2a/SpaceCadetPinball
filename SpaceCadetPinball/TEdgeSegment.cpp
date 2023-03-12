@@ -8,7 +8,7 @@
 TEdgeSegment::TEdgeSegment(TCollisionComponent* collComp, char* activeFlag, unsigned collisionGroup)
 {
 	CollisionComponent = collComp;
-	ActiveFlag = activeFlag;
+	ActiveFlagPtr = activeFlag;
 	CollisionGroup = collisionGroup;
 	ProcessedFlag = 0;
 }
