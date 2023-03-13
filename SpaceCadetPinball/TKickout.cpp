@@ -105,7 +105,7 @@ void TKickout::Collision(TBall* ball, vector2* nextPosition, vector2* direction,
 		ball->Position.Y = Circle.Center.Y;
 		OriginalBallZ = ball->Position.Z;
 		ball->Position.Z = CollisionBallSetZ;
-		ball->AsEdgeCollisionFlag = true;
+		ball->CollisionDisabledFlag = true;
 		if (PinballTable->TiltLockFlag)
 		{
 			Message(MessageCode::TKickoutRestartTimer, 0.1f);

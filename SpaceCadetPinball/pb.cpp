@@ -358,7 +358,7 @@ void pb::timed_frame(float timeNow, float timeDelta, bool drawBalls)
 			ball->TimeDelta = timeDelta;
 			if (ball->TimeDelta > 0.01f && ball->Speed < 0.8f)
 				ball->TimeDelta = 0.01f;
-			ball->AsEdgeCollisionFlag = false;
+			ball->CollisionDisabledFlag = false;
 			if (ball->CollisionComp)
 			{
 				ball->CollisionComp->FieldEffect(ball, &vecDst);
@@ -401,7 +401,7 @@ void pb::timed_frame(float timeNow, float timeDelta, bool drawBalls)
 		for (auto ballIndex = 0u; ballIndex < MainTable->BallList.size(); ballIndex++)
 		{
 			auto ball = MainTable->BallList[ballIndex];
-			if (!ball->AsEdgeCollisionFlag && step <= ballSteps[ballIndex])
+			if (!ball->CollisionDisabledFlag && step <= ballSteps[ballIndex])
 			{
 				ray.CollisionMask = ball->CollisionMask;
 				ball->TimeNow = timeNow;
@@ -443,7 +443,7 @@ void pb::timed_frame(float timeNow, float timeDelta, bool drawBalls)
 					}
 
 					edge->EdgeCollision(ball, distance);
-					if (distance <= 0.0f || ball->AsEdgeCollisionFlag)
+					if (distance <= 0.0f || ball->CollisionDisabledFlag)
 						break;
 					distanceSum += distance;
 				}
@@ -606,8 +606,7 @@ void pb::InputDown(GameInput input)
 		case 'b':
 			{
 				vector2 pos{6.0f, 7.0f};
-				if (!MainTable->BallCountInRect(pos, MainTable->CollisionCompOffset * 1.2f) && MainTable->AddBall(
-					pos.X, pos.Y))
+				if (!MainTable->BallCountInRect(pos, MainTable->CollisionCompOffset * 1.2f) && MainTable->AddBall(pos))
 					MainTable->MultiballCount++;
 				break;
 			}
@@ -760,9 +759,9 @@ void pb::ShowMessageBox(Uint32 flags, LPCSTR title, LPCSTR message)
 
 float pb::BallToBallCollision(const ray_type& ray, const TBall& ball, TEdgeSegment** edge, float collisionDistance)
 {
-	for (auto curBall : MainTable->BallList)
+	for (const auto curBall : MainTable->BallList)
 	{
-		if (curBall->ActiveFlagPtr && curBall != &ball && (curBall->CollisionMask & ball.CollisionMask) != 0 &&
+		if (curBall->ActiveFlag && curBall != &ball && (curBall->CollisionMask & ball.CollisionMask) != 0 &&
 			std::abs(curBall->Position.X - ball.Position.X) < BallToBallCollisionDistance &&
 			std::abs(curBall->Position.Y - ball.Position.Y) < BallToBallCollisionDistance)
 		{
@@ -770,7 +769,7 @@ float pb::BallToBallCollision(const ray_type& ray, const TBall& ball, TEdgeSegme
 			if (distance < 1e9f)
 			{
 				distance = std::max(0.0f, distance - 0.002f);
-				if (collisionDistance > distance)
+				if (distance < collisionDistance)
 				{
 					collisionDistance = distance;
 					*edge = curBall;

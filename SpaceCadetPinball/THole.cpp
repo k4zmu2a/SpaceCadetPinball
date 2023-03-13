@@ -18,7 +18,7 @@ THole::THole(TPinballTable* table, int groupIndex) : TCollisionComponent(table, 
 	Unknown4 = 0.050000001f;
 	MessageField = 0;
 	Timer = 0;
-	BallCapturedFlag = 0;
+	BallCapturedFlag = false;
 	Unknown3 = loader::query_float_attribute(groupIndex, 0, 407, 0.25f);
 	GravityMult = loader::query_float_attribute(groupIndex, 0, 701, 0.2f);
 	GravityPull = *loader::query_float_attribute(groupIndex, 0, 305);
@@ -33,18 +33,15 @@ THole::THole(TPinballTable* table, int groupIndex) : TCollisionComponent(table, 
 	auto tCircle = new TCircle(this, &ActiveFlag, visual.CollisionGroup,
 	                           reinterpret_cast<vector3*>(visual.FloatArr),
 	                           Circle.RadiusSq);
-	if (tCircle)
-	{
-		tCircle->place_in_grid(&AABB);
-		EdgeList.push_back(tCircle);
-	}
+	tCircle->place_in_grid(&AABB);
+	EdgeList.push_back(tCircle);
 
 	ZSetValue = loader::query_float_attribute(groupIndex, 0, 408)[2];
 	CollisionMask = static_cast<int>(floor(*loader::query_float_attribute(groupIndex, 0, 1304)));
 
-	// Full tilt hack - CollisionMask should be 1
+	// CollisionMask difference: 3DPB - value given as is, FT: mask = 1 << value
 	if (pb::FullTiltMode)
-		CollisionMask = 1;
+		CollisionMask = 1 << CollisionMask;
 
 	Circle.RadiusSq = visual.FloatArr[2] * visual.FloatArr[2];
 	circle.RadiusSq = Circle.RadiusSq;
@@ -64,7 +61,7 @@ int THole::Message(MessageCode code, float value)
 		if (Timer)
 			timer::kill(Timer);
 		Timer = 0;
-		BallCapturedSecondStage = 1;
+		BallCapturedSecondStage = true;
 	}
 	return 0;
 }
@@ -73,14 +70,14 @@ void THole::Collision(TBall* ball, vector2* nextPosition, vector2* direction, fl
 {
 	if (!BallCapturedFlag)
 	{
-		BallCapturedSecondStage = 0;
-		Threshold = 1000000000.0;
-		BallCapturedFlag = 1;
+		BallCapturedSecondStage = false;
+		Threshold = 1e9f;
+		BallCapturedFlag = true;
 		ball->CollisionComp = this;
 		ball->Position.X = Circle.Center.X;
 		ball->Position.Y = Circle.Center.Y;
 		ball->Direction.Z = 0.0;
-		ball->AsEdgeCollisionFlag = true;
+		ball->CollisionDisabledFlag = true;
 
 		// Ramp hole has no delay in FT.
 		auto captureTime = pb::FullTiltMode ? 0 : 0.5f;
@@ -111,15 +108,13 @@ int THole::FieldEffect(TBall* ball, vector2* vecDst)
 			ball->Position.Z += ball->Direction.Z;
 			if (ball->Position.Z <= ZSetValue)
 			{
-				BallCapturedFlag = 0;
-				BallCapturedSecondStage = 0;
+				BallCapturedFlag = false;
+				BallCapturedSecondStage = false;
 				ball->Position.Z = ZSetValue;
-				ball->Direction.Z = 0.0;
 				ball->CollisionMask = CollisionMask;
-				ball->Direction.Y = 0.0;
 				ball->CollisionComp = nullptr;
-				ball->Direction.X = 0.0;
-				ball->Speed = 0.0;
+				ball->Direction = {};
+				ball->Speed = 0.0f;
 				loader::play_sound(SoftHitSoundId, ball, "THole2");
 				control::handler(MessageCode::ControlBallReleased, this);
 			}
@@ -149,5 +144,5 @@ void THole::TimerExpired(int timerId, void* caller)
 {
 	auto hole = static_cast<THole*>(caller);
 	hole->Timer = 0;
-	hole->BallCapturedSecondStage = 1;
+	hole->BallCapturedSecondStage = true;
 }

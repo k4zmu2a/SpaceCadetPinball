@@ -15,8 +15,8 @@ public:
 
 	static void TimerExpired(int timerId, void* caller);
 
-	int BallCapturedFlag;
-	int BallCapturedSecondStage{};
+	bool BallCapturedFlag{};
+	bool BallCapturedSecondStage{};
 	int Timer;
 	float Unknown3;
 	float Unknown4;

@@ -72,24 +72,17 @@ void TSink::Collision(TBall* ball, vector2* nextPosition, vector2* direction, fl
 
 void TSink::TimerExpired(int timerId, void* caller)
 {
-	RectF rect{};
-
 	auto sink = static_cast<TSink*>(caller);
 	auto table = sink->PinballTable;
-
-	rect.XMin = table->CollisionCompOffset * -2.0f + sink->BallPosition.X;
-	rect.XMax = table->CollisionCompOffset * 2.0f + sink->BallPosition.X;
-	rect.YMin = table->CollisionCompOffset * -2.0f + sink->BallPosition.Y;
-	rect.YMax = table->CollisionCompOffset * 2.0f + sink->BallPosition.Y;
-	if (table->BallCountInRect(rect))
+	if (table->BallCountInRect(sink->BallPosition, table->CollisionCompOffset * 2.0f))
 	{
 		timer::set(0.5f, sink, TimerExpired);
 	}
 	else 
 	{
-		auto ball = table->AddBall(sink->BallPosition.X, sink->BallPosition.Y);
+		auto ball = table->AddBall(sink->BallPosition);
 		assertm(ball, "Failure to create ball in sink");
-		ball->AsEdgeCollisionFlag = true;
+		ball->CollisionDisabledFlag = true;
 		ball->throw_ball(&sink->BallThrowDirection, sink->ThrowAngleMult, sink->ThrowSpeedMult1,
 			sink->ThrowSpeedMult2);
 		if (sink->SoundIndex3)

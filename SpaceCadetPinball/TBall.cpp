@@ -108,11 +108,11 @@ void TBall::not_again(TEdgeSegment* edge)
 	EdgeCollisionResetFlag = true;
 }
 
-bool TBall::already_hit(TEdgeSegment* edge)
+bool TBall::already_hit(const TEdgeSegment& edge) const
 {
 	for (int i = 0; i < EdgeCollisionCount; i++)
 	{
-		if (Collisions[i] == edge)
+		if (Collisions[i] == &edge)
 			return true;
 	}
 
@@ -152,35 +152,29 @@ void TBall::throw_ball(vector3* direction, float angleMult, float speedMult1, fl
 
 void TBall::EdgeCollision(TBall* ball, float distance)
 {
-	ball->AsEdgeCollisionFlag = true;
-	vector2 nextPos{
-		        ball->Position.X + ball->Direction.X * distance,
-		        ball->Position.Y + ball->Direction.Y * distance
-	        },
-	        collDir{nextPos.X - Position.X, nextPos.Y - Position.Y};
-	maths::normalize_2d(collDir);
-	vector2 invCollDir{ -collDir.X, -collDir.Y };
-
-	ball->Position.X = nextPos.X;
-	ball->Position.Y = nextPos.Y;
+	ball->CollisionDisabledFlag = true;
+	ball->Position.X += ball->Direction.X * distance;
+	ball->Position.Y += ball->Direction.Y * distance;
 	ball->Direction.X *= ball->Speed;
 	ball->Direction.Y *= ball->Speed;
 	Direction.X *= Speed;
 	Direction.Y *= Speed;
 
-	auto coef = -maths::DotProduct(ball->Direction, collDir);
-	vector2 v44{collDir.X * coef, collDir.Y * coef};
-	vector2 v13{ball->Direction.X + v44.X, ball->Direction.Y + v44.Y};
-	
-	coef = -maths::DotProduct(Direction, invCollDir);
-	vector2 v11{invCollDir.X * coef, invCollDir.Y * coef};
-	vector2 v10{Direction.X + v11.X, Direction.Y + v11.Y};
+	// AB - vector from ball to this, BA - from this to ball; collision direction
+	vector2 AB{ball->Position.X - Position.X, ball->Position.Y - Position.Y};
+	maths::normalize_2d(AB);
+	vector2 BA{-AB.X, -AB.Y};
 
-	ball->Direction.X = -v11.X + v13.X;
-	ball->Direction.Y = -v11.Y + v13.Y;
+	// Projection = difference between ball directions and collision direction
+	auto projAB = -maths::DotProduct(ball->Direction, AB);
+	auto projBA = -maths::DotProduct(Direction, BA);
+	vector2 delta{AB.X * projAB - BA.X * projBA, AB.Y * projAB - BA.Y * projBA};
+
+	ball->Direction.X += delta.X;
+	ball->Direction.Y += delta.Y;
 	ball->Speed = maths::normalize_2d(ball->Direction);
-	Direction.X = -v44.X + v10.X;
-	Direction.Y = -v44.Y + v10.Y;
+	Direction.X -= delta.X;
+	Direction.Y -= delta.Y;
 	Speed = maths::normalize_2d(Direction);
 }
 
@@ -199,6 +193,6 @@ vector2 TBall::get_coordinates()
 void TBall::Disable()
 {
 	ActiveFlag = false;
-	AsEdgeCollisionFlag = true;
+	CollisionDisabledFlag = true;
 	SpriteSet(-1);
 }

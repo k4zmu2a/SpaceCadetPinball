@@ -76,9 +76,9 @@ int TEdgeManager::TestGridBox(int x, int y, float* distPtr, TEdgeSegment** edgeD
 		for (auto it = edgeBox->EdgeList.rbegin(); it != edgeBox->EdgeList.rend(); ++it)
 		{
 			auto edge = *it;
-			if (!edge->ProcessedFlag && *edge->ActiveFlagPtr && (edge->CollisionGroup & ray->CollisionMask))
+			if (!edge->ProcessedFlag && *edge->ActiveFlagPtr && (edge->CollisionGroup & ray->CollisionMask) != 0)
 			{
-				if (!ball->already_hit(edge))
+				if (!ball->already_hit(*edge))
 				{
 					++edgeIndex;
 					*edgePtr = edge;

@@ -35,8 +35,7 @@ TPlunger::TPlunger(TPinballTable* table, int groupIndex) : TCollisionComponent(t
 	PullbackIncrement = MaxPullback / (ListBitmap->size() * 8.0f);
 	PullbackDelay = 0.025f;
 	float* floatArr = loader::query_float_attribute(groupIndex, 0, 601);
-	table->PlungerPositionX = floatArr[0];
-	table->PlungerPositionY = floatArr[1];
+	table->PlungerPosition = {floatArr[0], floatArr[1]};
 }
 
 void TPlunger::Collision(TBall* ball, vector2* nextPosition, vector2* direction, float distance, TEdgeSegment* edge)
@@ -72,18 +71,13 @@ int TPlunger::Message(MessageCode code, float value)
 		break;
 	case MessageCode::PlungerFeedBall:
 		{
-			RectF rect{};
-			rect.XMin = PinballTable->CollisionCompOffset * -1.2f + PinballTable->PlungerPositionX;
-			rect.XMax = PinballTable->CollisionCompOffset * 1.2f + PinballTable->PlungerPositionX;
-			rect.YMin = PinballTable->CollisionCompOffset * -1.2f + PinballTable->PlungerPositionY;
-			rect.YMax = PinballTable->CollisionCompOffset * 1.2f + PinballTable->PlungerPositionY;
-			if(PinballTable->BallCountInRect(rect))
+			if (PinballTable->BallCountInRect(PinballTable->PlungerPosition, PinballTable->CollisionCompOffset * 1.2f))
 			{
 				timer::set(1.0f, this, BallFeedTimer);
 			}
-			else 
+			else
 			{
-				auto ball = PinballTable->AddBall(PinballTable->PlungerPositionX, PinballTable->PlungerPositionY);
+				auto ball = PinballTable->AddBall(PinballTable->PlungerPosition);
 				assertm(ball, "Failure to create ball in plunger");
 				PinballTable->MultiballCount++;
 				PinballTable->BallInDrainFlag = 0;

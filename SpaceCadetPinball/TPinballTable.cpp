@@ -59,7 +59,7 @@ TPinballTable::TPinballTable(): TPinballComponent(nullptr, -1, false)
 	MultiballFlag = false;
 	PlayerCount = 0;
 
-	auto ball = AddBall(0.0f, 0.0f);
+	auto ball = AddBall({0.0f, 0.0f});
 	ball->Disable();
 
 	new TTableLayer(this);
@@ -595,7 +595,7 @@ int TPinballTable::Message(MessageCode code, float value)
 	return 0;
 }
 
-TBall* TPinballTable::AddBall(float x, float y)
+TBall* TPinballTable::AddBall(vector2 position)
 {
 	TBall* ball = nullptr;
 
@@ -629,8 +629,8 @@ TBall* TPinballTable::AddBall(float x, float y)
 		BallList.push_back(ball);
 	}
 
-	ball->Position.X = x;
-	ball->Position.Y = y;
+	ball->Position.X = position.X;
+	ball->Position.Y = position.Y;
 	ball->PrevPosition = ball->Position;
 	ball->StuckCounter = 0;
 	ball->LastActiveTime = pb::time_ticks;

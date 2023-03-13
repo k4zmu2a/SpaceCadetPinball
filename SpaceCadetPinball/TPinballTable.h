@@ -1,5 +1,6 @@
 #pragma once
 
+#include "maths.h"
 #include "TPinballComponent.h"
 
 class TBall;
@@ -9,7 +10,6 @@ class TPlunger;
 class TDrain;
 class TDemo;
 class TLightGroup;
-struct RectF;
 
 struct score_struct_super
 {
@@ -35,7 +35,7 @@ public:
 	void tilt(float time);
 	void port_draw() override;
 	int Message(MessageCode code, float value) override;
-	TBall* AddBall(float x, float y);
+	TBall* AddBall(vector2 position);
 	int BallCountInRect(const RectF& rect);
 	int BallCountInRect(const vector2& pos, float margin);
 
@@ -77,8 +77,7 @@ public:
 	float GravityAngleX{};
 	float GravityAnglY{};
 	float CollisionCompOffset{};
-	float PlungerPositionX{};
-	float PlungerPositionY{};
+	vector2 PlungerPosition{};
 	int ScoreMultiplier{};
 	int ScoreAdded{};
 	int ScoreSpecial1{};

@@ -9,7 +9,7 @@ public :
 	TBall(TPinballTable* table, int groupIndex);
 	void Repaint();
 	void not_again(TEdgeSegment* edge);
-	bool already_hit(TEdgeSegment* edge);
+	bool already_hit(const TEdgeSegment& edge) const;
 	int Message(MessageCode code, float value) override;
 	vector2 get_coordinates() override;
 	void Disable();
@@ -38,5 +38,5 @@ public :
 	int StuckCounter = 0;
 	int LastActiveTime{};
 	float VisualZArray[50]{};
-	bool AsEdgeCollisionFlag{};
+	bool CollisionDisabledFlag{};
 };
