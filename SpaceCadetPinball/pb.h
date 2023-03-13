@@ -66,7 +66,7 @@ public:
 	static void replay_level(bool demoMode);
 	static void ballset(float dx, float dy);
 	static void frame(float dtMilliSec);
-	static void timed_frame(float timeNow, float timeDelta, bool drawBalls);
+	static void timed_frame(float timeDelta);
 	static void pause_continue();
 	static void loose_focus();
 	static void InputUp(GameInput input);

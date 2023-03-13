@@ -52,7 +52,6 @@ struct ray_type
 	vector2 Direction;
 	float MaxDistance;
 	float MinDistance;
-	float TimeNow;
 	int CollisionMask;
 };
 

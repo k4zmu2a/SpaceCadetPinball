@@ -17,7 +17,6 @@ TBall::TBall(TPinballTable* table, int groupIndex) : TCollisionComponent(table, 
 	visualStruct visual{};
 	char ballGroupName[10]{"ball"};
 
-	TimeNow = 0.0;
 	RayMaxDistance = 0.0;
 	ActiveFlag = 1;
 	CollisionComp = nullptr;

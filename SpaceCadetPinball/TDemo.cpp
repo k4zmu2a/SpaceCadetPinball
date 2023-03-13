@@ -125,7 +125,7 @@ void TDemo::Collision(TBall* ball, vector2* nextPosition, vector2* direction, fl
 	case 1404:
 		if (!PlungerFlag)
 		{
-			PinballTable->Message(MessageCode::PlungerInputPressed, ball->TimeNow);
+			PinballTable->Message(MessageCode::PlungerInputPressed, 0);
 			float time = RandFloat() + 2.0f;
 			PlungerFlag = timer::set(time, this, PlungerRelease);
 		}

@@ -615,7 +615,6 @@ TBall* TPinballTable::AddBall(vector2 position)
 		ball->Direction = {};
 		ball->Speed = 0;
 		ball->TimeDelta = 0;
-		ball->TimeNow = 0;
 		ball->EdgeCollisionCount = 0;
 		ball->CollisionFlag = 0;
 		ball->CollisionMask = 1;

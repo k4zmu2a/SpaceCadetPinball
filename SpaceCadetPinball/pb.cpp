@@ -285,7 +285,7 @@ void pb::frame(float dtMilliSec)
 
 	float dtSec = dtMilliSec * 0.001f;
 	time_next = time_now + dtSec;
-	timed_frame(time_now, dtSec, true);
+	timed_frame(dtSec);
 	time_now = time_next;
 
 	dtMilliSec += time_ticks_remainder;
@@ -318,7 +318,7 @@ void pb::frame(float dtMilliSec)
 	}
 }
 
-void pb::timed_frame(float timeNow, float timeDelta, bool drawBalls)
+void pb::timed_frame(float timeDelta)
 {
 	for (auto ball : MainTable->BallList)
 	{
@@ -346,12 +346,13 @@ void pb::timed_frame(float timeNow, float timeDelta, bool drawBalls)
 		}
 	}
 
-	int ballSteps[20]{-1};
+	int ballSteps[20]{};
 	float ballStepsDistance[20]{};
 	int maxStep = -1;
 	for (auto index = 0u; index < MainTable->BallList.size(); index++)
 	{
 		auto ball = MainTable->BallList[index];
+		ballSteps[index] = -1;
 		if (ball->ActiveFlag != 0)
 		{
 			vector2 vecDst{};
@@ -366,8 +367,8 @@ void pb::timed_frame(float timeNow, float timeDelta, bool drawBalls)
 			else
 			{
 				TTableLayer::edge_manager->FieldEffects(ball, &vecDst);
-				vecDst.X *= timeDelta;
-				vecDst.Y *= timeDelta;
+				vecDst.X *= ball->TimeDelta;
+				vecDst.Y *= ball->TimeDelta;
 				ball->Direction.X *= ball->Speed;
 				ball->Direction.Y *= ball->Speed;
 				maths::vector_add(ball->Direction, vecDst);
@@ -401,16 +402,15 @@ void pb::timed_frame(float timeNow, float timeDelta, bool drawBalls)
 		for (auto ballIndex = 0u; ballIndex < MainTable->BallList.size(); ballIndex++)
 		{
 			auto ball = MainTable->BallList[ballIndex];
-			if (!ball->CollisionDisabledFlag && step <= ballSteps[ballIndex])
+			if (!ball->CollisionDisabledFlag && ballSteps[ballIndex] >= step)
 			{
 				ray.CollisionMask = ball->CollisionMask;
-				ball->TimeNow = timeNow;
 
 				for (auto distanceSum = 0.0f; distanceSum < BallHalfRadius;)
 				{
 					ray.Origin = ball->Position;
 					ray.Direction = ball->Direction;
-					if (step >= ballSteps[ballIndex])
+					if (ballSteps[ballIndex] <= step)
 					{
 						ray.MaxDistance = ballStepsDistance[ballIndex] - ballSteps[ballIndex] * BallHalfRadius;
 					}
@@ -418,7 +418,6 @@ void pb::timed_frame(float timeNow, float timeDelta, bool drawBalls)
 					{
 						ray.MaxDistance = BallHalfRadius;
 					}
-					ray.TimeNow = ball->TimeNow;
 
 					TEdgeSegment* edge = nullptr;
 					auto distance = TTableLayer::edge_manager->FindCollisionDistance(&ray, ball, &edge);
@@ -462,13 +461,10 @@ void pb::timed_frame(float timeNow, float timeDelta, bool drawBalls)
 		flipper->UpdateSprite();
 	}
 
-	if (drawBalls)
+	for (auto ball : MainTable->BallList)
 	{
-		for (auto ball : MainTable->BallList)
-		{
-			if (ball->ActiveFlag)
-				ball->Repaint();
-		}
+		if (ball->ActiveFlag)
+			ball->Repaint();
 	}
 }
 

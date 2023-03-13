@@ -24,7 +24,6 @@ public :
 	float Speed;
 	float RayMaxDistance;
 	float TimeDelta;
-	float TimeNow;
 	vector2 RampFieldForce{};
 	TCollisionComponent* CollisionComp;
 	int CollisionMask;
