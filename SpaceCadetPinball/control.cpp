@@ -916,6 +916,44 @@ void control::pbctrl_bdoor_controller(char key)
 		"I knew it worked too good to be right.",
 		"World's most expensive flippers"
 	};
+	static const char* credits[35]
+	{
+		"Full Tilt! was created by Cinematronics",
+		"for Maxis.",
+		"Cinematronics Team:",
+		"Programming\nMichael Sandige\nJohn Taylor",
+		"Art\nJohn Frantz Jr.\nRyan Medeiros",
+		"Design\nKevin Gliner",
+		"Sound Effects\nMatt Ridgeway",
+		"Donald S. Griffin",
+		"Design Consultant\nMark Sprenger",
+		"Music\nMatt Ridgeway",
+		"Producer\nKevin Gliner",
+		"Voices\nMike McGeary\nWilliam Rice",
+		"Grand Poobah\nDavid Stafford",
+		"Special Thanks\nPaula Sandige\nAlex St. John",
+		"Brad Silverberg\nJeff Camp",
+		"Danny Thorpe\nGreg Hospelhorn",
+		"Maxis Team:",
+		"Producer\nJohn Csicsery",
+		"Product Manager\nLarry Lee",
+		"Lead Tester\nMichael Gilmartin",
+		"QA Manager\nAlan Barton",
+		"Additional Testing\nJoe Longworth\nScott Shicoff",
+		"Owen Nelson\nJohn \"Jussi\" Ylinen",
+		"John Landes\nMarc Meyer",
+		"Cathy Castro\nKeith Meyer",
+		"Additional Art\nOcean Quigley",
+		"Rick Macaraeg\nCharlie Aquilina",
+		"Art Director\nSharon Barr",
+		"Install Program\nKevin O'Hare",
+		"Intro Music",
+		"Brian Conrad",
+		"John Csicsery",
+		"Special Thanks\nSam Poole\nJoe Scirica",
+		"Jeff Braun\nBob Derber\nAshley Csicsery",
+		"Tom Forge\nWill \"Burr\" Wright",
+	};
 
 	// Original allowed to enter cheats only before the first launch.
 	std::memmove(&cheatBuffer[0], &cheatBuffer[1], 10);
@@ -944,10 +982,19 @@ void control::pbctrl_bdoor_controller(char key)
 	}
 	else if (pb::FullTiltMode && strcmp(bufferEnd - 5, "quote") == 0)
 	{
-		// A sad developer easter egg type 'cheat' from Full Tilt 
+		// Developer easter egg type 'cheat' from Full Tilt
 		float time = 0;
 		for (auto quote : quotes)
-			mission_text_box->Display(quote, time += 3);
+			mission_text_box->Display(quote, time += 3, true);
+		return;
+	}
+	else if (pb::FullTiltMode && strcmp(bufferEnd - 7, "credits") == 0)
+	{
+		// Full Tilt in-game credits, shown when idle for 60sec
+		float time = 0;
+		for (auto line : credits)
+			mission_text_box->Display(line, time += 2, true);
+		pb::CreditsActive = true;
 		return;
 	}
 	else if (strcmp(bufferEnd - 9, "easy mode") == 0)

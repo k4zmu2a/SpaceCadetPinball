@@ -71,7 +71,7 @@ void TTextBox::TimerExpired(int timerId, void* caller)
 	}
 }
 
-void TTextBox::Clear()
+void TTextBox::Clear(bool lowPriorityOnly)
 {
 	gdrv_bitmap8* bmp = BgBmp;
 	if (bmp)
@@ -92,16 +92,17 @@ void TTextBox::Clear()
 			timer::kill(Timer);
 		Timer = 0;
 	}
-	while (CurrentMessage)
+	while (CurrentMessage && (!lowPriorityOnly || CurrentMessage->LowPriority))
 	{
-		TTextBoxMessage* message = CurrentMessage;
-		TTextBoxMessage* nextMessage = message->NextMessage;
+		auto message = CurrentMessage;
+		CurrentMessage = message->NextMessage;
 		delete message;
-		CurrentMessage = nextMessage;
 	}
+	if (CurrentMessage)
+		Draw();
 }
 
-void TTextBox::Display(const char* text, float time)
+void TTextBox::Display(const char* text, float time, bool lowPriority)
 {
 	if (!text)
 		return;
@@ -124,23 +125,20 @@ void TTextBox::Display(const char* text, float time)
 		if (Timer == -1)
 			Clear();
 
-		auto message = new TTextBoxMessage(text, time);
-		if (message)
+		auto message = new TTextBoxMessage(text, time, lowPriority);
+		if (message->Text)
 		{
-			if (message->Text)
-			{
-				if (CurrentMessage)
-					PreviousMessage->NextMessage = message;
-				else
-					CurrentMessage = message;
-				PreviousMessage = message;
-				if (Timer == 0)
-					Draw();
-			}
+			if (CurrentMessage)
+				PreviousMessage->NextMessage = message;
 			else
-			{
-				delete message;
-			}
+				CurrentMessage = message;
+			PreviousMessage = message;
+			if (Timer == 0)
+				Draw();
+		}
+		else
+		{
+			delete message;
 		}
 	}
 }

@@ -34,7 +34,8 @@ int pb::time_ticks = 0;
 GameModes pb::game_mode = GameModes::GameOver;
 float pb::time_now = 0, pb::time_next = 0, pb::time_ticks_remainder = 0;
 float pb::BallMaxSpeed, pb::BallHalfRadius, pb::BallToBallCollisionDistance;
-bool pb::FullTiltMode = false, pb::FullTiltDemoMode = false, pb::cheat_mode = false, pb::demo_mode = false;
+float pb::IdleTimerMs = 0;
+bool pb::FullTiltMode = false, pb::FullTiltDemoMode = false, pb::cheat_mode = false, pb::demo_mode = false, pb::CreditsActive = false;
 std::string pb::DatFileName, pb::BasePath;
 ImU32 pb::TextBoxColor;
 int pb::quickFlag = 0;
@@ -194,6 +195,11 @@ void pb::firsttime_setup()
 
 void pb::mode_change(GameModes mode)
 {
+	if (CreditsActive)
+		MissTextBox->Clear(true);
+	CreditsActive = false;
+	IdleTimerMs = 0;
+
 	switch (mode)
 	{
 	case GameModes::InGame:
@@ -282,6 +288,15 @@ void pb::frame(float dtMilliSec)
 		dtMilliSec = 100;
 	if (dtMilliSec <= 0)
 		return;
+
+	if (FullTiltMode && !demo_mode)
+	{
+		IdleTimerMs += dtMilliSec;
+		if (IdleTimerMs >= 60000 && !CreditsActive)
+		{
+			PushCheat("credits");
+		}
+	}
 
 	float dtSec = dtMilliSec * 0.001f;
 	time_next = time_now + dtSec;
@@ -562,6 +577,11 @@ void pb::InputDown(GameInput input)
 
 	if (game_mode != GameModes::InGame || winmain::single_step || demo_mode)
 		return;
+
+	if (CreditsActive)
+		MissTextBox->Clear(true);
+	CreditsActive = false;
+	IdleTimerMs = 0;
 
 	if (input.Type == InputTypes::Keyboard)
 		control::pbctrl_bdoor_controller(static_cast<char>(input.Value));

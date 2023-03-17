@@ -20,8 +20,8 @@ public:
 	TTextBox(TPinballTable* table, int groupIndex);
 	~TTextBox() override;
 	int Message(MessageCode code, float value) override;
-	void Clear();
-	void Display(const char* text, float time);
+	void Clear(bool lowPriorityOnly = false);
+	void Display(const char* text, float time, bool lowPriority = false);
 	void DrawImGui();
 
 private:

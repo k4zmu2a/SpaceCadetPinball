@@ -47,7 +47,7 @@ public:
 	static float time_now, time_next, time_ticks_remainder;
 	static float BallMaxSpeed, BallHalfRadius, BallToBallCollisionDistance;
 	static GameModes game_mode;
-	static bool cheat_mode;
+	static bool cheat_mode, CreditsActive;
 	static DatFile* record_table;
 	static TPinballTable* MainTable;
 	static bool FullTiltMode, FullTiltDemoMode;
@@ -83,5 +83,6 @@ public:
 	static void ShowMessageBox(Uint32 flags, LPCSTR title, LPCSTR message);
 private:
 	static bool demo_mode;
+	static float IdleTimerMs;
 	static float BallToBallCollision(const ray_type& ray, const TBall& ball, TEdgeSegment** edge, float collisionDistance);
 };
