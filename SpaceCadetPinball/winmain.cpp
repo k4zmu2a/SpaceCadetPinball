@@ -1067,29 +1067,174 @@ void winmain::a_dialog()
 	}
 
 	bool unused_open = true;
-	if (ImGui::BeginPopupModal(pb::get_rc_string(Msg::STRING204), &unused_open, ImGuiWindowFlags_AlwaysAutoResize))
+	ImGui::PushStyleVar(ImGuiStyleVar_WindowMinSize, ImVec2{ 600, 300 });
+	if (ImGui::BeginPopupModal(pb::get_rc_string(Msg::STRING204), &unused_open, ImGuiWindowFlags_None))
 	{
-		ImGui::TextUnformatted(pb::get_rc_string(Msg::STRING139));
-		ImGui::TextUnformatted("Original game by Cinematronics, Microsoft");
-		ImGui::Separator();
-
-		ImGui::TextUnformatted("Decompiled -> Ported to SDL");
-		ImGui::Text("Version %s", Version);
-		if (ImGui::SmallButton("Project home: https://github.com/k4zmu2a/SpaceCadetPinball"))
+		if (ImGui::BeginTabBar("AboutTabBar", ImGuiTabBarFlags_None))
 		{
-#if SDL_VERSION_ATLEAST(2, 0, 14)
-			// Relatively new feature, skip with older SDL
-			SDL_OpenURL("https://github.com/k4zmu2a/SpaceCadetPinball");
-#endif
-		}
-		ImGui::Separator();
+			if (ImGui::BeginTabItem("3DPB"))
+			{
+				ImGui::TextUnformatted(pb::get_rc_string(Msg::STRING139));
+				ImGui::TextUnformatted("Original game by Cinematronics, Microsoft");
+				ImGui::Separator();
 
+				ImGui::TextUnformatted("Decompiled -> Ported to SDL");
+				ImGui::Text("Version %s", Version);
+				if (ImGui::SmallButton("Project home: https://github.com/k4zmu2a/SpaceCadetPinball"))
+				{
+#if SDL_VERSION_ATLEAST(2, 0, 14)
+					// Relatively new feature, skip with older SDL
+					SDL_OpenURL("https://github.com/k4zmu2a/SpaceCadetPinball");
+#endif
+				}
+				ImGui::EndTabItem();
+			}
+			ImGui::PushStyleColor(ImGuiCol_Button, 0);
+			ImGui::PushStyleColor(ImGuiCol_ButtonHovered, 0);
+			ImGui::PushStyleColor(ImGuiCol_ButtonActive, 0);
+			if (ImGui::BeginTabItem("Full Tilt!"))
+			{
+				const ImVec2 buttonCenter = { -1, 0 };
+				ImGui::Button("Full Tilt! was created by Cinematronics for Maxis.", buttonCenter);
+				ImGui::Button("Version 1.1", buttonCenter);
+
+				auto tableRow = [](LPCSTR textA, LPCSTR textB)
+				{
+					ImGui::TableNextRow();
+					ImGui::TableNextColumn();
+					ImGui::TextUnformatted(textA);
+					ImGui::TableNextColumn();
+					ImGui::TextUnformatted(textB);
+				};
+				if (ImGui::BeginTable("Full Tilt!", 2))
+				{
+					ImGui::TableNextRow();
+					ImGui::TableNextColumn();
+					ImGui::Button("Cinematronics", buttonCenter);
+					ImGui::Separator();
+					if (ImGui::BeginTable("Cinematronics", 2))
+					{
+						tableRow("PROGRAMMING", "ART");
+						tableRow("Michael Sandige", "John Frantz");
+						tableRow("John Taylor", "Ryan Medeiros");
+						ImGui::EndTable();
+					}
+					ImGui::Separator();
+					if (ImGui::BeginTable("Cinematronics", 2))
+					{
+						tableRow("DESIGN", "SOUND EFFECTS");
+						tableRow("Kevin Gliner", "Matt Ridgeway");
+						tableRow(nullptr, "Donald S. Griffin");
+						ImGui::EndTable();
+					}
+					ImGui::Separator();
+					if (ImGui::BeginTable("Cinematronics", 2))
+					{
+						tableRow("DESIGN CONSULTANT", "MUSIC");
+						tableRow("Mark Sprenger", "Matt Ridgeway");
+						ImGui::EndTable();
+					}
+					ImGui::Separator();
+					if (ImGui::BeginTable("Cinematronics", 2))
+					{
+						tableRow("PRODUCER", "VOICES");
+						tableRow("Kevin Gliner", "Mike McGeary");
+						tableRow(nullptr, "William Rice");
+						ImGui::EndTable();
+					}
+					ImGui::Separator();
+					if (ImGui::BeginTable("Cinematronics", 2))
+					{
+						tableRow("GRAND POOBAH", nullptr);
+						tableRow("David Stafford", nullptr);
+						ImGui::EndTable();
+					}
+					ImGui::Separator();
+					ImGui::Button("SPECIAL THANKS", buttonCenter);
+					if (ImGui::BeginTable("Cinematronics", 2))
+					{
+						tableRow("Paula Sandige", "Alex St. John");
+						tableRow("Brad Silverberg", "Jeff Camp");
+						tableRow("Danny Thorpe", "Greg Hospelhorn");
+						tableRow("Keith Johnson", "Sean Grant");
+						tableRow("Bob McAnn", "Michael Kelley");
+						tableRow("Rob Rosenhouse", "Lisa Acton");
+						ImGui::EndTable();
+					}
+					ImGui::TextUnformatted("Dan and Mitchell Roth");
+
+					ImGui::TableNextColumn();
+					ImGui::Button("Maxis", buttonCenter);
+					ImGui::Separator();
+					if (ImGui::BeginTable("Maxis", 2))
+					{
+						tableRow("PRODUCER", "PRODUCT MANAGER");
+						tableRow("John Csicsery", "Larry Lee");
+						ImGui::EndTable();
+					}
+					ImGui::Separator();
+					if (ImGui::BeginTable("Maxis", 2))
+					{
+						tableRow("LEAD TESTER", "QA MANAGER");
+						tableRow("Scott Shicoff", "Scott Shicoff");
+						ImGui::EndTable();
+					}
+					ImGui::Separator();
+					ImGui::Button("ADDITIONAL TESTING", buttonCenter);
+					if (ImGui::BeginTable("Maxis", 2))
+					{
+						tableRow("Cathy Castro", "Robin Hines");
+						tableRow("John \"Jussi\" Ylinen", "Keith Meyer");
+						tableRow("Marc Meyer", "Owen Nelson");
+						tableRow("Joe Longworth", "Peter Saylor");
+						tableRow("Michael Gilmartin", "Robin Hines");
+						ImGui::EndTable();
+					}
+					ImGui::Separator();
+					if (ImGui::BeginTable("Maxis", 2))
+					{
+						tableRow("ADDITIONAL ART", "ART DIRECTOR");
+						tableRow("Ocean Quigley", "Sharon Barr");
+						tableRow("Rick Macaraeg", "INSTALL PROGRAM");
+						tableRow("Charlie Aquilina", "Kevin O'Hare");
+						ImGui::EndTable();
+					}
+					ImGui::Separator();
+					if (ImGui::BeginTable("Maxis", 2))
+					{
+						tableRow("INTRO MUSIC", "DOCUMENTATION");
+						tableRow("Brian Conrad", "David Caggiano");
+						tableRow("John Csicsery", "Michael Bremer");
+						tableRow(nullptr, "Bob Sombrio");
+						ImGui::EndTable();
+					}
+					ImGui::Separator();
+					ImGui::Button("SPECIAL THANKS", buttonCenter);
+					if (ImGui::BeginTable("Maxis", 2))
+					{
+						tableRow("Sam Poole", "Joe Scirica");
+						tableRow("Jeff Braun", "Bob Derber");
+						tableRow("Ashley Csicsery", "Tom Forge");
+						ImGui::EndTable();
+					}
+					ImGui::Button("Will \"Burr\" Wright", buttonCenter);
+					ImGui::EndTable();
+				}
+
+				ImGui::EndTabItem();
+			}
+			ImGui::EndTabBar();
+			ImGui::PopStyleColor(3);
+		}
+
+		ImGui::Separator();
 		if (ImGui::Button("Ok"))
 		{
 			ImGui::CloseCurrentPopup();
 		}
 		ImGui::EndPopup();
 	}
+	ImGui::PopStyleVar();
 }
 
 void winmain::end_pause()
