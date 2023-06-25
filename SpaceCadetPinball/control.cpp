@@ -1032,14 +1032,14 @@ void control::table_set_bonus_hold()
 
 void control::table_set_bonus()
 {
-	TableG->ScoreSpecial2Flag = 1;
+	TableG->BonusScoreFlag = true;
 	lite59->Message(MessageCode::TLightTurnOnTimed, 60.0);
 	info_text_box->Display(pb::get_rc_string(Msg::STRING105), 2.0);
 }
 
 void control::table_set_jackpot()
 {
-	TableG->ScoreSpecial3Flag = 1;
+	TableG->JackpotScoreFlag = true;
 	lite60->Message(MessageCode::TLightTurnOnTimed, 60.0);
 	info_text_box->Display(pb::get_rc_string(Msg::STRING116), 2.0);
 }
@@ -1140,19 +1140,28 @@ bool control::CheckBallInControlBounds(const TBall& ball, const TCollisionCompon
 		ball.Position.Y <= cmp.AABB.YMax + offset;
 }
 
-int control::SpecialAddScore(int score)
+int control::SpecialAddScore(int score, bool mission)
 {
-	int prevFlag1 = TableG->ScoreSpecial3Flag;
-	TableG->ScoreSpecial3Flag = 0;
-	int prevFlag2 = TableG->ScoreSpecial2Flag;
-	TableG->ScoreSpecial2Flag = 0;
-	int prevMult = TableG->ScoreMultiplier;
-	TableG->ScoreMultiplier = 0;
+	// FT: mission completion applies current jackpot
+	if (mission && pb::FullTiltMode)
+		score += TableG->JackpotScore;
 
-	int addedScore = TableG->AddScore(score);
-	TableG->ScoreSpecial2Flag = prevFlag2;
-	TableG->ScoreMultiplier = prevMult;
-	TableG->ScoreSpecial3Flag = prevFlag1;
+	const auto bonus = TableG->BonusScoreFlag;
+	const auto jackpot = TableG->JackpotScoreFlag;
+	const auto scoreMult = TableG->ScoreMultiplier;
+
+	TableG->BonusScoreFlag = false;
+	TableG->JackpotScoreFlag = false;
+	TableG->ScoreMultiplier = 0;
+	const auto addedScore = TableG->AddScore(score);
+	TableG->BonusScoreFlag = bonus;
+	TableG->JackpotScoreFlag = jackpot;
+	TableG->ScoreMultiplier = scoreMult;
+
+	// FT: each mission starts with jackpot set to 5e5
+	if (mission && pb::FullTiltMode)
+		TableG->JackpotScore = 500000;
+
 	return addedScore;
 }
 
@@ -1368,7 +1377,7 @@ void control::LaunchRampControl(MessageCode code, TPinballComponent* caller)
 		if (lite54->light_on())
 		{
 			someFlag = 1;
-			int addedScore = SpecialAddScore(TableG->ScoreSpecial1);
+			int addedScore = SpecialAddScore(TableG->ReflexShotScore);
 			snprintf(Buffer, sizeof Buffer, pb::get_rc_string(Msg::STRING111), addedScore);
 			info_text_box->Display(Buffer, 2.0);
 		}
@@ -1432,11 +1441,13 @@ void control::ReentryLanesRolloverControl(MessageCode code, TPinballComponent* c
 		{
 			light = lite8;
 		}
-		else
+		else if (roll2 == caller)
 		{
 			light = lite9;
-			if (roll2 != caller)
-				light = lite10;
+		}
+		else
+		{
+			light = lite10;
 		}
 		if (!light->FlasherOnFlag)
 		{
@@ -1610,7 +1621,7 @@ void control::BonusLaneRolloverControl(MessageCode code, TPinballComponent* call
 	{
 		if (lite16->light_on())
 		{
-			int addedScore = SpecialAddScore(TableG->ScoreSpecial2);
+			int addedScore = SpecialAddScore(TableG->BonusScore);
 			snprintf(Buffer, sizeof Buffer, pb::get_rc_string(Msg::STRING104), addedScore);
 			info_text_box->Display(Buffer, 2.0);
 			lite16->Message(MessageCode::TLightResetAndTurnOff, 0.0);
@@ -1837,13 +1848,13 @@ void control::RightFlipperControl(MessageCode code, TPinballComponent* caller)
 void control::JackpotLightControl(MessageCode code, TPinballComponent* caller)
 {
 	if (code == MessageCode::ControlTimerExpired)
-		TableG->ScoreSpecial3Flag = 0;
+		TableG->JackpotScoreFlag = false;
 }
 
 void control::BonusLightControl(MessageCode code, TPinballComponent* caller)
 {
 	if (code == MessageCode::ControlTimerExpired)
-		TableG->ScoreSpecial2Flag = 0;
+		TableG->BonusScoreFlag = false;
 }
 
 void control::BoosterTargetControl(MessageCode code, TPinballComponent* caller)
@@ -2384,6 +2395,7 @@ void control::MissionControl(MessageCode code, TPinballComponent* caller)
 	case 18:
 		MaelstromController(code, caller);
 		break;
+	/*case 19: QuoteController*/
 	case 20:
 		AlienMenacePartTwoController(code, caller);
 		break;
@@ -2449,10 +2461,20 @@ void control::HyperspaceKickOutControl(MessageCode code, TPinballComponent* call
 		}
 	case 1:
 		{
-			auto addedScore = SpecialAddScore(TableG->ScoreSpecial3);
-			snprintf(Buffer, sizeof Buffer, pb::get_rc_string(Msg::STRING115), addedScore);
-			info_text_box->Display(Buffer, 2.0);
-			TableG->ScoreSpecial3 = 20000;
+			if (!pb::FullTiltMode)
+			{
+				auto addedScore = SpecialAddScore(TableG->JackpotScore);
+				snprintf(Buffer, sizeof Buffer, pb::get_rc_string(Msg::STRING115), addedScore);
+				info_text_box->Display(Buffer, 2.0);
+				TableG->JackpotScore = 20000;
+			}
+			else
+			{
+				TableG->JackpotScore *= 2;
+				if (TableG->JackpotScore > 10000000)
+					TableG->JackpotScore = 10000000;
+				info_text_box->Display(pb::get_rc_string(Msg::ControlJackpotDoubled), 2.0);
+			}
 			break;
 		}
 	case 2:
@@ -2486,7 +2508,7 @@ void control::HyperspaceKickOutControl(MessageCode code, TPinballComponent* call
 	if (lite25->light_on())
 	{
 		someFlag = 1;
-		auto addedScore = SpecialAddScore(TableG->ScoreSpecial1);
+		auto addedScore = SpecialAddScore(TableG->ReflexShotScore);
 		snprintf(Buffer, sizeof Buffer, pb::get_rc_string(Msg::STRING111), addedScore);
 		info_text_box->Display(Buffer, 2.0);
 	}
@@ -2512,10 +2534,10 @@ void control::HyperspaceKickOutControl(MessageCode code, TPinballComponent* call
 			auto duration = soundwave41->Play(nullptr, "HyperspaceKickOutControl_setMultiball");
 			table_set_multiball(duration);
 		}
-		if (TableG->ScoreSpecial3 < 100000)
-			TableG->ScoreSpecial3 = 100000;
-		if (TableG->ScoreSpecial2 < 100000)
-			TableG->ScoreSpecial2 = 100000;
+		if (TableG->JackpotScore < 100000)
+			TableG->JackpotScore = 100000;
+		if (TableG->BonusScore < 100000)
+			TableG->BonusScore = 100000;
 		GravityWellKickoutControl(MessageCode::ControlEnableMultiplier, nullptr);
 	}
 
@@ -2528,12 +2550,12 @@ void control::HyperspaceKickOutControl(MessageCode code, TPinballComponent* call
 		}
 		else
 		{
-			if (someFlag < 1 || someFlag > 3)
+			if (someFlag < (!pb::FullTiltMode ? 1 : 2) || someFlag > 3)
 			{
 				auto duration = soundwave41->Play(lite24, "HyperspaceKickOutControl1");
 				soundwave36_1->Play(lite24, "HyperspaceKickOutControl2");
 				soundwave50_2->Play(lite24, "HyperspaceKickOutControl3");
-				lite25->Message(MessageCode::TLightFlasherStartTimed, 5.0);
+				lite25->Message(MessageCode::TLightFlasherStartTimed, duration + 5.0f);
 				caller->Message(MessageCode::TKickoutRestartTimer, duration);
 				return;
 			}
@@ -2590,7 +2612,7 @@ void control::PlungerControl(MessageCode code, TPinballComponent* caller)
 			r_trek_lights->Message(MessageCode::TLightResetAndTurnOff, 0.0);
 			r_trek_lights->Message(MessageCode::TLightGroupOffsetAnimationForward, 0.2f);
 			r_trek_lights->Message(MessageCode::TLightGroupAnimationBackward, 0.2f);
-			TableG->ScoreSpecial1 = 25000;
+			TableG->ReflexShotScore = 25000;
 			MultiplierLightGroupControl(MessageCode::ControlDisableMultiplier, top_target_lights);
 			fuel_bargraph->Message(MessageCode::TLightResetAndTurnOn, 0.0);
 			lite200->Message(MessageCode::TLightResetAndTurnOn, 0.0);
@@ -2756,7 +2778,7 @@ void control::BallDrainControl(MessageCode code, TPinballComponent* caller)
 			{
 				if (!TableG->TiltLockFlag)
 				{
-					int time = SpecialAddScore(TableG->ScoreSpecial2);
+					int time = SpecialAddScore(TableG->BonusScore);
 					snprintf(Buffer, sizeof Buffer, pb::get_rc_string(Msg::STRING195), time);
 					info_text_box->Display(Buffer, 2.0);
 				}
@@ -2870,7 +2892,7 @@ void control::BallDrainControl(MessageCode code, TPinballComponent* caller)
 				if (lite58->light_on())
 					lite58->Message(MessageCode::TLightResetAndTurnOff, 0.0);
 				else
-					TableG->ScoreSpecial2 = 25000;
+					TableG->BonusScore = 25000;
 			}
 		}
 	}
@@ -2962,7 +2984,7 @@ void control::AlienMenacePartTwoController(MessageCode code, TPinballComponent* 
 			lite198->MessageField = 1;
 			MissionControl(MessageCode::ControlMissionComplete, nullptr);
 			mission_text_box->Display(pb::get_rc_string(Msg::STRING231), 4.0);
-			int addedScore = SpecialAddScore(750000);
+			int addedScore = SpecialAddScore(750000, true);
 			snprintf(Buffer, sizeof Buffer, pb::get_rc_string(Msg::STRING179), addedScore);
 			if (!AddRankProgress(7))
 			{
@@ -2994,7 +3016,7 @@ void control::BlackHoleThreatController(MessageCode code, TPinballComponent* cal
 			lite198->MessageField = 1;
 			MissionControl(MessageCode::ControlMissionComplete, nullptr);
 			mission_text_box->Display(pb::get_rc_string(Msg::STRING225), 4.0);
-			int addedScore = SpecialAddScore(1000000);
+			int addedScore = SpecialAddScore(1000000, true);
 			snprintf(Buffer, sizeof Buffer, pb::get_rc_string(Msg::STRING179), addedScore);
 			if (!AddRankProgress(8))
 			{
@@ -3119,7 +3141,7 @@ void control::BugHuntController(MessageCode code, TPinballComponent* caller)
 			lite198->MessageField = 1;
 			MissionControl(MessageCode::ControlMissionComplete, nullptr);
 			mission_text_box->Display(pb::get_rc_string(Msg::STRING227), 4.0);
-			int addedScore = SpecialAddScore(750000);
+			int addedScore = SpecialAddScore(750000, true);
 			snprintf(Buffer, sizeof Buffer, pb::get_rc_string(Msg::STRING179), addedScore);
 			if (!AddRankProgress(7))
 			{
@@ -3194,7 +3216,7 @@ void control::CosmicPlaguePartTwoController(MessageCode code, TPinballComponent*
 		lite198->MessageField = 1;
 		MissionControl(MessageCode::ControlMissionComplete, nullptr);
 		mission_text_box->Display(pb::get_rc_string(Msg::STRING242), 4.0);
-		int addedScore = SpecialAddScore(1750000);
+		int addedScore = SpecialAddScore(1750000, true);
 		snprintf(Buffer, sizeof Buffer, pb::get_rc_string(Msg::STRING179), addedScore);
 		if (!AddRankProgress(11))
 		{
@@ -3238,7 +3260,7 @@ void control::DoomsdayMachineController(MessageCode code, TPinballComponent* cal
 			lite198->MessageField = 1;
 			MissionControl(MessageCode::ControlMissionComplete, nullptr);
 			mission_text_box->Display(pb::get_rc_string(Msg::STRING239), 4.0);
-			int addedScore = SpecialAddScore(1250000);
+			int addedScore = SpecialAddScore(1250000, true);
 			snprintf(Buffer, sizeof Buffer, pb::get_rc_string(Msg::STRING179), addedScore);
 			if (!AddRankProgress(9))
 			{
@@ -3379,7 +3401,7 @@ void control::LaunchTrainingController(MessageCode code, TPinballComponent* call
 			lite198->MessageField = 1;
 			MissionControl(MessageCode::ControlMissionComplete, nullptr);
 			mission_text_box->Display(pb::get_rc_string(Msg::STRING212), 4.0);
-			int addedScore = SpecialAddScore(500000);
+			int addedScore = SpecialAddScore(500000, true);
 			snprintf(Buffer, sizeof Buffer, pb::get_rc_string(Msg::STRING179), addedScore);
 			if (!AddRankProgress(6))
 			{
@@ -3461,7 +3483,7 @@ void control::MaelstromPartEightController(MessageCode code, TPinballComponent* 
 		lite130->Message(MessageCode::TLightResetAndTurnOff, 0.0);
 		lite198->MessageField = 1;
 		MissionControl(MessageCode::ControlMissionComplete, nullptr);
-		int addedScore = SpecialAddScore(5000000);
+		int addedScore = SpecialAddScore(5000000, true);
 		snprintf(Buffer, sizeof Buffer, pb::get_rc_string(Msg::STRING179), addedScore);
 		info_text_box->Display(pb::get_rc_string(Msg::STRING149), 4.0);
 		if (!AddRankProgress(18))
@@ -3723,7 +3745,7 @@ void control::PracticeMissionController(MessageCode code, TPinballComponent* cal
 			lite198->MessageField = 1;
 			MissionControl(MessageCode::ControlMissionComplete, nullptr);
 			mission_text_box->Display(pb::get_rc_string(Msg::STRING209), 4.0);
-			int addedScore = SpecialAddScore(500000);
+			int addedScore = SpecialAddScore(500000, true);
 			snprintf(Buffer, sizeof Buffer, pb::get_rc_string(Msg::STRING179), addedScore);
 			if (!AddRankProgress(6))
 			{
@@ -3786,7 +3808,7 @@ void control::ReconnaissanceController(MessageCode code, TPinballComponent* call
 			lite198->MessageField = 1;
 			MissionControl(MessageCode::ControlMissionComplete, nullptr);
 			mission_text_box->Display(pb::get_rc_string(Msg::STRING237), 4.0);
-			int addedScore = SpecialAddScore(1250000);
+			int addedScore = SpecialAddScore(1250000, true);
 			snprintf(Buffer, sizeof Buffer, pb::get_rc_string(Msg::STRING179), addedScore);
 			if (!AddRankProgress(9))
 			{
@@ -3837,7 +3859,7 @@ void control::ReentryTrainingController(MessageCode code, TPinballComponent* cal
 			lite198->MessageField = 1;
 			MissionControl(MessageCode::ControlMissionComplete, nullptr);
 			mission_text_box->Display(pb::get_rc_string(Msg::STRING214), 4.0);
-			int addedScore = SpecialAddScore(500000);
+			int addedScore = SpecialAddScore(500000, true);
 			snprintf(Buffer, sizeof Buffer, pb::get_rc_string(Msg::STRING179), addedScore);
 			if (!AddRankProgress(6))
 			{
@@ -3878,7 +3900,7 @@ void control::RescueMissionController(MessageCode code, TPinballComponent* calle
 			lite198->MessageField = 1;
 			MissionControl(MessageCode::ControlMissionComplete, nullptr);
 			mission_text_box->Display(pb::get_rc_string(Msg::STRING230), 4.0);
-			int addedScore = SpecialAddScore(750000);
+			int addedScore = SpecialAddScore(750000, true);
 			snprintf(Buffer, sizeof Buffer, pb::get_rc_string(Msg::STRING179), addedScore);
 			if (!AddRankProgress(7))
 			{
@@ -3951,7 +3973,7 @@ void control::SatelliteController(MessageCode code, TPinballComponent* caller)
 			lite198->MessageField = 1;
 			MissionControl(MessageCode::ControlMissionComplete, nullptr);
 			mission_text_box->Display(pb::get_rc_string(Msg::STRING234), 4.0);
-			int addedScore = SpecialAddScore(1250000);
+			int addedScore = SpecialAddScore(1250000, true);
 			snprintf(Buffer, sizeof Buffer, pb::get_rc_string(Msg::STRING179), addedScore);
 			if (!AddRankProgress(9))
 			{
@@ -4024,7 +4046,7 @@ void control::ScienceMissionController(MessageCode code, TPinballComponent* call
 			lite198->MessageField = 1;
 			MissionControl(MessageCode::ControlMissionComplete, nullptr);
 			mission_text_box->Display(pb::get_rc_string(Msg::STRING216), 4.0);
-			int addedScore = SpecialAddScore(750000);
+			int addedScore = SpecialAddScore(750000, true);
 			snprintf(Buffer, sizeof Buffer, pb::get_rc_string(Msg::STRING179), addedScore);
 			if (!AddRankProgress(9))
 			{
@@ -4061,7 +4083,7 @@ void control::SecretMissionGreenController(MessageCode code, TPinballComponent* 
 		lite198->MessageField = 1;
 		MissionControl(MessageCode::ControlMissionComplete, nullptr);
 		mission_text_box->Display(pb::get_rc_string(Msg::STRING246), 4.0);
-		int addedScore = SpecialAddScore(1500000);
+		int addedScore = SpecialAddScore(1500000, true);
 		snprintf(Buffer, sizeof Buffer, pb::get_rc_string(Msg::STRING179), addedScore);
 		if (!AddRankProgress(10))
 		{
@@ -4164,7 +4186,8 @@ void control::SelectMissionController(MessageCode code, TPinballComponent* calle
 					lite198->MessageField = lite56->MessageField;
 					auto scoreId = lite56->MessageField - 2;
 					MissionControl(MessageCode::ControlMissionComplete, nullptr);
-					int addedScore = SpecialAddScore(mission_select_scores[scoreId]);
+					auto score = !pb::FullTiltMode ? mission_select_scores[scoreId] : 100000;
+					int addedScore = SpecialAddScore(score);
 					snprintf(Buffer, sizeof Buffer, pb::get_rc_string(Msg::STRING178), addedScore);
 					mission_text_box->Display(Buffer, 4.0);
 					midi::play_track(MidiTracks::Track2, true);
@@ -4369,7 +4392,7 @@ void control::SpaceRadiationController(MessageCode code, TPinballComponent* call
 			lite198->MessageField = 1;
 			MissionControl(MessageCode::ControlMissionComplete, nullptr);
 			mission_text_box->Display(pb::get_rc_string(Msg::STRING222), 4.0);
-			int addedScore = SpecialAddScore(1000000);
+			int addedScore = SpecialAddScore(1000000, true);
 			snprintf(Buffer, sizeof Buffer, pb::get_rc_string(Msg::STRING179), addedScore);
 			if (!AddRankProgress(8))
 			{
@@ -4422,7 +4445,7 @@ void control::StrayCometController(MessageCode code, TPinballComponent* caller)
 			lite198->MessageField = 1;
 			MissionControl(MessageCode::ControlMissionComplete, nullptr);
 			mission_text_box->Display(pb::get_rc_string(Msg::STRING220), 4.0);
-			int addedScore = SpecialAddScore(1000000);
+			int addedScore = SpecialAddScore(1000000, true);
 			snprintf(Buffer, sizeof Buffer, pb::get_rc_string(Msg::STRING179), addedScore);
 			if (!AddRankProgress(8))
 			{

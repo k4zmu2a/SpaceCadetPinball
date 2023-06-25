@@ -16,7 +16,7 @@ struct score_struct_super
 	scoreStruct* ScoreStruct;
 	int Score;
 	int ScoreE9Part;
-	int Unknown2;
+	int JackpotScore;
 	int BallCount;
 	int ExtraBalls;
 	int BallLockedCounter;
@@ -80,11 +80,11 @@ public:
 	vector2 PlungerPosition{};
 	int ScoreMultiplier{};
 	int ScoreAdded{};
-	int ScoreSpecial1{};
-	int ScoreSpecial2{};
-	int ScoreSpecial2Flag{};
-	int ScoreSpecial3{};
-	int ScoreSpecial3Flag{};
+	int ReflexShotScore{};
+	int BonusScore{};
+	bool BonusScoreFlag{};
+	int JackpotScore{};
+	bool JackpotScoreFlag{};
 	int UnknownP71{};
 	int BallCount{};
 	int MaxBallCount;

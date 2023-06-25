@@ -4998,6 +4998,13 @@ const TextArray translations::Translations =
 		},
 	},
 	{
+		Msg::ControlJackpotDoubled,
+		{
+			{ Lang::English, "Jackpot Doubled" },
+			{ Lang::Russian, "Джекпот удвоен" },
+		},
+	},
+	{
 		Msg::TextBoxColor,
 		{
 			{ Lang::Arabic, "255 255 255   (R G B لون الخط الافتراضي)" },

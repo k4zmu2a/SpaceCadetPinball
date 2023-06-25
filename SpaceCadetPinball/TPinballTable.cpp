@@ -248,17 +248,18 @@ TPinballComponent* TPinballTable::find_component(int groupIndex)
 
 int TPinballTable::AddScore(int score)
 {
-	if (ScoreSpecial3Flag)
+	if (JackpotScoreFlag)
 	{
-		ScoreSpecial3 += score;
-		if (ScoreSpecial3 > 5000000)
-			ScoreSpecial3 = 5000000;
+		JackpotScore += score;
+		const auto jackpotLimit = !pb::FullTiltMode ? 5000000 : 10000000;
+		if (JackpotScore > jackpotLimit)
+			JackpotScore = jackpotLimit;
 	}
-	if (ScoreSpecial2Flag)
+	if (BonusScoreFlag)
 	{
-		ScoreSpecial2 += score;
-		if (ScoreSpecial2 > 5000000)
-			ScoreSpecial2 = 5000000;
+		BonusScore += score;
+		if (BonusScore > 5000000)
+			BonusScore = 5000000;
 	}
 	int addedScore = ScoreAdded + score * score_multipliers[ScoreMultiplier];
 	CurScore += addedScore;
@@ -430,7 +431,7 @@ int TPinballTable::Message(MessageCode code, float value)
 				scorePtr->BallCount = MaxBallCount;
 				scorePtr->ExtraBalls = ExtraBalls;
 				scorePtr->BallLockedCounter = BallLockedCounter;
-				scorePtr->Unknown2 = ScoreSpecial3;
+				scorePtr->JackpotScore = JackpotScore;
 			}
 
 			BallCount = MaxBallCount;
@@ -443,8 +444,8 @@ int TPinballTable::Message(MessageCode code, float value)
 				score::set(PlayerScores[scoreIndex].ScoreStruct, -1);
 			}
 
-			ScoreSpecial3Flag = 0;
-			ScoreSpecial2Flag = 0;
+			JackpotScoreFlag = false;
+			BonusScoreFlag = false;
 			UnknownP71 = 0;
 			pb::InfoTextBox->Clear();
 			pb::MissTextBox->Clear();
@@ -455,9 +456,12 @@ int TPinballTable::Message(MessageCode code, float value)
 			LightShowTimer = timer::set(time, this, LightShow_timeout);
 		}
 
-		// Multi-ball is FT exclusive feature, at least for now.
 		if (pb::FullTiltMode)
+		{
+			// Multi-ball is FT exclusive feature, at least for now.
 			MultiballFlag = true;
+			JackpotScore = 500000;
+		}
 		midi::play_track(MidiTracks::Track1, true);
 		break;
 	case MessageCode::PlungerRelaunchBall:
@@ -489,14 +493,14 @@ int TPinballTable::Message(MessageCode code, float value)
 			PlayerScores[CurrentPlayer].BallCount = BallCount;
 			PlayerScores[CurrentPlayer].ExtraBalls = ExtraBalls;
 			PlayerScores[CurrentPlayer].BallLockedCounter = BallLockedCounter;
-			PlayerScores[CurrentPlayer].Unknown2 = ScoreSpecial3;
+			PlayerScores[CurrentPlayer].JackpotScore = JackpotScore;
 
 			CurScore = nextScorePtr->Score;
 			CurScoreE9 = nextScorePtr->ScoreE9Part;
 			BallCount = nextScorePtr->BallCount;
 			ExtraBalls = nextScorePtr->ExtraBalls;
 			BallLockedCounter = nextScorePtr->BallLockedCounter;
-			ScoreSpecial3 = nextScorePtr->Unknown2;
+			JackpotScore = nextScorePtr->JackpotScore;
 
 			CurScoreStruct = nextScorePtr->ScoreStruct;
 			score::set(CurScoreStruct, CurScore);
@@ -544,8 +548,8 @@ int TPinballTable::Message(MessageCode code, float value)
 
 			if (textboxText != nullptr)
 				pb::InfoTextBox->Display(textboxText, -1);
-			ScoreSpecial3Flag = 0;
-			ScoreSpecial2Flag = 0;
+			JackpotScoreFlag = false;
+			BonusScoreFlag = false;
 			UnknownP71 = 0;
 			CurrentPlayer = nextPlayer;
 		}
@@ -572,11 +576,11 @@ int TPinballTable::Message(MessageCode code, float value)
 		LightShowTimer = 0;
 		ScoreMultiplier = 0;
 		ScoreAdded = 0;
-		ScoreSpecial1 = 0;
-		ScoreSpecial2 = 10000;
-		ScoreSpecial2Flag = 0;
-		ScoreSpecial3 = 20000;
-		ScoreSpecial3Flag = 0;
+		ReflexShotScore = 0;
+		BonusScore = 10000;
+		BonusScoreFlag = false;
+		JackpotScore = 20000;
+		JackpotScoreFlag = false;
 		UnknownP71 = 0;
 		ExtraBalls = 0;
 		MultiballCount = 0;

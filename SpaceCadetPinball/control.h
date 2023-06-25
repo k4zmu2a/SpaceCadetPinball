@@ -92,7 +92,7 @@ public:
 	static void UnstuckBall(TBall& ball, int dt);
 	static bool CheckBallInControlBounds(const TBall& ball, const TCollisionComponent& cmp);
 	static void cheat_bump_rank();
-	static int SpecialAddScore(int score);
+	static int SpecialAddScore(int score, bool mission = false);
 	static int AddRankProgress(int rank);
 	static void AdvanceWormHoleDestination(int flag);
 
