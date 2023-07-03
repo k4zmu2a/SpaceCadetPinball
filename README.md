@@ -87,11 +87,10 @@ Tested with: macOS Big Sur (Intel) with Xcode 13 & macOS Montery Beta (Apple Sil
 * ~~Resizable window, scaled graphics~~
 * ~~Loader for high-res sprites from CADET.DAT~~
 * ~~Cross-platform port using SDL2, SDL2_mixer, ImGui~~
-* Misc features of Full Tilt: 3 music tracks, multiball, centered textboxes, etc.
-* Maybe: Text translations
-* Maybe: Android port
-* Maybe x2: support for other two tables
-  * Table specific BL (control interactions and missions) is hardcoded, othere parts might be also patched
+* Full Tilt Cadet features
+* Localization support
+* Maybe: Support for the other two tables - Dragon and Pirate
+* Maybe: Game data editor
 
 ## On 64-bit bug that killed the game
 
