@@ -288,4 +288,5 @@ struct optionsStruct
 	BoolOption DebugOverlayAabb;
 	StringOption FontFileName;
 	StringOption Language;
+	BoolOption HideCursor;
 };

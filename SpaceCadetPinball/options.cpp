@@ -151,6 +151,7 @@ optionsStruct options::Options
 	{"Debug Overlay AABB", true},
 	{"FontFileName", ""},
 	{"Language", translations::GetCurrentLanguage()->ShortName},
+	{"Hide Cursor", false},
 };
 
 void options::InitPrimary()

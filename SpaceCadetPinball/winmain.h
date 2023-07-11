@@ -106,6 +106,7 @@ private:
 	static unsigned PrevSdlErrorCount;
 	static unsigned gfrOffset;
 	static float gfrWindow;
+	static int CursorIdleCounter;
 
 	static void RenderUi();
 	static void RenderFrameTimeDialog();

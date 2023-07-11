@@ -49,6 +49,7 @@ winmain::DurationMs winmain::TargetFrameTime;
 optionsStruct& winmain::Options = options::Options;
 winmain::DurationMs winmain::SpinThreshold = DurationMs(0.005);
 WelfordState winmain::SleepState{};
+int winmain::CursorIdleCounter = 0;
 
 int winmain::WinMain(LPCSTR lpCmdLine)
 {
@@ -353,6 +354,8 @@ void winmain::MainLoop()
 
 			if (UpdateToFrameCounter >= UpdateToFrameRatio)
 			{
+				if (Options.HideCursor && CursorIdleCounter <= 0)
+					ImGui::SetMouseCursor(ImGuiMouseCursor_None);
 				ImGui_ImplSDL2_NewFrame();
 				ImGui_Render_NewFrame();
 				ImGui::NewFrame();
@@ -420,6 +423,8 @@ void winmain::MainLoop()
 			frameDuration = std::min<DurationMs>(DurationMs(frameEnd - frameStart), 2 * TargetFrameTime);
 			frameStart = frameEnd;
 			UpdateToFrameCounter++;
+
+			CursorIdleCounter = std::max(CursorIdleCounter - static_cast<int>(frameDuration.count()), 0);
 		}
 	}
 
@@ -581,10 +586,6 @@ void winmain::RenderUi()
 
 			if (ImGui::BeginMenu("Graphics"))
 			{
-				if (ImGui::MenuItem("Change Font"))
-				{
-					font_selection::ShowDialog();
-				}
 				if (ImGui::MenuItem(pb::get_rc_string(Msg::Menu1_WindowUniformScale), nullptr, Options.UniformScaling))
 				{
 					options::toggle(Menu1::WindowUniformScale);
@@ -639,6 +640,16 @@ void winmain::RenderUi()
 				if (changed)
 				{
 					UpdateFrameRate();
+				}
+				ImGui::Separator();
+
+				if (ImGui::MenuItem("Hide Cursor", nullptr, Options.HideCursor))
+				{
+					Options.HideCursor ^= true;
+				}
+				if (ImGui::MenuItem("Change Font..."))
+				{
+					font_selection::ShowDialog();
 				}
 
 				ImGui::EndMenu();
@@ -832,6 +843,21 @@ int winmain::event_handler(const SDL_Event* event)
 	if (!options::WaitingForInput() || !inputDown)
 		ImGui_ImplSDL2_ProcessEvent(event);
 
+	bool mouseEvent;
+	switch (event->type)
+	{
+	case SDL_MOUSEMOTION:
+	case SDL_MOUSEBUTTONDOWN:
+	case SDL_MOUSEBUTTONUP:
+	case SDL_MOUSEWHEEL:
+		CursorIdleCounter = 1000;
+		mouseEvent = true;
+		break;
+	default:
+		mouseEvent = false;
+		break;
+	}
+
 	if (ImIO->WantCaptureMouse && !options::WaitingForInput())
 	{
 		if (mouse_down)
@@ -839,15 +865,8 @@ int winmain::event_handler(const SDL_Event* event)
 			mouse_down = 0;
 			SDL_SetWindowGrab(MainWindow, SDL_FALSE);
 		}
-		switch (event->type)
-		{
-		case SDL_MOUSEMOTION:
-		case SDL_MOUSEBUTTONDOWN:
-		case SDL_MOUSEBUTTONUP:
-		case SDL_MOUSEWHEEL:
+		if (mouseEvent)
 			return 1;
-		default: ;
-		}
 	}
 	if (ImIO->WantCaptureKeyboard && !options::WaitingForInput())
 	{
