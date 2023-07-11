@@ -60,7 +60,8 @@ int TPlunger::Message(MessageCode code, float value)
 	switch (code)
 	{
 	case MessageCode::PlungerInputPressed:
-		if (!PullbackStartedFlag && PinballTable->MultiballCount > 0 && !PinballTable->TiltLockFlag)
+		if (!PullbackStartedFlag && (!pb::FullTiltMode || PinballTable->MultiballCount > 0 && !PinballTable->
+			TiltLockFlag))
 		{
 			PullbackStartedFlag = true;
 			Boost = 0.0;
