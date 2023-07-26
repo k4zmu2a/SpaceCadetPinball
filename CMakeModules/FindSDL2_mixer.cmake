@@ -42,6 +42,11 @@
 # (To distribute this file outside of CMake, substitute the full
 #  License text for the above reference.)
 
+SET(SDL2_MIXER_SEARCH_PATHS
+    ${SDL2_MIXER_PATH}
+    ${CMAKE_SOURCE_DIR}/extern
+)
+
 find_path(SDL2_MIXER_INCLUDE_DIR SDL_mixer.h
         HINTS
         ENV SDL2MIXERDIR
@@ -49,7 +54,7 @@ find_path(SDL2_MIXER_INCLUDE_DIR SDL_mixer.h
         PATH_SUFFIXES SDL2
         # path suffixes to search inside ENV{SDLDIR}
         include/SDL2 include
-        PATHS ${SDL2_MIXER_PATH}
+        PATHS ${SDL2_MIXER_SEARCH_PATHS}
         )
 
 if(CMAKE_SIZEOF_VOID_P EQUAL 8)
@@ -64,7 +69,7 @@ find_library(SDL2_MIXER_LIBRARY
         ENV SDL2MIXERDIR
         ENV SDL2DIR
         PATH_SUFFIXES lib bin ${VC_LIB_PATH_SUFFIX}
-        PATHS ${SDL2_MIXER_PATH}
+        PATHS ${SDL2_MIXER_SEARCH_PATHS}
         )
 
 if(SDL2_MIXER_INCLUDE_DIR AND EXISTS "${SDL2_MIXER_INCLUDE_DIR}/SDL_mixer.h")

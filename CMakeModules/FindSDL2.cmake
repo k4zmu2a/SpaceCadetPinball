@@ -77,6 +77,7 @@ SET(SDL2_SEARCH_PATHS
 	/opt/csw # Blastwave
 	/opt
 	${SDL2_PATH}
+	${CMAKE_SOURCE_DIR}/extern
 )
 
 FIND_PATH(SDL2_INCLUDE_DIR SDL.h
