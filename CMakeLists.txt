@@ -19,6 +19,13 @@ if(MINGW)
 	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -static")
 endif()
 
+if(APPLE)
+    set(MACOSX_RPATH)
+    set(CMAKE_BUILD_WITH_INSTALL_RPATH true)
+    set(CMAKE_INSTALL_RPATH "@executable_path/../Frameworks")
+    set(CMAKE_OSX_ARCHITECTURES "arm64;x86_64")
+endif()
+
 # SDL2main is not needed
 set(SDL2_BUILDING_LIBRARY ON)
 
