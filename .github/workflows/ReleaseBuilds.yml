@@ -4,7 +4,7 @@ on: [workflow_dispatch]
 
 jobs:
   build-macos:
-    runs-on: macos-12
+    runs-on: macos-11
     timeout-minutes: 15
     steps:
       - uses: actions/checkout@v3
