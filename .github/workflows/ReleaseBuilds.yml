@@ -11,9 +11,9 @@ jobs:
         with:
           ref: master
 
-      - run: bash build.sh
+      - run: bash build-mac-app.sh
 
       - uses: actions/upload-artifact@v3
         with:
           name: mac-build
-          path: packaging/*.dmg
+          path: *.dmg

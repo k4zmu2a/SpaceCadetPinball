@@ -39,19 +39,17 @@ cd ..
 cmake .
 cmake --build .
 
-cd packaging
-
 sw_version='2.0.1'
 
 mkdir -p SpaceCadetPinball.app/Contents/MacOS
 mkdir -p SpaceCadetPinball.app/Contents/Resources
 mkdir -p SpaceCadetPinball.app/Contents/Frameworks
 
-cp -a Info.plist SpaceCadetPinball.app/Contents/
-cp -a SpaceCadetPinball.icns SpaceCadetPinball.app/Contents/Resources/
-cp -a ../extern/SDL2.framework SpaceCadetPinball.app/Contents/Frameworks/
-cp -a ../extern/SDL2_mixer.framework SpaceCadetPinball.app/Contents/Frameworks/
-cp -a ../bin/SpaceCadetPinball SpaceCadetPinball.app/Contents/MacOS/
+cp -a Platform/macOS/Info.plist SpaceCadetPinball.app/Contents/
+cp -a Platform/macOS/SpaceCadetPinball.icns SpaceCadetPinball.app/Contents/Resources/
+cp -a extern/SDL2.framework SpaceCadetPinball.app/Contents/Frameworks/
+cp -a extern/SDL2_mixer.framework SpaceCadetPinball.app/Contents/Frameworks/
+cp -a bin/SpaceCadetPinball SpaceCadetPinball.app/Contents/MacOS/
 
 sed -i '' "s/CHANGEME_SW_VERSION/$sw_version/" SpaceCadetPinball.app/Contents/Info.plist
 
