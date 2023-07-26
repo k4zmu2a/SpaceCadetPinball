@@ -74,12 +74,22 @@ This project is available as Flatpak on [Flathub](https://flathub.org/apps/detai
 
 ### On macOS
 
+Install XCode (or at least Xcode Command Line Tools with `xcode-select --install`) and CMake.
+
+**Manual compilation:**
+
 * **Homebrew**: Install the `SDL2`, `SDL2_mixer` homebrew packages.
 * **MacPorts**: Install the `libSDL2`, `libSDL2_mixer` macports packages.
 
 Compile with CMake. Ensure that `CMAKE_OSX_ARCHITECTURES` variable is set for either `x86_64` Apple Intel or `arm64` for Apple Silicon.
 
 Tested with: macOS Big Sur (Intel) with Xcode 13 & macOS Montery Beta (Apple Silicon) with Xcode 13.
+
+**Automated compilation:**
+
+Run the `build-mac-app.sh` script from the root of the repository. The app will be available in a DMG file named `SpaceCadetPinball-<version>-mac.dmg`.
+
+Tested with: macOS Ventura (Apple Silicon) with Xcode Command Line Tools 14 & macOS Big Sur on GitHub Runner (Intel) with XCode 13.
 
 ## Plans
 
