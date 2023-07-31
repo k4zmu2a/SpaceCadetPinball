@@ -2,7 +2,7 @@
 
 set -xe
 
-mkdir Libs
+mkdir -p Libs
 
 cd Libs
 
