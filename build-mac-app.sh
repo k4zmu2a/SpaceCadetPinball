@@ -2,9 +2,9 @@
 
 set -xe
 
-mkdir extern
+mkdir Libs
 
-cd extern
+cd Libs
 
 sdl_version='2.28.1'
 sdl_filename="SDL2-$sdl_version.dmg"
@@ -47,8 +47,8 @@ mkdir -p SpaceCadetPinball.app/Contents/Frameworks
 
 cp -a Platform/macOS/Info.plist SpaceCadetPinball.app/Contents/
 cp -a Platform/macOS/SpaceCadetPinball.icns SpaceCadetPinball.app/Contents/Resources/
-cp -a extern/SDL2.framework SpaceCadetPinball.app/Contents/Frameworks/
-cp -a extern/SDL2_mixer.framework SpaceCadetPinball.app/Contents/Frameworks/
+cp -a Libs/SDL2.framework SpaceCadetPinball.app/Contents/Frameworks/
+cp -a Libs/SDL2_mixer.framework SpaceCadetPinball.app/Contents/Frameworks/
 cp -a bin/SpaceCadetPinball SpaceCadetPinball.app/Contents/MacOS/
 
 sed -i '' "s/CHANGEME_SW_VERSION/$sw_version/" SpaceCadetPinball.app/Contents/Info.plist
