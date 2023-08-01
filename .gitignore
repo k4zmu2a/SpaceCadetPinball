@@ -266,7 +266,7 @@ __pycache__/
 /Export
 /DrMem
 /Doc private
-# Windows local libraries
+# Windows and macOS local libraries
 /Libs
 
 #CMake generated

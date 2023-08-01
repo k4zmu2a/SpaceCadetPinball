@@ -1,0 +1,19 @@
+name: Make Release Builds
+
+on: [workflow_dispatch]
+
+jobs:
+  build-macos:
+    runs-on: macos-11
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          ref: master
+
+      - run: bash build-mac-app.sh
+
+      - uses: actions/upload-artifact@v3
+        with:
+          name: mac-build
+          path: SpaceCadetPinball-*-mac.dmg
