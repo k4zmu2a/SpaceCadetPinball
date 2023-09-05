@@ -245,7 +245,7 @@ int DatFile::field_size(int groupIndex, FieldTypes targetEntryType)
 int DatFile::record_labeled(LPCSTR targetGroupName)
 {
 	auto targetLength = strlen(targetGroupName);
-	for (int groupIndex = Groups.size() - 1; groupIndex >= 0; --groupIndex)
+	for (int groupIndex = static_cast<int>(Groups.size()) - 1; groupIndex >= 0; --groupIndex)
 	{
 		auto groupName = field(groupIndex, FieldTypes::GroupName);
 		if (!groupName)

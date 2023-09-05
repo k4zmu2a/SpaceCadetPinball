@@ -1366,7 +1366,7 @@ void winmain::RenderFrameTimeDialog()
 			sprintf(overlay, "avg %.3fms, dev %.3fms", average, dev);
 
 			auto region = ImGui::GetContentRegionAvail();
-			ImGui::PlotLines("Lines", gfrDisplay.data(), gfrDisplay.size(),
+			ImGui::PlotLines("Lines", gfrDisplay.data(), static_cast<int>(gfrDisplay.size()),
 			                 scrollPlot ? gfrOffset : 0, overlay, 0, yMax, region);
 		}
 	}

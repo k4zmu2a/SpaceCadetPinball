@@ -53,7 +53,7 @@ void Sound::PlaySound(Mix_Chunk* wavePtr, int time, TPinballComponent* soundSour
 				return a.TimeStamp < b.TimeStamp;
 			};
 			auto min = std::min_element(Channels.begin(), Channels.end(), cmp);
-			auto oldestChannel = std::distance(Channels.begin(), min);
+			auto oldestChannel = static_cast<int>(std::distance(Channels.begin(), min));
 			Mix_HaltChannel(oldestChannel);
 		}
 

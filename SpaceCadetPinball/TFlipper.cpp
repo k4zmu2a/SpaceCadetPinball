@@ -115,8 +115,7 @@ void TFlipper::Collision(TBall* ball, vector2* nextPosition, vector2* direction,
 
 void TFlipper::UpdateSprite()
 {
-	int bmpCountSub1 = ListBitmap->size() - 1;
-
+	auto bmpCountSub1 = static_cast<int>(ListBitmap->size()) - 1;
 	auto newBmpIndex = static_cast<int>(floor(FlipperEdge->CurrentAngle / FlipperEdge->AngleMax * bmpCountSub1 + 0.5f));
 	newBmpIndex = Clamp(newBmpIndex, 0, bmpCountSub1);
 	if (BmpIndex == newBmpIndex)

@@ -89,7 +89,7 @@ void TFlagSpinner::NextFrame()
 {
 	BmpIndex += SpinDirection;
 	int bmpIndex = BmpIndex;
-	int bmpCount = ListBitmap->size();
+	int bmpCount = static_cast<int>(ListBitmap->size());
 	if (bmpIndex >= bmpCount)
 		BmpIndex = 0;
 	else if (bmpIndex < 0)
