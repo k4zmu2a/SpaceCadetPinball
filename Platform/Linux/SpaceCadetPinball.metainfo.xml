@@ -28,6 +28,20 @@
         </screenshot>
     </screenshots>
     <releases>
+        <release version="2.1.0" date="2023-10-16">
+            <description>
+                <p>Feature release focusing on FT compatibility.</p>
+                <p>Main highlights:</p>
+                <ul>
+                    <li>FT: collision system changes, table control changes, multiball, three MIDI tracks.</li>
+                    <li>Work in progress: localization support. Depends on external font selection for most languages.</li>
+                    <li>HW accelerated ImGui renderer.</li>
+                    <li>Experimental stereo sound support.</li>
+                    <li>UX improvements.</li>
+                    <li>Bug fixes.</li>
+                </ul>
+            </description>
+        </release>
         <release version="2.0.1" date="2021-12-29">
             <description>
                 <p>First bug fix release of cross-platform port.</p>

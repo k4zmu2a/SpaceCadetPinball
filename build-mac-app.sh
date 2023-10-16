@@ -39,7 +39,7 @@ cd ..
 cmake .
 cmake --build .
 
-sw_version='2.0.1'
+sw_version='2.1.0'
 
 mkdir -p SpaceCadetPinball.app/Contents/MacOS
 mkdir -p SpaceCadetPinball.app/Contents/Resources
