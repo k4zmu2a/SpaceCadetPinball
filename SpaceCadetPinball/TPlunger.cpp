@@ -24,15 +24,21 @@ TPlunger::TPlunger(TPinballTable* table, int groupIndex) : TCollisionComponent(t
 	HardHitSoundId = visual.Kicker.HardHitSoundId;
 	Threshold = 1000000000.0;
 
-	// In FT, default max pullback is 50.
-	if (pb::FullTiltMode)
-		MaxPullback = 50;
-	else
-		MaxPullback = 100;
+    // FT:MaxPullback = 50; 3DPB: MaxPullback = 100, PullbackIncrement is floored.
+    if (pb::FullTiltMode)
+    {
+        MaxPullback = 50;
+        PullbackIncrement = MaxPullback / (ListBitmap->size() * 8.0f);
+    }
+    else
+    {
+        MaxPullback = 100;
+        PullbackIncrement = std::floor(MaxPullback / (ListBitmap->size() * 8.0f));
+    }
 
 	Elasticity = 0.5f;
 	Smoothness = 0.5f;
-	PullbackIncrement = MaxPullback / (ListBitmap->size() * 8.0f);
+	
 	PullbackDelay = 0.025f;
 	float* floatArr = loader::query_float_attribute(groupIndex, 0, 601);
 	table->PlungerPosition = {floatArr[0], floatArr[1]};
