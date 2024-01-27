@@ -436,32 +436,21 @@ void winmain::MainLoop()
 
 void winmain::RenderUi()
 {
-	// A minimal window with a button to prevent menu lockout.
-	if (!Options.ShowMenu)
+	// Transparent menu bar with a button for preventing menu lockout.
+	ImGui::PushStyleColor(ImGuiCol_MenuBarBg, ImVec4{});
+	ImGui::PushStyleColor(ImGuiCol_WindowBg, ImVec4{});
+	ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, 0);
+	if (!Options.ShowMenu && ImGui::BeginMainMenuBar())
 	{
-		ImGui::SetNextWindowPos(ImVec2{});
-		ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2{10, 0});
-		if (ImGui::Begin("main", nullptr,
-		                 ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoBackground |
-		                 ImGuiWindowFlags_AlwaysAutoResize |
-		                 ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoFocusOnAppearing))
+		if (ImGui::MenuItem("Menu"))
 		{
-			ImGui::PushID(1);
-			ImGui::PushStyleColor(ImGuiCol_Button, ImVec4{});
-			if (ImGui::Button("Menu"))
-			{
-				options::toggle(Menu1::Show_Menu);
-			}
-			ImGui::PopStyleColor(1);
-			ImGui::PopID();
-		}
-		ImGui::End();
-		ImGui::PopStyleVar();
-
-		// This window can not loose nav focus for some reason, clear it manually.
-		if (ImGui::IsKeyDown(ImGuiKey_Escape) || ImGui::IsKeyDown(ImGuiKey_GamepadFaceRight))
+			options::toggle(Menu1::Show_Menu);
 			ImGui::FocusWindow(nullptr);
+		}
+		ImGui::EndMainMenuBar();
 	}
+	ImGui::PopStyleVar(1);
+	ImGui::PopStyleColor(2);
 
 	// No demo window in release to save space
 #ifndef NDEBUG

@@ -195,7 +195,7 @@ void pb::firsttime_setup()
 
 void pb::mode_change(GameModes mode)
 {
-	if (CreditsActive)
+	if (CreditsActive && MissTextBox)
 		MissTextBox->Clear(true);
 	CreditsActive = false;
 	IdleTimerMs = 0;
