@@ -2,6 +2,7 @@
 #include "winmain.h"
 
 #include "control.h"
+#include "EmbeddedData.h"
 #include "fullscrn.h"
 #include "midi.h"
 #include "options.h"
@@ -129,6 +130,23 @@ int winmain::WinMain(LPCSTR lpCmdLine)
 		}
 		else
 			mixOpened = true;
+	}
+
+	{
+		// Load SDL Game Controller definitions from DB
+		unsigned decompressedSize{};
+		const auto controllerDb = ImFontAtlas::DecompressCompressedStbData(
+			EmbeddedData::SDL_GameControllerDB_compressed_data,
+			EmbeddedData::SDL_GameControllerDB_compressed_size,
+			decompressedSize);
+		auto rw = SDL_RWFromMem(controllerDb, decompressedSize);
+		const auto added = SDL_GameControllerAddMappingsFromRW(rw, 1);
+		IM_FREE(controllerDb);
+		if (added < 0)
+		{
+			printf("Could not load game controller DB.\nSDL Error: %s\n", SDL_GetError());
+			SDL_ClearError();
+		}
 	}
 
 	auto resetAllOptions = strstr(lpCmdLine, "-reset") != nullptr;

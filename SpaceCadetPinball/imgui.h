@@ -2884,6 +2884,7 @@ struct ImFontAtlas
     //typedef ImFontGlyphRangesBuilder GlyphRangesBuilder; // OBSOLETED in 1.67+
 	// Compressed base85 is useful for more than embedded TTF
 	static char* DecompressCompressedBase85Data(const char* compressed_data_base85); // 'compressed_data_base85' still owned by caller. Compress with binary_to_compressed_c.cpp with -base85 parameter.
+	static char* DecompressCompressedStbData(const unsigned int* compressed_data_stb, unsigned int compressed_data_size, unsigned int& decompressed_size);
 };
 
 // Font runtime data and rendering
