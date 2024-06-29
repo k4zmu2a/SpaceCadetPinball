@@ -28,6 +28,8 @@
 	</array>
 	<key>CSResourcesFileMapped</key>
 	<true/>
+	<key>LSMinimumSystemVersion</key>
+	<string>10.11</string>
 	<key>NSHighResolutionCapable</key>
 	<true/>
 </dict>
