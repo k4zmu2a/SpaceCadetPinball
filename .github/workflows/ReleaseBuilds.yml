@@ -4,16 +4,20 @@ on: [workflow_dispatch]
 
 jobs:
   build-macos:
-    runs-on: macos-11
+    runs-on: macos-12
     timeout-minutes: 15
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
         with:
           ref: master
 
+      - uses: maxim-lobanov/setup-xcode@v1
+        with:
+          xcode-version: 13
+
       - run: bash build-mac-app.sh
 
-      - uses: actions/upload-artifact@v3
+      - uses: actions/upload-artifact@v4
         with:
           name: mac-build
           path: SpaceCadetPinball-*-mac.dmg
