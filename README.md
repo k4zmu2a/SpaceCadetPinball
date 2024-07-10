@@ -24,6 +24,8 @@ Supports data files from Windows and Full Tilt versions of the game.
 | Nintendo 3DS       | MaikelChan      | https://github.com/MaikelChan/SpaceCadetPinball/tree/3ds                                                   |
 | Nintendo DS        | Headshotnoby    | https://github.com/headshot2017/3dpinball-nds                                                              |
 | Nintendo Wii U     | IntriguingTiles | https://github.com/IntriguingTiles/SpaceCadetPinball-WiiU                                                  |
+| PlayStation 2      | Headshotnoby    | https://github.com/headshot2017/3dpinball-ps2                                                              |
+| Sega Dreamcast     | Headshotnoby    | https://github.com/headshot2017/3dpinball-dc                                                               |
 | MorphOS            | BeWorld         | https://www.morphos-storage.net/?id=1688897                                                                |
 | AmigaOS 4          | rjd324          | http://aminet.net/package/game/actio/spacecadetpinball-aos4                                                |
 | Android (WIP)      | fexed           | https://github.com/fexed/Pinball-on-Android                                                                |
