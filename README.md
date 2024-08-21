@@ -79,6 +79,17 @@ This project is available as Flatpak on [Flathub](https://flathub.org/apps/detai
 
 Install XCode (or at least Xcode Command Line Tools with `xcode-select --install`) and CMake.
 
+**HomeBrew**
+
+You can easily install the build artifact by using `brew`.
+
+```sh
+brew tap draftbrew/tap
+brew install --no-quarantine space-cadet-pinball
+```
+
+Be aware that the flag `--no-quarantime` will disable macOS's Gatekeeper during installation.
+
 **Manual compilation:**
 
 * **Homebrew**: Install the `SDL2`, `SDL2_mixer` homebrew packages.
