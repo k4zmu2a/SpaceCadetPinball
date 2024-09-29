@@ -13,7 +13,7 @@ public:
 private:
 	static gdrv_bitmap8* dbScreen;
 
-	static void DrawCicleType(circle_type& circle);
+	static void DrawCircleType(circle_type& circle);
 	static void DrawLineType(line_type& line);
 	static void DrawEdge(TEdgeSegment* edge);
 	static void DrawBoxGrid();

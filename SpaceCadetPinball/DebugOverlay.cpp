@@ -295,7 +295,7 @@ void DebugOverlay::DrawComponentAabb()
 	}
 }
 
-void DebugOverlay::DrawCicleType(circle_type& circle)
+void DebugOverlay::DrawCircleType(circle_type& circle)
 {
 	vector2 linePt{ circle.Center.X + sqrt(circle.RadiusSq), circle.Center.Y };
 	auto pt1 = proj::xform_to_2d(circle.Center);
@@ -340,7 +340,7 @@ void DebugOverlay::DrawEdge(TEdgeSegment* edge)
 	auto circle = dynamic_cast<TCircle*>(edge);
 	if (circle)
 	{
-		DrawCicleType(circle->Circle);
+		DrawCircleType(circle->Circle);
 		return;
 	}
 
@@ -352,7 +352,7 @@ void DebugOverlay::DrawEdge(TEdgeSegment* edge)
 
 		DrawLineType(flip->LineA);
 		DrawLineType(flip->LineB);
-		DrawCicleType(flip->circlebase);
-		DrawCicleType(flip->circleT1);
+		DrawCircleType(flip->circlebase);
+		DrawCircleType(flip->circleT1);
 	}
 }
