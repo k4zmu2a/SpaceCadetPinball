@@ -2982,6 +2982,10 @@ void control::AlienMenacePartTwoController(MessageCode code, TPinballComponent* 
 			lite308->Message(MessageCode::TLightResetAndTurnOff, 0.0);
 			lite311->Message(MessageCode::TLightResetAndTurnOff, 0.0);
 			lite198->MessageField = 1;
+			if (pb::FullTiltMode)
+			{
+				table_set_replay(4.0);
+			}
 			MissionControl(MessageCode::ControlMissionComplete, nullptr);
 			mission_text_box->Display(pb::get_rc_string(Msg::STRING231), 4.0);
 			int addedScore = SpecialAddScore(750000, true);
@@ -3014,6 +3018,10 @@ void control::BlackHoleThreatController(MessageCode code, TPinballComponent* cal
 			if (lite314->light_on())
 				lite314->Message(MessageCode::TLightResetAndTurnOff, 0.0);
 			lite198->MessageField = 1;
+			if (pb::FullTiltMode)
+			{
+				table_set_replay(4.0);
+			}
 			MissionControl(MessageCode::ControlMissionComplete, nullptr);
 			mission_text_box->Display(pb::get_rc_string(Msg::STRING225), 4.0);
 			int addedScore = SpecialAddScore(1000000, true);
@@ -3139,6 +3147,10 @@ void control::BugHuntController(MessageCode code, TPinballComponent* caller)
 			lite313->Message(MessageCode::TLightResetAndTurnOff, 0.0);
 			lite319->Message(MessageCode::TLightResetAndTurnOff, 0.0);
 			lite198->MessageField = 1;
+			if (pb::FullTiltMode)
+			{
+				table_set_replay(4.0);
+			}
 			MissionControl(MessageCode::ControlMissionComplete, nullptr);
 			mission_text_box->Display(pb::get_rc_string(Msg::STRING227), 4.0);
 			int addedScore = SpecialAddScore(750000, true);
@@ -3214,6 +3226,10 @@ void control::CosmicPlaguePartTwoController(MessageCode code, TPinballComponent*
 	{
 		lite310->Message(MessageCode::TLightResetAndTurnOff, 0.0);
 		lite198->MessageField = 1;
+		if (pb::FullTiltMode)
+		{
+			table_set_replay(4.0);
+		}
 		MissionControl(MessageCode::ControlMissionComplete, nullptr);
 		mission_text_box->Display(pb::get_rc_string(Msg::STRING242), 4.0);
 		int addedScore = SpecialAddScore(1750000, true);
@@ -3258,6 +3274,10 @@ void control::DoomsdayMachineController(MessageCode code, TPinballComponent* cal
 			lite301->Message(MessageCode::TLightResetAndTurnOff, 0.0);
 			lite320->Message(MessageCode::TLightResetAndTurnOff, 0.0);
 			lite198->MessageField = 1;
+			if (pb::FullTiltMode)
+			{
+				table_set_replay(4.0);
+			}
 			MissionControl(MessageCode::ControlMissionComplete, nullptr);
 			mission_text_box->Display(pb::get_rc_string(Msg::STRING239), 4.0);
 			int addedScore = SpecialAddScore(1250000, true);
@@ -3399,6 +3419,10 @@ void control::LaunchTrainingController(MessageCode code, TPinballComponent* call
 		{
 			lite317->Message(MessageCode::TLightResetAndTurnOff, 0.0);
 			lite198->MessageField = 1;
+			if (pb::FullTiltMode)
+			{
+				table_set_replay(4.0);
+			}
 			MissionControl(MessageCode::ControlMissionComplete, nullptr);
 			mission_text_box->Display(pb::get_rc_string(Msg::STRING212), 4.0);
 			int addedScore = SpecialAddScore(500000, true);
@@ -3482,6 +3506,10 @@ void control::MaelstromPartEightController(MessageCode code, TPinballComponent* 
 		lite304->Message(MessageCode::TLightResetAndTurnOff, 0.0);
 		lite130->Message(MessageCode::TLightResetAndTurnOff, 0.0);
 		lite198->MessageField = 1;
+		if (pb::FullTiltMode)
+		{
+			table_set_replay(4.0);
+		}
 		MissionControl(MessageCode::ControlMissionComplete, nullptr);
 		int addedScore = SpecialAddScore(5000000, true);
 		snprintf(Buffer, sizeof Buffer, pb::get_rc_string(Msg::STRING179), addedScore);
@@ -3743,6 +3771,10 @@ void control::PracticeMissionController(MessageCode code, TPinballComponent* cal
 			lite308->Message(MessageCode::TLightResetAndTurnOff, 0.0);
 			lite311->Message(MessageCode::TLightResetAndTurnOff, 0.0);
 			lite198->MessageField = 1;
+			if (pb::FullTiltMode)
+			{
+				table_set_replay(4.0);
+			}
 			MissionControl(MessageCode::ControlMissionComplete, nullptr);
 			mission_text_box->Display(pb::get_rc_string(Msg::STRING209), 4.0);
 			int addedScore = SpecialAddScore(500000, true);
@@ -3806,6 +3838,10 @@ void control::ReconnaissanceController(MessageCode code, TPinballComponent* call
 			lite320->Message(MessageCode::TLightResetAndTurnOff, 0.0);
 			lite321->Message(MessageCode::TLightResetAndTurnOff, 0.0);
 			lite198->MessageField = 1;
+			if (pb::FullTiltMode)
+			{
+				table_set_replay(4.0);
+			}
 			MissionControl(MessageCode::ControlMissionComplete, nullptr);
 			mission_text_box->Display(pb::get_rc_string(Msg::STRING237), 4.0);
 			int addedScore = SpecialAddScore(1250000, true);
@@ -3857,6 +3893,10 @@ void control::ReentryTrainingController(MessageCode code, TPinballComponent* cal
 		{
 			lite307->Message(MessageCode::TLightResetAndTurnOff, 0.0);
 			lite198->MessageField = 1;
+			if (pb::FullTiltMode)
+			{
+				table_set_replay(4.0);
+			}
 			MissionControl(MessageCode::ControlMissionComplete, nullptr);
 			mission_text_box->Display(pb::get_rc_string(Msg::STRING214), 4.0);
 			int addedScore = SpecialAddScore(500000, true);
@@ -3898,6 +3938,10 @@ void control::RescueMissionController(MessageCode code, TPinballComponent* calle
 			if (lite304->light_on())
 				lite304->Message(MessageCode::TLightResetAndTurnOff, 0.0);
 			lite198->MessageField = 1;
+			if (pb::FullTiltMode)
+			{
+				table_set_replay(4.0);
+			}
 			MissionControl(MessageCode::ControlMissionComplete, nullptr);
 			mission_text_box->Display(pb::get_rc_string(Msg::STRING230), 4.0);
 			int addedScore = SpecialAddScore(750000, true);
@@ -3971,6 +4015,10 @@ void control::SatelliteController(MessageCode code, TPinballComponent* caller)
 		{
 			lite308->Message(MessageCode::TLightResetAndTurnOff, 0.0);
 			lite198->MessageField = 1;
+			if (pb::FullTiltMode)
+			{
+				table_set_replay(4.0);
+			}
 			MissionControl(MessageCode::ControlMissionComplete, nullptr);
 			mission_text_box->Display(pb::get_rc_string(Msg::STRING234), 4.0);
 			int addedScore = SpecialAddScore(1250000, true);
@@ -4044,6 +4092,10 @@ void control::ScienceMissionController(MessageCode code, TPinballComponent* call
 			lite309->Message(MessageCode::TLightResetAndTurnOff, 0.0);
 			lite315->Message(MessageCode::TLightResetAndTurnOff, 0.0);
 			lite198->MessageField = 1;
+			if (pb::FullTiltMode)
+			{
+				table_set_replay(4.0);
+			}
 			MissionControl(MessageCode::ControlMissionComplete, nullptr);
 			mission_text_box->Display(pb::get_rc_string(Msg::STRING216), 4.0);
 			int addedScore = SpecialAddScore(750000, true);
@@ -4081,6 +4133,10 @@ void control::SecretMissionGreenController(MessageCode code, TPinballComponent* 
 	if (sink2 == caller)
 	{
 		lite198->MessageField = 1;
+		if (pb::FullTiltMode)
+		{
+			table_set_replay(4.0);
+		}
 		MissionControl(MessageCode::ControlMissionComplete, nullptr);
 		mission_text_box->Display(pb::get_rc_string(Msg::STRING246), 4.0);
 		int addedScore = SpecialAddScore(1500000, true);
@@ -4390,6 +4446,10 @@ void control::SpaceRadiationController(MessageCode code, TPinballComponent* call
 			&& lite104->MessageField == 15)
 		{
 			lite198->MessageField = 1;
+			if (pb::FullTiltMode)
+			{
+				table_set_replay(4.0);
+			}
 			MissionControl(MessageCode::ControlMissionComplete, nullptr);
 			mission_text_box->Display(pb::get_rc_string(Msg::STRING222), 4.0);
 			int addedScore = SpecialAddScore(1000000, true);
@@ -4443,6 +4503,10 @@ void control::StrayCometController(MessageCode code, TPinballComponent* caller)
 		{
 			lite304->Message(MessageCode::TLightResetAndTurnOff, 0.0);
 			lite198->MessageField = 1;
+			if (pb::FullTiltMode)
+			{
+				table_set_replay(4.0);
+			}
 			MissionControl(MessageCode::ControlMissionComplete, nullptr);
 			mission_text_box->Display(pb::get_rc_string(Msg::STRING220), 4.0);
 			int addedScore = SpecialAddScore(1000000, true);
@@ -4568,6 +4632,10 @@ void control::TimeWarpPartTwoController(MessageCode code, TPinballComponent* cal
 	lite304->Message(MessageCode::TLightResetAndTurnOff, 0.0);
 	lite317->Message(MessageCode::TLightResetAndTurnOff, 0.0);
 	lite198->MessageField = 1;
+	if (pb::FullTiltMode)
+	{
+		table_set_replay(4.0);
+	}
 	MissionControl(MessageCode::ControlMissionComplete, nullptr);
 	// SpecialAddScore sets the score dirty flag. So next tick it will be redrawn.
 }
