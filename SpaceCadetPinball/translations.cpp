@@ -1977,7 +1977,7 @@ const TextArray translations::Translations =
 			{ Lang::Russian, "Инопланетная угроза" },
 			{ Lang::Swedish, "Pigs in Space" },
 			{ Lang::Turkish, "Yabancı İstilası" },
-			{ Lang::SimplifiedChinese, "外星人的威协" },
+			{ Lang::SimplifiedChinese, "外星人的威胁" },
 			{ Lang::TraditionalChinese, "異境驚魂" },
 		},
 	},
@@ -4413,7 +4413,7 @@ const TextArray translations::Translations =
 			{ Lang::Russian, "Войдите в червоточину" },
 			{ Lang::Swedish, "Skjut in kulan i ett maskhål" },
 			{ Lang::Turkish, "Solucan Deliği Vur" },
-			{ Lang::SimplifiedChinese, "击中虫孔" },
+			{ Lang::SimplifiedChinese, "击中旋涡式星体" },
 			{ Lang::TraditionalChinese, "命中蟲孔" },
 		},
 	},
@@ -5002,6 +5002,8 @@ const TextArray translations::Translations =
 		{
 			{ Lang::English, "Jackpot Doubled" },
 			{ Lang::Russian, "Джекпот удвоен" },
+			{ Lang::SimplifiedChinese, "头奖翻倍" },
+			{ Lang::TraditionalChinese, "幸運大獎翻倍" },
 		},
 	},
 	{
