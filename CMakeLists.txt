@@ -245,3 +245,7 @@ if(UNIX AND NOT APPLE)
 			"share/icons/hicolor/${S}x${S}/apps" RENAME "${PROJECT_NAME}.png")
 	endforeach(S)
 endif()
+
+if(MSVC)
+	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /utf-8")
+endif()
