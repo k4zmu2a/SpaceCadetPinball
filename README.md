@@ -15,6 +15,7 @@ Supports data files from Windows and Full Tilt versions of the game.
 
 | Platform           | Author          | URL                                                                                                        |
 | ------------------ | --------------- | ---------------------------------------------------------------------------------------------------------- |
+| PSP                | DiegoBloise     | <https://github.com/DiegoBloise/SpaceCadetPinball_PSP>                                                     |
 | PS Vita            | Axiom           | <https://github.com/suicvne/SpaceCadetPinball_Vita>                                                        |
 | Emscripten         | alula           | <https://github.com/alula/SpaceCadetPinball> <br> Play online: <https://alula.github.io/SpaceCadetPinball> |
 | Nintendo Switch    | averne          | <https://github.com/averne/SpaceCadetPinball-NX>                                                           |
