@@ -40,21 +40,29 @@ cmake .
 cmake --build .
 
 sw_version='2.1.1'
+app_name='Space Cadet Pinball'
 
-mkdir -p SpaceCadetPinball.app/Contents/MacOS
-mkdir -p SpaceCadetPinball.app/Contents/Resources
-mkdir -p SpaceCadetPinball.app/Contents/Frameworks
+mkdir -p "$app_name.app/Contents/MacOS"
+mkdir -p "$app_name.app/Contents/Resources"
+mkdir -p "$app_name.app/Contents/Frameworks"
 
-cp -a Platform/macOS/Info.plist SpaceCadetPinball.app/Contents/
-cp -a Platform/macOS/SpaceCadetPinball.icns SpaceCadetPinball.app/Contents/Resources/
-cp -a Libs/SDL2.framework SpaceCadetPinball.app/Contents/Frameworks/
-cp -a Libs/SDL2_mixer.framework SpaceCadetPinball.app/Contents/Frameworks/
-cp -a bin/SpaceCadetPinball SpaceCadetPinball.app/Contents/MacOS/
+cp -a Platform/macOS/Info.plist "$app_name.app/Contents/"
+cp -a Platform/macOS/SpaceCadetPinball.icns "$app_name.app/Contents/Resources/"
+cp -a Libs/SDL2.framework "$app_name.app/Contents/Frameworks/"
+cp -a Libs/SDL2_mixer.framework "$app_name.app/Contents/Frameworks/"
+cp -a bin/SpaceCadetPinball "$app_name.app/Contents/MacOS/"
 
-sed -i '' "s/CHANGEME_SW_VERSION/$sw_version/" SpaceCadetPinball.app/Contents/Info.plist
+sed -i '' "s/CHANGEME_SW_VERSION/$sw_version/" "$app_name.app/Contents/Info.plist"
 
-echo -n "APPL????" > SpaceCadetPinball.app/Contents/PkgInfo
+echo -n "APPL????" > "$app_name.app/Contents/PkgInfo"
 
-hdiutil create -fs HFS+ -srcfolder SpaceCadetPinball.app -volname "SpaceCadetPinball $sw_version" "SpaceCadetPinball-$sw_version-mac.dmg"
+hdiutil create -fs HFS+ -srcfolder "$app_name.app" -volname "$app_name $sw_version" "$app_name-$sw_version-mac.dmg"
 
-rm -r SpaceCadetPinball.app
+# Install to /Applications
+rm -rf "/Applications/$app_name.app"
+cp -R "$app_name.app" /Applications/
+touch "/Applications/$app_name.app"
+/System/Library/Frameworks/CoreServices.framework/Frameworks/LaunchServices.framework/Support/lsregister -f "/Applications/$app_name.app"
+killall Finder 2>/dev/null || true
+
+rm -r "$app_name.app"

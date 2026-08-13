@@ -15,7 +15,9 @@
 	<key>CFBundleLongVersionString</key>
 	<string></string>
 	<key>CFBundleName</key>
-	<string>SpaceCadetPinball</string>
+	<string>Space Cadet Pinball</string>
+	<key>CFBundleDisplayName</key>
+	<string>Space Cadet Pinball</string>
 	<key>CFBundlePackageType</key>
 	<string>APPL</string>
 	<key>CFBundleShortVersionString</key>
