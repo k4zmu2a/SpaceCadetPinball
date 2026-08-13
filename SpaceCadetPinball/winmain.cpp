@@ -88,6 +88,10 @@ int winmain::WinMain(LPCSTR lpCmdLine)
 		return 1;
 	}
 
+	// The game has no text fields; leaving text input active makes macOS
+	// show the press-and-hold accent picker over held keys (e.g. 'z' flipper).
+	SDL_StopTextInput();
+
 	// If HW fails, fallback to SW SDL renderer.
 	SDL_Renderer* renderer = nullptr;
 	auto swOffset = strstr(lpCmdLine, "-sw") != nullptr ? 1 : 0;
