@@ -2,6 +2,23 @@
 
 set -xe
 
+cd "$(dirname "$0")"
+game_data_dir="${GAME_DATA_DIR:-$PWD/GameData}"
+if [ -d "$game_data_dir" ]; then
+	game_data_dir="$(cd "$game_data_dir" && pwd)"
+	if [ ! -f "$game_data_dir/PINBALL.DAT" ] && [ ! -f "$game_data_dir/pinball.dat" ] && \
+	   [ ! -f "$game_data_dir/CADET.DAT" ] && [ ! -f "$game_data_dir/cadet.dat" ] && \
+	   [ ! -f "$game_data_dir/DEMO.DAT" ] && [ ! -f "$game_data_dir/demo.dat" ]; then
+		echo "No supported game DAT file found in $game_data_dir" >&2
+		exit 1
+	fi
+elif [ -n "${GAME_DATA_DIR:-}" ]; then
+	echo "Game data directory does not exist: $game_data_dir" >&2
+	exit 1
+else
+	echo "Warning: building without game data. See README.md for setup instructions." >&2
+fi
+
 mkdir -p Libs
 
 cd Libs
@@ -47,6 +64,9 @@ mkdir -p SpaceCadetPinball.app/Contents/Frameworks
 
 cp -a Platform/macOS/Info.plist SpaceCadetPinball.app/Contents/
 cp -a Platform/macOS/SpaceCadetPinball.icns SpaceCadetPinball.app/Contents/Resources/
+if [ -d "$game_data_dir" ]; then
+	cp -a "$game_data_dir/." SpaceCadetPinball.app/Contents/Resources/
+fi
 cp -a Libs/SDL2.framework SpaceCadetPinball.app/Contents/Frameworks/
 cp -a Libs/SDL2_mixer.framework SpaceCadetPinball.app/Contents/Frameworks/
 cp -a bin/SpaceCadetPinball SpaceCadetPinball.app/Contents/MacOS/
