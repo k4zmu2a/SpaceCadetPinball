@@ -8,6 +8,7 @@
 #include "pb.h"
 #include "render.h"
 #include "TBall.h"
+#include "TLine.h"
 #include "timer.h"
 #include "TPinballTable.h"
 
@@ -70,6 +71,8 @@ int TPlunger::Message(MessageCode code, float value)
 			TiltLockFlag))
 		{
 			PullbackStartedFlag = true;
+			// A rapid second pull must not be cleared by the previous release.
+			timer::kill(ReleasedTimer);
 			Boost = 0.0;
 			Threshold = 1000000000.0;
 			loader::play_sound(HardHitSoundId, this, "TPlunger1");
@@ -134,6 +137,7 @@ int TPlunger::Message(MessageCode code, float value)
 			loader::play_sound(SoundIndexP2, this, "TPlunger3");
 			SpriteSet(0);
 			timer::set(PullbackDelay, this, ReleasedTimer);
+			StrikeRestingBall();
 		}
 		break;
 	case MessageCode::Reset:
@@ -162,6 +166,38 @@ void TPlunger::BallFeedTimer(int timerId, void* caller)
 {
 	auto plunger = static_cast<TPlunger*>(caller);
 	plunger->Message(MessageCode::PlungerFeedBall, 0.0);
+}
+
+void TPlunger::StrikeRestingBall()
+{
+	// A resting ball still rebounds by about 0.003 table units. Its next
+	// collision can be later than the 25 ms release window (upstream #210).
+	// Resolve contact at release within a small numerical skin, using the
+	// actual, radius-offset plunger wall rather than the ball-feed position.
+	constexpr float contactSkin = 0.005f;
+	for (auto ball : PinballTable->BallList)
+	{
+		if (!ball->ActiveFlag || ball->HasGroupFlag || ball->CollisionComp || ball->Speed >= 0.8f)
+			continue;
+		for (auto edge : EdgeList)
+		{
+			auto line = dynamic_cast<TLine*>(edge);
+			if (!line || !*edge->ActiveFlagPtr || !(edge->CollisionGroup & ball->CollisionMask))
+				continue;
+			ray_type ray{};
+			ray.Origin = ball->Position;
+			ray.Direction = {-line->Line.PerpendicularC.X, -line->Line.PerpendicularC.Y};
+			ray.MinDistance = 0.002f; // Same penetration tolerance as pb::timed_frame.
+			ray.MaxDistance = contactSkin;
+			auto distance = line->FindCollisionDistance(ray);
+			if (distance >= 1e9f)
+				continue;
+			line->EdgeCollision(ball, distance);
+			// One release supplies one impulse, even for a very weak shot.
+			ReleasedTimer(0, this);
+			return;
+		}
+	}
 }
 
 void TPlunger::PullbackTimer(int timerId, void* caller)
