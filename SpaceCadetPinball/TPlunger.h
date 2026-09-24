@@ -24,4 +24,7 @@ public:
 	int SoundIndexP2;
 	bool PullbackStartedFlag{};
 	int SomeCounter{};
+
+private:
+	void StrikeRestingBall();
 };
