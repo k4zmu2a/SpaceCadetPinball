@@ -4,6 +4,10 @@
 
 #include "pb.h"
 
+#ifndef _WIN32
+#include <glob.h>
+#endif
+
 
 std::vector<Mix_Music*> midi::LoadedTracks{};
 Mix_Music* midi::track1, * midi::track2, * midi::track3;
@@ -61,8 +65,45 @@ void midi::StopPlayback()
 	}
 }
 
+/// <summary>
+/// SDL_mixer MIDI music requires a sound font, which is usually not
+/// installed and is not bundled with the game. SDL_mixer only accepts
+/// it through the SDL_SOUNDFONTS env variable, so when the variable is
+/// not set, look for a *.sf2 file next to the game data (the folder
+/// containing the .DAT file) and point SDL_mixer to it.
+/// </summary>
+static void SetSoundFontFromGameData()
+{
+	if (SDL_getenv("SDL_SOUNDFONTS"))
+		return;
+
+	std::string foundPath;
+	const auto pattern = pb::BasePath + "*.sf2";
+#ifdef _WIN32
+	WIN32_FIND_DATAA findData{};
+	auto findHandle = FindFirstFileA(pattern.c_str(), &findData);
+	if (findHandle != INVALID_HANDLE_VALUE)
+	{
+		foundPath = pb::BasePath + findData.cFileName;
+		FindClose(findHandle);
+	}
+#else
+	glob_t globResult{};
+	if (glob(pattern.c_str(), 0, nullptr, &globResult) == 0 && globResult.gl_pathc > 0)
+		foundPath = globResult.gl_pathv[0];
+	globfree(&globResult);
+#endif
+
+	if (!foundPath.empty())
+	{
+		SDL_setenv("SDL_SOUNDFONTS", foundPath.c_str(), 0);
+		printf("Using sound font: %s\n", foundPath.c_str());
+	}
+}
+
 int midi::music_init(bool mixOpen, int volume)
 {
+	SetSoundFontFromGameData();
 	MixOpen = mixOpen;
 	SetVolume(volume);
 	active_track = MidiTracks::None;

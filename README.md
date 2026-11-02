@@ -9,7 +9,8 @@ Reverse engineering of `3D Pinball for Windows - Space Cadet`, a game bundled wi
 ## How to play
 
 Place compiled executable into a folder containing original game resources (not included).\
-Supports data files from Windows and Full Tilt versions of the game.
+Supports data files from Windows and Full Tilt versions of the game.\
+For music, place a General MIDI sound font (*.sf2) next to the game data or set the `SDL_SOUNDFONTS` environment variable.
 
 ## Known source ports
 
