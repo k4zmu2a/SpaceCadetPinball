@@ -125,6 +125,11 @@ optionsStruct options::Options
 	{"FullScreen", false},
 	{"Players", 1},
 	{"Screen Resolution", -1},
+	// Zero size means that no window geometry has been saved yet.
+	{"Window Width", 0},
+	{"Window Height", 0},
+	{"Window X", 0},
+	{"Window Y", 0},
 	{"UI Scale", 1.0f},
 	{"Uniform scaling", true},
 	{"Linear Filtering", true},
