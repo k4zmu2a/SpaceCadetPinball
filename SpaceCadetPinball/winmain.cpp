@@ -52,6 +52,67 @@ winmain::DurationMs winmain::SpinThreshold = DurationMs(0.005);
 WelfordState winmain::SleepState{};
 int winmain::CursorIdleCounter = 0;
 
+namespace
+{
+	// Returns true when a saved window size was applied.
+	bool RestoreWindowGeometry(SDL_Window* window)
+	{
+		auto width = options::Options.WindowWidth.V;
+		auto height = options::Options.WindowHeight.V;
+		if (width <= 0 || height <= 0)
+			return false;
+
+		SDL_SetWindowSize(window, width, height);
+
+		// Keep the saved position only if enough of the window is still on a display.
+		// Otherwise let the window manager place the window.
+		auto x = options::Options.WindowX.V;
+		auto y = options::Options.WindowY.V;
+		const SDL_Rect windowRect{x, y, width, height};
+		for (auto i = 0; i < SDL_GetNumVideoDisplays(); i++)
+		{
+			SDL_Rect displayBounds;
+			SDL_Rect intersection;
+			if (SDL_GetDisplayUsableBounds(i, &displayBounds) == 0 &&
+				SDL_IntersectRect(&windowRect, &displayBounds, &intersection) &&
+				intersection.w >= 32 && intersection.h >= 32)
+			{
+				SDL_SetWindowPosition(window, x, y);
+				break;
+			}
+		}
+
+		return true;
+	}
+
+	void SaveWindowGeometry()
+	{
+		// SDL restores the windowed geometry when leaving fullscreen, so only save
+		// while the window is not in fullscreen mode.
+		if (!winmain::MainWindow || fullscrn::screen_mode ||
+			(SDL_GetWindowFlags(winmain::MainWindow) & SDL_WINDOW_FULLSCREEN))
+			return;
+
+		int width, height, x, y;
+		SDL_GetWindowSize(winmain::MainWindow, &width, &height);
+		SDL_GetWindowPosition(winmain::MainWindow, &x, &y);
+		if (width <= 0 || height <= 0)
+			return;
+
+		options::Options.WindowWidth = width;
+		options::Options.WindowHeight = height;
+		options::Options.WindowX = x;
+		options::Options.WindowY = y;
+
+		// Persist the geometry while the game is running, so it is
+		// not lost if the process does not shut down cleanly.
+		options::Options.WindowWidth.Save();
+		options::Options.WindowHeight.Save();
+		options::Options.WindowX.Save();
+		options::Options.WindowY.Save();
+	}
+}
+
 int winmain::WinMain(LPCSTR lpCmdLine)
 {
 	std::set_new_handler(memalloc_failure);
@@ -150,9 +211,11 @@ int winmain::WinMain(LPCSTR lpCmdLine)
 	}
 
 	auto resetAllOptions = strstr(lpCmdLine, "-reset") != nullptr;
+	auto restoreWindowGeometry = true;
 	do
 	{
 		restart = false;
+		auto restoredWindowGeometry = false;
 
 		// ImGui init
 		IMGUI_CHECKVERSION();
@@ -250,7 +313,15 @@ int winmain::WinMain(LPCSTR lpCmdLine)
 			Options.FullScreen = true;
 		}
 
-		if (!Options.FullScreen)
+		if (restoreWindowGeometry)
+		{
+			restoredWindowGeometry = RestoreWindowGeometry(MainWindow);
+			restoreWindowGeometry = false;
+		}
+
+		// On a restart, keep using the selected table resolution instead of
+		// overwriting it with the geometry saved on the previous run.
+		if (!Options.FullScreen && !restoredWindowGeometry)
 		{
 			auto resInfo = &fullscrn::resolution_array[fullscrn::GetResolution()];
 			SDL_SetWindowSize(MainWindow, resInfo->TableWidth, resInfo->TableHeight);
@@ -893,6 +964,9 @@ int winmain::event_handler(const SDL_Event* event)
 	case SDL_QUIT:
 		end_pause();
 		bQuit = true;
+		// Save before leaving fullscreen, so a fullscreen exit does not replace
+		// the remembered windowed geometry.
+		SaveWindowGeometry();
 		fullscrn::shutdown();
 		return_value = 0;
 		return 0;
@@ -1014,9 +1088,13 @@ int winmain::event_handler(const SDL_Event* event)
 			has_focus = false;
 			pb::loose_focus();
 			break;
+		case SDL_WINDOWEVENT_MOVED:
+			SaveWindowGeometry();
+			break;
 		case SDL_WINDOWEVENT_SIZE_CHANGED:
 		case SDL_WINDOWEVENT_RESIZED:
 			fullscrn::window_size_changed();
+			SaveWindowGeometry();
 			break;
 		default: ;
 		}

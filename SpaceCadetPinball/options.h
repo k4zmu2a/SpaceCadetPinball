@@ -262,6 +262,10 @@ struct optionsStruct
 	BoolOption FullScreen;
 	IntOption Players;
 	IntOption Resolution;
+	IntOption WindowWidth;
+	IntOption WindowHeight;
+	IntOption WindowX;
+	IntOption WindowY;
 	FloatOption UIScale;
 	BoolOption UniformScaling;
 	BoolOption LinearFiltering;
